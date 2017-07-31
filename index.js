@@ -27,6 +27,8 @@ const app = express()
 
 loadViews().then((views) => {
   views.forEach((view) => {
+    console.log('hydra view route: ' + view.iriTemplate.template)
+
     app.use(view.handle)
   })
 
