@@ -1,0 +1,29 @@
+{
+  "name": "hydra-view",
+  "description": "",
+  "version": "0.0.1",
+  "license": "MIT",
+  "homepage": "https://github.com/zazuko/hydra-view",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zazuko/hydra-view.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zazuko/hydra-view/issues"
+  },
+  "scripts": {
+    "test": "standard && mocha"
+  },
+  "dependencies": {
+    "nodeify-fetch": "^1.0.1",
+    "rdf-ext": "^1.0.0",
+    "rdf-parser-jsonld": "^1.0.0",
+    "sparql-http-client": "^1.0.2",
+    "uri-templates": "^0.2.0"
+  },
+  "devDependencies": {
+    "express": "^4.15.3",
+    "mocha": "^3.4.2",
+    "standard": "^10.0.2"
+  }
+}

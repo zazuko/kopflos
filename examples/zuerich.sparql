@@ -1,0 +1,31 @@
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * WHERE {
+  GRAPH <https://linked.opendata.swiss/graph/zh/statistics> {
+    ?obs a qb:Observation ;
+      <http://ld.stadt-zuerich.ch/statistics/property/ZEIT> ?zeit;
+      <http://ld.stadt-zuerich.ch/statistics/property/RAUM> ?raum;
+      <http://ld.stadt-zuerich.ch/statistics/property/RAUM> <http://ld.stadt-zuerich.ch/statistics/code/R00091>;
+      <http://ld.stadt-zuerich.ch/statistics/property/KENNZAHL> ?kennzahl ;
+      <http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE1> ?flaeche ;
+      <http://ld.stadt-zuerich.ch/statistics/property/EINHEIT> ?einheit ;
+      <http://ld.stadt-zuerich.ch/statistics/property/WERT> ?wert .
+
+    ?raum rdfs:label ?raumLabel .
+    ?kennzahl rdfs:label ?kennzahlLabel .
+    ?flaeche skos:notation ?flaecheLabel .
+
+    BIND (xsd:datetime(SUBSTR(str(?zeit),STRLEN(str(?zeit))-3)) AS ?zeitLabel)
+
+    FILTER (?flaecheLabel IN( "BBA1310"))
+
+    # IRI template variables
+    BIND (SUBSTR(str(?raum), STRLEN(str(?raum))-5) AS ?raumLiteral)
+    BIND (SUBSTR(str(?zeitLabel), 1, 4) AS ?zeitLiteral)
+
+    FILTER (?raumLiteral IN ("${raum}"))
+    FILTER (?zeitLiteral IN ("${zeit}"))
+  }
+} ORDER BY ?zeitLabel LIMIT 10
