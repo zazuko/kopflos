@@ -1,0 +1,31 @@
+# examples http://localhost:9000/api/statistics/flaechen/R00091?from=1965&to=1987
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * WHERE {
+  GRAPH <https://linked.opendata.swiss/graph/zh/statistics> {
+    ?obs a qb:Observation ;
+      <http://ld.stadt-zuerich.ch/statistics/property/ZEIT> ?zeitLabel;
+      <http://ld.stadt-zuerich.ch/statistics/property/RAUM> ?raum;
+      <http://ld.stadt-zuerich.ch/statistics/property/RAUM> <http://ld.stadt-zuerich.ch/statistics/code/R00091>;
+      <http://ld.stadt-zuerich.ch/statistics/property/KENNZAHL> ?kennzahl ;
+      <http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE1> ?flaeche ;
+      <http://ld.stadt-zuerich.ch/statistics/property/EINHEIT> ?einheit ;
+      <http://ld.stadt-zuerich.ch/statistics/property/WERT> ?wert .
+
+    ?raum rdfs:label ?raumLabel .
+    ?kennzahl rdfs:label ?kennzahlLabel .
+    ?flaeche skos:notation ?flaecheLabel .
+
+    BIND (xsd:datetime(SUBSTR(str(?zeitLabel),STRLEN(str(?zeitLabel))-3)) AS ?zeit)
+
+    FILTER (?flaecheLabel IN("BBA1310"))
+
+    BIND (SUBSTR(str(?raum), STRLEN(str(?raum))-5) AS ?raumLiteral)
+
+    FILTER (?raumLiteral IN (${'"' + (raum.join ? raum.join('", "') : raum) + '"'}))
+    ${typeof from !== 'undefined'? 'FILTER (?zeit >= xsd:datetime("'+from+'"))':''}
+    ${typeof to !== 'undefined'? 'FILTER (?zeit <= xsd:datetime("'+to+'"))':''}
+  }
+} ORDER BY ?zeit LIMIT 10

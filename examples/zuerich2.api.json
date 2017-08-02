@@ -1,0 +1,61 @@
+{
+  "@context": "http://www.w3.org/ns/hydra/context.jsonld",
+  "@graph": [{
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/Api",
+    "@type": "Class",
+    "supportedProperty": [
+      "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen"
+    ]
+  }, {
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
+    "@type": "Class",
+    "raum": "",
+    "zeit": ""
+  }, {
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/output/flaechen",
+    "@type": "Class",
+    "zeitLabel": "",
+    "raumLabel": "",
+    "kennzahlLabel": "",
+    "flaecheLabel": "",
+    "wert": ""
+  }, {
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen/get",
+    "@type": [
+      "Operation",
+      "http://example.org/hv/HydraView"
+    ],
+    "method": "GET",
+    "http://example.org/hv/variables": {
+      "@id": "http://ld.stadt-zuerich.ch/api/statistics/iri/flaechen"
+    },
+    "http://example.org/hv/code": {
+      "@type": "http://example.org/hv/SparqlQuery",
+      "http://example.org/hv/source": {
+        "@id": "file://examples/zuerich2.sparql"
+      }
+    },
+    "expects": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
+    "returns": "http://ld.stadt-zuerich.ch/api/statistics/output/flaechen"
+  }, {
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen",
+    "@type": "hydra:TemplatedLink",
+    "supportedOperation": [
+      "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen/get"
+    ]
+  }, {
+    "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen",
+    "@type": "IriTemplate",
+    "template": "/api/statistics/flaechen{/raum}{?from,to}",
+    "variableRepresentation": "BasicRepresentation",
+    "mapping": [{
+      "@type": "IriTemplateMapping",
+      "variable": "raum",
+      "property": "http://ld.stadt-zuerich.ch/statistics/query/RAUM"
+    }, {
+      "@type": "IriTemplateMapping",
+      "variable": "zeit",
+      "property": "http://ld.stadt-zuerich.ch/statistics/query/ZEIT"
+    }]
+  }]
+}

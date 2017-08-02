@@ -10,7 +10,7 @@ function readJsonLdFile (filePath) {
 }
 
 function loadViews () {
-  return readJsonLdFile('examples/zuerich.api.json').then((api) => {
+  return readJsonLdFile('examples/zuerich2.api.json').then((api) => {
     const viewIris = api.match(null, ns.rdf.type, ns.hydraView.HydraView).toArray().map(t => t.subject)
 
     return viewIris.map((iri) => {
