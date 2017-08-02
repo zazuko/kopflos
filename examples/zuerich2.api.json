@@ -10,7 +10,8 @@
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
     "@type": "Class",
     "raum": "",
-    "zeit": ""
+    "from": ""
+    "to": ""
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/output/flaechen",
     "@type": "Class",
@@ -54,8 +55,12 @@
       "property": "http://ld.stadt-zuerich.ch/statistics/query/RAUM"
     }, {
       "@type": "IriTemplateMapping",
-      "variable": "zeit",
-      "property": "http://ld.stadt-zuerich.ch/statistics/query/ZEIT"
+      "variable": "from",
+      "property": "http://ld.stadt-zuerich.ch/statistics/query/FROM"
+    }, {
+      "@type": "IriTemplateMapping",
+      "variable": "to",
+      "property": "http://ld.stadt-zuerich.ch/statistics/query/TO"
     }]
   }]
 }
