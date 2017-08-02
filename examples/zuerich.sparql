@@ -26,6 +26,6 @@ SELECT * WHERE {
     BIND (SUBSTR(str(?zeitLabel), 1, 4) AS ?zeitLiteral)
 
     FILTER (?raumLiteral IN ("${raum}"))
-    FILTER (?zeitLiteral IN ("${zeit}"))
+    FILTER (?zeitLiteral IN (${'"' + (zeit.join ? zeit.join('", "') : zeit) + '"'}))
   }
 } ORDER BY ?zeitLabel LIMIT 10

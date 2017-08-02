@@ -46,7 +46,7 @@
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen",
     "@type": "IriTemplate",
-    "template": "/api/statistics/flaechen{/raum}{?zeit}",
+    "template": "/api/statistics/flaechen{/raum}{?zeit*}",
     "variableRepresentation": "BasicRepresentation",
     "mapping": [{
       "@type": "IriTemplateMapping",
