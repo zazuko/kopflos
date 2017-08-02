@@ -10,7 +10,7 @@
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
     "@type": "Class",
     "raum": "",
-    "from": ""
+    "from": "",
     "to": ""
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/output/flaechen",
