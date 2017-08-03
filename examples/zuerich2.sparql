@@ -3,29 +3,38 @@ PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT * WHERE {
-  GRAPH <https://linked.opendata.swiss/graph/zh/statistics> {
+CONSTRUCT  {
+      ?obs a qb:Observation .
+      ?obs ?property ?value .
+      ?value rdfs:label ?label .
+      ?value skos:notation ?notation .
+}
+WHERE {
+    # Specify Class
     ?obs a qb:Observation ;
-      <http://ld.stadt-zuerich.ch/statistics/property/ZEIT> ?zeitLabel;
+       ?property ?value.
+    # Get Labels and Notations
+    OPTIONAL {?value rdfs:label ?label .}
+    OPTIONAL { ?value skos:notation ?notation .}
+
+    # Specify properties
+    ?obs <http://ld.stadt-zuerich.ch/statistics/property/ZEIT> ?zeitProp;
       <http://ld.stadt-zuerich.ch/statistics/property/RAUM> ?raum;
-      <http://ld.stadt-zuerich.ch/statistics/property/RAUM> <http://ld.stadt-zuerich.ch/statistics/code/R00091>;
-      <http://ld.stadt-zuerich.ch/statistics/property/KENNZAHL> ?kennzahl ;
-      <http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE1> ?flaeche ;
-      <http://ld.stadt-zuerich.ch/statistics/property/EINHEIT> ?einheit ;
-      <http://ld.stadt-zuerich.ch/statistics/property/WERT> ?wert .
+      <http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE1> ?flaeche .
 
-    ?raum rdfs:label ?raumLabel .
-    ?kennzahl rdfs:label ?kennzahlLabel .
-    ?flaeche skos:notation ?flaecheLabel .
+    # Get Notations
+    ?raum skos:notation ?raumNotation .
+    ?flaeche skos:notation ?flaecheNotation .
 
-    BIND (xsd:datetime(SUBSTR(str(?zeitLabel),STRLEN(str(?zeitLabel))-3)) AS ?zeit)
+    # Only because time is not yet clean bind.
+    BIND (xsd:datetime(SUBSTR(str(?zeitProp),STRLEN(str(?zeitProp))-3)) AS ?zeit)
 
-    FILTER (?flaecheLabel IN("BBA1310"))
+    # Filter per Property
+    FILTER (?flaecheNotation IN("BBA1310"))
+    FILTER (?raumNotation IN (${'"' + (raum.join ? raum.join('", "') : raum) + '"'}))
 
-    BIND (SUBSTR(str(?raum), STRLEN(str(?raum))-5) AS ?raumLiteral)
 
-    FILTER (?raumLiteral IN (${'"' + (raum.join ? raum.join('", "') : raum) + '"'}))
+    # Filter Time Range
     ${typeof from !== 'undefined'? 'FILTER (?zeit >= xsd:datetime("'+from+'"))':''}
     ${typeof to !== 'undefined'? 'FILTER (?zeit <= xsd:datetime("'+to+'"))':''}
-  }
-} ORDER BY ?zeit LIMIT 10
+} ORDER BY ?zeit
