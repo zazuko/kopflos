@@ -32,7 +32,7 @@
     "http://example.org/hv/code": {
       "@type": "http://example.org/hv/SparqlQuery",
       "http://example.org/hv/source": {
-        "@id": "file://examples/zuerich.sparql"
+        "@id": "file://zuerich.sparql"
       }
     },
     "expects": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
