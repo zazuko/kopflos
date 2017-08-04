@@ -10,7 +10,7 @@ function readJsonLdFile (filePath) {
 }
 
 function loadLinks () {
-  return readJsonLdFile('examples/zuerich.api.json').then((api) => {
+  return readJsonLdFile('examples/zuerich2.api.json').then((api) => {
     const templatedLinkIris = api.match(null, ns.rdf.type, ns.hydra.TemplatedLink).toArray().map(t => t.subject)
 
     return templatedLinkIris.map((iri) => {

@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "nodeify-fetch": "^1.0.1",
+    "rdf-body-parser": "^1.1.0",
     "rdf-ext": "^1.0.0",
+    "rdf-fetch": "^1.0.0",
     "rdf-parser-jsonld": "^1.0.0",
     "sparql-http-client": "^1.0.2",
     "uri-templates": "^0.2.0"
