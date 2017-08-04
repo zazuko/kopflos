@@ -25,7 +25,7 @@ SELECT * WHERE {
     BIND (SUBSTR(str(?raum), STRLEN(str(?raum))-5) AS ?raumLiteral)
     BIND (SUBSTR(str(?zeitLabel), 1, 4) AS ?zeitLiteral)
 
-    FILTER (?raumLiteral IN ("${raum}"))
-    FILTER (?zeitLiteral IN (${'"' + (zeit.join ? zeit.join('", "') : zeit) + '"'}))
+    FILTER (?raumLiteral IN (${raum.toCanonical()}))
+    FILTER (?zeitLiteral IN (${(zeit.join ? zeit.map(v => v.toCanonical()).join() : zeit.toCanonical())}))
   }
 } ORDER BY ?zeitLabel LIMIT 10

@@ -3,18 +3,18 @@ const fs = require('fs')
 const ns = require('./lib/namespaces')
 const rdf = require('rdf-ext')
 const JsonLdParser = require('rdf-parser-jsonld')
-const SparqlView = require('./lib/SparqlView')
+const TemplatedLink = require('./lib/TemplatedLink')
 
 function readJsonLdFile (filePath) {
   return rdf.dataset().import(JsonLdParser.import(fs.createReadStream(filePath), {factory: rdf}))
 }
 
-function loadViews () {
-  return readJsonLdFile('examples/zuerich2.api.json').then((api) => {
-    const viewIris = api.match(null, ns.rdf.type, ns.hydraView.HydraView).toArray().map(t => t.subject)
+function loadLinks () {
+  return readJsonLdFile('examples/zuerich.api.json').then((api) => {
+    const templatedLinkIris = api.match(null, ns.rdf.type, ns.hydra.TemplatedLink).toArray().map(t => t.subject)
 
-    return viewIris.map((iri) => {
-      return new SparqlView({
+    return templatedLinkIris.map((iri) => {
+      return new TemplatedLink({
         api: api,
         iri: iri,
         endpointUrl: 'http://ld.stadt-zuerich.ch/query'
@@ -25,11 +25,11 @@ function loadViews () {
 
 const app = express()
 
-loadViews().then((views) => {
-  views.forEach((view) => {
-    console.log('hydra view route: ' + view.iriTemplate.template)
+loadLinks().then((links) => {
+  links.forEach((link) => {
+    console.log('hydra view route: ' + link.iriTemplate.template)
 
-    app.use(view.handle)
+    app.use(link.handle)
   })
 
   app.listen(9000, () => {
