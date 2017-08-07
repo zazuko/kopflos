@@ -1,0 +1,55 @@
+{
+  "@context": {
+    "Observation": "http://purl.org/linked-data/cube#Observation",
+    "code": "http://ld.stadt-zuerich.ch/statistics/code/",
+    "dataset": "http://ld.stadt-zuerich.ch/statistics/dataset/",
+    "einheit": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/EINHEIT",
+      "@type": "@id"
+    },
+    "gruppencode1": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE1",
+      "@type": "@id"
+    },
+    "gruppencode2": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE2",
+      "@type": "@id"
+    },
+    "gruppencode3": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE3",
+      "@type": "@id"
+    },
+    "gruppencode4": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE4",
+      "@type": "@id"
+    },
+    "gruppencode5": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/GRUPPENCODE5",
+      "@type": "@id"
+    },
+    "kennzahl": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/KENNZAHL",
+      "@type": "@id"
+    },
+    "label": {
+      "@id": "http://www.w3.org/2000/01/rdf-schema#label",
+      "@language": "de-ch"
+    },
+    "notation": {
+      "@id": "http://www.w3.org/2004/02/skos/core#notation"
+    },
+    "raum": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/RAUM",
+      "@type": "@id"
+    },
+    "wert": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/WERT",
+      "@type": "http://www.w3.org/2001/XMLSchema#double"
+    },
+    "zeit": {
+      "@id": "http://ld.stadt-zuerich.ch/statistics/property/ZEIT",
+      "@type": "@id"
+    }
+  },
+  "@type": "Observation"
+}
