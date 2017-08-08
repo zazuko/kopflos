@@ -6,7 +6,9 @@ const JsonLdParser = require('rdf-parser-jsonld')
 const Router = require('express').Router
 const TemplatedLink = require('./lib/TemplatedLink')
 
-function middleware (apiPath, api) {
+function middleware (apiPath, api, options) {
+  options = options || {}
+
   const router = new Router()
 
   const apiDocumentation = new ApiDocumentation({
@@ -22,10 +24,13 @@ function middleware (apiPath, api) {
     const templatedLink = new TemplatedLink({
       api: api,
       iri: iri,
-      endpointUrl: 'http://ld.stadt-zuerich.ch/query'
+      endpointUrl: 'http://ld.stadt-zuerich.ch/query',
+      debug: options.debug
     })
 
-    console.log('hydra view route: ' + templatedLink.iriTemplate.template)
+    if (options.debug) {
+      console.log('hydra view route: ' + templatedLink.iriTemplate.template)
+    }
 
     router.use(templatedLink.handle)
   })
@@ -37,9 +42,9 @@ function readJsonLdFile (filePath) {
   return rdf.dataset().import(JsonLdParser.import(fs.createReadStream(filePath), {factory: rdf}))
 }
 
-middleware.fromJsonLdFile = function (apiPath, filePath) {
+middleware.fromJsonLdFile = function (apiPath, filePath, options) {
   return readJsonLdFile(filePath).then((api) => {
-    return middleware(apiPath, api)
+    return middleware(apiPath, api, options)
   })
 }
 

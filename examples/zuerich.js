@@ -3,7 +3,7 @@ const hydraView = require('..')
 
 const app = express()
 
-hydraView.fromJsonLdFile('/api', 'zuerich2.api.json').then((middleware) => {
+hydraView.fromJsonLdFile('/api', 'zuerich2.api.json', {debug: true}).then((middleware) => {
   app.use(middleware)
 
   app.listen(9000, () => {
