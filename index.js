@@ -1,5 +1,7 @@
+const absoluteUrl = require('absolute-url')
 const fs = require('fs')
 const ns = require('./lib/namespaces')
+const path = require('path')
 const rdf = require('rdf-ext')
 const ApiDocumentation = require('./lib/ApiDocumentation')
 const JsonLdParser = require('rdf-parser-jsonld')
@@ -10,6 +12,8 @@ function middleware (apiPath, api, options) {
   options = options || {}
 
   const router = new Router()
+
+  router.use(absoluteUrl())
 
   const apiDocumentation = new ApiDocumentation({
     api: api,
@@ -24,7 +28,8 @@ function middleware (apiPath, api, options) {
     const templatedLink = new TemplatedLink({
       api: api,
       iri: iri,
-      endpointUrl: 'http://ld.stadt-zuerich.ch/query',
+      basePath: options.basePath,
+      sparqlEndpointUrl: options.sparqlEndpointUrl,
       debug: options.debug
     })
 
@@ -43,8 +48,13 @@ function readJsonLdFile (filePath) {
 }
 
 middleware.fromJsonLdFile = function (apiPath, filePath, options) {
+  options = options || {}
+  options.basePath = options.basePath || path.dirname(filePath)
+
   return readJsonLdFile(filePath).then((api) => {
     return middleware(apiPath, api, options)
+  }).then((middleware) => {
+    return middleware
   })
 }
 

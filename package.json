@@ -16,6 +16,7 @@
     "test": "standard && mocha"
   },
   "dependencies": {
+    "absolute-url": "^1.2.2",
     "lodash": "^4.17.4",
     "nodeify-fetch": "^1.0.1",
     "rdf-body-parser": "^1.1.1",
