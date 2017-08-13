@@ -4,7 +4,8 @@
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/Api",
     "@type": "Class",
     "supportedProperty": [
-      "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen"
+      "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen",
+      "http://ld.stadt-zuerich.ch/api/statistics/view/property"
     ]
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
@@ -65,5 +66,42 @@
       "variable": "to",
       "property": "http://ld.stadt-zuerich.ch/statistics/query/TO"
     }]
-  }]
+  }, {
+      "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/property/get",
+      "@type": [
+        "Operation",
+        "http://example.org/hv/HydraView"
+      ],
+      "method": "GET",
+      "http://example.org/hv/variables": {
+        "@id": "http://ld.stadt-zuerich.ch/api/statistics/iri/property"
+      },
+      "http://example.org/hv/code": {
+        "@type": "http://example.org/hv/SparqlQuery",
+        "http://example.org/hv/source": {
+          "@id": "file://zuerich.property.sparql"
+        }
+      },
+      "http://example.org/hv/returnFrame": {
+        "@id": "file://zuerich.context.json"
+      },
+      "expects": "http://ld.stadt-zuerich.ch/api/statistics/input/property",
+      "returns": "http://ld.stadt-zuerich.ch/api/statistics/output/property"
+    }, {
+      "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/property",
+      "@type": "hydra:TemplatedLink",
+      "supportedOperation": [
+        "http://ld.stadt-zuerich.ch/api/statistics/view/property/get"
+      ]
+    }, {
+      "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/property",
+      "@type": "IriTemplate",
+      "template": "/api/statistics/property{/property}",
+      "variableRepresentation": "BasicRepresentation",
+      "mapping": [{
+        "@type": "IriTemplateMapping",
+        "variable": "property",
+        "property": "http://ld.stadt-zuerich.ch/statistics/query/property"
+      }]
+    }]
 }

@@ -1,0 +1,8 @@
+CONSTRUCT {
+  <http://ld.stadt-zuerich.ch/statistics/property/${property.value}> <http://www.w3.org/ns/hydra/core#member> ?notation
+} WHERE {
+  SELECT DISTINCT ?notation WHERE {
+    ?s <http://ld.stadt-zuerich.ch/statistics/property/${property.value}> ?value .
+    ?value <http://www.w3.org/2004/02/skos/core#notation> ?notation .
+  }
+}
