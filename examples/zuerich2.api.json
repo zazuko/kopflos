@@ -10,6 +10,9 @@
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/input/flaechen",
     "@type": "Class",
+    "supportedProperty": [{
+      "property": "http://ld-stadt-zuerich.ch/api/statistics/property/RAUM"
+    }],
     "raum": "",
     "from": "",
     "to": ""
@@ -51,7 +54,7 @@
   }, {
     "@id": "http://ld.stadt-zuerich.ch/api/statistics/view/flaechen",
     "@type": "IriTemplate",
-    "template": "/api/statistics/flaechen{/raum}{?from,to}",
+    "template": "/api/statistics/flaechen/{?from,to,raum,flaechen}",
     "variableRepresentation": "BasicRepresentation",
     "mapping": [{
       "@type": "IriTemplateMapping",
