@@ -5,6 +5,7 @@ const path = require('path')
 const rdf = require('rdf-ext')
 const ApiDocumentation = require('./lib/ApiDocumentation')
 const JsonLdParser = require('rdf-parser-jsonld')
+const JsonLdContextLink = require('./lib/JsonLdContextLink')
 const Router = require('express').Router
 const TemplatedLink = require('./lib/TemplatedLink')
 
@@ -14,6 +15,9 @@ function middleware (apiPath, api, options) {
   const router = new Router()
 
   router.use(absoluteUrl())
+  router.use(JsonLdContextLink.create({
+    iri: options.contextHeader
+  }))
 
   const apiDocumentation = new ApiDocumentation({
     api: api,
@@ -30,6 +34,7 @@ function middleware (apiPath, api, options) {
       iri: iri,
       basePath: options.basePath,
       sparqlEndpointUrl: options.sparqlEndpointUrl,
+      contextHeader: options.contextHeader,
       debug: options.debug
     })
 
