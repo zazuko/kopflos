@@ -3,11 +3,13 @@ const fs = require('fs')
 const ns = require('./lib/namespaces')
 const path = require('path')
 const rdf = require('rdf-ext')
+const url = require('url')
 const ApiDocumentation = require('./lib/ApiDocumentation')
+const IriTemplate = require('./lib/IriTemplate')
 const JsonLdParser = require('rdf-parser-jsonld')
 const JsonLdContextLink = require('./lib/JsonLdContextLink')
 const Router = require('express').Router
-const TemplatedLink = require('./lib/TemplatedLink')
+const SparqlView = require('./lib/SparqlView')
 
 function middleware (apiPath, api, options) {
   options = options || {}
@@ -26,23 +28,41 @@ function middleware (apiPath, api, options) {
 
   router.use(apiDocumentation.handle)
 
-  const templatedLinkIris = api.match(null, ns.rdf.type, ns.hydra.TemplatedLink).toArray().map(t => t.subject)
+  const iriTemplates = api.match(null, ns.rdf.type, ns.hydra.IriTemplate).toArray().map(t => t.subject)
 
-  templatedLinkIris.forEach((iri) => {
-    const templatedLink = new TemplatedLink({
+  iriTemplates.forEach((iri) => {
+    const iriTemplate = new IriTemplate({
+      api: api,
+      iri: iri
+    })
+
+    if (options.debug) {
+      console.log('IriTemplate route: ' + iriTemplate.template)
+    }
+
+    router.use(iriTemplate.handle)
+  })
+
+  const hydraViews = api.match(null, ns.rdf.type, ns.hydraView.HydraView).toArray().map(t => t.subject)
+
+  hydraViews.forEach((iri) => {
+    const property = api.match(null, ns.hydra.supportedOperation, iri).toArray().map(t => t.subject).shift()
+    const path = url.parse(property.toString()).pathname
+
+    const view = new SparqlView({
       api: api,
       iri: iri,
       basePath: options.basePath,
-      sparqlEndpointUrl: options.sparqlEndpointUrl,
+      endpointUrl: options.sparqlEndpointUrl,
       contextHeader: options.contextHeader,
       debug: options.debug
     })
 
     if (options.debug) {
-      console.log('hydra view route: ' + templatedLink.iriTemplate.template)
+      console.log('HydraView route: ' + path)
     }
 
-    router.use(templatedLink.handle)
+    router.use(path, view.handle)
   })
 
   return router
