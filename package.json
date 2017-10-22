@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "absolute-url": "^1.2.2",
+    "jsonld-context-link": "^1.0.0",
     "lodash": "^4.17.4",
     "nodeify-fetch": "^1.0.1",
     "rdf-body-parser": "^1.1.1",
@@ -26,6 +27,7 @@
     "rdf-parser-jsonld": "^1.0.0",
     "rdf-serializer-csvw": "github:rdf-ext/rdf-serializer-csvw",
     "rdf-serializer-jsonld-ext": "^1.2.0",
+    "set-link": "^1.0.0",
     "sparql-http-client": "^1.0.2",
     "uri-templates": "^0.2.0"
   },

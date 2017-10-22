@@ -1,5 +1,6 @@
 const absoluteUrl = require('absolute-url')
 const fs = require('fs')
+const jsonldContextLink = require('jsonld-context-link')
 const ns = require('./lib/namespaces')
 const path = require('path')
 const rdf = require('rdf-ext')
@@ -7,7 +8,6 @@ const url = require('url')
 const ApiDocumentation = require('./lib/ApiDocumentation')
 const IriTemplate = require('./lib/IriTemplate')
 const JsonLdParser = require('rdf-parser-jsonld')
-const JsonLdContextLink = require('./lib/JsonLdContextLink')
 const Router = require('express').Router
 const SparqlView = require('./lib/SparqlView')
 
@@ -17,9 +17,12 @@ function middleware (apiPath, api, options) {
   const router = new Router()
 
   router.use(absoluteUrl())
-  router.use(JsonLdContextLink.create({
-    iri: options.contextHeader
-  }))
+
+  router.jsonldContexts = jsonldContextLink({
+    basePath: options.contextHeader
+  })
+
+  router.use(router.jsonldContexts)
 
   const apiDocumentation = new ApiDocumentation({
     api: api,
