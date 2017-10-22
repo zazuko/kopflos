@@ -1,0 +1,59 @@
+{
+  "@context": "http://www.w3.org/ns/hydra/context.jsonld",
+  "@graph": [{
+    "@id": "http://wikidata.zazuko.com/api/Api",
+    "@type": "Class",
+    "supportedProperty": [{
+      "@id": "http://wikidata.zazuko.com/api/spaceprobes",
+      "@type": "Collection",
+      "search": "http://wikidata.zazuko.com/api/spaceprobes#search",
+      "supportedOperation": [{
+        "@id": "http://wikidata.zazuko.com/api/spaceprobes#get",
+        "@type": [
+          "Operation",
+          "http://example.org/hv/HydraView"
+        ],
+        "method": "GET",
+        "http://example.org/hv/variables": {
+          "@id": "http://wikidata.zazuko.com/api/spaceprobes#search"
+        },
+        "http://example.org/hv/code": {
+          "@type": "http://example.org/hv/SparqlQuery",
+          "http://example.org/hv/source": {
+            "@id": "file://spaceprobes.sparql"
+          }
+        },
+        "http://example.org/hv/returnFrame": {
+          "@id": "file://spaceprobes.context.json"
+        },
+        "expects": "http://wikidata.zazuko.com/api/TimeRange",
+        "returns": "http://wikidata.zazuko.com/api/Result"
+      }]
+    }]
+  }, {
+    "@id": "http://wikidata.zazuko.com/api/TimeRange",
+    "@type": "Class",
+    "supportedProperty": [{
+      "property": "http://wikidata.zazuko.com/api/property/FROM"
+    }, {
+      "property": "http://wikidata.zazuko.com/api/property/TO"
+    }]
+  }, {
+    "@id": "http://wikidata.zazuko.com/api/Result",
+    "@type": "Class"
+  }, {
+    "@id": "http://wikidata.zazuko.com/api/spaceprobes#search",
+    "@type": "IriTemplate",
+    "template": "/api/spaceprobes/{?from,to}",
+    "variableRepresentation": "BasicRepresentation",
+    "mapping": [{
+      "@type": "IriTemplateMapping",
+      "variable": "from",
+      "property": "http://wikidata.zazuko.com/api/property/FROM"
+    }, {
+      "@type": "IriTemplateMapping",
+      "variable": "to",
+      "property": "http://wikidata.zazuko.com/api/property/TO"
+    }]
+  }]
+}

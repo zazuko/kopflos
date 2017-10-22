@@ -3,7 +3,11 @@ const hydraView = require('..')
 
 const app = express()
 
-hydraView.fromJsonLdFile('/api', 'zuerich2.api.json', {debug: true}).then((middleware) => {
+hydraView.fromJsonLdFile('/api', 'spaceprobes.api.json', {
+  debug: true,
+  sparqlEndpointUrl: 'https://query.wikidata.org/bigdata/namespace/wdq/sparql',
+  contextHeader: '/context/'
+}).then((middleware) => {
   app.use(middleware)
 
   app.listen(9000, () => {
