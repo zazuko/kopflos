@@ -20,11 +20,11 @@
         "http://example.org/hv/code": {
           "@type": "http://example.org/hv/SparqlQuery",
           "http://example.org/hv/source": {
-            "@id": "file://spaceprobes.sparql"
+            "@id": "spaceprobes.sparql"
           }
         },
         "http://example.org/hv/returnFrame": {
-          "@id": "file://spaceprobes.context.json"
+          "@id": "spaceprobes.context.json"
         },
         "expects": "http://wikidata.zazuko.com/api/TimeRange",
         "returns": "http://wikidata.zazuko.com/api/Result"
