@@ -1,13 +1,12 @@
 const absoluteUrl = require('absolute-url')
-const fs = require('fs')
 const jsonldContextLink = require('jsonld-context-link')
 const ns = require('./lib/namespaces')
 const path = require('path')
-const rdf = require('rdf-ext')
+const rdfFetch = require('./lib/rdfFetch')
 const url = require('url')
 const ApiDocumentation = require('./lib/ApiDocumentation')
+const BodyParser = require('./lib/BodyParser')
 const IriTemplate = require('./lib/IriTemplate')
-const JsonLdParser = require('rdf-parser-jsonld')
 const Router = require('express').Router
 const SparqlView = require('./lib/SparqlView')
 
@@ -48,16 +47,23 @@ function middleware (apiPath, api, options) {
 
   const hydraViews = api.match(null, ns.rdf.type, ns.hydraView.HydraView).toArray().map(t => t.subject)
 
-  hydraViews.forEach((iri) => {
+  return Promise.all(hydraViews.map((iri) => {
     const property = api.match(null, ns.hydra.supportedOperation, iri).toArray().map(t => t.subject).shift()
     const path = url.parse(property.toString()).pathname
+
+    const bodyParser = new BodyParser({
+      api: api,
+      iri: iri,
+      contextHeader: options.contextHeader
+    })
+
+    router.use(path, bodyParser.handle)
 
     const view = new SparqlView({
       api: api,
       iri: iri,
       basePath: options.basePath,
       endpointUrl: options.sparqlEndpointUrl,
-      contextHeader: options.contextHeader,
       debug: options.debug
     })
 
@@ -66,24 +72,26 @@ function middleware (apiPath, api, options) {
     }
 
     router.use(path, view.handle)
+
+    return Promise.all([
+      bodyParser.init(),
+      view.init()
+    ])
+  })).then(() => {
+    return router
   })
-
-  return router
 }
 
-function readJsonLdFile (filePath) {
-  return rdf.dataset().import(JsonLdParser.import(fs.createReadStream(filePath), {factory: rdf}))
-}
-
-middleware.fromJsonLdFile = function (apiPath, filePath, options) {
+middleware.fromUrl = function (apiPath, filePath, options) {
   options = options || {}
   options.basePath = options.basePath || path.dirname(filePath)
 
-  return readJsonLdFile(filePath).then((api) => {
+  return rdfFetch(filePath).then(res => res.dataset()).then((api) => {
     return middleware(apiPath, api, options)
-  }).then((middleware) => {
-    return middleware
   })
 }
+
+// deprecated API
+middleware.fromJsonLdFile = middleware.fromUrl
 
 module.exports = middleware
