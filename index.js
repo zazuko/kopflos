@@ -50,6 +50,7 @@ function middleware (apiPath, api, options) {
   return Promise.all(hydraViews.map((iri) => {
     const property = api.match(null, ns.hydra.supportedOperation, iri).toArray().map(t => t.subject).shift()
     const path = url.parse(property.toString()).pathname
+    const method = api.match(iri, ns.hydra.method).toArray().map(t => t.object).shift().value.toLowerCase()
 
     const bodyParser = new BodyParser({
       api: api,
@@ -57,7 +58,7 @@ function middleware (apiPath, api, options) {
       contextHeader: options.contextHeader
     })
 
-    router.use(path, bodyParser.handle)
+    router[method](path, bodyParser.handle)
 
     const view = new SparqlView({
       api: api,
@@ -68,10 +69,10 @@ function middleware (apiPath, api, options) {
     })
 
     if (options.debug) {
-      console.log('HydraView route: ' + path)
+      console.log('HydraView route: (' + method + ') ' + path)
     }
 
-    router.use(path, view.handle)
+    router[method](path, view.handle)
 
     return Promise.all([
       bodyParser.init(),
