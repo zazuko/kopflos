@@ -74,7 +74,6 @@ function middleware (apiPath, api, options) {
     return views
   }, [])
 
-
   return Promise.all(hydraViews.map((hydraView) => {
     const bodyParser = new BodyParser({
       api: api,
