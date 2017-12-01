@@ -13,6 +13,8 @@ const SparqlView = require('./lib/SparqlView')
 function middleware (apiPath, api, options) {
   options = options || {}
 
+  const graph = options.graph || api
+
   const router = new Router()
 
   router.use(absoluteUrl())
@@ -45,34 +47,56 @@ function middleware (apiPath, api, options) {
     router.use(iriTemplate.handle)
   })
 
-  const hydraViews = api.match(null, ns.rdf.type, ns.hydraView.HydraView).toArray().map(t => t.subject)
+  // search for supported classes and connected views
+  const hydraClasses = api.match(null, ns.hydra.supportedClass).toArray().map((classTriple) => {
+    return {
+      iri: classTriple.object,
+      views: api.match(classTriple.object, ns.hydra.supportedOperation).filter((operationTriple) => {
+        return api.match(operationTriple.object, ns.rdf.type, ns.hydraView.HydraView).length > 0
+      }).toArray().map(t => t.object)
+    }
+  })
 
-  return Promise.all(hydraViews.map((iri) => {
-    const property = api.match(null, ns.hydra.supportedOperation, iri).toArray().map(t => t.subject).shift()
-    const path = url.parse(property.toString()).pathname
-    const method = api.match(iri, ns.hydra.method).toArray().map(t => t.object).shift().value.toLowerCase()
+  // search for all views for the types given in graph
+  const hydraViews = graph.match(null, ns.rdf.type).toArray().reduce((views, triple) => {
+    const hydraClass = hydraClasses.filter(hydraClass => triple.object.equals(hydraClass.iri)).shift()
 
+    if (hydraClass) {
+      hydraClass.views.forEach((view) => {
+        views.push({
+          iri: view,
+          path: url.parse(triple.subject.value).path,
+          method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+        })
+      })
+    }
+
+    return views
+  }, [])
+
+
+  return Promise.all(hydraViews.map((hydraView) => {
     const bodyParser = new BodyParser({
       api: api,
-      iri: iri,
+      iri: hydraView.iri,
       contextHeader: options.contextHeader
     })
 
-    router[method](path, bodyParser.handle)
+    router[hydraView.method](hydraView.path, bodyParser.handle)
 
     const view = new SparqlView({
       api: api,
-      iri: iri,
+      iri: hydraView.iri,
       basePath: options.basePath,
       endpointUrl: options.sparqlEndpointUrl,
       debug: options.debug
     })
 
     if (options.debug) {
-      console.log('HydraView route: (' + method + ') ' + path)
+      console.log('HydraView route: (' + hydraView.method + ') ' + hydraView.path)
     }
 
-    router[method](path, view.handle)
+    router[hydraView.method](hydraView.path, view.handle)
 
     return Promise.all([
       bodyParser.init(),
