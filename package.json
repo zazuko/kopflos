@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "absolute-url": "^1.2.2",
+    "express": "^4.15.3",
     "file-fetch": "^1.1.0",
     "jsonld-context-link": "^1.0.0",
     "lodash": "^4.17.4",
@@ -34,7 +35,6 @@
     "uri-templates": "^0.2.0"
   },
   "devDependencies": {
-    "express": "^4.15.3",
     "mocha": "^3.4.2",
     "standard": "^10.0.2",
     "supertest": "^3.0.0"
