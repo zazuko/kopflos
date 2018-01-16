@@ -52,7 +52,7 @@ function middleware (apiPath, api, options) {
     return {
       iri: classTriple.object,
       views: api.match(classTriple.object, ns.hydra.supportedOperation).filter((operationTriple) => {
-        return api.match(operationTriple.object, ns.rdf.type, ns.hydraView.HydraView).length > 0
+        return api.match(operationTriple.object, ns.rdf.type, ns.hydraBox.View).length > 0
       }).toArray().map(t => t.object)
     }
   })

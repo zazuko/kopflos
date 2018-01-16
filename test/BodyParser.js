@@ -18,7 +18,7 @@ function buildOptions (options) {
     const returnFrame = rdf.namedNode('file://' + path.join(__dirname, 'support/context.json'))
 
     options.api = rdf.dataset([
-      rdf.quad(options.iri, ns.hydraView.returnFrame, returnFrame)
+      rdf.quad(options.iri, ns.hydraBox.returnFrame, returnFrame)
     ])
   }
 

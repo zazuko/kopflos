@@ -12,19 +12,19 @@
         "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#get",
         "@type": [
           "Operation",
-          "http://example.org/hv/HydraView"
+          "http://hydra-box.org/schema/View"
         ],
         "method": "GET",
-        "http://example.org/hv/variables": {
+        "http://hydra-box.org/schema/variables": {
           "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
         },
-        "http://example.org/hv/code": {
-          "@type": "http://example.org/hv/SparqlQuery",
-          "http://example.org/hv/source": {
+        "http://hydra-box.org/schema/code": {
+          "@type": "http://hydra-box.org/schema/SparqlQuery",
+          "http://hydra-box.org/schema/source": {
             "@id": "spaceprobes.sparql"
           }
         },
-        "http://example.org/hv/returnFrame": {
+        "http://hydra-box.org/schema/returnFrame": {
           "@id": "spaceprobes.context.json"
         },
         "expects": "http://wikidata.zazuko.com/api/TimeRange",
@@ -33,19 +33,19 @@
 	    "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#post",
   	    "@type": [
           "Operation",
-	      "http://example.org/hv/HydraView"
+	      "http://hydra-box.org/schema/HydraView"
 	    ],
 	    "method": "POST",
-	    "http://example.org/hv/variables": {
+	    "http://hydra-box.org/schema/variables": {
 	      "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
 	    },
-	    "http://example.org/hv/code": {
-	      "@type": "http://example.org/hv/SparqlQuery",
-	      "http://example.org/hv/source": {
+	    "http://hydra-box.org/schema/code": {
+	      "@type": "http://hydra-box.org/schema/SparqlQuery",
+	      "http://hydra-box.org/schema/source": {
 	        "@id": "spaceprobes.sparql"
 	      }
 	    },
-	    "http://example.org/hv/returnFrame": {
+	    "http://hydra-box.org/schema/returnFrame": {
 	      "@id": "spaceprobes.context.json"
 	    },
 	    "expects": "http://wikidata.zazuko.com/api/schema/TimeRange",
