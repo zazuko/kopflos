@@ -1,16 +1,16 @@
 {
-  "name": "hydra-view",
+  "name": "hydra-box",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/zazuko/hydra-view",
+  "homepage": "https://github.com/zazuko/hydra-box",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zazuko/hydra-view.git"
+    "url": "https://github.com/zazuko/hydra-box.git"
   },
   "bugs": {
-    "url": "https://github.com/zazuko/hydra-view/issues"
+    "url": "https://github.com/zazuko/hydra-box/issues"
   },
   "scripts": {
     "test": "standard && mocha"
