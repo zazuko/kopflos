@@ -28,7 +28,7 @@
     "rdf-fetch": "^1.0.0",
     "rdf-formats-common": "^1.0.1",
     "rdf-parser-jsonld": "^1.0.0",
-    "rdf-serializer-csvw": "github:rdf-ext/rdf-serializer-csvw",
+    "rdf-serializer-csvw": "^0.0.1",
     "rdf-serializer-jsonld-ext": "^1.3.0",
     "set-link": "^1.0.0",
     "sparql-http-client": "^1.0.2",
