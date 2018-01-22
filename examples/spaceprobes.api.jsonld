@@ -33,7 +33,7 @@
 	    "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#post",
   	    "@type": [
           "Operation",
-	      "http://hydra-box.org/schema/HydraView"
+	      "http://hydra-box.org/schema/View"
 	    ],
 	    "method": "POST",
 	    "http://hydra-box.org/schema/variables": {
