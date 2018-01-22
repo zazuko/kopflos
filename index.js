@@ -47,13 +47,23 @@ function middleware (apiPath, api, options) {
     router.use(iriTemplate.handle)
   })
 
-  // search for supported classes and connected views
+  // search for supported classes and supported properties connected views
   const hydraClasses = api.match(null, ns.hydra.supportedClass).toArray().map((classTriple) => {
     return {
       iri: classTriple.object,
       views: api.match(classTriple.object, ns.hydra.supportedOperation).filter((operationTriple) => {
         return api.match(operationTriple.object, ns.rdf.type, ns.hydraBox.View).length > 0
-      }).toArray().map(t => t.object)
+      }).toArray().map(t => t.object),
+      properties: api.match(classTriple.object, ns.hydra.supportedProperty).toArray().map((supportedPropertyTriple) => {
+        const propertyTriple = api.match(supportedPropertyTriple.object, ns.hydra.property).toArray().shift()
+
+        return {
+          iri: propertyTriple.object,
+          views: api.match(propertyTriple.object, ns.hydra.supportedOperation).filter((operationTriple) => {
+            return api.match(operationTriple.object, ns.rdf.type, ns.hydraBox.View).length > 0
+          }).toArray().map(t => t.object)
+        }
+      })
     }
   })
 
@@ -62,11 +72,25 @@ function middleware (apiPath, api, options) {
     const hydraClass = hydraClasses.filter(hydraClass => triple.object.equals(hydraClass.iri)).shift()
 
     if (hydraClass) {
+      // views directly connected to classes
       hydraClass.views.forEach((view) => {
         views.push({
           iri: view,
           path: url.parse(triple.subject.value).path,
           method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+        })
+      })
+
+      // views connected to properties
+      hydraClass.properties.forEach((hydraProperty) => {
+        graph.match(triple.subject, hydraProperty.iri).forEach((property) => {
+          hydraProperty.views.forEach((view) => {
+            views.push({
+              iri: view,
+              path: url.parse(property.object.value).path,
+              method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+            })
+          })
         })
       })
     }
