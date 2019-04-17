@@ -111,7 +111,8 @@ function middleware (apiPath, api, options) {
       api: api,
       iri: hydraView.iri,
       basePath: options.basePath,
-      endpointUrl: options.sparqlEndpointUrl,
+      queryUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
+      updateUrl: options.sparqlEndpointUpdateUrl,
       authentication: options.authentication,
       debug: options.debug
     })
