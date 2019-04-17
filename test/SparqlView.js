@@ -8,7 +8,7 @@ const rdf = require('rdf-ext')
 const SparqlView = require('../lib/SparqlView')
 
 describe('SparqlView', () => {
-  it('should be a constructorr', () => {
+  it('should be a constructor', () => {
     assert.equal(typeof SparqlView, 'function')
   })
 
