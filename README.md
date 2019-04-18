@@ -96,3 +96,34 @@ the express router
 ```diff
 +<> a <api#Entrypoint> .
 ```
+
+## Create an express application using hydra-box
+
+With the operation and its implementation declared, it's time to create a simple express `server.js` file.
+
+```js
+const path = require('path')
+const express = require('express')
+const hydraBox = require('hydra-box')
+
+function hydraMiddleware () {
+  return hydraBox.fromUrl('/api', 'file://' + path.join(__dirname, 'hydra/api.ttl'), {
+    sparqlEndpointUrl: 'http://example.app/sparql',
+    contextHeader: '/context/'
+  })
+}
+
+Promise.resolve()
+  .then(async () => {
+    const app = express()
+    app.use(await hydraMiddleware())
+    app.listen(9090)
+  })
+  .catch(err => console.error(err))
+```
+
+Few things to notice here:
+
+* The `hydraBox.fromUrl` method takes a `file://` URL and not a filesystem path. It means that also a remove graph can be used
+* The aforementioned method is async, hence the `Promise.resolve()` wrapping the bootstrap
+* No shown here, `cors` is immediately necessary to expose `Link` headers outside your domain
