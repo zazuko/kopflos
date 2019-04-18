@@ -19,7 +19,8 @@ the terms will be within an `https://examle.app/api#` namespace.
 ### Create a Hydra `ApiDocumentation` graph
 
 First step is to create the API Documentation which describes the types and operations which the API supports. 
-This is easiest done by hand-crafting a static RDF file. It can be serialized in any format supported by `rdf-ext`.
+This is easiest done by hand-crafting a static RDF file. It can be serialized in any format supported by 
+[`rdf-ext`](https://github.com/rdf-ext/rdf-ext).
 For the case of this example, turtle will be used.
 
 #### Create initial API Documentation
