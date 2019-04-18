@@ -6,8 +6,7 @@ Hydra Box will use such an API description to start a server which provides the 
 
 ## Getting started
 
-A hydra-box API is essentially an [expressjs](https://expressjs.com) app where it is yet another middleware. Three main steps 
-are necessary to set it up:
+Hydra-box API is an [expressjs](https://expressjs.com) middleware. Three main steps are necessary to set it up:
 
 1. Create a Hydra `ApiDocumentation` graph
 1. Add terms to declare how specific operations are implemented
