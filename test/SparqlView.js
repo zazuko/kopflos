@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, beforeEach, afterEach */
 
 const assert = require('assert')
 const fs = require('fs')
@@ -6,9 +6,11 @@ const ns = require('../lib/namespaces')
 const path = require('path')
 const rdf = require('rdf-ext')
 const SparqlView = require('../lib/SparqlView')
+const sinon = require('sinon')
+const SparqlHttp = require('sparql-http-client')
 
 describe('SparqlView', () => {
-  it('should be a constructorr', () => {
+  it('should be a constructor', () => {
     assert.equal(typeof SparqlView, 'function')
   })
 
@@ -102,7 +104,45 @@ describe('SparqlView', () => {
   })
 
   describe('handle', () => {
+    let buildVariables
 
+    beforeEach(() => {
+      buildVariables = sinon.stub(SparqlView, 'evalTemplateString')
+    })
+
+    it('pushes environment variables to `evalTemplateString`', () => {
+      // given
+      const api = rdf.dataset()
+      const iri = rdf.namedNode('http://example.org/')
+      const view = new SparqlView({ api, iri })
+      const next = sinon.stub()
+      sinon.stub(view, 'buildVariables')
+      const res = sinon.stub()
+      view.client = sinon.createStubInstance(SparqlHttp, {
+        constructQuery: sinon.stub().resolves({
+          quadStream: sinon.stub()
+        })
+      })
+      process.env.MY_VAR = 'localhost'
+
+      // when
+      view._handle(null, res, next)
+
+      // then
+      assert(buildVariables.calledWith(
+        sinon.match.any,
+        sinon.match.any,
+        sinon.match({
+          env: {
+            MY_VAR: 'localhost'
+          }
+        })
+      ))
+    })
+
+    afterEach(() => {
+      SparqlView.evalTemplateString.restore()
+    })
   })
 
   describe('buildVariables', () => {
