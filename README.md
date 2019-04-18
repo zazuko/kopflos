@@ -14,7 +14,7 @@ are necessary to set it up:
 1. Create an express application using hydra-box
 
 For the sake of this tutorial, let's assume that the entrypoint and base URI of all resources is `https://example.app/` and
-the terms will be within an `https://examle.app/api#` namespace.
+the terms will be within an `https://example.app/api#` namespace.
 
 ### Create a Hydra `ApiDocumentation` graph
 
@@ -48,8 +48,8 @@ name as it will be important later to correctly bootstrap the application in JS.
 
 #### Declare implementation of the entrypoint resource
 
-To have client discover that they can request the entrypoint resource, its details must be added to the documention document.
-This is done by adding a `SupportedClass` and a `GET` `SupporteOperation`. Optionally, both can use `hydra:title` or 
+To have client discover that they can request the entrypoint resource, its details must be added to the documentation document.
+This is done by adding a `SupportedClass` and a `GET` `SupportedOperation`. Optionally, both can use `hydra:title` or 
 `hydra:description` properties to give some human-readable information about the individual resources and operations.
 
 ```diff
@@ -72,7 +72,7 @@ This is done by adding a `SupportedClass` and a `GET` `SupporteOperation`. Optio
 The graph created so far is not enough for hydra-box to serve just yet. It needs to know what code to execute
 when a supported resource is requested.
 
-Curently, the only built-in method is to link an operation to a SPARQL query which will be executed against an underlying store.
+Currently, the only built-in method is to link an operation to a SPARQL query which will be executed against an underlying store.
 
 ```diff
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
@@ -88,7 +88,7 @@ Curently, the only built-in method is to link an operation to a SPARQL query whi
 +    ]
 ```
 
-The simnplest possible content of the `hydra/entrypoint.get.sparql` file is a `DESCRIBE <https://example.app/>` query.
+The simplest possible content of the `hydra/entrypoint.get.sparql` file is a `DESCRIBE <https://example.app/>` query.
 
 Fianally, an explicit declaration of the type of the entrypoint resource is necessary so that hydra-box can set up 
 the express router.
@@ -126,5 +126,5 @@ Few things to notice here:
 
 * The `hydraBox.fromUrl` method takes a `file://` URL and not a filesystem path. It means that also a remote graph can be used
 * The aforementioned method is async, hence the `Promise.resolve()` wrapping the bootstrap
-* Its first argument is the desired path to the API Documentaion resource. It must match the one usead earlier
+* Its first argument is the desired path to the API Documentation resource. It must match the one used earlier
 * Not shown here, `cors` is immediately necessary to expose `Link` headers to browser clients outside your domain
