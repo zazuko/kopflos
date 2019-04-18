@@ -6,13 +6,12 @@ Hydra Box will use such an API description to start a server which provides the 
 
 ## Getting started
 
-A hydra-box API is essentially an [expressjs](https://expressjs.com) app where hydra-box is yet another middleware. To set
-it up three main steps are necessary:
+A hydra-box API is essentially an [expressjs](https://expressjs.com) app where it is yet another middleware. Three main steps 
+are necessary to set it up:
 
 1. Create a Hydra `ApiDocumentation` graph
-1. Add hydra-box terms to declare how specific operations are implemented
+1. Add terms to declare how specific operations are implemented
 1. Create an express application using hydra-box
-1. Implement the Hydra's operations as decalred by the graph
 
 For the sake of this tutorial, let's assume that the entrypoint and base URI of all resources is `https://example.app/` and
 the terms will be within an `https://examle.app/api#` namespace.
@@ -32,7 +31,7 @@ mkdir hydra
 touch api.ttl
 ```
 
-In this graph, add a `hydra:ApiDocumentation` resource and a link to the entrypoint. The entrypoint is required as per
+In this graph, add a `hydra:ApiDocumentation` resource and link it to the entrypoint. The entrypoint is required as per
 the Hydra specification.
 
 ```diff
@@ -50,7 +49,7 @@ name as it will be important later to correctly bootstrap the application in JS.
 
 To have client discover that they can request the entrypoint resource, its details must be added to the documention document.
 This is done by adding a `SupportedClass` and a `GET` `SupporteOperation`. Optionally, both can use `hydra:title` or 
-`hydra:description` properties to give some human-readable information about the resources in question.
+`hydra:description` properties to give some human-readable information about the individual resources and operations.
 
 ```diff
 -  hydra:entrypoint <> .
@@ -67,12 +66,12 @@ This is done by adding a `SupportedClass` and a `GET` `SupporteOperation`. Optio
 +  ]
 ```
 
-## Add hydra-box terms to declare how specific operations are implemented
+## Add terms to declare how specific operations are implemented
 
-The graph created so far is not enough for hydre-box to serve resources yet. It needs to know what code to execute
-when a matching request is performed.
+The graph created so far is not enough for hydra-box to serve just yet. It needs to know what code to execute
+when a supported resource is requested.
 
-The simplest, built-in method is to link an operation to a SPARQL query which will be executed against an underlying store.
+Curently, the only built-in method is to link an operation to a SPARQL query which will be executed against an underlying store.
 
 ```diff
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
@@ -88,10 +87,10 @@ The simplest, built-in method is to link an operation to a SPARQL query which wi
 +    ]
 ```
 
-The simples possible content of the `entrypoint.get.sparql` file is a `DESCRIBE <https://example.app/>` query.
+The simnplest possible content of the `hydra/entrypoint.get.sparql` file is a `DESCRIBE <https://example.app/>` query.
 
 Fianally, an explicit declaration of the type of the entrypoint resource is necessary so that hydra-box can set up 
-the express router
+the express router.
 
 ```diff
 +<> a <api#Entrypoint> .
@@ -99,7 +98,7 @@ the express router
 
 ## Create an express application using hydra-box
 
-With the operation and its implementation declared, it's time to create a simple express `server.js` file.
+With the first operation and its implementation declared, it's time to create a minimal express app in `server.js` file.
 
 ```js
 const path = require('path')
@@ -124,6 +123,7 @@ Promise.resolve()
 
 Few things to notice here:
 
-* The `hydraBox.fromUrl` method takes a `file://` URL and not a filesystem path. It means that also a remove graph can be used
+* The `hydraBox.fromUrl` method takes a `file://` URL and not a filesystem path. It means that also a remote graph can be used
 * The aforementioned method is async, hence the `Promise.resolve()` wrapping the bootstrap
-* No shown here, `cors` is immediately necessary to expose `Link` headers outside your domain
+* Its first argument is the desired path to the API Documentaion resource. It must match the one usead earlier
+* Not shown here, `cors` is immediately necessary to expose `Link` headers to browser clients outside your domain
