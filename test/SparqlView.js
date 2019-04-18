@@ -17,14 +17,16 @@ describe('SparqlView', () => {
   it('should assign the options', () => {
     const api = rdf.dataset()
     const iri = rdf.namedNode('http://example.org/')
-    const endpointUrl = 'http://example.org/query'
+    const queryUrl = 'http://example.org/query'
+    const updateUrl = 'http://example.org/update'
 
-    const view = new SparqlView({api, iri, debug: true, endpointUrl})
+    const view = new SparqlView({api, iri, debug: true, queryUrl, updateUrl})
 
     assert.equal(view.api, api)
     assert.equal(view.iri, iri)
     assert.equal(view.debug, true)
-    assert.equal(view.endpointUrl, endpointUrl)
+    assert.equal(view.queryUrl, queryUrl)
+    assert.equal(view.updateUrl, updateUrl)
   })
 
   it('should assign code, source and variables from the API', () => {
@@ -90,13 +92,13 @@ describe('SparqlView', () => {
         rdf.quad(code, ns.hydraBox.source, source)
       ])
 
-      const endpointUrl = 'http://example.org/query'
+      const queryUrl = 'http://example.org/query'
 
-      const view = new SparqlView({api, iri, endpointUrl})
+      const view = new SparqlView({api, iri, queryUrl})
 
       return view.init().then(() => {
         assert.equal(typeof view.client, 'object')
-        assert.equal(view.client.endpointUrl, endpointUrl)
+        assert.equal(view.client.endpointUrl, queryUrl)
       })
     })
   })
