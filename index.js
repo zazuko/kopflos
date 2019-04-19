@@ -8,12 +8,21 @@ const ApiDocumentation = require('./lib/ApiDocumentation')
 const BodyParser = require('./lib/BodyParser')
 const IriTemplate = require('./lib/IriTemplate')
 const Router = require('express').Router
-const SparqlView = require('./lib/SparqlView')
+const createRegistry = require('./lib/loaders')
+const cf = require('clownface')
+const SparqlHttp = require('sparql-http-client')
 
 function middleware (apiPath, api, options) {
   options = options || {}
 
+  const loaders = createRegistry(options)
   const graph = options.graph || api
+
+  const client = new SparqlHttp({
+    endpointUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
+    updateUrl: options.sparqlEndpointUpdateUrl,
+    fetch: rdfFetch
+  })
 
   const router = new Router()
 
@@ -98,7 +107,7 @@ function middleware (apiPath, api, options) {
     return views
   }, [])
 
-  return Promise.all(hydraViews.map((hydraView) => {
+  return Promise.all(hydraViews.map(async (hydraView) => {
     const bodyParser = new BodyParser({
       api: api,
       iri: hydraView.iri,
@@ -107,26 +116,15 @@ function middleware (apiPath, api, options) {
 
     router[hydraView.method](hydraView.path, bodyParser.handle)
 
-    const view = new SparqlView({
-      api: api,
-      iri: hydraView.iri,
-      basePath: options.basePath,
-      queryUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
-      updateUrl: options.sparqlEndpointUpdateUrl,
-      authentication: options.authentication,
-      debug: options.debug
-    })
+    const handler = await loaders.load(
+      cf(api).node(hydraView.iri).out(ns.code.implementedBy),
+      {
+        hydraView, options, client
+      })
 
-    if (options.debug) {
-      console.log('HydraView route: (' + hydraView.method + ') ' + hydraView.path)
-    }
+    router[hydraView.method](hydraView.path, handler)
 
-    router[hydraView.method](hydraView.path, view.handle)
-
-    return Promise.all([
-      bodyParser.init(),
-      view.init()
-    ])
+    await bodyParser.init()
   })).then(() => {
     return router
   })

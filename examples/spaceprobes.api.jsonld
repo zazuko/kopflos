@@ -1,5 +1,10 @@
 {
-  "@context": "http://www.w3.org/ns/hydra/context.jsonld",
+  "@context": [
+    "http://www.w3.org/ns/hydra/context.jsonld",
+    {
+      "code": "https://code.described.at/"
+    }
+  ],
   "@graph": [{
     "supportedClass": [{
       "@id": "http://wikidata.zazuko.com/api/schema/Spaceprobes",
@@ -18,7 +23,7 @@
         "http://hydra-box.org/schema/variables": {
           "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
         },
-        "http://hydra-box.org/schema/code": {
+        "code:implementedBy": {
           "@type": "http://hydra-box.org/schema/SparqlQuery",
           "http://hydra-box.org/schema/source": {
             "@id": "spaceprobes.sparql"
@@ -39,7 +44,7 @@
 	    "http://hydra-box.org/schema/variables": {
 	      "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
 	    },
-	    "http://hydra-box.org/schema/code": {
+	    "code:implementedBy": {
 	      "@type": "http://hydra-box.org/schema/SparqlQuery",
 	      "http://hydra-box.org/schema/source": {
 	        "@id": "spaceprobes.sparql"
