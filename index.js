@@ -97,7 +97,8 @@ function middleware (apiPath, api, options) {
             views.push({
               iri: view,
               path: url.parse(property.object.value).path,
-              method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+              method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift(),
+              implementation: cf(api).node(view).out(ns.code.implementedBy)
             })
           })
         })
@@ -105,7 +106,16 @@ function middleware (apiPath, api, options) {
     }
 
     return views
-  }, [])
+  }, []).filter(view => {
+    if (!view.implementation) {
+      if (options.debug) {
+        console.warn(`No implementation for operation ${view.path}`)
+      }
+      return false
+    }
+
+    return true
+  })
 
   return Promise.all(hydraViews.map(async (hydraView) => {
     const bodyParser = new BodyParser({
@@ -117,7 +127,7 @@ function middleware (apiPath, api, options) {
     router[hydraView.method](hydraView.path, bodyParser.handle)
 
     const handler = await loaders.load(
-      cf(api).node(hydraView.iri).out(ns.code.implementedBy),
+      hydraView.implementation,
       {
         hydraView, options, client
       })
