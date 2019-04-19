@@ -86,7 +86,8 @@ function middleware (apiPath, api, options) {
         views.push({
           iri: view,
           path: url.parse(triple.subject.value).path,
-          method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+          method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift(),
+          implementation: cf(api).node(view).out(ns.code.implementedBy)
         })
       })
 
