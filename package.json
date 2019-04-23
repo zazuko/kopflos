@@ -30,6 +30,7 @@
     "rdf-fetch": "^1.0.0",
     "rdf-formats-common": "^1.0.1",
     "rdf-native-loader": "git+https://github.com/zazuko/rdf-native-loader.git",
+    "rdf-native-loader-code": "git+https://github.com/zazuko/rdf-native-loader-code.git",
     "rdf-parser-jsonld": "^1.0.0",
     "rdf-serializer-csvw": "^0.0.1",
     "rdf-serializer-jsonld-ext": "^1.3.0",
