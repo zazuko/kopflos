@@ -127,13 +127,17 @@ function middleware (apiPath, api, options) {
 
     router[hydraView.method](hydraView.path, bodyParser.handle)
 
-    const handler = await loaders.load(
+    const result = await loaders.load(
       hydraView.implementation,
       {
-        hydraView, options, client
+        hydraView, options, client, basePath: process.cwd()
       })
 
-    router[hydraView.method](hydraView.path, handler)
+    const handlers = Array.isArray(result) ? result : [result]
+
+    handlers.push((_, res) => res.end())
+
+    router[hydraView.method](hydraView.path, ...handlers)
 
     await bodyParser.init()
   })).then(() => {

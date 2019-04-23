@@ -2,7 +2,12 @@
   "@context": [
     "http://www.w3.org/ns/hydra/context.jsonld",
     {
-      "code": "https://code.described.at/"
+      "code": "https://code.described.at/",
+      "argList": {
+        "@id": "code:arguments",
+        "@container": "@list"
+      },
+      "code:link": { "@type": "@id" }
     }
   ],
   "@graph": [{
@@ -24,10 +29,19 @@
           "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
         },
         "code:implementedBy": {
-          "@type": "http://hydra-box.org/schema/SparqlQuery",
-          "http://hydra-box.org/schema/source": {
-            "@id": "spaceprobes.sparql"
-          }
+          "@type": "http://hydra-box.org/schema/middlewareChain",
+          "argList": [
+            {
+              "@type": "code:EcmaScript",
+              "code:link": "file:./setStatus.js"
+            },
+            {
+              "@type": "http://hydra-box.org/schema/SparqlQuery",
+              "http://hydra-box.org/schema/source": {
+                "@id": "spaceprobes.sparql"
+              }
+            }
+          ]
         },
         "http://hydra-box.org/schema/returnFrame": {
           "@id": "spaceprobes.context.json"
