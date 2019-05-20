@@ -27,36 +27,7 @@ describe('SparqlView', () => {
     assert.equal(view.debug, true)
   })
 
-  it('should assign code, source and variables from the API', () => {
-    const iri = rdf.namedNode('http://example.org/operation')
-
-    const code = rdf.blankNode()
-    const source = rdf.blankNode()
-    const variables = rdf.blankNode()
-
-    const api = rdf.dataset([
-      rdf.quad(iri, ns.hydraBox.code, code),
-      rdf.quad(code, ns.hydraBox.source, source),
-      rdf.quad(iri, ns.hydraBox.variables, variables)
-    ])
-
-    const view = new SparqlView({api, iri})
-
-    assert.equal(view.code, code)
-    assert.equal(view.source, source)
-    assert.equal(view.variables, variables)
-  })
-
   describe('init', () => {
-    it('should be a method', () => {
-      const api = rdf.dataset()
-      const iri = rdf.namedNode('http://example.org/')
-
-      const view = new SparqlView({api, iri})
-
-      assert.equal(typeof view.init, 'function')
-    })
-
     xit('should fetch the SPARQL template from the given URL', () => {
       const filePath = path.join(__dirname, 'support/sparql.es6')
 
