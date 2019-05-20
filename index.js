@@ -130,7 +130,10 @@ function middleware (apiPath, api, options) {
     const result = await loaders.load(
       hydraView.implementation,
       {
-        hydraView, options, client, basePath: process.cwd()
+        context: {
+          hydraView, options, client
+        },
+        basePath: process.cwd()
       })
 
     const handlers = Array.isArray(result) ? result : [result]

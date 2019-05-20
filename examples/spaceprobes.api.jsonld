@@ -14,7 +14,6 @@
     "supportedClass": [{
       "@id": "http://wikidata.zazuko.com/api/schema/Spaceprobes",
       "@type": "Class",
-      "@type": "Collection",
       "search": {
         "@id": "http://wikidata.zazuko.com/api/schema/spaceprobes#search"
       },
