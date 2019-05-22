@@ -1,4 +1,4 @@
-/* global describe, it, beforeEach, afterEach */
+/* global describe, it, xit, beforeEach, afterEach */
 
 const assert = require('assert')
 const fs = require('fs')
@@ -25,41 +25,10 @@ describe('SparqlView', () => {
     assert.equal(view.api, api)
     assert.equal(view.iri, iri)
     assert.equal(view.debug, true)
-    assert.equal(view.queryUrl, queryUrl)
-    assert.equal(view.updateUrl, updateUrl)
-  })
-
-  it('should assign code, source and variables from the API', () => {
-    const iri = rdf.namedNode('http://example.org/operation')
-
-    const code = rdf.blankNode()
-    const source = rdf.blankNode()
-    const variables = rdf.blankNode()
-
-    const api = rdf.dataset([
-      rdf.quad(iri, ns.hydraBox.code, code),
-      rdf.quad(code, ns.hydraBox.source, source),
-      rdf.quad(iri, ns.hydraBox.variables, variables)
-    ])
-
-    const view = new SparqlView({api, iri})
-
-    assert.equal(view.code, code)
-    assert.equal(view.source, source)
-    assert.equal(view.variables, variables)
   })
 
   describe('init', () => {
-    it('should be a method', () => {
-      const api = rdf.dataset()
-      const iri = rdf.namedNode('http://example.org/')
-
-      const view = new SparqlView({api, iri})
-
-      assert.equal(typeof view.init, 'function')
-    })
-
-    it('should fetch the SPARQL template from the given URL', () => {
+    xit('should fetch the SPARQL template from the given URL', () => {
       const filePath = path.join(__dirname, 'support/sparql.es6')
 
       const iri = rdf.namedNode('http://example.org/operation')
@@ -76,29 +45,6 @@ describe('SparqlView', () => {
 
       return view.init().then(() => {
         assert.equal(view.sparqlQuery, fs.readFileSync(filePath).toString())
-      })
-    })
-
-    it('should create a SPARQL client pointing to the endpoint URL', () => {
-      const filePath = path.join(__dirname, 'support/sparql.es6')
-
-      const iri = rdf.namedNode('http://example.org/operation')
-
-      const code = rdf.blankNode()
-      const source = rdf.namedNode('file://' + filePath)
-
-      const api = rdf.dataset([
-        rdf.quad(iri, ns.hydraBox.code, code),
-        rdf.quad(code, ns.hydraBox.source, source)
-      ])
-
-      const queryUrl = 'http://example.org/query'
-
-      const view = new SparqlView({api, iri, queryUrl})
-
-      return view.init().then(() => {
-        assert.equal(typeof view.client, 'object')
-        assert.equal(view.client.endpointUrl, queryUrl)
       })
     })
   })

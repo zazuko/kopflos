@@ -8,12 +8,21 @@ const ApiDocumentation = require('./lib/ApiDocumentation')
 const BodyParser = require('./lib/BodyParser')
 const IriTemplate = require('./lib/IriTemplate')
 const Router = require('express').Router
-const SparqlView = require('./lib/SparqlView')
+const createRegistry = require('./lib/loaders')
+const cf = require('clownface')
+const SparqlHttp = require('sparql-http-client')
 
 function middleware (apiPath, api, options) {
   options = options || {}
 
+  const loaders = createRegistry(options)
   const graph = options.graph || api
+
+  const client = new SparqlHttp({
+    endpointUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
+    updateUrl: options.sparqlEndpointUpdateUrl,
+    fetch: rdfFetch
+  })
 
   const router = new Router()
 
@@ -77,7 +86,8 @@ function middleware (apiPath, api, options) {
         views.push({
           iri: view,
           path: url.parse(triple.subject.value).path,
-          method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+          method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift(),
+          implementation: cf(api).node(view).out(ns.code.implementedBy)
         })
       })
 
@@ -88,7 +98,8 @@ function middleware (apiPath, api, options) {
             views.push({
               iri: view,
               path: url.parse(property.object.value).path,
-              method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift()
+              method: api.match(view, ns.hydra.method).toArray().map(t => t.object.value.toLowerCase()).shift(),
+              implementation: cf(api).node(view).out(ns.code.implementedBy)
             })
           })
         })
@@ -96,9 +107,18 @@ function middleware (apiPath, api, options) {
     }
 
     return views
-  }, [])
+  }, []).filter(view => {
+    if (!view.implementation) {
+      if (options.debug) {
+        console.warn(`No implementation for operation ${view.path}`)
+      }
+      return false
+    }
 
-  return Promise.all(hydraViews.map((hydraView) => {
+    return true
+  })
+
+  return Promise.all(hydraViews.map(async (hydraView) => {
     const bodyParser = new BodyParser({
       api: api,
       iri: hydraView.iri,
@@ -107,26 +127,22 @@ function middleware (apiPath, api, options) {
 
     router[hydraView.method](hydraView.path, bodyParser.handle)
 
-    const view = new SparqlView({
-      api: api,
-      iri: hydraView.iri,
-      basePath: options.basePath,
-      queryUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
-      updateUrl: options.sparqlEndpointUpdateUrl,
-      authentication: options.authentication,
-      debug: options.debug
-    })
+    const result = await loaders.load(
+      hydraView.implementation,
+      {
+        context: {
+          hydraView, options, client
+        },
+        basePath: process.cwd()
+      })
 
-    if (options.debug) {
-      console.log('HydraView route: (' + hydraView.method + ') ' + hydraView.path)
-    }
+    const handlers = Array.isArray(result) ? result : [result]
 
-    router[hydraView.method](hydraView.path, view.handle)
+    handlers.push((_, res) => res.end())
 
-    return Promise.all([
-      bodyParser.init(),
-      view.init()
-    ])
+    router[hydraView.method](hydraView.path, ...handlers)
+
+    await bodyParser.init()
   })).then(() => {
     return router
   })
