@@ -60,7 +60,9 @@ describe('SparqlView', () => {
       // given
       const api = rdf.dataset()
       const iri = rdf.namedNode('http://example.org/')
-      const view = new SparqlView({ api, iri })
+      const sparqlQueries = [ 'SPARQL' ]
+      const view = new SparqlView({ api, iri, sparqlQueries })
+      view._executeQuery = sinon.stub()
       const next = sinon.stub()
       sinon.stub(view, 'buildVariables')
       const res = sinon.stub()
