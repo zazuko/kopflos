@@ -66,7 +66,7 @@ This is done by adding a `SupportedClass` and a `GET` `SupportedOperation`. Opti
 +  ]
 ```
 
-## Add terms to declare how specific operations are implemented
+### Add terms to declare how specific operations are implemented
 
 The graph created so far is not enough for hydra-box to serve just yet. It needs to know what code to execute
 when a supported resource is requested.
@@ -96,7 +96,7 @@ the express router.
 +<> a <api#Entrypoint> .
 ```
 
-## Create an express application using hydra-box
+### Create an express application using hydra-box
 
 With the first operation and its implementation declared, it's time to create a minimal express app in `server.js` file.
 
@@ -127,3 +127,10 @@ Few things to notice here:
 * The aforementioned method is async, hence the `Promise.resolve()` wrapping the bootstrap
 * Its first argument is the desired path to the API Documentation resource. It must match the one used earlier
 * Not shown here, `cors` is immediately necessary to expose `Link` headers to browser clients outside your domain
+
+## Releasing
+
+```shell
+npm run release
+git push --follow-tags origin linting && npm publish
+```
