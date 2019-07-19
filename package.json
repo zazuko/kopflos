@@ -1,7 +1,7 @@
 {
   "name": "hydra-box",
   "description": "",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "homepage": "https://github.com/zazuko/hydra-box",
   "main": "index.js",
