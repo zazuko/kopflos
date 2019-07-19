@@ -155,11 +155,8 @@ describe('BodyParser', () => {
           .then((res) => {
             assert(!res.headers.link)
             assert.deepEqual(res.body, [{
-              '@graph': {
-                '@id': 'http://example.org/subject',
-                '@type': 'http://schema.org/Thing'
-              },
-              '@id': '@default'
+              '@id': 'http://example.org/subject',
+              '@type': 'http://schema.org/Thing'
             }])
           })
       })
