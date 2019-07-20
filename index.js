@@ -20,7 +20,7 @@ function middleware (apiPath, api, options) {
 
   const client = new SparqlHttp({
     endpointUrl: options.sparqlEndpointQueryUrl || options.sparqlEndpointUrl,
-    updateUrl: options.sparqlEndpointUpdateUrl,
+    updateUrl: options.sparqlEndpointUpdateUrl || options.sparqlEndpointUrl,
     fetch: rdfFetch
   })
 
