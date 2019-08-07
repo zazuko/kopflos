@@ -26,6 +26,12 @@ function middleware (apiPath, api, options) {
 
   const router = new Router()
 
+  router.use((req, res, next) => {
+    req.sparql = client
+    if (next) {
+      next()
+    }
+  })
   router.use(absoluteUrl())
 
   router.jsonldContexts = jsonldContextLink({
