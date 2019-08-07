@@ -3,3 +3,12 @@ node_js:
   - "12"
   - "10"
   - "8"
+deploy:
+  provider: npm
+  email: npm@t-code.pl
+  api_key:
+    secure: iaCUxxpIlBuVKMtW7bkwJKM5/hKsZKtPTLBkamdDpVFh+ozdnfEUYFXTB4IzuWMQkUZBBPCC6jatmtS7iVIC+OtWIAcLiHipxBt0qUA6Ra8QFCQqjdm/5z4+QdnDbHr6BcfsaN/sk5gJUoPNkQyoNDpZWvtRwnkufXD/vTbbKzWdrC/8LULtVRvPkbgfshDXLkEnlure50ifEMAVy0ivhk0CqDs5MtkEPq8U3ZrjWrLp2H3SIGaXJcH2gPHP1GnaKWELQoLSV7WLCJSYsa5fyroFeyWWjwN5QD6+VwqXqYqxuKXFXe02bZaWFHrf5MSY/do4yOeXur3+0F2GpZ0sC75gLIPqJd0odfNnbPP1sqLaQK5cySwpx9UrqvD2CdV3wV+Wf2ILR4A+oN58puTqWE/e9sx3VZxkDPoJbB3vLJtBLzQ/p2AaZQN7PaUz0Gny6c5aW5RlFZXboCA6fVeMCvnlZ9oM6JYJ6KmWObqw+v4roC5n0Yko/aDr+sMGHGAdnzhbEKVhcQf5JZZD/Mjl15JBcE8qwIPuBfkT07+Ds+JzrSNxuUcYXx3/pseAu5wy4VzgTqocICKbBD2mstX5qmapxAfQrO7+9OlyyOfVHEVZA1R2T50c/WZzoZJN+rnttBnWeXnAcLrlcPsQxGD/npXzr9rDHzvljiz+f1GN8H8=
+  on:
+    node: "10"
+    tags: true
+    repo: zazuko/hydra-box
