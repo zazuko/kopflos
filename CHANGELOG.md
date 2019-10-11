@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/zazuko/hydra-box/compare/v0.4.0...v0.4.1) (2019-10-11)
+
+### Bug Fixes
+
+* use rdf-loader packages from npm ([ed86e71](https://github.com/zazuko/hydra-box/commit/ed86e71))
+
+
 ## [0.4.0](https://github.com/zazuko/hydra-box/compare/v0.3.0...v0.4.0) (2019-08-07)
 
 
