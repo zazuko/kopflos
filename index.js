@@ -128,7 +128,8 @@ function middleware (apiPath, api, options) {
     const bodyParser = new BodyParser({
       api: api,
       iri: hydraView.iri,
-      contextHeader: options.contextHeader
+      contextHeader: options.contextHeader,
+      uploadLimit: options.uploadLimit
     })
 
     router[hydraView.method](hydraView.path, bodyParser.handle)
