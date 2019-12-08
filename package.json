@@ -1,70 +1,47 @@
 {
   "name": "hydra-box",
-  "description": "",
+  "description": "Hydra Box middleware",
   "version": "0.4.2",
-  "license": "MIT",
-  "homepage": "https://github.com/zazuko/hydra-box",
   "main": "index.js",
+  "scripts": {
+    "coverage": "codecov",
+    "test": "standard && nyc --reporter=lcov mocha"
+  },
+  "author": "Thomas Bergwinkl <bergi@axolotlfarm.org> (https://www.bergnet.org/people/bergi/card#me)",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zazuko/hydra-box.git"
+    "url": "git://github.com/zazuko/hydra-box.git"
   },
   "bugs": {
     "url": "https://github.com/zazuko/hydra-box/issues"
   },
-  "scripts": {
-    "pretest": "standard",
-    "test": "mocha",
-    "release": "standard-version"
-  },
+  "homepage": "https://github.com/zazuko/hydra-box",
   "dependencies": {
-    "@rdfjs/namespace": "^1.0.0",
+    "@rdfjs/data-model": "^1.1.2",
+    "@rdfjs/dataset": "^1.0.1",
+    "@rdfjs/express-handler": "^1.0.2",
+    "@rdfjs/namespace": "^1.1.0",
+    "@rdfjs/term-set": "^1.0.0",
     "absolute-url": "^1.2.2",
-    "body-parser": "^1.19.0",
-    "clownface": "^0.10.0",
-    "express": "^4.15.3",
-    "file-fetch": "^1.1.0",
-    "isstream": "^0.1.2",
-    "jsonld-context-link": "^1.0.0",
-    "lodash": "^4.17.4",
-    "multistream": "^2.1.1",
-    "nodeify-fetch": "^2.0.0",
-    "proto-fetch": "^1.0.0",
-    "rdf-body-parser": "^1.1.1",
-    "rdf-ext": "^1.2.2",
-    "rdf-fetch": "^1.0.0",
-    "rdf-formats-common": "^1.0.1",
-    "rdf-loader-code": "^0.2.0",
-    "rdf-loaders-registry": "^0.1.0",
-    "rdf-parser-jsonld": "^1.0.0",
-    "rdf-serializer-csvw": "^0.0.1",
-    "rdf-serializer-jsonld-ext": "^1.3.0",
+    "clownface": "^0.12.1",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "rdf-dataset-ext": "^1.0.0",
+    "rdf-loader-code": "^0.3.0",
+    "rdf-loaders-registry": "^0.2.0",
+    "rdf-utils-fs": "^2.1.0",
     "set-link": "^1.0.0",
-    "sparql-http-client": "^1.0.2",
-    "uri-templates": "^0.2.0"
+    "uri-template-route": "^1.0.0"
   },
   "devDependencies": {
-    "@types/sinon": "^7.0.11",
-    "mocha": "^3.4.2",
-    "sinon": "^7.3.1",
-    "standard": "^10.0.2",
-    "supertest": "^3.0.0",
-    "@commitlint/cli": "^7.0.0",
-    "@commitlint/config-conventional": "^7.0.0",
-    "cz-conventional-changelog": "^2.1.0",
-    "standard-version": "^6.0.1",
-    "husky": "^1.0.0",
-    "lint-staged": "^8.0.0"
-  },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "standard --fix",
-      "git add"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "@zazuko/rdf-vocabularies": "^2019.10.22",
+    "alcaeus": "^0.10.4",
+    "http-errors": "^1.7.3",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "rdf-store-fs": "^1.0.0",
+    "standard": "^14.3.1",
+    "supertest": "^4.0.2"
   }
 }
