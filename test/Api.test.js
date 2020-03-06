@@ -1,4 +1,4 @@
-const { strictEqual } = require('assert')
+const { strictEqual, ok } = require('assert')
 const { describe, it } = require('mocha')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const Api = require('../Api')
@@ -27,5 +27,28 @@ describe('Api', () => {
     const api = new Api({ path })
 
     strictEqual(api.path, path)
+  })
+
+  describe('replaceIRI', () => {
+    it('changes the base of IRIs in dataset', () => {
+      // given
+      const dataset = rdf.dataset()
+        .add(rdf.quad(
+          rdf.namedNode('http://example.org/S'),
+          rdf.namedNode('http://example.org/P'),
+          rdf.namedNode('http://example.org/O'))
+        )
+      const api = new Api({ dataset })
+
+      // when
+      api.replaceIRI('http://example.org/', 'http://example.com/')
+
+      // then
+      ok([...api.dataset][0].equals(rdf.quad(
+        rdf.namedNode('http://example.com/S'),
+        rdf.namedNode('http://example.com/P'),
+        rdf.namedNode('http://example.com/O')
+      )))
+    })
   })
 })
