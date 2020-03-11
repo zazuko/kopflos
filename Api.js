@@ -17,6 +17,7 @@ class Api {
     this.codePath = codePath
     this.loaderRegistry = new LoaderRegistry()
     this.initialized = false
+    this.sources = []
 
     EcmaScriptLoader.register(this.loaderRegistry)
     EcmaScriptLiteralLoader.register(this.loaderRegistry)
@@ -26,6 +27,8 @@ class Api {
     if (this.initialized) {
       return
     }
+
+    await Promise.all(this.sources)
 
     const apiDoc = clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
 
@@ -40,21 +43,25 @@ class Api {
     this.initialized = true
   }
 
-  async fromFile (filePath) {
+  fromFile (filePath) {
     if (!this.dataset) {
       this.dataset = rdf.dataset()
     }
 
-    addAll(this.dataset, await fromStream(rdf.dataset(), fromFile(filePath)))
+    const loadFile = fromStream(rdf.dataset(), fromFile(filePath))
+      .then(quads => addAll(this.dataset, quads))
+    this.sources.push(loadFile)
 
     return this
   }
 
+  // I would consider renaming if this is targeted at the API re-base
   replaceIRI (oldIRI, newIRI) {
     this.dataset = replaceDatasetIRI(oldIRI, newIRI, this.dataset)
+    return this
   }
 
-  static async fromFile (filePath, options) {
+  static fromFile (filePath, options) {
     const api = new Api(options)
 
     return api.fromFile(filePath)

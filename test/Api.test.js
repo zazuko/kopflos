@@ -1,9 +1,25 @@
-const { strictEqual, ok } = require('assert')
-const { describe, it } = require('mocha')
+const mock = require('mock-require')
+const { toStream } = require('rdf-dataset-ext')
+const sinon = require('sinon')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
+mock('rdf-utils-fs', {
+  fromFile: sinon.stub().callsFake(() => toStream(rdf.dataset()))
+})
+
+const rdfUtilsFs = require('rdf-utils-fs')
+const { strictEqual, ok } = require('assert')
+const { describe, it, afterEach } = require('mocha')
 const Api = require('../Api')
 
 describe('Api', () => {
+  afterEach(() => {
+    rdfUtilsFs.fromFile.resetHistory()
+  })
+
+  afterEach(() => {
+    mock.stopAll()
+  })
+
   it('should be a constructor', () => {
     strictEqual(typeof Api, 'function')
   })
@@ -49,6 +65,53 @@ describe('Api', () => {
         rdf.namedNode('http://example.com/P'),
         rdf.namedNode('http://example.com/O')
       )))
+    })
+
+    it('returns self', async () => {
+      // given
+      const dataset = rdf.dataset()
+
+      // when
+      const api = new Api({ dataset })
+      const returned = api.fromFile('foo')
+      await api.init()
+
+      // then
+      strictEqual(returned, api)
+    })
+  })
+
+  describe('fromFile', () => {
+    it('returns self', async () => {
+      // given
+      const dataset = rdf.dataset()
+
+      // when
+      const api = new Api({ dataset })
+      const returned = api.fromFile('foo')
+      await api.init()
+
+      // then
+      strictEqual(returned, api)
+    })
+
+    it('combines loaded datasets', async () => {
+      // given
+      rdfUtilsFs.fromFile.callsFake((name) => {
+        return toStream(rdf.dataset([
+          rdf.quad(rdf.blankNode(), rdf.namedNode('file'), rdf.literal(name))
+        ]))
+      })
+
+      // when
+      const api = Api.fromFile('first')
+        .fromFile('second')
+        .fromFile('third')
+      await api.init()
+
+      // then
+      strictEqual(api.sources.length, 3)
+      strictEqual(api.dataset.size, 4)
     })
   })
 })
