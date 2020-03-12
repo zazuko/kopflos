@@ -1,0 +1,57 @@
+@base <http://localhost:9000/api/schema/>.
+
+@prefix hydra: <http://www.w3.org/ns/hydra/core#>.
+@prefix code: <https://code.described.at/>.
+@prefix hydrabox: <http://hydra-box.org/schema/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<Table> a hydra:Class;
+  hydra:supportedOperation
+    <table#get>,
+    <table#post>;
+  hydra:supportedProperty [
+    hydra:property <row>
+  ].
+
+<table#get> a hydra:SupportedOperation;
+  hydra:method "GET";
+  hydra:returns <Table>;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./table.js#get>
+  ].
+
+<table#post> a hydra:SupportedOperation;
+  hydra:expects <Row>;
+  hydra:method "POST";
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./table.js#post>
+  ].
+
+<Row> a hydra:Class;
+  hydra:supportedOperation
+    <row#get>,
+    <row#put>;
+  hydra:supportedProperty [
+    hydra:property <operatorNumber>
+  ], [
+    hydra:property <registrationNumber>
+  ], [
+    hydra:property <name>
+  ].
+
+<row#get> a hydra:SupportedOperation;
+  hydra:method "GET";
+  hydra:returns <Row>;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./table.js#getLine>
+  ].
+
+<row#put> a hydra:SupportedOperation;
+  hydra:expects <Row>;
+  hydra:method "PUT";
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./table.js#putLine>
+  ].

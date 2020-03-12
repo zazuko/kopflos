@@ -1,4 +1,5 @@
 .nyc_output
 coverage
 examples/blog/store
+examples/tele/store
 node_modules
