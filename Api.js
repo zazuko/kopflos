@@ -6,7 +6,7 @@ const { replaceDatasetIRI } = require('./lib/replaceIRI')
 const LoaderRegistry = require('rdf-loaders-registry')
 const EcmaScriptLoader = require('rdf-loader-code/ecmaScript')
 const EcmaScriptLiteralLoader = require('rdf-loader-code/ecmaScriptLiteral')
-const ns = require('./lib/namespaces')
+const ns = require('@tpluscode/rdf-ns-builders')
 
 class Api {
   constructor ({ term, dataset, graph, path, codePath } = {}) {

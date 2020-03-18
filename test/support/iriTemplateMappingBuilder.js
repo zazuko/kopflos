@@ -1,4 +1,4 @@
-const ns = require('../../lib/namespaces')
+const ns = require('@tpluscode/rdf-ns-builders')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 
 function iriTemplateMappingBuilder ({
