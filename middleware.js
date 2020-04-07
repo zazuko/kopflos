@@ -9,7 +9,7 @@ const iriTemplate = require('./lib/middleware/iriTemplate')
 const operation = require('./lib/middleware/operation')
 const resource = require('./lib/middleware/resource')
 
-function middleware (api, store) {
+function middleware (api, store, { baseIriFromRequest } = {}) {
   const router = new Router()
 
   router.use(absoluteUrl())
@@ -43,7 +43,7 @@ function middleware (api, store) {
 
     next()
   })
-  router.use(rdfHandler())
+  router.use(rdfHandler({ baseIriFromRequest }))
   router.use(apiHeader(api))
   router.use(iriTemplate(api))
   router.use(resource(store))
