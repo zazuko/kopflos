@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  e2e-tests:
+    image: hydrofoil/hypertest
+    network_mode: "host"
+    environment:
+      BASE_URI: "https://wikibus-sheets.lndo.site/"
+    volumes:
+      - ./test:/tests

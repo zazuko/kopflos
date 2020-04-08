@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "coverage": "codecov",
-    "test": "standard && nyc --reporter=lcov mocha"
+    "test": "standard && nyc --reporter=lcov mocha",
+    "blog": "(cd examples/blog; sh init.sh; DEBUG=hydra-box* node server.js)"
   },
   "author": "Thomas Bergwinkl <bergi@axolotlfarm.org> (https://www.bergnet.org/people/bergi/card#me)",
   "license": "MIT",

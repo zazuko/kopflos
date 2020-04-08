@@ -1,4 +1,6 @@
 #!/bin/bash
 
-rm -rf ./store
-cp -R ./store-default ./store
+if [[ ! -d ./store ]]; then
+  rm -rf ./store
+  cp -R ./store-default ./store
+fi
