@@ -1,7 +1,7 @@
-const setGraph = require('./lib/setGraph')
+const unsetGraph = require('./lib/unsetGraph')
 
 function get (req, res) {
-  res.dataset(setGraph(req.hydra.resource.dataset))
+  res.dataset(unsetGraph(req.hydra.resource.dataset))
 }
 
 module.exports = {
