@@ -37,6 +37,7 @@
   "devDependencies": {
     "@zazuko/rdf-vocabularies": "^2019.10.22",
     "alcaeus": "^0.10.4",
+    "codecov": "^3.6.5",
     "http-errors": "^1.7.3",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
