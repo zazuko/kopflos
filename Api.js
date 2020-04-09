@@ -50,8 +50,10 @@ class Api {
     return this
   }
 
-  replaceIRI (oldIRI, newIRI) {
-    this.dataset = replaceDatasetIRI(oldIRI, newIRI, this.dataset)
+  rebase (fromBaseIRI, toBaseIRI) {
+    this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset)
+
+    return this
   }
 
   static async fromFile (filePath, options) {
