@@ -55,9 +55,9 @@ class Api {
     return this
   }
 
-  // I would consider renaming if this is targeted at the API re-base
-  replaceIRI (oldIRI, newIRI) {
-    this.dataset = replaceDatasetIRI(oldIRI, newIRI, this.dataset)
+  rebase (fromBaseIRI, toBaseIRI) {
+    this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset)
+
     return this
   }
 

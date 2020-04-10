@@ -2,7 +2,7 @@ const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const generateIri = require('./lib/generateIri')
 const ns = require('./lib/namespaces')
 const rebase = require('./lib/rebase')
-const setGraph = require('./lib/setGraph')
+const unsetGraph = require('./lib/unsetGraph')
 const validate = require('./lib/validate')
 
 async function get (req, res) {
@@ -20,7 +20,7 @@ async function get (req, res) {
     }
   }
 
-  res.dataset(setGraph(req.hydra.resource.dataset))
+  res.dataset(unsetGraph(req.hydra.resource.dataset))
 }
 
 async function post (req, res, next) {

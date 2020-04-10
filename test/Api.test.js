@@ -45,7 +45,7 @@ describe('Api', () => {
     strictEqual(api.path, path)
   })
 
-  describe('replaceIRI', () => {
+  describe('rebase', () => {
     it('changes the base of IRIs in dataset', () => {
       // given
       const dataset = rdf.dataset()
@@ -57,7 +57,7 @@ describe('Api', () => {
       const api = new Api({ dataset })
 
       // when
-      api.replaceIRI('http://example.org/', 'http://example.com/')
+      api.rebase('http://example.org/', 'http://example.com/')
 
       // then
       ok([...api.dataset][0].equals(rdf.quad(
