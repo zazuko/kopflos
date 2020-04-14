@@ -13,9 +13,9 @@ services:
   e2e-tests:
     depends_on:
       - blog
-    image: hydrofoil/hypertest:0.6.1
+    image: hydrofoil/hypertest:0.6.2
     network_mode: "host"
     environment:
       BASE_URI: "http://localhost:9000/"
     volumes:
-      - ./test-e2e:/tests
+      - ./test-e2e/blog:/tests

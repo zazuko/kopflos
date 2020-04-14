@@ -1,11 +1,13 @@
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const { dc11, xsd } = require('@tpluscode/rdf-ns-builders')
+const vocab = require('@tpluscode/rdf-ns-builders')
 const generateIri = require('./lib/generateIri')
 const ns = require('./lib/namespaces')
 const rebase = require('./lib/rebase')
 const validate = require('./lib/validate')
 
 async function get (req, res) {
+  const url = rdf.namedNode(req.absoluteUrl())
+
   if (req.dataset) {
     const filters = await req.dataset()
 
@@ -18,6 +20,17 @@ async function get (req, res) {
     if (from || to) {
       console.log(`filter: ${from && from.value} - ${to && to.value}`)
     }
+
+    req.hydra.resource.dataset.add(rdf.quad(
+      req.hydra.term,
+      vocab.hydra.view,
+      url,
+    ))
+    req.hydra.resource.dataset.add(rdf.quad(
+      url,
+      vocab.rdf.type,
+      vocab.hydra.PartialCollectionView,
+    ))
   }
 
   res.dataset(req.hydra.resource.dataset)
@@ -34,7 +47,7 @@ async function post (req, res, next) {
     const commentsTerm = rdf.namedNode(`${postTerm.value}/comments`)
     const content = rebase(rawContent, postTerm)
 
-    content.add(rdf.quad(postTerm, dc11.date, rdf.literal((new Date()).toISOString(), xsd.date)))
+    content.add(rdf.quad(postTerm, vocab.dc11.date, rdf.literal((new Date()).toISOString(), vocab.xsd.date)))
     content.add(rdf.quad(postTerm, ns.schema.comments, commentsTerm))
 
     await req.app.locals.store.write(postTerm, content)
