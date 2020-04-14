@@ -1,4 +1,3 @@
 .nyc_output
 coverage
-examples/blog/store
 node_modules

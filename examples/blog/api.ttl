@@ -10,7 +10,6 @@
 @prefix schema: <http://schema.org/> .
 
 <Blog> a hydra:Class;
-  hydra:search <blog#search>;
   hydra:supportedOperation
     <blog#get>,
     <blog#post>.

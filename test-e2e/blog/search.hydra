@@ -1,0 +1,14 @@
+PREFIX api: <http://localhost:9000/api/schema/>
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+
+With Class api:Blog {
+    Expect Link hydra:search (
+        api:from = "2010-01-01"
+        api:to = "2010-12-31"
+    ) {
+        Expect Type api:Blog
+        Expect Property hydra:view {
+            Expect Id <http://localhost:9000/?from=2010-01-01&to=2010-12-31>
+        }
+    }
+}
