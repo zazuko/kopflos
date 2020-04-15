@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  blog:
+    image: node:13
+    working_dir: /app
+    command: npm run blog
+    volumes:
+      - .:/app
+    ports:
+      - 9000:9000
+  e2e-tests:
+    depends_on:
+      - blog
+    image: hydrofoil/hypertest
+    network_mode: "host"
+    environment:
+      BASE_URI: "http://localhost:9000/"
+    volumes:
+      - ./test-e2e:/tests
