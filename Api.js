@@ -16,6 +16,7 @@ class Api {
     this.path = path
     this.codePath = codePath
     this.loaderRegistry = new LoaderRegistry()
+    this.tasks = []
     this.initialized = false
 
     EcmaScriptLoader.register(this.loaderRegistry)
@@ -25,6 +26,10 @@ class Api {
   async init () {
     if (this.initialized) {
       return
+    }
+
+    for (const task of this.tasks) {
+      await task()
     }
 
     const apiDoc = clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
@@ -40,18 +45,22 @@ class Api {
     this.initialized = true
   }
 
-  async fromFile (filePath) {
-    if (!this.dataset) {
-      this.dataset = rdf.dataset()
-    }
+  fromFile (filePath) {
+    this.tasks.push(async () => {
+      if (!this.dataset) {
+        this.dataset = rdf.dataset()
+      }
 
-    addAll(this.dataset, await fromStream(rdf.dataset(), fromFile(filePath)))
+      addAll(this.dataset, await fromStream(rdf.dataset(), fromFile(filePath)))
+    })
 
     return this
   }
 
   rebase (fromBaseIRI, toBaseIRI) {
-    this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset)
+    this.tasks.push(async () => {
+      this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset)
+    })
 
     return this
   }
