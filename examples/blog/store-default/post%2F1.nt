@@ -1,0 +1,6 @@
+<http://localhost:9000/post/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost:9000/api/schema/Post> .
+<http://localhost:9000/post/1> <http://www.w3.org/2000/01/rdf-schema#label> "My Post" .
+<http://localhost:9000/post/1> <http://localhost:9000/api/schema/comments> <http://localhost:9000/post/1/comments> .
+_:b12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost:9000/api/schema/Comment> .
+_:b12 <http://www.w3.org/2000/01/rdf-schema#label> "I don't like it" .
+<http://localhost:9000/post/1/comments> <http://localhost:9000/api/schema/comment> _:b12 .

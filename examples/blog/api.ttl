@@ -1,0 +1,79 @@
+@base <http://localhost:9000/api/schema/>.
+
+@prefix hydra: <http://www.w3.org/ns/hydra/core#>.
+@prefix code: <https://code.described.at/>.
+@prefix hydrabox: <http://hydra-box.org/schema/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<Blog> a hydra:Class;
+  hydra:search <blog#search>;
+  hydra:supportedOperation
+    <blog#get>,
+    <blog#post>.
+
+<blog#get> a hydra:SupportedOperation;
+  hydrabox:variables <blog#search>;
+  hydra:expects <TimeRange>;
+  hydra:method "GET";
+  hydra:returns <Result>;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./blog.js#get>
+  ].
+
+<blog#post> a hydra:SupportedOperation;
+  hydra:expects <Post>;
+  hydra:method "POST";
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./blog.js#post>
+  ].
+
+<blog#search> a hydra:IriTemplate;
+  hydra:mapping [ a hydra:IriTemplateMapping;
+    hydra:property <from>;
+    hydra:variable "from"
+  ], [ a hydra:IriTemplateMapping;
+    hydra:property <to>;
+    hydra:variable "to"
+  ];
+  hydra:template "/{?from,to}";
+  hydra:variableRepresentation hydra:BasicRepresentation.
+
+<Post> a hydra:Class;
+  hydra:supportedOperation
+    <post#get>;
+  hydra:supportedProperty [
+    hydra:property <comments>
+  ].
+
+<post#get> a hydra:SupportedOperation;
+  hydra:method "GET";
+  hydra:returns <Post>;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./post.js#get>
+  ].
+
+<comment#post> a hydra:SupportedOperation;
+  hydra:method "POST";
+  hydra:expects <Comment>;
+  hydra:returns <Post>;
+  code:implementedBy [ a code:EcmaScript;
+    code:link <file:./comment.js#post>
+  ].
+
+<Comment> a hydra:Class.
+
+<Result> a hydra:Class.
+
+<TimeRange> a hydra:Class;
+  hydra:supportedProperty [
+    hydra:property <from>
+  ], [
+    hydra:property <to>
+  ].
+
+<comments> a hydra:Link;
+  hydra:supportedOperation
+      <comment#post>.

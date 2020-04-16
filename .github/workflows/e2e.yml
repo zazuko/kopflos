@@ -1,0 +1,18 @@
+name: e2e tests
+
+on: [push, pull_request]
+
+jobs:
+  e2e-tests:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: npm i
+      - run: docker-compose up -d blog
+      - run: npx wait-on http://localhost:9000 -t 30000
+      - run: docker-compose run --rm e2e-tests 2>&1
+      - run: docker-compose logs blog
+        if: failure()
+      - run: docker-compose logs e2e-tests
+        if: failure()

@@ -1,5 +1,4 @@
+.nyc_output
 coverage
+examples/blog/store
 node_modules
-package-lock.json
-.idea/
-*.log
