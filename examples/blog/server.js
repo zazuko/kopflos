@@ -17,7 +17,7 @@ async function main () {
 
   const app = express()
   app.locals.store = new ResourceStore({ quadStore: store })
-  app.use(hydraBox(api, store))
+  app.use(hydraBox(api, { store }))
   app.listen(9000)
 }
 

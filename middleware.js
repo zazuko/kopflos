@@ -8,8 +8,9 @@ const apiHeader = require('./lib/middleware/apiHeader')
 const iriTemplate = require('./lib/middleware/iriTemplate')
 const operation = require('./lib/middleware/operation')
 const resource = require('./lib/middleware/resource')
+const StoreResourceLoader = require('./StoreResourceLoader')
 
-function middleware (api, store, { baseIriFromRequest } = {}) {
+function middleware (api, { baseIriFromRequest, loader, store } = {}) {
   const router = new Router()
 
   router.use(absoluteUrl())
@@ -46,7 +47,15 @@ function middleware (api, store, { baseIriFromRequest } = {}) {
   router.use(rdfHandler({ baseIriFromRequest }))
   router.use(apiHeader(api))
   router.use(iriTemplate(api))
-  router.use(resource(store))
+
+  if (loader) {
+    router.use(resource({ loader }))
+  } else if (store) {
+    router.use(resource({ loader: new StoreResourceLoader({ store }) }))
+  } else {
+    throw new Error('no loader or store provided')
+  }
+
   router.use(operation(api))
 
   return router
