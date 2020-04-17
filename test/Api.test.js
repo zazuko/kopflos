@@ -3,8 +3,8 @@ const { resolve } = require('path')
 const clownface = require('clownface')
 const { describe, it } = require('mocha')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
+const ns = require('@tpluscode/rdf-ns-builders')
 const Api = require('../Api')
-const ns = require('../lib/namespaces')
 
 describe('Api', () => {
   it('should be a constructor', () => {
