@@ -28,6 +28,10 @@ class Api {
       return
     }
 
+    if (!this.dataset) {
+      this.dataset = rdf.dataset()
+    }
+
     for (const task of this.tasks) {
       await task()
     }
@@ -47,10 +51,6 @@ class Api {
 
   fromFile (filePath) {
     this.tasks.push(async () => {
-      if (!this.dataset) {
-        this.dataset = rdf.dataset()
-      }
-
       addAll(this.dataset, await fromStream(rdf.dataset(), fromFile(filePath)))
     })
 
