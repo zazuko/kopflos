@@ -1,4 +1,5 @@
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
+const { dc11, xsd } = require('@tpluscode/rdf-ns-builders')
 const generateIri = require('./lib/generateIri')
 const ns = require('./lib/namespaces')
 const rebase = require('./lib/rebase')
@@ -34,7 +35,7 @@ async function post (req, res, next) {
     const commentsTerm = rdf.namedNode(`${postTerm.value}/comments`)
     const content = rebase(rawContent, postTerm)
 
-    content.add(rdf.quad(postTerm, ns.dc.date, rdf.literal((new Date()).toISOString(), ns.xsd.date)))
+    content.add(rdf.quad(postTerm, dc11.date, rdf.literal((new Date()).toISOString(), xsd.date)))
     content.add(rdf.quad(postTerm, ns.schema.comments, commentsTerm))
 
     await req.app.locals.store.write(postTerm, content)

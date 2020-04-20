@@ -1,9 +1,9 @@
 const httpErrors = require('http-errors')
-const ns = require('./namespaces')
+const { rdfs } = require('@tpluscode/rdf-ns-builders')
 
 // this is a dummy for the actual shacl RDF/JS library which should be implemented
 async function shaclValidate (dataset, shape) {
-  if (dataset.match(null, ns.rdfs.label, null, null).size === 0) {
+  if (dataset.match(null, rdfs.label, null, null).size === 0) {
     return [new Error('rdfs:label missing')]
   }
 
