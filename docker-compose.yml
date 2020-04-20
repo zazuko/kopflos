@@ -9,10 +9,11 @@ services:
       - .:/app
     ports:
       - 9000:9000
+      - 9001:9001
   e2e-tests:
     depends_on:
       - blog
-    image: hydrofoil/hypertest
+    image: hydrofoil/hypertest:0.6.1
     network_mode: "host"
     environment:
       BASE_URI: "http://localhost:9000/"
