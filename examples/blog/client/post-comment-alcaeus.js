@@ -1,4 +1,4 @@
-const { Hydra } = require('alcaeus')
+const Hydra = require('alcaeus/with-parsers')
 
 const baseUrl = 'http://localhost:9000/'
 
@@ -12,10 +12,12 @@ async function postComment () {
     '@id': '',
     '@type': 'http://localhost:9000/api/schema/Comment',
     'http://www.w3.org/2000/01/rdf-schema#label': 'new comment created by alcaeus'
-  }))
+  }), {
+    'Content-Type': 'application/ld+json'
+  })
 
   console.log(`comment created: ${response.xhr.ok}`)
-  console.log(`IRI: ${response.xhr.headers.get('location')}`)
+  console.log(`IRI: ${response.root.id.value}`)
 }
 
 postComment()

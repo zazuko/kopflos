@@ -19,7 +19,7 @@ async function post (req, res, next) {
 
     await req.app.locals.store.write(postTerm, content)
 
-    res.status(201).set('location', postTerm.value).end()
+    res.status(303).set('location', postTerm.value).end()
   } catch (err) {
     next(err)
   }
