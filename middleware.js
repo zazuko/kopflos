@@ -10,8 +10,9 @@ const iriTemplate = require('./lib/middleware/iriTemplate')
 const operation = require('./lib/middleware/operation')
 const resource = require('./lib/middleware/resource')
 const waitFor = require('./lib/middleware/waitFor')
+const StoreResourceLoader = require('./StoreResourceLoader')
 
-function middleware (api, store, { baseIriFromRequest } = {}) {
+function middleware (api, { baseIriFromRequest, loader, store } = {}) {
   const init = defer()
   const router = new Router()
 
@@ -58,7 +59,15 @@ function middleware (api, store, { baseIriFromRequest } = {}) {
   router.use(rdfHandler({ baseIriFromRequest }))
   router.use(waitFor(init, () => apiHeader(api)))
   router.use(waitFor(init, () => iriTemplate(api)))
-  router.use(resource(store))
+
+  if (loader) {
+    router.use(resource({ loader }))
+  } else if (store) {
+    router.use(resource({ loader: new StoreResourceLoader({ store }) }))
+  } else {
+    throw new Error('no loader or store provided')
+  }
+
   router.use(waitFor(init, () => operation(api)))
 
   return router
