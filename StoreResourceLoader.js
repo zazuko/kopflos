@@ -25,13 +25,13 @@ class StoreResourceLoader {
     }
   }
 
-  async byClass (term) {
+  async forClassOperation (term) {
     const resource = await this.load(term)
 
     return resource ? [resource] : []
   }
 
-  async byProperty (term) {
+  async forPropertyOperation (term) {
     const dataset = await fromStream(rdf.dataset(), this.store.match(null, null, term, null))
     const result = []
 

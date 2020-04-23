@@ -40,11 +40,11 @@ describe('StoreResourceLoader', () => {
     })
   })
 
-  describe('.byClass', () => {
+  describe('.forClassOperation', () => {
     it('should be a method', () => {
       const loader = new StoreResourceLoader({ store: {} })
 
-      strictEqual(typeof loader.byClass, 'function')
+      strictEqual(typeof loader.forClassOperation, 'function')
     })
 
     it('should load term, dataset and types from the given named graph', async () => {
@@ -55,7 +55,7 @@ describe('StoreResourceLoader', () => {
       })
       const loader = new StoreResourceLoader({ store })
 
-      const resources = await loader.byClass(term)
+      const resources = await loader.forClassOperation(term)
       const resource = resources[0]
 
       strictEqual(term.equals(resource.term), true)
@@ -64,11 +64,11 @@ describe('StoreResourceLoader', () => {
     })
   })
 
-  describe('.byProperty', () => {
+  describe('.forPropertyOperation', () => {
     it('should be a method', () => {
       const loader = new StoreResourceLoader({ store: {} })
 
-      strictEqual(typeof loader.byProperty, 'function')
+      strictEqual(typeof loader.forPropertyOperation, 'function')
     })
 
     it('should load term, dataset and types from the given named graph', async () => {
@@ -80,7 +80,7 @@ describe('StoreResourceLoader', () => {
       })
       const loader = new StoreResourceLoader({ store })
 
-      const resources = await loader.byProperty(link)
+      const resources = await loader.forPropertyOperation(link)
       const resource = resources[0]
 
       strictEqual(term.equals(resource.term), true)
