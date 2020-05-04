@@ -26,11 +26,6 @@ async function get (req, res) {
       vocab.hydra.view,
       url,
     ))
-    req.hydra.resource.dataset.add(rdf.quad(
-      url,
-      vocab.rdf.type,
-      vocab.hydra.PartialCollectionView,
-    ))
   }
 
   res.dataset(req.hydra.resource.dataset)
