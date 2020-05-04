@@ -5,7 +5,7 @@ const baseUrl = 'http://localhost:9000/'
 
 async function getBlog () {
   const blog = await Hydra.loadResource(baseUrl)
-  return blog.root
+  return blog.representation.root
 }
 
 getBlog()
