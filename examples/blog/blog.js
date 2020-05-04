@@ -3,7 +3,6 @@ const { dc11, xsd } = require('@tpluscode/rdf-ns-builders')
 const generateIri = require('./lib/generateIri')
 const ns = require('./lib/namespaces')
 const rebase = require('./lib/rebase')
-const unsetGraph = require('./lib/unsetGraph')
 const validate = require('./lib/validate')
 
 async function get (req, res) {
@@ -21,7 +20,7 @@ async function get (req, res) {
     }
   }
 
-  res.dataset(unsetGraph(req.hydra.resource.dataset))
+  res.dataset(req.hydra.resource.dataset)
 }
 
 async function post (req, res, next) {
