@@ -58,7 +58,7 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
 
   router.use(rdfHandler({ baseIriFromRequest }))
   router.use(waitFor(init, () => apiHeader(api)))
-  router.use(waitFor(init, () => iriTemplate(api)))
+  router.use(waitFor(init, () => iriTemplate.absolute(api)))
 
   if (loader) {
     router.use(resource({ loader }))
@@ -68,6 +68,7 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
     throw new Error('no loader or store provided')
   }
 
+  router.use(waitFor(init, () => iriTemplate.relative(api)))
   router.use(waitFor(init, () => operation(api)))
 
   return router

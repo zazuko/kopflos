@@ -5,9 +5,14 @@ function iriTemplateMappingBuilder ({
   dataset = rdf.dataset(),
   term = rdf.blankNode(),
   graph = rdf.defaultGraph(),
+  type,
   template,
   variables
 } = {}) {
+  if (type) {
+    dataset.add(rdf.quad(type, ns.hydra.search, term, graph))
+  }
+
   dataset.add(rdf.quad(term, ns.rdf.type, ns.hydra.IriTemplate, graph))
 
   if (template) {
@@ -20,7 +25,7 @@ function iriTemplateMappingBuilder ({
 
       dataset.add(rdf.quad(term, ns.hydra.mapping, mapping, graph))
       dataset.add(rdf.quad(mapping, ns.hydra.variable, rdf.literal(key), graph))
-      dataset.add(rdf.quad(mapping, ns.hydra.property, rdf.namedNode(value), graph))
+      dataset.add(rdf.quad(mapping, ns.hydra.property, rdf.namedNode(value.value || value), graph))
     })
   }
 

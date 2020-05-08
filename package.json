@@ -23,6 +23,7 @@
     "@rdfjs/dataset": "^1.0.1",
     "@rdfjs/express-handler": "^1.1.0",
     "@rdfjs/namespace": "^1.1.0",
+    "@rdfjs/term-map": "^1.0.0",
     "@rdfjs/term-set": "^1.0.0",
     "@tpluscode/rdf-ns-builders": "^0.1.0",
     "absolute-url": "^1.2.2",
@@ -35,7 +36,8 @@
     "rdf-loaders-registry": "^0.2.0",
     "rdf-utils-fs": "^2.1.0",
     "set-link": "^1.0.0",
-    "uri-template-route": "^1.0.0"
+    "uri-template-route": "^1.0.0",
+    "uri-templates": "^0.2.0"
   },
   "devDependencies": {
     "@zazuko/rdf-vocabularies": "^2019.10.22",
