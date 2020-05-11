@@ -56,7 +56,7 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
     }
   })
 
-  router.use(rdfHandler({ baseIriFromRequest }))
+  router.use(rdfHandler({ baseIriFromRequest, sendTriples: true }))
   router.use(waitFor(init, () => apiHeader(api)))
   router.use(waitFor(init, () => iriTemplate(api)))
 

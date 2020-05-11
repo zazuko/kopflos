@@ -21,7 +21,7 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.1.2",
     "@rdfjs/dataset": "^1.0.1",
-    "@rdfjs/express-handler": "^1.1.0",
+    "@rdfjs/express-handler": "^1.2.0",
     "@rdfjs/namespace": "^1.1.0",
     "@rdfjs/term-set": "^1.0.0",
     "@tpluscode/rdf-ns-builders": "^0.1.0",
