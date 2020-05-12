@@ -65,7 +65,7 @@ class Api {
     return this
   }
 
-  static async fromFile (filePath, options) {
+  static fromFile (filePath, options) {
     const api = new Api(options)
 
     return api.fromFile(filePath)
