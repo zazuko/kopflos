@@ -55,6 +55,12 @@ describe('Api', () => {
       strictEqual(api.tasks.length, 1)
     })
 
+    it('static call should be chainable', () => {
+      const api = Api.fromFile('foo').fromFile('bar')
+
+      strictEqual(api.tasks.length, 2)
+    })
+
     it('should load the API from the given file when init is called', async () => {
       const api = new Api()
 
