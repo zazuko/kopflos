@@ -57,6 +57,9 @@ Additionally there is a `hydra` property assigned to `req` that contains more da
  
     // requested URL as RDF/JS NamedNode
     term,
+    
+    // the selected hydra:Operation as Graph Pointer
+    operation,
 
     // resource this request is about
     // This can be the requested URL for the case that a class operation is called.
