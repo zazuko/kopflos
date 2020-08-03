@@ -19,7 +19,7 @@ describe('middleware/resource', () => {
     }
   })
 
-  function hydraMock(req, res, next) {
+  function hydraMock (req, res, next) {
     req.hydra = {
       term: RDF.namedNode(req.uri)
     }

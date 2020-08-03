@@ -31,7 +31,7 @@ async function get (req, res) {
     req.hydra.resource.dataset.add(rdf.quad(
       req.hydra.term,
       vocab.hydra.view,
-      url,
+      url
     ))
   }
 

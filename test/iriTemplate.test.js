@@ -1,7 +1,7 @@
-const { strictEqual, ok } = require('assert')
+const { strictEqual } = require('assert')
 const express = require('express')
 const { describe, it } = require('mocha')
-const { fromStream, equals } = require('rdf-dataset-ext')
+const { fromStream } = require('rdf-dataset-ext')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const request = require('supertest')
 const iriTemplateMappingBuilder = require('./support/iriTemplateMappingBuilder')
@@ -141,7 +141,7 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?tag*}',
         variables: {
-          tag: 'http://example.org/tag',
+          tag: 'http://example.org/tag'
         }
       })))
 
@@ -166,7 +166,7 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?tag}',
         variables: {
-          tag: 'http://example.org/tag',
+          tag: 'http://example.org/tag'
         }
       })))
 
