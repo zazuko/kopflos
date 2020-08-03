@@ -1,7 +1,7 @@
-const { strictEqual } = require('assert')
+const { strictEqual, ok } = require('assert')
 const express = require('express')
 const { describe, it } = require('mocha')
-const { fromStream } = require('rdf-dataset-ext')
+const { fromStream, equals } = require('rdf-dataset-ext')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const request = require('supertest')
 const iriTemplateMappingBuilder = require('./support/iriTemplateMappingBuilder')
@@ -131,6 +131,56 @@ describe('middleware/iriTemplate', () => {
 
       strictEqual(dataset.match(null, fromQuad.predicate, fromQuad.object).size, 1)
       strictEqual(dataset.match(null, toQuad.predicate, toQuad.object).size, 1)
+    })
+
+    it('should return individual object for multiple query param occurrences', async () => {
+      let dataset = null
+      const app = express()
+      const tagProp = rdf.namedNode('http://example.org/tag')
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?tag*}',
+        variables: {
+          tag: 'http://example.org/tag',
+        }
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      await request(app).get('/?tag=foo&tag=bar')
+
+      strictEqual(dataset.size, 2)
+      strictEqual(dataset.match(null, tagProp, rdf.literal('foo')).size, 1)
+      strictEqual(dataset.match(null, tagProp, rdf.literal('bar')).size, 1)
+    })
+
+    it('should return individual object for comma-separated query values', async () => {
+      let dataset = null
+      const app = express()
+      const tagProp = rdf.namedNode('http://example.org/tag')
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?tag}',
+        variables: {
+          tag: 'http://example.org/tag',
+        }
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      await request(app).get('/?tag=foo,bar')
+
+      strictEqual(dataset.size, 2)
+      strictEqual(dataset.match(null, tagProp, rdf.literal('foo')).size, 1)
+      strictEqual(dataset.match(null, tagProp, rdf.literal('bar')).size, 1)
     })
   })
 
