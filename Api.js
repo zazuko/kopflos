@@ -24,29 +24,11 @@ class Api {
   }
 
   async init () {
-    if (this.initialized) {
-      return
+    if (!this._initialization) {
+      this._initialization = this._beginInit()
     }
 
-    if (!this.dataset) {
-      this.dataset = rdf.dataset()
-    }
-
-    for (const task of this.tasks) {
-      await task()
-    }
-
-    const apiDoc = clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
-
-    if (apiDoc.has(ns.rdf.type, ns.hydra.ApiDocumentation).terms.length === 0) {
-      apiDoc.addOut(ns.rdf.type, ns.hydra.ApiDocumentation)
-
-      apiDoc.node().has(ns.rdf.type, ns.hydra.Class).forEach(supportedClass => {
-        apiDoc.addOut(ns.hydra.supportedClass, supportedClass)
-      })
-    }
-
-    this.initialized = true
+    return this._initialization
   }
 
   fromFile (filePath) {
@@ -69,6 +51,26 @@ class Api {
     const api = new Api(options)
 
     return api.fromFile(filePath)
+  }
+
+  async _beginInit () {
+    if (!this.dataset) {
+      this.dataset = rdf.dataset()
+    }
+
+    for (const task of this.tasks) {
+      await task()
+    }
+
+    const apiDoc = clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
+
+    if (apiDoc.has(ns.rdf.type, ns.hydra.ApiDocumentation).terms.length === 0) {
+      apiDoc.addOut(ns.rdf.type, ns.hydra.ApiDocumentation)
+
+      apiDoc.node().has(ns.rdf.type, ns.hydra.Class).forEach(supportedClass => {
+        apiDoc.addOut(ns.hydra.supportedClass, supportedClass)
+      })
+    }
   }
 }
 
