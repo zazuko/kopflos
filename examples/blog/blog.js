@@ -21,11 +21,11 @@ async function get (req, res) {
       console.log(`date filter: ${from && from.value} - ${to && to.value}`)
     }
 
-    const tagQuad = [...filters.match(null, ns.schema.tag, null, null)][0]
-    const tag = tagQuad && tagQuad.object
+    const tagQuads = [...filters.match(null, ns.schema.tag, null, null)]
+    const tags = tagQuads.map(tagQuad => tagQuad.object.value)
 
-    if (tag) {
-      console.log(`tag filter: ${tag.value}`)
+    if (tags) {
+      console.log(`tag filter: ${tags}`)
     }
 
     req.hydra.resource.dataset.add(rdf.quad(
