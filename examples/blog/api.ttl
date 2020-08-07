@@ -37,9 +37,12 @@
   ], [ a hydra:IriTemplateMapping;
     hydra:property <to>;
     hydra:variable "to"
+  ], [ a hydra:IriTemplateMapping;
+    hydra:property <tag>;
+    hydra:variable "tag"
   ];
-  hydra:template "/{?from,to}";
-  hydra:variableRepresentation hydra:BasicRepresentation.
+  hydra:template "/{?from,to,tag}";
+  hydra:variableRepresentation hydra:BasicRepresentation .
 
 <Post> a hydra:Class;
   hydra:supportedOperation

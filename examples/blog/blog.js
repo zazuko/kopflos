@@ -18,13 +18,20 @@ async function get (req, res) {
     const to = toQuad && toQuad.object
 
     if (from || to) {
-      console.log(`filter: ${from && from.value} - ${to && to.value}`)
+      console.log(`date filter: ${from && from.value} - ${to && to.value}`)
+    }
+
+    const tagQuads = [...filters.match(null, ns.schema.tag, null, null)]
+    const tags = tagQuads.map(tagQuad => tagQuad.object.value)
+
+    if (tags) {
+      console.log(`tag filter: ${tags}`)
     }
 
     req.hydra.resource.dataset.add(rdf.quad(
       req.hydra.term,
       vocab.hydra.view,
-      url,
+      url
     ))
   }
 
