@@ -13,7 +13,7 @@ const resource = require('./lib/middleware/resource')
 const waitFor = require('./lib/middleware/waitFor')
 const StoreResourceLoader = require('./StoreResourceLoader')
 
-function middleware (api, { baseIriFromRequest, loader, store } = {}) {
+function middleware (api, { baseIriFromRequest, loader, store, middleware = {} } = {}) {
   const init = defer()
   const router = new Router()
 
@@ -69,6 +69,9 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
     throw new Error('no loader or store provided')
   }
 
+  if (middleware.resource) {
+    router.use(waitFor(init, () => middleware.resource))
+  }
   router.use(waitFor(init, () => operation(api)))
 
   return router
