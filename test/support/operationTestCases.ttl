@@ -1,0 +1,17 @@
+@base          <http://example.com/> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix code:  <https://code.described.at/> .
+
+<api>
+    hydra:supportedClass <Person> .
+
+<Person>
+    hydra:supportedOperation [ hydra:method       "GET" ;
+                               code:implementedBy _:person-get ] ;
+    hydra:supportedProperty  [ hydra:property <friends> ] ;
+.
+
+<friends> a hydra:Link ;
+    hydra:supportedOperation [ hydra:method       "POST" ;
+                               code:implementedBy _:friends-post ] ;
+.
