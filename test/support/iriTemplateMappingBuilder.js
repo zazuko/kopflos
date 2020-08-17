@@ -6,7 +6,8 @@ function iriTemplateMappingBuilder ({
   term = rdf.blankNode(),
   graph = rdf.defaultGraph(),
   template,
-  variables
+  variables,
+  explicitRepresentation
 } = {}) {
   dataset.add(rdf.quad(term, ns.rdf.type, ns.hydra.IriTemplate, graph))
 
@@ -22,6 +23,10 @@ function iriTemplateMappingBuilder ({
       dataset.add(rdf.quad(mapping, ns.hydra.variable, rdf.literal(key), graph))
       dataset.add(rdf.quad(mapping, ns.hydra.property, rdf.namedNode(value), graph))
     })
+  }
+
+  if (explicitRepresentation) {
+    dataset.add(rdf.quad(term, ns.hydra.variableRepresentation, ns.hydra.ExplicitRepresentation))
   }
 
   return {
