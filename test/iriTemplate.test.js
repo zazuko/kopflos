@@ -1,7 +1,9 @@
-const { strictEqual } = require('assert')
+const { strictEqual, deepStrictEqual } = require('assert')
 const express = require('express')
 const { describe, it } = require('mocha')
+const clownface = require('clownface')
 const { fromStream } = require('rdf-dataset-ext')
+const { hydra, schema, xsd } = require('@tpluscode/rdf-ns-builders')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const request = require('supertest')
 const iriTemplateMappingBuilder = require('./support/iriTemplateMappingBuilder')
@@ -226,6 +228,143 @@ describe('middleware/iriTemplate', () => {
 
       strictEqual(dataset.match(null, fromQuad.predicate, fromQuad.object).size, 1)
       strictEqual(dataset.match(null, toQuad.predicate, toQuad.object).size, 1)
+    })
+  })
+
+  describe('when template uses explicit representation', () => {
+    it('should parse unquoted template variable as named node', async () => {
+      // given
+      let dataset = null
+      const app = express()
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?id}',
+        variables: {
+          id: schema.identifier
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      // when
+      await request(app).get('/?id=http%3A%2F%2Fwww.hydra-cg.com%2F')
+
+      // then
+      const boundTerm = clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.namedNode('http://www.hydra-cg.com/'))
+    })
+
+    it('should parse quoted template variable as literal', async () => {
+      // given
+      let dataset = null
+      const app = express()
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?find}',
+        variables: {
+          find: hydra.freetextQuery
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      // when
+      await request(app).get('/?find=%22A%20simple%20string%22')
+
+      // then
+      const boundTerm = clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.literal('A simple string'))
+    })
+
+    it('should parse literal with quotes inside', async () => {
+      // given
+      let dataset = null
+      const app = express()
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?find}',
+        variables: {
+          find: hydra.freetextQuery
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      // when
+      await request(app).get('/?find=%22A%20string%20%22%20with%20a%20quote%22')
+
+      // then
+      const boundTerm = clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.literal('A string " with a quote'))
+    })
+
+    it('should parse typed literal', async () => {
+      // given
+      let dataset = null
+      const app = express()
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?length}',
+        variables: {
+          length: schema.length
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      // when
+      await request(app).get('/?length=%225.5%22%5E%5Ehttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal')
+
+      // then
+      const boundTerm = clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.literal('5.5', xsd.decimal))
+    })
+
+    it('should parse tagged literal', async () => {
+      // given
+      let dataset = null
+      const app = express()
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?find}',
+        variables: {
+          find: hydra.freetextQuery
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      // when
+      await request(app).get('/?find=%22A%20simple%20string%22%40en')
+
+      // then
+      const boundTerm = clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.literal('A simple string', 'en'))
     })
   })
 })
