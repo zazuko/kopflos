@@ -1,6 +1,7 @@
 const debug = require('debug')('hydra-box:middleware')
 const absoluteUrl = require('absolute-url')
 const { Router } = require('express')
+const { asyncMiddleware } = require('middleware-async')
 const { defer } = require('promise-the-world')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const rdfHandler = require('@rdfjs/express-handler')
@@ -18,7 +19,7 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
 
   router.use(absoluteUrl())
   router.use(setLink)
-  router.use(async (req, res, next) => {
+  router.use(asyncMiddleware(async (req, res, next) => {
     const iri = new URL(req.absoluteUrl())
 
     iri.search = ''
@@ -54,7 +55,7 @@ function middleware (api, { baseIriFromRequest, loader, store } = {}) {
 
       next(err)
     }
-  })
+  }))
 
   router.use(rdfHandler({ baseIriFromRequest, sendTriples: true }))
   router.use(waitFor(init, () => apiHeader(api)))
