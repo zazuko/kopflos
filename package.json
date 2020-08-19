@@ -29,6 +29,7 @@
     "clownface": "^0.12.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
+    "middleware-async": "^1.2.6",
     "promise-the-world": "^1.0.1",
     "rdf-dataset-ext": "^1.0.0",
     "rdf-loader-code": "^0.3.0",
