@@ -1,4 +1,4 @@
-const debug = require('debug')('hydra-box:middleware')
+const { debug } = require('./lib/log')('middleware')
 const absoluteUrl = require('absolute-url')
 const { Router } = require('express')
 const { defer } = require('promise-the-world')
