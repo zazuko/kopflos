@@ -13,7 +13,7 @@ describe('hydra-box', () => {
     api = {
       path: '/api',
       dataset: RDF.dataset(),
-      async init() {},
+      async init () {}
     }
   })
 
@@ -21,7 +21,7 @@ describe('hydra-box', () => {
     // given
     const loadedResource = {
       term: RDF.blankNode(),
-      types: [],
+      types: []
     }
     const app = express()
     const middleware = sinon.spy((req, res, next) => next())
@@ -45,7 +45,7 @@ describe('hydra-box', () => {
     // given
     const loadedResource = {
       term: RDF.blankNode(),
-      types: [],
+      types: []
     }
     const app = express()
     const middlewares = [
@@ -75,7 +75,7 @@ describe('hydra-box', () => {
     let receivedResource
     const loadedResource = {
       term: RDF.blankNode(),
-      types: [],
+      types: []
     }
     const app = express()
     const middleware = sinon.spy((req, res, next) => {
