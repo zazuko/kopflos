@@ -74,10 +74,10 @@ describe('middleware/operation', () => {
     const response = await request(app).get('/')
 
     // then
-    assert.strictEqual(response.status, 404)
+    assert.strictEqual(response.status, 405)
   })
 
-  it('calls next middleware when no operation is found', async () => {
+  it('returns 405 Method Not Found when no operation is found', async () => {
     // given
     const app = express()
     app.use(hydraMock({
@@ -89,7 +89,8 @@ describe('middleware/operation', () => {
     const response = await request(app).patch('/')
 
     // then
-    assert.strictEqual(response.status, 404)
+    assert.strictEqual(response.status, 405)
+    assert.strictEqual(response.headers.allow, 'GET, DELETE')
   })
 
   it('calls GET handler when HEAD is requested', async () => {
@@ -136,6 +137,28 @@ describe('middleware/operation', () => {
     ))
   })
 
+  it('returns 405 Method Not Allowed when nested resource does not have operation', async () => {
+    // given
+    const app = express()
+    const dataset = RDF.dataset()
+    clownface({ dataset })
+      .namedNode('/john-doe')
+      .addOut(NS.friends, RDF.namedNode('/friends'))
+    app.use(hydraMock({
+      types: [NS.Person],
+      term: '/friends',
+      dataset
+    }, '/john-doe'))
+    app.use(middleware(api))
+
+    // when
+    const response = await request(app).patch('/friends')
+
+    // then
+    assert.strictEqual(response.status, 405)
+    assert.strictEqual(response.headers.allow, 'POST')
+  })
+
   it('does not call supported property operation when resource does not match', async () => {
     // given
     const app = express()
@@ -154,7 +177,7 @@ describe('middleware/operation', () => {
     const response = await request(app).post('/john-doe')
 
     // then
-    assert.strictEqual(response.status, 404)
+    assert.strictEqual(response.status, 405)
     assert(api.loaderRegistry.load.notCalled)
   })
 
