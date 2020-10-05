@@ -20,6 +20,7 @@ describe('hydra-box', () => {
   it('hooks up resource singular middleware', async () => {
     // given
     const loadedResource = {
+      dataset: RDF.dataset(),
       term: RDF.blankNode(),
       types: []
     }
@@ -44,6 +45,7 @@ describe('hydra-box', () => {
   it('hooks up multiple resource middlewares', async () => {
     // given
     const loadedResource = {
+      dataset: RDF.dataset(),
       term: RDF.blankNode(),
       types: []
     }
@@ -74,6 +76,7 @@ describe('hydra-box', () => {
     // given
     let receivedResource
     const loadedResource = {
+      dataset: RDF.dataset(),
       term: RDF.blankNode(),
       types: []
     }
