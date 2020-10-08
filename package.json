@@ -40,12 +40,14 @@
     "uri-template-route": "^1.0.0"
   },
   "devDependencies": {
+    "@rdfjs/fetch": "^2.1.0",
     "@zazuko/rdf-vocabularies": "^2019.10.22",
     "alcaeus": "^1.0.0-beta.4",
     "codecov": "^3.6.5",
+    "express-as-promise": "0.0.2",
     "mocha": "^6.2.2",
-    "nodemon": "^2.0.3",
     "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.3",
     "nyc": "^14.1.1",
     "rdf-store-fs": "^1.0.0",
     "sinon": "^9.0.2",
