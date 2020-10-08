@@ -1,7 +1,7 @@
 {
   "name": "hydra-box",
   "description": "Hydra Box middleware",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "index.js",
   "scripts": {
     "coverage": "codecov",
