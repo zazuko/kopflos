@@ -1,0 +1,9 @@
+PREFIX api: <http://localhost:9000/api/schema/>
+
+ENTRYPOINT "category/csvw"
+
+With Class api:Category {
+    Expect Link api:post {
+        Expect Status 404
+    }
+}

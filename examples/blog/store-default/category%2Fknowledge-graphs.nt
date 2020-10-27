@@ -1,0 +1,3 @@
+<http://localhost:9000/category/knowledge-graphs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost:9000/api/schema/Category> .
+
+<http://localhost:9000/category/knowledge-graphs> <http://localhost:9000/api/schema/post> <http://localhost:9000/post/3> .

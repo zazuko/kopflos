@@ -81,3 +81,20 @@
 <comments> a hydra:Link;
   hydra:supportedOperation
       <comment#post>.
+
+<Category> a hydra:Class ;
+  hydra:supportedOperation
+    <category#get>;
+  hydra:supportedProperty [
+    hydra:property <post>
+  ]
+.
+
+<category#get> a hydra:SupportedOperation;
+  hydra:method "GET";
+  hydra:returns <Category>;
+  code:implementedBy [ a code:EcmaScript;
+                       code:link <file:./category.js#get>
+                     ].
+
+<post> a hydra:Link, rdf:Property .
