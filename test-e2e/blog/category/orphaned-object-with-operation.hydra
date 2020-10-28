@@ -1,0 +1,11 @@
+PREFIX api: <http://localhost:9000/api/schema/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+ENTRYPOINT "category/rdf"
+
+With Class api:Category {
+    Expect Link api:post {
+        // <post/3> will return 405 because it has an operation supported by <pinned-post> property
+        Expect Status 405
+    }
+}
