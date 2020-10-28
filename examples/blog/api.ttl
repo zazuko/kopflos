@@ -87,6 +87,9 @@
     <category#get>;
   hydra:supportedProperty [
     hydra:property <post>
+  ] ;
+  hydra:supportedProperty [
+    hydra:property <pinned-post>
   ]
 .
 
@@ -98,3 +101,10 @@
                      ].
 
 <post> a hydra:Link, rdf:Property .
+
+<pinned-post> a hydra:Link, rdf:Property ;
+  hydra:supportedOperation [
+     hydra:method "PUT" ;
+     code:implementedBy "(req, res, next) => res.status(204).end()"^^code:EcmaScript
+  ]
+.

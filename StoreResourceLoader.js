@@ -37,7 +37,7 @@ class StoreResourceLoader {
 
     for (const quad of dataset) {
       result.push({
-        property: quad.property,
+        property: quad.predicate,
         object: quad.object,
         ...await this.load(quad.subject)
       })
