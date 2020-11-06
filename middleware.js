@@ -13,7 +13,7 @@ const resource = require('./lib/middleware/resource')
 const waitFor = require('./lib/middleware/waitFor')
 const StoreResourceLoader = require('./StoreResourceLoader')
 
-function middleware (api, { baseIriFromRequest, loader, store, middleware = {} } = {}) {
+function middleware (api, { baseIriFromRequest, store, middleware = {}, ...options} = {} = {}) {
   const init = defer()
   const router = new Router()
 
@@ -28,10 +28,20 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
 
     debug(`${req.method} to ${term.value}`)
 
+    let loader
+    if (options.loader) {
+      loader = options.loader
+    } else if (store) {
+      loader = new StoreResourceLoader({ store })
+    } else {
+      throw new Error('no loader or store provided')
+    }
+
     req.hydra = {
       api,
       store,
-      term
+      term,
+      loader
     }
 
     if (!api.term) {
@@ -60,14 +70,7 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
   router.use(rdfHandler({ baseIriFromRequest, sendTriples: true }))
   router.use(waitFor(init, () => apiHeader(api)))
   router.use(waitFor(init, () => iriTemplate(api)))
-
-  if (loader) {
-    router.use(resource({ loader }))
-  } else if (store) {
-    router.use(resource({ loader: new StoreResourceLoader({ store }) }))
-  } else {
-    throw new Error('no loader or store provided')
-  }
+  router.use(resource())
 
   if (middleware.resource) {
     router.use(waitFor(init, () => middleware.resource))
