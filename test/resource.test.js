@@ -23,6 +23,7 @@ describe('middleware/resource', () => {
     req.hydra = {
       term: RDF.namedNode(req.url)
     }
+    res.locals.hydra = {}
     next()
   }
 

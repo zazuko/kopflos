@@ -38,7 +38,8 @@ describe('hydra-box', () => {
     const middleware = sinon.spy((req, res, next) => next())
     app.use(hydraBox(api, {
       loader: {
-        forClassOperation: () => [loadedResource]
+        forClassOperation: () => [loadedResource],
+        forPropertyOperation: () => []
       },
       middleware: {
         resource: middleware
@@ -66,7 +67,8 @@ describe('hydra-box', () => {
     ]
     app.use(hydraBox(api, {
       loader: {
-        forClassOperation: () => [loadedResource]
+        forClassOperation: () => [loadedResource],
+        forPropertyOperation: () => []
       },
       middleware: {
         resource: middlewares
@@ -84,20 +86,19 @@ describe('hydra-box', () => {
 
   it('calls resource middleware after loader', async () => {
     // given
-    let receivedResource
     const loadedResource = {
       dataset: RDF.dataset(),
       term: RDF.blankNode(),
       types: []
     }
     const app = express()
-    const middleware = sinon.spy((req, res, next) => {
-      receivedResource = req.hydra.resource
+    const middleware = sinon.stub().callsFake((req, res, next) => {
       next()
     })
     app.use(hydraBox(api, {
       loader: {
-        forClassOperation: () => [loadedResource]
+        forClassOperation: () => [loadedResource],
+        forPropertyOperation: () => []
       },
       middleware: {
         resource: middleware
@@ -108,7 +109,7 @@ describe('hydra-box', () => {
     await request(app).get('/')
 
     // then
-    assert.strictEqual(receivedResource, loadedResource)
+    assert(middleware.called)
   })
 
   describe('api', () => {

@@ -32,7 +32,7 @@ describe('middleware/operation', () => {
       })
   })
 
-  function testResource({ types = [], term, dataset = RDF.dataset(), property, object } = {}) {
+  function testResource ({ types = [], term, dataset = RDF.dataset(), property, object } = {}) {
     if (property && object) {
       return {
         term,
@@ -53,7 +53,7 @@ describe('middleware/operation', () => {
   function hydraMock (...resources) {
     return function (req, res, next) {
       req.hydra = {
-        term: RDF.namedNode(req.url),
+        term: RDF.namedNode(req.url)
       }
       res.locals = {
         hydra: {
