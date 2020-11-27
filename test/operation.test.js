@@ -90,7 +90,8 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.Person]
+      types: [NS.Person],
+      term: RDF.namedNode('/')
     })))
     const hooks = {
       operations: sinon.stub().callsFake(operations => operations)
@@ -140,7 +141,8 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.Person]
+      types: [NS.Person],
+      term: RDF.namedNode('/')
     })))
     app.use(middleware())
 
@@ -248,7 +250,8 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.Person]
+      types: [NS.Person],
+      term: RDF.namedNode('/john-doe')
     })))
     app.use(middleware())
 
