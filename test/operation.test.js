@@ -53,6 +53,7 @@ describe('middleware/operation', () => {
   function hydraMock (...resources) {
     return function (req, res, next) {
       req.hydra = {
+        api,
         term: RDF.namedNode(req.url)
       }
       res.locals = {
@@ -94,7 +95,7 @@ describe('middleware/operation', () => {
     const hooks = {
       operations: sinon.stub().callsFake(operations => operations)
     }
-    app.use(middleware(api, hooks))
+    app.use(middleware(hooks))
 
     // when
     const response = await request(app).get('/')
@@ -110,7 +111,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.NoSuchClass]
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).get('/')
@@ -125,7 +126,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.Person]
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).patch('/')
@@ -141,7 +142,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.Person]
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).head('/')
@@ -168,7 +169,7 @@ describe('middleware/operation', () => {
       object: RDF.namedNode('/friends'),
       dataset
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).post('/friends')
@@ -195,7 +196,7 @@ describe('middleware/operation', () => {
       object: RDF.namedNode('/friends'),
       dataset
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).patch('/friends')
@@ -211,7 +212,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.Person]
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).delete('/foo')
@@ -234,7 +235,7 @@ describe('middleware/operation', () => {
       object: RDF.namedNode('/john-doe/interests'),
       dataset
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     const response = await request(app).get('/john-doe/interests')
@@ -249,7 +250,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.Person]
     })))
-    app.use(middleware(api))
+    app.use(middleware())
 
     // when
     api.loaderRegistry.load.returns(null)
