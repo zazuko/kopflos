@@ -13,7 +13,7 @@ const resource = require('./lib/middleware/resource')
 const waitFor = require('./lib/middleware/waitFor')
 const StoreResourceLoader = require('./StoreResourceLoader')
 
-function middleware (api, { baseIriFromRequest, store, middleware = {}, ...options} = {} = {}) {
+function middleware (api, { baseIriFromRequest, store, middleware = {}, ...options } = {}) {
   const init = defer()
   const router = new Router()
 
