@@ -85,6 +85,25 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.status, 404)
   })
 
+  it('calls operations middleware hook when defined', async () => {
+    // given
+    const app = express()
+    app.use(hydraMock(testResource({
+      types: [NS.Person]
+    })))
+    const hooks = {
+      operations: sinon.stub().callsFake(operations => operations)
+    }
+    app.use(middleware(api, hooks))
+
+    // when
+    const response = await request(app).get('/')
+
+    // then
+    assert(hooks.operations.called)
+    assert.strictEqual(response.status, 200)
+  })
+
   it('calls next middleware when class is not supported', async () => {
     // given
     const app = express()

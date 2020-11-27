@@ -74,7 +74,7 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
     throw new Error('no loader or store provided')
   }
 
-  router.use(waitFor(init, () => operation(api, middleware.resource)))
+  router.use(waitFor(init, () => operation(api, middleware)))
 
   return router
 }
