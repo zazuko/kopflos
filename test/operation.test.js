@@ -94,7 +94,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/')
     })))
     const hooks = {
-      operations: sinon.stub().callsFake(operations => operations)
+      operations: sinon.stub().callsFake((req, res, next) => next())
     }
     app.use(middleware(hooks))
 
