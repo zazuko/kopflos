@@ -61,6 +61,11 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
   router.use(waitFor(init, () => apiHeader(api)))
   router.use(waitFor(init, () => iriTemplate(api)))
 
+  router.use((req, res, next) => {
+    res.locals.hydra = {}
+    next()
+  })
+
   if (loader) {
     router.use(resource({ loader }))
   } else if (store) {
@@ -69,10 +74,7 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
     throw new Error('no loader or store provided')
   }
 
-  if (middleware.resource) {
-    router.use(waitFor(init, () => middleware.resource))
-  }
-  router.use(waitFor(init, () => operation(api)))
+  router.use(operation(middleware))
 
   return router
 }

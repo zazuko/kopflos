@@ -32,14 +32,33 @@ describe('middleware/operation', () => {
       })
   })
 
-  function hydraMock ({ types = [], term, dataset = RDF.dataset() } = {}, rootResource) {
+  function testResource ({ types = [], term, dataset = RDF.dataset(), property, object } = {}) {
+    if (property && object) {
+      return {
+        term,
+        types,
+        dataset,
+        property,
+        object
+      }
+    }
+
+    return {
+      term,
+      types,
+      dataset
+    }
+  }
+
+  function hydraMock (...resources) {
     return function (req, res, next) {
       req.hydra = {
-        term: RDF.namedNode(req.url),
-        resource: {
-          dataset,
-          term: rootResource ? RDF.namedNode(rootResource) : term || RDF.namedNode(req.url),
-          types
+        api,
+        term: RDF.namedNode(req.url)
+      }
+      res.locals = {
+        hydra: {
+          resources
         }
       }
       next()
@@ -51,6 +70,11 @@ describe('middleware/operation', () => {
     const app = express()
     app.use((req, res, next) => {
       req.hydra = {}
+      res.locals = {
+        hydra: {
+          resources: []
+        }
+      }
       next()
     })
     app.use(middleware(api))
@@ -62,13 +86,33 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.status, 404)
   })
 
+  it('calls operations middleware hook when defined', async () => {
+    // given
+    const app = express()
+    app.use(hydraMock(testResource({
+      types: [NS.Person],
+      term: RDF.namedNode('/')
+    })))
+    const hooks = {
+      operations: sinon.stub().callsFake((req, res, next) => next())
+    }
+    app.use(middleware(hooks))
+
+    // when
+    const response = await request(app).get('/')
+
+    // then
+    assert(hooks.operations.called)
+    assert.strictEqual(response.status, 200)
+  })
+
   it('calls next middleware when class is not supported', async () => {
     // given
     const app = express()
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.NoSuchClass]
-    }))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).get('/')
@@ -77,13 +121,13 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.status, 405)
   })
 
-  it('returns 405 Method Not Found when no operation is found', async () => {
+  it('returns 405 Method Not Allowed when no operation is found', async () => {
     // given
     const app = express()
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.Person]
-    }))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).patch('/')
@@ -96,10 +140,11 @@ describe('middleware/operation', () => {
   it('calls GET handler when HEAD is requested', async () => {
     // given
     const app = express()
-    app.use(hydraMock({
-      types: [NS.Person]
-    }))
-    app.use(middleware(api))
+    app.use(hydraMock(testResource({
+      types: [NS.Person],
+      term: RDF.namedNode('/')
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).head('/')
@@ -119,12 +164,14 @@ describe('middleware/operation', () => {
     clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.friends, RDF.namedNode('/friends'))
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: '/friends',
+      term: RDF.namedNode('/john-doe'),
+      property: NS.friends,
+      object: RDF.namedNode('/friends'),
       dataset
-    }, '/john-doe'))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).post('/friends')
@@ -144,12 +191,14 @@ describe('middleware/operation', () => {
     clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.friends, RDF.namedNode('/friends'))
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: '/friends',
+      term: RDF.namedNode('/john-doe'),
+      property: NS.friends,
+      object: RDF.namedNode('/friends'),
       dataset
-    }, '/john-doe'))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).patch('/friends')
@@ -159,35 +208,13 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.headers.allow, 'POST')
   })
 
-  it('does not call supported property operation when resource does not match', async () => {
-    // given
-    const app = express()
-    const dataset = RDF.dataset()
-    clownface({ dataset })
-      .namedNode('/john-doe')
-      .addOut(NS.friends, RDF.namedNode('/friends'))
-    app.use(hydraMock({
-      types: [NS.Person],
-      term: '/friends',
-      dataset
-    }, '/john-doe'))
-    app.use(middleware(api))
-
-    // when
-    const response = await request(app).post('/john-doe')
-
-    // then
-    assert.strictEqual(response.status, 405)
-    assert(api.loaderRegistry.load.notCalled)
-  })
-
   it('throws when multiple operations are found for class', async () => {
     // given
     const app = express()
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.Person]
-    }))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).delete('/foo')
@@ -203,12 +230,14 @@ describe('middleware/operation', () => {
     clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.interests, RDF.namedNode('/john-doe/interests'))
-    app.use(hydraMock({
+    app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: '/john-doe/interests',
+      term: RDF.namedNode('/john-doe'),
+      property: NS.interests,
+      object: RDF.namedNode('/john-doe/interests'),
       dataset
-    }, '/john-doe'))
-    app.use(middleware(api))
+    })))
+    app.use(middleware())
 
     // when
     const response = await request(app).get('/john-doe/interests')
@@ -220,10 +249,11 @@ describe('middleware/operation', () => {
   it('throws when operation fails to load', async () => {
     // given
     const app = express()
-    app.use(hydraMock({
-      types: [NS.Person]
-    }))
-    app.use(middleware(api))
+    app.use(hydraMock(testResource({
+      types: [NS.Person],
+      term: RDF.namedNode('/john-doe')
+    })))
+    app.use(middleware())
 
     // when
     api.loaderRegistry.load.returns(null)

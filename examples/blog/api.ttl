@@ -81,3 +81,30 @@
 <comments> a hydra:Link;
   hydra:supportedOperation
       <comment#post>.
+
+<Category> a hydra:Class ;
+  hydra:supportedOperation
+    <category#get>;
+  hydra:supportedProperty [
+    hydra:property <post>
+  ] ;
+  hydra:supportedProperty [
+    hydra:property <pinned-post>
+  ]
+.
+
+<category#get> a hydra:SupportedOperation;
+  hydra:method "GET";
+  hydra:returns <Category>;
+  code:implementedBy [ a code:EcmaScript;
+                       code:link <file:./category.js#get>
+                     ].
+
+<post> a hydra:Link, rdf:Property .
+
+<pinned-post> a hydra:Link, rdf:Property ;
+  hydra:supportedOperation [
+     hydra:method "PUT" ;
+     code:implementedBy "(req, res, next) => res.status(204).end()"^^code:EcmaScript
+  ]
+.

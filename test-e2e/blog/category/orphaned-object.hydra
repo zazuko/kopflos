@@ -1,0 +1,10 @@
+PREFIX api: <http://localhost:9000/api/schema/>
+
+ENTRYPOINT "category/csvw"
+
+With Class api:Category {
+    Expect Link api:post {
+        // <post/2> will return 404 because it is an triple object but none of the properties have any operations
+        Expect Status 404
+    }
+}
