@@ -4,7 +4,6 @@
   "version": "0.5.2",
   "main": "index.js",
   "scripts": {
-    "coverage": "codecov",
     "test": "standard && nyc --reporter=lcov mocha",
     "blog": "(cd examples/blog; bash init.sh --keep; DEBUG=hydra-box* nodemon --ext ttl,js,json --exec node --inspect=0.0.0.0:9001 server.js)"
   },
