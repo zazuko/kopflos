@@ -35,7 +35,7 @@ describe('StoreResourceLoader', () => {
       const resource = await loader.load(term)
 
       strictEqual(term.equals(resource.term), true)
-      strictEqual(resource.dataset.size, 2)
+      strictEqual((await resource.dataset()).size, 2)
       strictEqual([...resource.types][0].value, 'http://example.org/Class')
     })
   })
@@ -59,7 +59,7 @@ describe('StoreResourceLoader', () => {
       const resource = resources[0]
 
       strictEqual(term.equals(resource.term), true)
-      strictEqual(resource.dataset.size, 2)
+      strictEqual((await resource.dataset()).size, 2)
       strictEqual([...resource.types][0].value, 'http://example.org/Class')
     })
   })
@@ -84,7 +84,7 @@ describe('StoreResourceLoader', () => {
       const resource = resources[0]
 
       strictEqual(term.equals(resource.term), true)
-      strictEqual(resource.dataset.size, 2)
+      strictEqual((await resource.dataset()).size, 2)
       strictEqual([...resource.types][0].value, 'http://example.org/Class')
     })
   })
