@@ -32,12 +32,12 @@ describe('middleware/operation', () => {
       })
   })
 
-  function testResource ({ types = [], term, dataset = RDF.dataset(), property, object } = {}) {
+  function testResource ({ types = [], term, prefetchDataset = RDF.dataset(), property, object } = {}) {
     if (property && object) {
       return {
         term,
         types,
-        dataset,
+        prefetchDataset,
         property,
         object
       }
@@ -46,7 +46,7 @@ describe('middleware/operation', () => {
     return {
       term,
       types,
-      dataset
+      prefetchDataset
     }
   }
 
@@ -169,7 +169,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.friends,
       object: RDF.namedNode('/friends'),
-      dataset
+      prefetchDataset: dataset
     })))
     app.use(middleware())
 
@@ -196,7 +196,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.friends,
       object: RDF.namedNode('/friends'),
-      dataset
+      prefetchDataset: dataset
     })))
     app.use(middleware())
 
@@ -235,7 +235,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.interests,
       object: RDF.namedNode('/john-doe/interests'),
-      dataset
+      prefetchDataset: dataset
     })))
     app.use(middleware())
 

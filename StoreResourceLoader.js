@@ -20,7 +20,10 @@ class StoreResourceLoader {
 
     return {
       term,
-      dataset,
+      prefetchDataset: dataset,
+      async dataset () {
+        return dataset
+      },
       types
     }
   }
