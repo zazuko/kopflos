@@ -1,5 +1,5 @@
-function get (req, res) {
-  res.dataset(req.hydra.resource.dataset)
+async function get (req, res) {
+  res.dataset(await req.hydra.resource.dataset())
 }
 
 module.exports = {

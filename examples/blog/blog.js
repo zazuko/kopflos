@@ -8,6 +8,7 @@ const validate = require('./lib/validate')
 async function get (req, res) {
   const url = rdf.namedNode(req.absoluteUrl())
 
+  const dataset = await req.hydra.resource.dataset()
   if (req.dataset) {
     const filters = await req.dataset()
 
@@ -28,14 +29,14 @@ async function get (req, res) {
       console.log(`tag filter: ${tags}`)
     }
 
-    req.hydra.resource.dataset.add(rdf.quad(
+    dataset.add(rdf.quad(
       req.hydra.term,
       vocab.hydra.view,
       url
     ))
   }
 
-  res.dataset(req.hydra.resource.dataset)
+  res.dataset(dataset)
 }
 
 async function post (req, res, next) {
