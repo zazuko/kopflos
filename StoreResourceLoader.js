@@ -1,6 +1,6 @@
 const clownface = require('clownface')
 const ns = require('@tpluscode/rdf-ns-builders')
-const { fromStream } = require('rdf-dataset-ext')
+const { fromStream, toStream } = require('rdf-dataset-ext')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const TermSet = require('@rdfjs/term-set')
 
@@ -23,6 +23,9 @@ class StoreResourceLoader {
       prefetchDataset: dataset,
       async dataset () {
         return dataset
+      },
+      quadStream () {
+        return toStream(dataset)
       },
       types
     }
