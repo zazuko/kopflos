@@ -1,6 +1,7 @@
 const { strictEqual } = require('assert')
 const { resolve } = require('path')
 const { describe, it } = require('mocha')
+const { fromStream } = require('rdf-dataset-ext')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const FlatMultiFileStore = require('rdf-store-fs/FlatMultiFileStore')
 const StoreResourceLoader = require('../StoreResourceLoader')
@@ -36,6 +37,22 @@ describe('StoreResourceLoader', () => {
 
       strictEqual(term.equals(resource.term), true)
       strictEqual((await resource.dataset()).size, 2)
+      strictEqual([...resource.types][0].value, 'http://example.org/Class')
+    })
+
+    it('attaches quadStream getter to resource', async () => {
+      const term = rdf.namedNode('http://example.org/')
+      const store = new FlatMultiFileStore({
+        baseIRI: 'http://example.org/',
+        path: resolve(__dirname, 'support/store')
+      })
+      const loader = new StoreResourceLoader({ store })
+
+      const resource = await loader.load(term)
+      const dataset = await fromStream(rdf.dataset(), resource.quadStream())
+
+      strictEqual(term.equals(resource.term), true)
+      strictEqual(dataset.size, 2)
       strictEqual([...resource.types][0].value, 'http://example.org/Class')
     })
   })
