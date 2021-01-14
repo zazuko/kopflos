@@ -159,16 +159,15 @@ describe('middleware/operation', () => {
     ))
   })
 
-  it('attaches a getter of clownface pointer', async () => {
+  it('attaches a getter of clownface pointer wrapping resource dataset', async () => {
     // given
     const app = express()
     let ptr = null
+    const dataset = RDF.dataset()
     app.use(hydraMock(testResource({
       types: [NS.Person],
       term: RDF.namedNode('/john-doe'),
-      dataset: async () => {
-        return RDF.dataset()
-      }
+      dataset: async () => dataset
     })))
     app.use(middleware())
     api.loaderRegistry.load.returns(async (req, res) => {
@@ -181,6 +180,7 @@ describe('middleware/operation', () => {
 
     // then
     assert.notStrictEqual(ptr.term, RDF.namedNode('/john-doe'))
+    assert.strictEqual(ptr.dataset, dataset)
   })
 
   it('calls supported property operation handler when matched to nested resource', async () => {
