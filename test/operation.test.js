@@ -32,21 +32,23 @@ describe('middleware/operation', () => {
       })
   })
 
-  function testResource ({ types = [], term, prefetchDataset = RDF.dataset(), property, object } = {}) {
+  function testResource ({ types = [], term, prefetchDataset = RDF.dataset(), property, object, ...rest } = {}) {
     if (property && object) {
       return {
         term,
         types,
         prefetchDataset,
         property,
-        object
+        object,
+        ...rest
       }
     }
 
     return {
       term,
       types,
-      prefetchDataset
+      prefetchDataset,
+      ...rest
     }
   }
 
@@ -155,6 +157,30 @@ describe('middleware/operation', () => {
       sinon.match.hasNested('term.value', sinon.match(/person-get$/)),
       sinon.match.any
     ))
+  })
+
+  it('attaches a getter of clownface pointer', async () => {
+    // given
+    const app = express()
+    let ptr = null
+    app.use(hydraMock(testResource({
+      types: [NS.Person],
+      term: RDF.namedNode('/john-doe'),
+      dataset: async () => {
+        return RDF.dataset()
+      }
+    })))
+    app.use(middleware())
+    api.loaderRegistry.load.returns(async (req, res) => {
+      ptr = await req.hydra.resource.clownface()
+      res.end()
+    })
+
+    // when
+    await request(app).get('/john-doe')
+
+    // then
+    assert.notStrictEqual(ptr.term, RDF.namedNode('/john-doe'))
   })
 
   it('calls supported property operation handler when matched to nested resource', async () => {
