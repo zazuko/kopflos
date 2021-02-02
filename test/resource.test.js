@@ -50,7 +50,7 @@ describe('middleware/resource', () => {
     app.use(handler)
 
     // when
-    const response = await request(app).get('/')
+    await request(app).get('/')
 
     // then
     assert(forClassOperation.calledWith(sinon.match({ termType: 'NamedNode' }), sinon.match.instanceOf(http.IncomingMessage)))
