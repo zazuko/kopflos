@@ -1,5 +1,6 @@
-const { strictEqual } = require('assert')
+const assert = require('assert')
 const express = require('express')
+const http = require('http')
 const { describe, it, beforeEach } = require('mocha')
 const sinon = require('sinon')
 const request = require('supertest')
@@ -38,6 +39,21 @@ describe('middleware/resource', () => {
     const response = await request(app).get('/')
 
     // then
-    strictEqual(response.status, 404)
+    assert.strictEqual(response.status, 404)
+  })
+
+  it('passes Request object to loader calls', async () => {
+    // given
+    const app = express()
+    const handler = resource({ loader })
+    app.use(hydraMock)
+    app.use(handler)
+
+    // when
+    const response = await request(app).get('/')
+
+    // then
+    assert(forClassOperation.calledWith(sinon.match({ termType: 'NamedNode' }), sinon.match.instanceOf(http.IncomingMessage)))
+    assert(forPropertyOperation.calledWith(sinon.match({ termType: 'NamedNode' }), sinon.match.instanceOf(http.IncomingMessage)))
   })
 })
