@@ -38,7 +38,6 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
     if (!api.term) {
       const apiIri = new URL(path.join(req.baseUrl, api.path), iri)
 
-      // api.path = apiIri.pathname
       api.term = rdf.namedNode(apiIri.toString())
 
       debug(`api.term was not set. Will use: ${api.term.value}`)

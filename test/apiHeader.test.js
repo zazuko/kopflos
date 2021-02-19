@@ -34,7 +34,7 @@ describe('middleware/apiHeader', () => {
     await response.expect(406)
   })
 
-  it('sets response link to the API', async () => {
+  it('sets API documentation URL link to the response', async () => {
     const app = createApp()
 
     app.use(apiHeader({
