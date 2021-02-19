@@ -51,7 +51,7 @@ describe('middleware/apiHeader', () => {
     await response.expect(res => {
       const containsPath = new RegExp(`<http://example.app/sub-path/api>; rel="${ns.hydra.apiDocumentation.value}"`)
 
-      assert.match(res.headers['link'], containsPath)
+      assert.match(res.headers.link, containsPath)
     })
   })
 })
