@@ -210,5 +210,28 @@ describe('hydra-box', () => {
         assert.strictEqual(toCanonical(output), toCanonical(dataset))
       })
     })
+
+    it('should host the Api at the path given in the Api object if it is mounde on sub path', async () => {
+      await withServer(async server => {
+        const dataset = RDF.dataset([
+          RDF.quad(ns.example.subject, ns.example.predicate, RDF.literal('test'))
+        ])
+
+        server.app.use('/path/to/app', hydraBox(new Api({ dataset, path: '/api' }), {
+          loader: {
+            forClassOperation: () => [],
+            forPropertyOperation: () => []
+          }
+        }))
+
+        const url = new URL(await server.listen())
+        url.pathname = '/path/to/app/api'
+
+        const res = await rdfFetch(url.toString())
+        const output = await res.dataset()
+
+        assert.strictEqual(toCanonical(output), toCanonical(dataset))
+      })
+    })
   })
 })
