@@ -1,6 +1,7 @@
 const { debug } = require('./lib/log')('middleware')
 const absoluteUrl = require('absolute-url')
 const { Router } = require('express')
+const path = require('path')
 const { asyncMiddleware } = require('middleware-async')
 const { defer } = require('promise-the-world')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
@@ -35,9 +36,7 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
     }
 
     if (!api.term) {
-      const apiIri = new URL(iri)
-
-      apiIri.pathname = api.path
+      const apiIri = new URL(path.join(req.baseUrl, api.path), iri)
 
       api.term = rdf.namedNode(apiIri.toString())
 
