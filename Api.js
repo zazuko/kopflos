@@ -3,24 +3,15 @@ const { fromFile } = require('rdf-utils-fs')
 const { addAll, fromStream } = require('rdf-dataset-ext')
 const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const { replaceDatasetIRI } = require('./lib/replaceIRI')
-const LoaderRegistry = require('rdf-loaders-registry')
-const EcmaScriptLoader = require('rdf-loader-code/ecmaScript')
-const EcmaScriptLiteralLoader = require('rdf-loader-code/ecmaScriptLiteral')
 const ns = require('@tpluscode/rdf-ns-builders')
+const Api = require('./lib/Api')
 
-class Api {
+class FileApi extends Api {
   constructor ({ term, dataset, graph, path, codePath } = {}) {
-    this.term = term
-    this.dataset = dataset
-    this.graph = graph
-    this.path = path
-    this.codePath = codePath
-    this.loaderRegistry = new LoaderRegistry()
-    this.tasks = []
-    this.initialized = false
+    super({ term, dataset, path, codePath })
 
-    EcmaScriptLoader.register(this.loaderRegistry)
-    EcmaScriptLiteralLoader.register(this.loaderRegistry)
+    this.graph = graph
+    this.tasks = []
   }
 
   async init () {
@@ -48,7 +39,7 @@ class Api {
   }
 
   static fromFile (filePath, options) {
-    const api = new Api(options)
+    const api = new FileApi(options)
 
     return api.fromFile(filePath)
   }
@@ -74,4 +65,4 @@ class Api {
   }
 }
 
-module.exports = Api
+module.exports = FileApi
