@@ -33,7 +33,7 @@
     "promise-the-world": "^1.0.1",
     "rdf-dataset-ext": "^1.0.0",
     "rdf-loader-code": "^0.3.0",
-    "rdf-loaders-registry": "^0.2.0",
+    "rdf-loaders-registry": "^0.3.0",
     "rdf-utils-fs": "^2.1.0",
     "set-link": "^1.0.0",
     "uri-template-route": "^1.0.0"
