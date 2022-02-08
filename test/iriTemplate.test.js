@@ -366,5 +366,31 @@ describe('middleware/iriTemplate', () => {
       const boundTerm = clownface({ dataset }).out().term
       deepStrictEqual(boundTerm, rdf.literal('A simple string', 'en'))
     })
+
+    it('should return individual object for comma-separated query values', async () => {
+      let dataset = null
+      const app = express()
+      const tagProp = rdf.namedNode('http://example.org/tag')
+
+      app.use(middleware(iriTemplateMappingBuilder({
+        template: '/{?tag}',
+        variables: {
+          tag: 'http://example.org/tag'
+        },
+        explicitRepresentation: true
+      })))
+
+      app.use(async (req, res, next) => {
+        dataset = await req.dataset()
+
+        next()
+      })
+
+      await request(app).get('/?tag=http%3A%2F%2Fexample.org%2Fdimension%2Fcolors,http%3A%2F%2Fexample.org%2Fdimension%2Fcountries')
+
+      strictEqual(dataset.size, 2)
+      strictEqual(dataset.match(null, tagProp, rdf.namedNode('http://example.org/dimension/colors')).size, 1)
+      strictEqual(dataset.match(null, tagProp, rdf.namedNode('http://example.org/dimension/countries')).size, 1)
+    })
   })
 })
