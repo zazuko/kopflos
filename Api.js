@@ -5,6 +5,7 @@ const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
 const { replaceDatasetIRI } = require('./lib/replaceIRI')
 const LoaderRegistry = require('rdf-loaders-registry')
 const EcmaScriptLoader = require('rdf-loader-code/ecmaScript')
+const EcmaScriptModuleLoader = require('rdf-loader-code/ecmaScriptModule')
 const EcmaScriptLiteralLoader = require('rdf-loader-code/ecmaScriptLiteral')
 const ns = require('@tpluscode/rdf-ns-builders')
 
@@ -20,6 +21,7 @@ class Api {
     this.initialized = false
 
     EcmaScriptLoader.register(this.loaderRegistry)
+    EcmaScriptModuleLoader.register(this.loaderRegistry)
     EcmaScriptLiteralLoader.register(this.loaderRegistry)
   }
 
