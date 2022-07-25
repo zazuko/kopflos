@@ -1,7 +1,7 @@
 {
   "name": "hydra-box",
   "description": "Hydra Box middleware",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "main": "index.js",
   "scripts": {
     "test": "standard && nyc --reporter=lcov mocha",
