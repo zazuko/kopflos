@@ -6,8 +6,8 @@ jobs:
   e2e-tests:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - run: npm i
       - run: docker-compose up -d blog
       - run: npx wait-on http://localhost:9000 -t 30000
@@ -21,10 +21,10 @@ jobs:
     runs-on: [ ubuntu-latest ]
     strategy:
       matrix:
-        node: [ 12, 14, 16, 18 ]
+        node: [ 18, 20 ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: npm i
@@ -37,7 +37,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - run: npm ci
       - run: npm run lint
