@@ -1,10 +1,10 @@
-const { strictEqual } = require('assert')
-const { resolve } = require('path')
-const { describe, it } = require('mocha')
-const { fromStream } = require('rdf-dataset-ext')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const FlatMultiFileStore = require('rdf-store-fs/FlatMultiFileStore')
-const StoreResourceLoader = require('../StoreResourceLoader')
+import { strictEqual } from 'node:assert'
+import { resolve } from 'node:path'
+import rdf from '@zazuko/env-node'
+import FlatMultiFileStore from 'rdf-store-fs/FlatMultiFileStore.js'
+import StoreResourceLoader from '../StoreResourceLoader.js'
+
+const __dirname = new URL('.', import.meta.url).pathname
 
 describe('StoreResourceLoader', () => {
   it('should be a constructor', () => {
@@ -29,7 +29,7 @@ describe('StoreResourceLoader', () => {
       const term = rdf.namedNode('http://example.org/')
       const store = new FlatMultiFileStore({
         baseIRI: 'http://example.org/',
-        path: resolve(__dirname, 'support/store')
+        path: resolve(__dirname, 'support/store'),
       })
       const loader = new StoreResourceLoader({ store })
 
@@ -44,12 +44,12 @@ describe('StoreResourceLoader', () => {
       const term = rdf.namedNode('http://example.org/')
       const store = new FlatMultiFileStore({
         baseIRI: 'http://example.org/',
-        path: resolve(__dirname, 'support/store')
+        path: resolve(__dirname, 'support/store'),
       })
       const loader = new StoreResourceLoader({ store })
 
       const resource = await loader.load(term)
-      const dataset = await fromStream(rdf.dataset(), resource.quadStream())
+      const dataset = await rdf.dataset().import(resource.quadStream())
 
       strictEqual(term.equals(resource.term), true)
       strictEqual(dataset.size, 2)
@@ -68,7 +68,7 @@ describe('StoreResourceLoader', () => {
       const term = rdf.namedNode('http://example.org/')
       const store = new FlatMultiFileStore({
         baseIRI: 'http://example.org/',
-        path: resolve(__dirname, 'support/store')
+        path: resolve(__dirname, 'support/store'),
       })
       const loader = new StoreResourceLoader({ store })
 
@@ -93,7 +93,7 @@ describe('StoreResourceLoader', () => {
       const link = rdf.namedNode('http://example.org/object')
       const store = new FlatMultiFileStore({
         baseIRI: 'http://example.org/',
-        path: resolve(__dirname, 'support/store')
+        path: resolve(__dirname, 'support/store'),
       })
       const loader = new StoreResourceLoader({ store })
 

@@ -1,28 +1,24 @@
-const assert = require('assert')
-const path = require('path')
-const { describe, it, beforeEach } = require('mocha')
-const express = require('express')
-const RDF = require('@rdfjs/dataset')
-const clownface = require('clownface')
-const { fromFile } = require('rdf-utils-fs')
-const { fromStream } = require('rdf-dataset-ext')
-const request = require('supertest')
-const sinon = require('sinon')
-const namespace = require('@rdfjs/namespace')
-const middleware = require('../lib/middleware/operation')
+import assert from 'node:assert'
+import path from 'node:path'
+import express from 'express'
+import RDF from '@zazuko/env-node'
+import sinon from 'sinon'
+import request from 'supertest'
+import middleware from '../lib/middleware/operation.js'
 
-const NS = namespace('http://example.com/')
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const NS = RDF.namespace('http://example.com/')
 
 describe('middleware/operation', () => {
   let api
 
   beforeEach(async () => {
     api = {
-      dataset: await fromStream(RDF.dataset(), fromFile(path.resolve(__dirname, 'support/operationTestCases.ttl'))),
+      dataset: await RDF.dataset().import(RDF.fromFile(path.resolve(__dirname, 'support/operationTestCases.ttl'))),
       term: NS.api,
       loaderRegistry: {
-        load: sinon.stub()
-      }
+        load: sinon.stub(),
+      },
     }
 
     api.loaderRegistry.load
@@ -32,7 +28,7 @@ describe('middleware/operation', () => {
       })
   })
 
-  function testResource ({ types = [], term, prefetchDataset = RDF.dataset(), property, object, ...rest } = {}) {
+  function testResource({ types = [], term, prefetchDataset = RDF.dataset(), property, object, ...rest } = {}) {
     if (property && object) {
       return {
         term,
@@ -40,7 +36,7 @@ describe('middleware/operation', () => {
         prefetchDataset,
         property,
         object,
-        ...rest
+        ...rest,
       }
     }
 
@@ -48,20 +44,20 @@ describe('middleware/operation', () => {
       term,
       types,
       prefetchDataset,
-      ...rest
+      ...rest,
     }
   }
 
-  function hydraMock (...resources) {
+  function hydraMock(...resources) {
     return function (req, res, next) {
       req.hydra = {
         api,
-        term: RDF.namedNode(req.url)
+        term: RDF.namedNode(req.url),
       }
       res.locals = {
         hydra: {
-          resources
-        }
+          resources,
+        },
       }
       next()
     }
@@ -74,8 +70,8 @@ describe('middleware/operation', () => {
       req.hydra = {}
       res.locals = {
         hydra: {
-          resources: []
-        }
+          resources: [],
+        },
       }
       next()
     })
@@ -93,10 +89,10 @@ describe('middleware/operation', () => {
     const app = express()
     app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: RDF.namedNode('/')
+      term: RDF.namedNode('/'),
     })))
     const hooks = {
-      operations: sinon.stub().callsFake((req, res, next) => next())
+      operations: sinon.stub().callsFake((req, res, next) => next()),
     }
     app.use(middleware(hooks))
 
@@ -112,7 +108,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.NoSuchClass]
+      types: [NS.NoSuchClass],
     })))
     app.use(middleware())
 
@@ -127,7 +123,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.Person]
+      types: [NS.Person],
     })))
     app.use(middleware())
 
@@ -144,7 +140,7 @@ describe('middleware/operation', () => {
     const app = express()
     app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: RDF.namedNode('/')
+      term: RDF.namedNode('/'),
     })))
     app.use(middleware())
 
@@ -155,7 +151,7 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.status, 200)
     assert(api.loaderRegistry.load.calledOnceWith(
       sinon.match.hasNested('term.value', sinon.match(/person-get$/)),
-      sinon.match.any
+      sinon.match.any,
     ))
   })
 
@@ -167,7 +163,7 @@ describe('middleware/operation', () => {
     app.use(hydraMock(testResource({
       types: [NS.Person],
       term: RDF.namedNode('/john-doe'),
-      dataset: async () => dataset
+      dataset: async () => dataset,
     })))
     app.use(middleware())
     api.loaderRegistry.load.returns(async (req, res) => {
@@ -187,7 +183,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     const dataset = RDF.dataset()
-    clownface({ dataset })
+    RDF.clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.friends, RDF.namedNode('/friends'))
     app.use(hydraMock(testResource({
@@ -195,7 +191,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.friends,
       object: RDF.namedNode('/friends'),
-      prefetchDataset: dataset
+      prefetchDataset: dataset,
     })))
     app.use(middleware())
 
@@ -206,7 +202,7 @@ describe('middleware/operation', () => {
     assert.strictEqual(response.status, 200)
     assert(api.loaderRegistry.load.calledOnceWith(
       sinon.match.hasNested('term.value', sinon.match(/friends-post$/)),
-      sinon.match.any
+      sinon.match.any,
     ))
   })
 
@@ -214,7 +210,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     const dataset = RDF.dataset()
-    clownface({ dataset })
+    RDF.clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.friends, RDF.namedNode('/friends'))
     app.use(hydraMock(testResource({
@@ -222,7 +218,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.friends,
       object: RDF.namedNode('/friends'),
-      prefetchDataset: dataset
+      prefetchDataset: dataset,
     })))
     app.use(middleware())
 
@@ -238,7 +234,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use(hydraMock(testResource({
-      types: [NS.Person]
+      types: [NS.Person],
     })))
     app.use(middleware())
 
@@ -253,7 +249,7 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     const dataset = RDF.dataset()
-    clownface({ dataset })
+    RDF.clownface({ dataset })
       .namedNode('/john-doe')
       .addOut(NS.interests, RDF.namedNode('/john-doe/interests'))
     app.use(hydraMock(testResource({
@@ -261,7 +257,7 @@ describe('middleware/operation', () => {
       term: RDF.namedNode('/john-doe'),
       property: NS.interests,
       object: RDF.namedNode('/john-doe/interests'),
-      prefetchDataset: dataset
+      prefetchDataset: dataset,
     })))
     app.use(middleware())
 
@@ -277,7 +273,7 @@ describe('middleware/operation', () => {
     const app = express()
     app.use(hydraMock(testResource({
       types: [NS.Person],
-      term: RDF.namedNode('/john-doe')
+      term: RDF.namedNode('/john-doe'),
     })))
     app.use(middleware())
 

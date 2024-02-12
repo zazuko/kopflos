@@ -2,7 +2,7 @@ version: "3"
 
 services:
   blog:
-    image: node:13
+    image: node:18
     working_dir: /app
     command: npm run blog
     volumes:

@@ -1,13 +1,9 @@
-const { strictEqual, deepStrictEqual } = require('assert')
-const express = require('express')
-const { describe, it } = require('mocha')
-const clownface = require('clownface')
-const { fromStream } = require('rdf-dataset-ext')
-const { hydra, schema, xsd } = require('@tpluscode/rdf-ns-builders')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const request = require('supertest')
-const iriTemplateMappingBuilder = require('./support/iriTemplateMappingBuilder')
-const middleware = require('../lib/middleware/iriTemplate')
+import { deepStrictEqual, strictEqual } from 'node:assert'
+import express from 'express'
+import rdf from '@zazuko/env-node'
+import request from 'supertest'
+import middleware from '../lib/middleware/iriTemplate.js'
+import iriTemplateMappingBuilder from './support/iriTemplateMappingBuilder.js'
 
 describe('middleware/iriTemplate', () => {
   it('should be a function', () => {
@@ -73,7 +69,7 @@ describe('middleware/iriTemplate', () => {
     const api = iriTemplateMappingBuilder({
       dataset,
       graph: rdf.namedNode('http://example.org/graph'),
-      template: '/2'
+      template: '/2',
     })
 
     app.use(middleware(api))
@@ -119,8 +115,8 @@ describe('middleware/iriTemplate', () => {
         template: '/{?from,to}',
         variables: {
           from: 'http://example.org/from',
-          to: 'http://example.org/to'
-        }
+          to: 'http://example.org/to',
+        },
       })))
 
       app.use(async (req, res, next) => {
@@ -143,8 +139,8 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?tag*}',
         variables: {
-          tag: 'http://example.org/tag'
-        }
+          tag: 'http://example.org/tag',
+        },
       })))
 
       app.use(async (req, res, next) => {
@@ -168,8 +164,8 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?tag}',
         variables: {
-          tag: 'http://example.org/tag'
-        }
+          tag: 'http://example.org/tag',
+        },
       })))
 
       app.use(async (req, res, next) => {
@@ -214,12 +210,12 @@ describe('middleware/iriTemplate', () => {
         template: '/{?from,to}',
         variables: {
           from: 'http://example.org/from',
-          to: 'http://example.org/to'
-        }
+          to: 'http://example.org/to',
+        },
       })))
 
       app.use(async (req, res, next) => {
-        dataset = await fromStream(rdf.dataset(), req.quadStream())
+        dataset = await rdf.dataset().import(req.quadStream())
 
         next()
       })
@@ -240,9 +236,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?id}',
         variables: {
-          id: schema.identifier
+          id: rdf.ns.schema.identifier,
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {
@@ -255,7 +251,7 @@ describe('middleware/iriTemplate', () => {
       await request(app).get('/?id=http%3A%2F%2Fwww.hydra-cg.com%2F')
 
       // then
-      const boundTerm = clownface({ dataset }).out().term
+      const boundTerm = rdf.clownface({ dataset }).out().term
       deepStrictEqual(boundTerm, rdf.namedNode('http://www.hydra-cg.com/'))
     })
 
@@ -267,9 +263,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?find}',
         variables: {
-          find: hydra.freetextQuery
+          find: rdf.ns.hydra.freetextQuery,
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {
@@ -282,7 +278,7 @@ describe('middleware/iriTemplate', () => {
       await request(app).get('/?find=%22A%20simple%20string%22')
 
       // then
-      const boundTerm = clownface({ dataset }).out().term
+      const boundTerm = rdf.clownface({ dataset }).out().term
       deepStrictEqual(boundTerm, rdf.literal('A simple string'))
     })
 
@@ -294,9 +290,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?find}',
         variables: {
-          find: hydra.freetextQuery
+          find: rdf.ns.hydra.freetextQuery,
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {
@@ -309,7 +305,7 @@ describe('middleware/iriTemplate', () => {
       await request(app).get('/?find=%22A%20string%20%22%20with%20a%20quote%22')
 
       // then
-      const boundTerm = clownface({ dataset }).out().term
+      const boundTerm = rdf.clownface({ dataset }).out().term
       deepStrictEqual(boundTerm, rdf.literal('A string " with a quote'))
     })
 
@@ -321,9 +317,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?length}',
         variables: {
-          length: schema.length
+          length: rdf.ns.schema.length,
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {
@@ -336,8 +332,8 @@ describe('middleware/iriTemplate', () => {
       await request(app).get('/?length=%225.5%22%5E%5Ehttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23decimal')
 
       // then
-      const boundTerm = clownface({ dataset }).out().term
-      deepStrictEqual(boundTerm, rdf.literal('5.5', xsd.decimal))
+      const boundTerm = rdf.clownface({ dataset }).out().term
+      deepStrictEqual(boundTerm, rdf.literal('5.5', rdf.ns.xsd.decimal))
     })
 
     it('should parse tagged literal', async () => {
@@ -348,9 +344,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?find}',
         variables: {
-          find: hydra.freetextQuery
+          find: rdf.ns.hydra.freetextQuery,
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {
@@ -363,7 +359,7 @@ describe('middleware/iriTemplate', () => {
       await request(app).get('/?find=%22A%20simple%20string%22%40en')
 
       // then
-      const boundTerm = clownface({ dataset }).out().term
+      const boundTerm = rdf.clownface({ dataset }).out().term
       deepStrictEqual(boundTerm, rdf.literal('A simple string', 'en'))
     })
 
@@ -375,9 +371,9 @@ describe('middleware/iriTemplate', () => {
       app.use(middleware(iriTemplateMappingBuilder({
         template: '/{?tag}',
         variables: {
-          tag: 'http://example.org/tag'
+          tag: 'http://example.org/tag',
         },
-        explicitRepresentation: true
+        explicitRepresentation: true,
       })))
 
       app.use(async (req, res, next) => {

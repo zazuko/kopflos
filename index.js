@@ -1,7 +1,7 @@
-const middleware = require('./middleware')
-const Api = require('./Api')
+import middleware from './middleware.js'
+import Api from './Api.js'
 
-module.exports = {
+export default {
   middleware,
-  Api
+  Api,
 }

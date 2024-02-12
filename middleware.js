@@ -1,20 +1,22 @@
-const { debug } = require('./lib/log')('middleware')
-const absoluteUrl = require('absolute-url')
-const { Router } = require('express')
-const path = require('path')
-const { asyncMiddleware } = require('middleware-async')
-const { defer } = require('promise-the-world')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const rdfHandler = require('@rdfjs/express-handler')
-const setLink = require('set-link')
-const apiHeader = require('./lib/middleware/apiHeader')
-const iriTemplate = require('./lib/middleware/iriTemplate')
-const operation = require('./lib/middleware/operation')
-const resource = require('./lib/middleware/resource')
-const waitFor = require('./lib/middleware/waitFor')
-const StoreResourceLoader = require('./StoreResourceLoader')
+import path from 'node:path'
+import rdf from '@zazuko/env-node'
+import { Router } from 'express'
+import { middleware as absoluteUrl } from 'absolute-url'
+import { asyncMiddleware } from 'middleware-async'
+import { defer } from 'promise-the-world'
+import rdfHandler from '@rdfjs/express-handler'
+import setLink from 'set-link'
+import apiHeader from './lib/middleware/apiHeader.js'
+import iriTemplate from './lib/middleware/iriTemplate.js'
+import operation from './lib/middleware/operation.js'
+import resource from './lib/middleware/resource.js'
+import waitFor from './lib/middleware/waitFor.js'
+import StoreResourceLoader from './StoreResourceLoader.js'
+import log from './lib/log.js'
 
-function middleware (api, { baseIriFromRequest, loader, store, middleware = {} } = {}) {
+const { debug } = log('middleware')
+
+function middleware(api, { baseIriFromRequest, loader, store, middleware = {} } = {}) {
   const init = defer()
   const router = new Router()
 
@@ -32,7 +34,7 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
     req.hydra = {
       api,
       store,
-      term
+      term,
     }
 
     if (!api.term) {
@@ -78,4 +80,4 @@ function middleware (api, { baseIriFromRequest, loader, store, middleware = {} }
   return router
 }
 
-module.exports = middleware
+export default middleware

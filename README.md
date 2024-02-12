@@ -14,7 +14,7 @@ The resource is read using the IRI as named graph filter.
 Here an example for a store on the local file system using `rdf-store-fs`:
 
 ```javascript
-const FlatMultiFileStore = require('rdf-store-fs/FlatMultiFileStore')
+import FlatMultiFileStore from 'rdf-store-fs/FlatMultiFileStore.js'
 
 const store = new FlatMultiFileStore({
   baseIRI: 'http://localhost:9000/',
