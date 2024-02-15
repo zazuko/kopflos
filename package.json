@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
-    "test": "c8 --all --reporter=lcov mocha",
+    "test": "c8 mocha",
     "blog": "(cd examples/blog; bash init.sh --keep; DEBUG=hydra-box* nodemon --ext ttl,js,json --exec node --inspect=0.0.0.0:9001 server.js)",
     "release": "changeset publish"
   },
@@ -46,5 +46,17 @@
     "rdf-store-fs": "^1.1.0",
     "sinon": "^17",
     "supertest": "^6.3.4"
+  },
+  "c8": {
+    "all": true,
+    "reporters": [
+      "lcovonly",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "examples",
+      "test"
+    ]
   }
 }
