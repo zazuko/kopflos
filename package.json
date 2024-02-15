@@ -38,7 +38,7 @@
     "@changesets/cli": "^2.26.1",
     "@tpluscode/eslint-config": "^0.4.4",
     "c8": "^9.1.0",
-    "alcaeus": "^2.3.3",
+    "alcaeus": "^3.0.0",
     "express-as-promise": "0.0.2",
     "mocha": "^10.3.0",
     "node-fetch": "^3.3.2",

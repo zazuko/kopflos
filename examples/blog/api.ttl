@@ -19,14 +19,14 @@
   hydra:expects <TimeRange>;
   hydra:method "GET";
   hydra:returns <Result>;
-  code:implementedBy [ a code:EcmaScript;
+  code:implementedBy [ a code:EcmaScriptModule;
     code:link <file:./blog.js#get>
   ].
 
 <blog#post> a hydra:SupportedOperation;
   hydra:expects <Post>;
   hydra:method "POST";
-  code:implementedBy [ a code:EcmaScript;
+  code:implementedBy [ a code:EcmaScriptModule;
     code:link <file:./blog.js#post>
   ].
 
@@ -54,7 +54,7 @@
 <post#get> a hydra:SupportedOperation;
   hydra:method "GET";
   hydra:returns <Post>;
-  code:implementedBy [ a code:EcmaScript;
+  code:implementedBy [ a code:EcmaScriptModule;
     code:link <file:./post.js#get>
   ].
 
@@ -63,7 +63,7 @@
   hydra:title "Post comment" ;
   hydra:expects <Comment>;
   hydra:returns <Post>;
-  code:implementedBy [ a code:EcmaScript;
+  code:implementedBy [ a code:EcmaScriptModule;
     code:link <file:./comment.js#post>
   ].
 
@@ -96,7 +96,7 @@
 <category#get> a hydra:SupportedOperation;
   hydra:method "GET";
   hydra:returns <Category>;
-  code:implementedBy [ a code:EcmaScript;
+  code:implementedBy [ a code:EcmaScriptModule;
                        code:link <file:./category.js#get>
                      ].
 

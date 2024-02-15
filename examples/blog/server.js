@@ -4,6 +4,8 @@ import hydraBox from '../../middleware.js'
 import Api from '../../Api.js'
 import ResourceStore from './lib/ResourceStore.js'
 
+const __dirname = new URL('.', import.meta.url).pathname
+
 async function main() {
   const store = new FlatMultiFileStore({
     baseIRI: 'http://localhost:9000/',
