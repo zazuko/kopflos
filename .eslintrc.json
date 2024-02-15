@@ -8,7 +8,7 @@
       "files": ["examples/**/*.js"],
       "rules": {
         "no-console": "off",
-        "ne-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off"
       }
     }
   ]
