@@ -1,4 +1,4 @@
-import { deepStrictEqual, strictEqual } from 'node:assert'
+import { deepStrictEqual, strictEqual, deepEqual } from 'node:assert'
 import express from 'express'
 import rdf from '@zazuko/env-node'
 import request from 'supertest'
@@ -333,7 +333,7 @@ describe('middleware/iriTemplate', () => {
 
       // then
       const boundTerm = rdf.clownface({ dataset }).out().term
-      deepStrictEqual(boundTerm, rdf.literal('5.5', rdf.ns.xsd.decimal))
+      deepEqual(boundTerm, rdf.literal('5.5', rdf.ns.xsd.decimal))
     })
 
     it('should parse tagged literal', async () => {
