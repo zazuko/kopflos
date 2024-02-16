@@ -10,9 +10,12 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/"]
   e2e-tests:
     depends_on:
-      - blog
+      blog:
+        condition: service_healthy
     image: hydrofoil/hypertest:0.6.5
     network_mode: "host"
     environment:
