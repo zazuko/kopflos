@@ -1,4 +1,5 @@
 import rdf from '@zazuko/env-node'
+import { schema } from './namespaces.js'
 
 // Generates IRIs for new resources based on the given rdf:type and parent.
 // An actual implementation could use a SPARQL query to find the next IRI.
