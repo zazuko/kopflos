@@ -5,7 +5,7 @@ import rdf from '@zazuko/env-node'
 // A cluster version could use a in memory key value store + SPARQL init.
 
 export default async function generateIri(type, parent) {
-  if (type.equals(rdf.ns.schema.Post)) {
+  if (type.equals(schema.Post)) {
     const id = Math.floor(Math.random() * 100000)
 
     return rdf.namedNode(`${parent.value}post/${id}`)

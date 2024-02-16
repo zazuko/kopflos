@@ -1,6 +1,7 @@
 import rdf from '@zazuko/env-node'
-import rebase from './lib/rebase.js'
+import { schema } from './lib/namespaces.js'
 import validate from './lib/validate.js'
+import rebase from './lib/rebase.js'
 
 export async function post(req, res, next) {
   try {
@@ -14,7 +15,7 @@ export async function post(req, res, next) {
     const content = rebase(rawContent, commentTerm)
 
     content.add(rdf.quad(commentTerm, rdf.ns.dc11.date, rdf.literal((new Date()).toISOString(), rdf.ns.xsd.date)))
-    content.add(rdf.quad(commentsTerm, rdf.ns.schema.comment, commentTerm))
+    content.add(rdf.quad(commentsTerm, schema.comment, commentTerm))
 
     await req.app.locals.store.write(postTerm, content)
 
