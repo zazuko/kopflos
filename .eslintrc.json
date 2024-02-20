@@ -5,7 +5,7 @@
   },
   "overrides": [
     {
-      "files": ["examples/**/*.ts"],
+      "files": ["examples/**/*.js"],
       "rules": {
         "no-console": "off",
         "import/no-extraneous-dependencies": "off"
