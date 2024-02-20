@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
-    "test": "c8 mocha",
+    "test": "c8 --reporter lcovonly mocha",
     "build": "tsc",
     "preblog": "npm run build",
     "blog": "(cd examples/blog; bash init.sh --keep; DEBUG=hydra-box* nodemon --ext ttl,js,json --exec node --inspect=0.0.0.0:9001 server.js)",
