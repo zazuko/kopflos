@@ -1,27 +1,24 @@
 import uriTemplateRoute from 'uri-template-route'
 import rdf from '@zazuko/env-node'
-import { Router } from 'express'
+import { RequestHandler, Router } from 'express'
+import type { GraphPointer } from 'clownface'
+import type { NamedNode } from '@rdfjs/types'
 import log from '../log.js'
+import Api from '../../Api.js'
 
 const { debug } = log('iriTemplate')
 
 const literalValueRegex = /^"(?<value>.+)"(@|\^\^)?((?<=@)(?<language>.*))?((?<=\^\^)(?<datatype>.*))?$/
 
-/**
- *
- * @param {Clownface} template
- * @param {string} value
- * @returns {NamedNode|Literal|string}
- */
-function createTermFromVariable({ template, value }) {
+function createTermFromVariable({ template, value }: { template: GraphPointer; value: string }) {
   if (!rdf.ns.hydra.ExplicitRepresentation.equals(template.out(rdf.ns.hydra.variableRepresentation).term)) {
     return value
   }
 
-  const parseValue = value => {
+  const parseValue = (value: string) => {
     const matches = value.match(literalValueRegex)
-    if (matches) {
-      let datatypeOrLanguage = matches.groups.language
+    if (matches?.groups) {
+      let datatypeOrLanguage: string | NamedNode = matches.groups.language
       if (matches.groups.datatype) {
         datatypeOrLanguage = rdf.namedNode(matches.groups.datatype)
       }
@@ -36,12 +33,12 @@ function createTermFromVariable({ template, value }) {
   return values.map(parseValue)
 }
 
-function middleware({ dataset, term, graph }) {
-  const iriTemplateNode = rdf.clownface({ dataset, term, graph })
+function middleware(pointer: GraphPointer): RequestHandler {
+  const iriTemplateNode = rdf.clownface(pointer)
   const template = iriTemplateNode.out(rdf.ns.hydra.template).value
 
   if (!template) {
-    debug(`ignore ${term.value} because it has no hydra:template property`)
+    debug(`ignore ${pointer.term.value} because it has no hydra:template property`)
 
     return (req, res, next) => next
   }
@@ -85,9 +82,9 @@ function middleware({ dataset, term, graph }) {
   })
 }
 
-export default function factory({ dataset, graph }) {
+export default function factory({ dataset, graph }: Pick<Api, 'dataset' | 'graph'>) {
   const node = rdf.clownface({ dataset, graph })
-  const router = new Router()
+  const router = Router()
 
   node.has(rdf.ns.rdf.type, rdf.ns.hydra.IriTemplate).forEach(iriTemplateNode => {
     debug('Creating route for IriTemplate', iriTemplateNode.term.value)

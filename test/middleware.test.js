@@ -2,7 +2,7 @@ import { URL } from 'node:url'
 import assert from 'node:assert'
 import { join } from 'node:path'
 import RDF from '@zazuko/env-node'
-import express from 'express'
+import express, { Router } from 'express'
 import ExpressAsPromise from 'express-as-promise'
 import sinon from 'sinon'
 import request from 'supertest'
@@ -157,7 +157,7 @@ describe('hydra-box', () => {
     it('should use the path from the given Api object for the link header if it is wrapped in a router', async () => {
       await ExpressAsPromise.withServer(async server => {
         const routerPath = '/router'
-        const router = new express.Router()
+        const router = Router()
         const path = '/test/api'
         const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${join(routerPath, path)}>; rel="${ns.hydra.apiDocumentation.value}"`)
 
@@ -182,7 +182,7 @@ describe('hydra-box', () => {
     it('should host the Api at the path given in the Api object if it is wrapped in a router', async () => {
       await ExpressAsPromise.withServer(async server => {
         const routerPath = '/router'
-        const router = new express.Router()
+        const router = Router()
         const path = '/test/api'
         const dataset = RDF.dataset([
           RDF.quad(example.subject, example.predicate, RDF.literal('test')),

@@ -1,11 +1,12 @@
 import path from 'node:path'
 import rdf from '@zazuko/env-node'
-import { Router } from 'express'
+import { RequestHandler, Router } from 'express'
 import { middleware as absoluteUrl } from 'absolute-url'
 import { asyncMiddleware } from 'middleware-async'
 import { defer } from 'promise-the-world'
 import rdfHandler from '@rdfjs/express-handler'
 import setLink from 'set-link'
+import type { Store } from '@rdfjs/types'
 import apiHeader from './lib/middleware/apiHeader.js'
 import iriTemplate from './lib/middleware/iriTemplate.js'
 import operation from './lib/middleware/operation.js'
@@ -13,12 +14,32 @@ import resource from './lib/middleware/resource.js'
 import waitFor from './lib/middleware/waitFor.js'
 import StoreResourceLoader from './StoreResourceLoader.js'
 import log from './lib/log.js'
+import Api from './Api.js'
+import { HydraBox, ResourceLoader } from './index.js'
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    hydra: HydraBox
+  }
+}
 
 const { debug } = log('middleware')
 
-function middleware(api, { baseIriFromRequest, loader, store, middleware = {} } = {}) {
+export interface HydraBoxMiddleware {
+  resource?: RequestHandler | RequestHandler[] | undefined
+  operations?: RequestHandler | RequestHandler[] | undefined
+}
+
+interface Options {
+  baseIriFromRequest?: boolean
+  loader?: ResourceLoader
+  store?: Store
+  middleware?: HydraBoxMiddleware
+}
+
+function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = {} }: Options) {
   const init = defer()
-  const router = new Router()
+  const router = Router()
 
   router.use(absoluteUrl())
   router.use(setLink)
@@ -31,13 +52,13 @@ function middleware(api, { baseIriFromRequest, loader, store, middleware = {} } 
 
     debug(`${req.method} to ${term.value}`)
 
-    req.hydra = {
+    req.hydra = <HydraBox>{
       api,
       store,
       term,
     }
 
-    if (!api.term) {
+    if (!api.term && api.path) {
       const apiIri = new URL(path.join(req.baseUrl, api.path), iri)
 
       api.term = rdf.namedNode(apiIri.toString())
@@ -51,8 +72,10 @@ function middleware(api, { baseIriFromRequest, loader, store, middleware = {} } 
       init.resolve()
 
       next()
-    } catch (err) {
-      init.reject(err)
+    } catch (/** @type {unknown} */ err) {
+      if (err instanceof Error) {
+        init.reject(err)
+      }
 
       next(err)
     }

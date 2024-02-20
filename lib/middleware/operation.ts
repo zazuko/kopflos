@@ -1,12 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rdf from '@zazuko/env-node'
-import { Router } from 'express'
+import { RequestHandler, Router, Response } from 'express'
+import type { GraphPointer, MultiPointer } from 'clownface'
 import createError from 'http-errors'
+import { isGraphPointer } from 'is-graph-pointer'
+import type { NamedNode } from '@rdfjs/types'
+import type { Dataset } from '@zazuko/env/lib/Dataset.js'
 import { code } from '../namespaces.js'
 import log from '../log.js'
+import { HydraBoxMiddleware } from '../../middleware.js'
+import Api from '../../Api.js'
+import { PotentialOperation, PropertyResource, Resource } from '../../index.js'
+
+interface OperationLocals {
+  hydra: {
+    resources: (Resource | PropertyResource)[]
+  }
+}
+
+type OperationRequestHandler = RequestHandler<any, any, any, any, OperationLocals>
 
 const { error, warn, debug } = log('operation')
 
-function findClassOperations(types, method) {
+function findClassOperations(types: MultiPointer, method?: string) {
   let operations = types.out(rdf.ns.hydra.supportedOperation)
 
   if (method) {
@@ -16,7 +32,13 @@ function findClassOperations(types, method) {
   return operations
 }
 
-function findPropertyOperations({ resource, api, method }) {
+interface FindPropertyOperations {
+  resource: PropertyResource
+  api: Api
+  method?: string
+}
+
+function findPropertyOperations({ resource, api, method }: FindPropertyOperations) {
   const apiGraph = rdf.clownface(api)
   const types = apiGraph.node([...resource.types])
 
@@ -37,8 +59,19 @@ function findPropertyOperations({ resource, api, method }) {
   return operations
 }
 
-function mapOperations({ api, res, method }) {
-  return res.locals.hydra.resources.flatMap((resource) => {
+interface MapOperations {
+  api: Api
+  res: Response<unknown, OperationLocals>
+  method?: string
+}
+
+type MapEntry = {
+  resource: Resource
+  operation: GraphPointer | null
+}
+
+function mapOperations({ api, res, method }: MapOperations) {
+  return res.locals.hydra.resources.flatMap((resource): MapEntry[] => {
     let moreOperations
     if ('property' in resource) {
       moreOperations = findPropertyOperations({ resource, method, api }).toArray()
@@ -55,16 +88,16 @@ function mapOperations({ api, res, method }) {
   })
 }
 
-function findOperations(req, res, next) {
+const findOperations: OperationRequestHandler = (req, res, next) => {
   const method = req.method === 'HEAD' ? 'GET' : req.method
 
   req.hydra.operations = mapOperations({ api: req.hydra.api, res, method })
-    .filter(({ operation }) => operation)
+    .filter((entry): entry is PotentialOperation => !!entry.operation)
 
   return next()
 }
 
-function prepareOperation(req, res, next) {
+const prepareOperation: RequestHandler = function (req, res, next) {
   if (!req.hydra.operations.length) {
     return next()
   }
@@ -75,25 +108,27 @@ function prepareOperation(req, res, next) {
   }
 
   const [{ resource, operation }] = req.hydra.operations
-  resource.clownface = async function () {
-    return rdf.clownface({
-      term: this.term,
-      dataset: await this.dataset(),
-    })
-  }
 
-  req.hydra.resource = resource
+  req.hydra.resource = {
+    ...resource,
+    async clownface(): Promise<GraphPointer<NamedNode, Dataset>> {
+      return rdf.clownface({
+        term: this.term,
+        dataset: await this.dataset(),
+      })
+    },
+  }
   req.hydra.operation = operation
   return next()
 }
 
-async function invokeOperation(req, res, next) {
+const invokeOperation: OperationRequestHandler = async (req, res, next) => {
   const { api } = req.hydra
 
   if (!req.hydra.operation) {
     const operationMap = mapOperations({ api, res })
     const allowedMethods = new Set(operationMap
-      .filter(({ operation }) => operation)
+      .filter((entry): entry is PotentialOperation => !!entry.operation)
       .flatMap(({ operation }) => operation.out(rdf.ns.hydra.method).values))
 
     if (!allowedMethods.size) {
@@ -111,7 +146,11 @@ async function invokeOperation(req, res, next) {
   debug(`IRI: ${req.hydra.resource.term.value}`)
   debug(`types: ${[...req.hydra.resource.types].map(term => term.value).join(' ')}`)
 
-  const handler = await api.loaderRegistry.load(req.hydra.operation.out(code.implementedBy), { basePath: api.codePath })
+  const implementation = req.hydra.operation.out(code.implementedBy)
+  let handler: RequestHandler | undefined
+  if (isGraphPointer(implementation)) {
+    handler = await api.loaderRegistry.load<RequestHandler>(implementation, { basePath: api.codePath })
+  }
 
   if (!handler) {
     return next(new Error('Failed to load operation'))
@@ -120,7 +159,7 @@ async function invokeOperation(req, res, next) {
   handler(req, res, next)
 }
 
-export default function factory(middleware = {}) {
+export default function factory(middleware: HydraBoxMiddleware = {}) {
   const router = Router()
 
   router.use(findOperations)
