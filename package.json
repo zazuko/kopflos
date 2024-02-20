@@ -67,12 +67,12 @@
     "rimraf": "^5.0.5",
     "sinon": "^17",
     "supertest": "^6.3.4",
-    "ts-node": "^10.9.2",
+    "tsm": "^2.3.0",
     "typescript": "^5.3.3"
   },
   "mocha": {
     "extensions": ["ts"],
-    "loader": "ts-node/esm"
+    "loader": "tsm"
   },
   "c8": {
     "all": true,
