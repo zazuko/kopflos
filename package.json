@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "prepare": "patch-package",
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "c8 --all --reporter lcovonly --reporter text mocha",
     "build": "tsc",
@@ -63,6 +64,7 @@
     "mocha": "^10.3.0",
     "node-fetch": "^3.3.2",
     "nodemon": "^2.0.3",
+    "patch-package": "^8.0.0",
     "rdf-store-fs": "^1.1.0",
     "rimraf": "^5.0.5",
     "sinon": "^17",
@@ -71,7 +73,9 @@
     "typescript": "^5.3.3"
   },
   "mocha": {
-    "extensions": ["ts"],
+    "extensions": [
+      "ts"
+    ],
     "loader": "tsm"
   },
   "c8": {
