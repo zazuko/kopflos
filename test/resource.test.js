@@ -1,10 +1,9 @@
-const { strictEqual } = require('assert')
-const express = require('express')
-const { describe, it, beforeEach } = require('mocha')
-const sinon = require('sinon')
-const request = require('supertest')
-const RDF = require('@rdfjs/data-model')
-const resource = require('../lib/middleware/resource')
+import { strictEqual } from 'node:assert'
+import request from 'supertest'
+import RDF from '@zazuko/env-node'
+import sinon from 'sinon'
+import express from 'express'
+import resource from '../lib/middleware/resource.js'
 
 describe('middleware/resource', () => {
   let loader, forClassOperation, forPropertyOperation
@@ -15,13 +14,13 @@ describe('middleware/resource', () => {
 
     loader = {
       forClassOperation,
-      forPropertyOperation
+      forPropertyOperation,
     }
   })
 
-  function hydraMock (req, res, next) {
+  function hydraMock(req, res, next) {
     req.hydra = {
-      term: RDF.namedNode(req.url)
+      term: RDF.namedNode(req.url),
     }
     res.locals.hydra = {}
     next()

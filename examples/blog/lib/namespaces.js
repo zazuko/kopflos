@@ -1,5 +1,3 @@
-const namespace = require('@rdfjs/namespace')
+import rdf from '@zazuko/env-node'
 
-module.exports = {
-  schema: namespace('http://localhost:9000/api/schema/')
-}
+export const schema = rdf.namespace('http://localhost:9000/api/schema/')

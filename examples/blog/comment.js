@@ -1,10 +1,9 @@
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const { dc11, xsd } = require('@tpluscode/rdf-ns-builders')
-const ns = require('./lib/namespaces')
-const rebase = require('./lib/rebase')
-const validate = require('./lib/validate')
+import rdf from '@zazuko/env-node'
+import { schema } from './lib/namespaces.js'
+import validate from './lib/validate.js'
+import rebase from './lib/rebase.js'
 
-async function post (req, res, next) {
+export async function post(req, res, next) {
   try {
     const rawContent = await req.dataset()
 
@@ -15,8 +14,8 @@ async function post (req, res, next) {
     const commentTerm = rdf.blankNode()
     const content = rebase(rawContent, commentTerm)
 
-    content.add(rdf.quad(commentTerm, dc11.date, rdf.literal((new Date()).toISOString(), xsd.date)))
-    content.add(rdf.quad(commentsTerm, ns.schema.comment, commentTerm))
+    content.add(rdf.quad(commentTerm, rdf.ns.dc11.date, rdf.literal((new Date()).toISOString(), rdf.ns.xsd.date)))
+    content.add(rdf.quad(commentsTerm, schema.comment, commentTerm))
 
     await req.app.locals.store.write(postTerm, content)
 
@@ -24,8 +23,4 @@ async function post (req, res, next) {
   } catch (err) {
     next(err)
   }
-}
-
-module.exports = {
-  post
 }

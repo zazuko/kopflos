@@ -1,38 +1,37 @@
-const ns = require('@tpluscode/rdf-ns-builders')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
+import rdf from '@zazuko/env-node'
 
-function iriTemplateMappingBuilder ({
+function iriTemplateMappingBuilder({
   dataset = rdf.dataset(),
   term = rdf.blankNode(),
   graph = rdf.defaultGraph(),
   template,
   variables,
-  explicitRepresentation
+  explicitRepresentation,
 } = {}) {
-  dataset.add(rdf.quad(term, ns.rdf.type, ns.hydra.IriTemplate, graph))
+  dataset.add(rdf.quad(term, rdf.ns.rdf.type, rdf.ns.hydra.IriTemplate, graph))
 
   if (template) {
-    dataset.add(rdf.quad(term, ns.hydra.template, rdf.literal(template), graph))
+    dataset.add(rdf.quad(term, rdf.ns.hydra.template, rdf.literal(template), graph))
   }
 
   if (variables) {
     Object.entries(variables).forEach(([key, value]) => {
       const mapping = rdf.blankNode()
 
-      dataset.add(rdf.quad(term, ns.hydra.mapping, mapping, graph))
-      dataset.add(rdf.quad(mapping, ns.hydra.variable, rdf.literal(key), graph))
-      dataset.add(rdf.quad(mapping, ns.hydra.property, rdf.namedNode(value), graph))
+      dataset.add(rdf.quad(term, rdf.ns.hydra.mapping, mapping, graph))
+      dataset.add(rdf.quad(mapping, rdf.ns.hydra.variable, rdf.literal(key), graph))
+      dataset.add(rdf.quad(mapping, rdf.ns.hydra.property, rdf.namedNode(value), graph))
     })
   }
 
   if (explicitRepresentation) {
-    dataset.add(rdf.quad(term, ns.hydra.variableRepresentation, ns.hydra.ExplicitRepresentation))
+    dataset.add(rdf.quad(term, rdf.ns.hydra.variableRepresentation, rdf.ns.hydra.ExplicitRepresentation))
   }
 
   return {
     dataset,
-    graph
+    graph,
   }
 }
 
-module.exports = iriTemplateMappingBuilder
+export default iriTemplateMappingBuilder

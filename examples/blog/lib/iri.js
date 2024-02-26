@@ -1,19 +1,14 @@
-const { resolve: resolvePath } = require('path')
-const { URL } = require('url')
+import { URL } from 'node:url'
+import { resolve as resolvePath } from 'node:path'
 
-function isRelative (iri) {
-  return !iri.match(new RegExp('^[a-z]+:'))
+export function isRelative(iri) {
+  return !iri.match(/^[a-z]+:/)
 }
 
-function resolve (baseIRI, relative) {
+export function resolve(baseIRI, relative) {
   const url = new URL(baseIRI)
 
   url.pathname = resolvePath(url.pathname, relative)
 
   return url.toString()
-}
-
-module.exports = {
-  isRelative,
-  resolve
 }

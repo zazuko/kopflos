@@ -1,15 +1,14 @@
-const assert = require('assert')
-const { describe, it } = require('mocha')
-const express = require('express')
-const request = require('supertest')
-const $rdf = require('rdf-ext')
-const absoluteUrl = require('absolute-url')
-const setLink = require('set-link')
-const rdfHandler = require('@rdfjs/express-handler')
-const apiHeader = require('../lib/middleware/apiHeader')
-const ns = require('../lib/namespaces')
+import assert from 'node:assert'
+import express from 'express'
+import request from 'supertest'
+import $rdf from '@zazuko/env-node'
+import { middleware as absoluteUrl } from 'absolute-url'
+import setLink from 'set-link'
+import rdfHandler from '@rdfjs/express-handler'
+import apiHeader from '../lib/middleware/apiHeader.js'
+import * as ns from '../lib/namespaces.js'
 
-function createApp () {
+function createApp() {
   const app = express()
   app.use(absoluteUrl())
   app.use(setLink)
@@ -24,7 +23,7 @@ describe('middleware/apiHeader', () => {
     app.use(apiHeader({
       path: '/api',
       term: $rdf.namedNode('http://example.app/api'),
-      dataset: $rdf.dataset()
+      dataset: $rdf.dataset(),
     }))
 
     const response = request(app)
@@ -40,7 +39,7 @@ describe('middleware/apiHeader', () => {
     app.use(apiHeader({
       path: 'api',
       term: $rdf.namedNode('http://example.app/sub-path/api'),
-      dataset: $rdf.dataset()
+      dataset: $rdf.dataset(),
     }))
     app.use((req, res) => {
       res.send(200)

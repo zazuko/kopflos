@@ -1,22 +1,21 @@
-const { fromStream, toStream } = require('rdf-dataset-ext')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
+import rdf from '@zazuko/env-node'
 
-class ResourceStore {
-  constructor ({ factory = rdf, quadStore }) {
+export default class ResourceStore {
+  constructor({ factory = rdf, quadStore }) {
     this.factory = factory
     this.quadStore = quadStore
   }
 
-  async read (resource) {
-    const dataset = await fromStream(this.factory.dataset(), this.quadStore.match(null, null, null, resource))
+  async read(resource) {
+    const dataset = await this.factory.dataset().import(this.quadStore.match(null, null, null, resource))
 
     return this.factory.dataset([...dataset].map(quad => this.factory.quad(quad.subject, quad.predicate, quad.object)))
   }
 
-  async write (resource, dataset) {
-    const stream = toStream(this.factory.dataset([...dataset].map(quad => {
+  async write(resource, dataset) {
+    const stream = this.factory.dataset([...dataset].map(quad => {
       return this.factory.quad(quad.subject, quad.predicate, quad.object, resource)
-    })))
+    })).toStream()
 
     const events = this.quadStore.import(stream)
 
@@ -26,5 +25,3 @@ class ResourceStore {
     })
   }
 }
-
-module.exports = ResourceStore

@@ -1,10 +1,9 @@
-const { strictEqual, ok } = require('assert')
-const { resolve } = require('path')
-const clownface = require('clownface')
-const { describe, it } = require('mocha')
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const ns = require('@tpluscode/rdf-ns-builders')
-const Api = require('../Api')
+import { resolve } from 'node:path'
+import { ok, strictEqual } from 'node:assert'
+import rdf from '@zazuko/env-node'
+import Api from '../Api.js'
+
+const __dirname = new URL('.', import.meta.url).pathname
 
 describe('Api', () => {
   it('should be a constructor', () => {
@@ -93,8 +92,8 @@ describe('Api', () => {
 
       await api.init()
 
-      const apiDoc = clownface({ dataset: api.dataset, term: api.term, graph: api.graph })
-      const subject = apiDoc.has(ns.rdf.type, ns.hydra.ApiDocumentation).term
+      const apiDoc = rdf.clownface({ dataset: api.dataset, term: api.term, graph: api.graph })
+      const subject = apiDoc.has(rdf.ns.rdf.type, rdf.ns.hydra.ApiDocumentation).term
 
       strictEqual(term.equals(subject), true)
     })
@@ -121,7 +120,7 @@ describe('Api', () => {
         .add(rdf.quad(
           rdf.namedNode('http://example.org/S'),
           rdf.namedNode('http://example.org/P'),
-          rdf.namedNode('http://example.org/O'))
+          rdf.namedNode('http://example.org/O')),
         )
       const api = new Api({ dataset })
 
@@ -133,7 +132,7 @@ describe('Api', () => {
       ok([...api.dataset][0].equals(rdf.quad(
         rdf.namedNode('http://example.com/S'),
         rdf.namedNode('http://example.com/P'),
-        rdf.namedNode('http://example.com/O')
+        rdf.namedNode('http://example.com/O'),
       )))
     })
   })

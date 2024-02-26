@@ -1,11 +1,12 @@
-const rdf = require('@rdfjs/data-model')
-const ns = require('./namespaces')
+import rdf from '@zazuko/env-node'
+import { schema } from './namespaces.js'
 
 // Generates IRIs for new resources based on the given rdf:type and parent.
 // An actual implementation could use a SPARQL query to find the next IRI.
 // A cluster version could use a in memory key value store + SPARQL init.
-async function generateIri (type, parent) {
-  if (type.equals(ns.schema.Post)) {
+
+export default async function generateIri(type, parent) {
+  if (type.equals(schema.Post)) {
     const id = Math.floor(Math.random() * 100000)
 
     return rdf.namedNode(`${parent.value}post/${id}`)
@@ -13,5 +14,3 @@ async function generateIri (type, parent) {
 
   throw new Error(`unknown type: ${type.value}`)
 }
-
-module.exports = generateIri

@@ -1,12 +1,11 @@
-const Hydra = require('alcaeus/with-parsers')
-const { rdfs } = require('@tpluscode/rdf-ns-builders')
+import rdf from './env.js'
 
 const baseUrl = 'http://localhost:9000/'
 
-async function getBlog () {
-  const blog = await Hydra.loadResource(baseUrl)
+async function getBlog() {
+  const blog = await rdf.hydra.loadResource(baseUrl)
   return blog.representation.root
 }
 
 getBlog()
-  .then(res => console.log(`Blog title: ${res[rdfs.label.value].value}`))
+  .then(res => console.log(`Blog title: ${res[rdf.ns.rdfs.label.value].value}`))

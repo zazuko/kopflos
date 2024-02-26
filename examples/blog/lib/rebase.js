@@ -1,7 +1,7 @@
-const rdf = { ...require('@rdfjs/data-model'), ...require('@rdfjs/dataset') }
-const { isRelative, resolve } = require('./iri')
+import rdf from '@zazuko/env-node'
+import { isRelative, resolve } from './iri.js'
 
-function rebaseBlankNode (dataset, base) {
+function rebaseBlankNode(dataset, base) {
   const mappedTerms = new Map([['', base]])
 
   return rdf.dataset([...dataset].map(quad => {
@@ -19,7 +19,7 @@ function rebaseBlankNode (dataset, base) {
   }))
 }
 
-function rebaseNamedNode (dataset, base) {
+function rebaseNamedNode(dataset, base) {
   return rdf.dataset([...dataset].map(quad => {
     if (isRelative(quad.subject.value)) {
       return rdf.quad(rdf.namedNode(resolve(base.value, quad.subject.value)), quad.predicate, quad.object, quad.graph)
@@ -29,7 +29,7 @@ function rebaseNamedNode (dataset, base) {
   }))
 }
 
-function rebase (dataset, base) {
+export default function rebase(dataset, base) {
   if (base.termType === 'BlankNode') {
     return rebaseBlankNode(dataset, base)
   }
@@ -40,5 +40,3 @@ function rebase (dataset, base) {
 
   throw new Error(`${base.termType} not supported for rebasing`)
 }
-
-module.exports = rebase
