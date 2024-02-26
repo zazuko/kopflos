@@ -5,7 +5,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "prepare": "patch-package",
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "c8 --all --reporter lcovonly --reporter text mocha",
     "build": "tsc",
@@ -49,7 +48,7 @@
     "@types/mocha": "^10.0.6",
     "@types/promise-the-world": "^1.0.6",
     "@types/rdf-store-fs": "^1.1.4",
-    "@types/rdfjs__express-handler": "^2.0.5",
+    "@types/rdfjs__express-handler": "^2.0.6",
     "@types/readable-stream": "^4.0.10",
     "@types/set-link": "^1.0.4",
     "@types/sinon": "^17.0.3",
@@ -64,7 +63,6 @@
     "mocha": "^10.3.0",
     "node-fetch": "^3.3.2",
     "nodemon": "^2.0.3",
-    "patch-package": "^8.0.0",
     "rdf-store-fs": "^1.1.0",
     "rimraf": "^5.0.5",
     "sinon": "^17",
@@ -73,9 +71,7 @@
     "typescript": "^5.3.3"
   },
   "mocha": {
-    "extensions": [
-      "ts"
-    ],
+    "extensions": ["ts"],
     "loader": "tsm"
   },
   "c8": {
