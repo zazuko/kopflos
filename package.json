@@ -62,7 +62,7 @@
     "express-as-promise": "0.0.2",
     "mocha": "^10.3.0",
     "node-fetch": "^3.3.2",
-    "nodemon": "^2.0.3",
+    "nodemon": "^3.1.0",
     "rdf-store-fs": "^1.1.0",
     "rimraf": "^5.0.5",
     "sinon": "^17",
