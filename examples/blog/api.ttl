@@ -2,7 +2,7 @@
 
 @prefix hydra: <http://www.w3.org/ns/hydra/core#>.
 @prefix code: <https://code.described.at/>.
-@prefix hydrabox: <http://hydra-box.org/schema/>.
+@prefix kopflos: <https://kopflos.described.at/>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix xml: <http://www.w3.org/XML/1998/namespace>.
@@ -15,7 +15,7 @@
     <blog#post>.
 
 <blog#get> a hydra:SupportedOperation;
-  hydrabox:variables <blog#search>;
+  kopflos:variables <blog#search>;
   hydra:expects <TimeRange>;
   hydra:method "GET";
   hydra:returns <Result>;

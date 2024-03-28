@@ -1,6 +1,6 @@
-# Hydra-Box - Blog Example
+# kopflos - Blog Example
 
-Simple hydra-box blog application that stores the RDF data in a file store in the local file system.
+Simple blog application that stores the RDF data in a file store in the local file system.
 
 Before you can run the example, you need to create an initial store.
 Run the following command in the directory `examples/blog/`:

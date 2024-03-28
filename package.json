@@ -1,7 +1,7 @@
 {
-  "name": "hydra-box",
-  "description": "Hydra Box middleware",
-  "version": "0.7.0",
+  "name": "@kopflos/core",
+  "description": "Hydra middleware for web APIs",
+  "version": "0.1.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -9,20 +9,27 @@
     "test": "c8 --all --reporter lcovonly --reporter text mocha",
     "build": "tsc",
     "preblog": "npm run build",
-    "blog": "(cd examples/blog; bash init.sh --keep; DEBUG=hydra-box* nodemon --ext ttl,js,json --exec node --inspect=0.0.0.0:9001 server.js)",
+    "blog": "(cd examples/blog; bash init.sh --keep; DEBUG=kopflos:core* nodemon --ext ttl,js,json --exec node --inspect=0.0.0.0:9001 server.js)",
     "prepack": "npm run build",
     "release": "changeset publish"
   },
-  "author": "Thomas Bergwinkl <bergi@axolotlfarm.org> (https://www.bergnet.org/people/bergi/card#me)",
+  "author": "Zazuko GmbH",
+  "contributors": [
+    {
+      "name": "Thomas Bergwinkl",
+      "email": "bergi@axolotlfarm.org",
+      "url": "https://www.bergnet.org/people/bergi/card#me"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/zazuko/hydra-box.git"
+    "url": "git://github.com/zazuko/kopflos.git"
   },
   "bugs": {
-    "url": "https://github.com/zazuko/hydra-box/issues"
+    "url": "https://github.com/zazuko/kopflos/issues"
   },
-  "homepage": "https://github.com/zazuko/hydra-box",
+  "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "@rdfjs/express-handler": "^2.0.0",
     "@zazuko/env-node": "^2.1.1",

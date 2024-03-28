@@ -1,8 +1,7 @@
-# hydra-box
+# @kopflos/core
 
-## 0.7.0
+## 0.1.0
 
 ### Minor Changes
 
-- edc3783: Convert package to ESM
-- 2643a0a: Source changes to TypeScript
+- First release, renamed from `hydra-box`
