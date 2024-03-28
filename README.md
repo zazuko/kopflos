@@ -1,8 +1,8 @@
 # @kopflos/core
 
 [Hydra](http://www.hydra-cg.com/spec/latest/core/) is a machine readable description for APIs.
-Hydra Box extends the API description with links to the actual code, which provides the API.
-Hydra Box will use such an API description to create an express middleware which provides the API and dynamically loads the required code for it.
+Kopflos extends the API description with links to the actual code, which provides the API.
+Kopflos will use such an API description to create an express middleware which provides the API and dynamically loads the required code for it.
 
 ## Usage
 
