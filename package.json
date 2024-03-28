@@ -13,6 +13,12 @@
     "prepack": "npm run build",
     "release": "changeset publish"
   },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts"
+  ],
   "author": "Zazuko GmbH",
   "contributors": [
     {
