@@ -1,6 +1,6 @@
 import debug0 from 'debug'
 
-const debug = debug0('hydra-box')
+const debug = debug0('kopflos:core')
 
 export default (ns: string) => {
   if (ns) {
