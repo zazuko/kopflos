@@ -1,4 +1,4 @@
-# @kopflos/core
+# @kopflos-cms/core
 
 [Hydra](http://www.hydra-cg.com/spec/latest/core/) is a machine readable description for APIs.
 Kopflos extends the API description with links to the actual code, which provides the API.
@@ -8,7 +8,7 @@ Kopflos will use such an API description to create an express middleware which p
 
 ### Application
 
-`@kopflos/core` uses an object that implements the [RDF/JS Store interface](http://rdf.js.org/stream-spec/#store-interface) to read resources and find types of resources to identify matching operations.
+`@kopflos-cms/core` uses an object that implements the [RDF/JS Store interface](http://rdf.js.org/stream-spec/#store-interface) to read resources and find types of resources to identify matching operations.
 The resource is read using the IRI as named graph filter.
 
 Here an example for a store on the local file system using `rdf-store-fs`:
@@ -43,7 +43,7 @@ app.listen(9000)
 ### Operation
 
 The operations must implement a [Express routing handler](http://expressjs.com/en/starter/basic-routing.html) interface (`(req, res, next) => {}`).
-@kopflos/core adds the [@rdfjs/express-handler](https://github.com/rdfjs-base/express-handler) to handle incoming and outgoing RDF data.
+@kopflos-cms/core adds the [@rdfjs/express-handler](https://github.com/rdfjs-base/express-handler) to handle incoming and outgoing RDF data.
 For `GET` requests with a matching IRI Template, the `.dataset()` and `.quadStream()` as defined by `express-handler` are also available to read the given variables.
 Additionally there is a `hydra` property assigned to `req` that contains more data about the request: 
 

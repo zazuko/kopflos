@@ -1,4 +1,4 @@
-# @kopflos/core
+# @kopflos-cms/core
 
 ## 0.1.0
 

@@ -1,5 +1,5 @@
 {
-  "name": "@kopflos/core",
+  "name": "@kopflos-cms/core",
   "description": "Hydra middleware for web APIs",
   "version": "0.1.0",
   "main": "index.js",

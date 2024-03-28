@@ -12,7 +12,7 @@ import hydraBox from '../middleware.js'
 
 const example = RDF.namespace('http://example.org/')
 
-describe('@kopflos/core', () => {
+describe('@kopflos-cms/core', () => {
   let api
 
   beforeEach(() => {
