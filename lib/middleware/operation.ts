@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import rdf from '@zazuko/env-node'
 import { RequestHandler, Router, Response } from 'express'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import createError from 'http-errors'
@@ -9,8 +8,9 @@ import type { Dataset } from '@zazuko/env/lib/Dataset.js'
 import { code } from '../namespaces.js'
 import log from '../log.js'
 import { HydraBoxMiddleware } from '../../middleware.js'
-import Api from '../../Api.js'
+import { Api } from '../../Api.js'
 import { PotentialOperation, PropertyResource, Resource } from '../../index.js'
+import Factory from '../factory.js'
 
 interface OperationLocals {
   hydra: {
@@ -22,7 +22,7 @@ type OperationRequestHandler = RequestHandler<any, any, any, any, OperationLocal
 
 const { error, warn, debug } = log('operation')
 
-function findClassOperations(types: MultiPointer, method?: string) {
+function findClassOperations({ types, method, rdf }: { types: MultiPointer; method?: string; rdf: Factory }) {
   let operations = types.out(rdf.ns.hydra.supportedOperation)
 
   if (method) {
@@ -39,7 +39,7 @@ interface FindPropertyOperations {
 }
 
 function findPropertyOperations({ resource, api, method }: FindPropertyOperations) {
-  const apiGraph = rdf.clownface(api)
+  const apiGraph = api.env.clownface(api)
   const types = apiGraph.node([...resource.types])
 
   const properties = [...resource.prefetchDataset
@@ -47,13 +47,13 @@ function findPropertyOperations({ resource, api, method }: FindPropertyOperation
     .map(({ predicate }) => predicate)
 
   let operations = types
-    .out(rdf.ns.hydra.supportedProperty)
-    .has(rdf.ns.hydra.property, properties)
-    .out(rdf.ns.hydra.property)
-    .out(rdf.ns.hydra.supportedOperation)
+    .out(api.env.ns.hydra.supportedProperty)
+    .has(api.env.ns.hydra.property, properties)
+    .out(api.env.ns.hydra.property)
+    .out(api.env.ns.hydra.supportedOperation)
 
   if (method) {
-    operations = operations.has(rdf.ns.hydra.method, method)
+    operations = operations.has(api.env.ns.hydra.method, method)
   }
 
   return operations
@@ -76,8 +76,8 @@ function mapOperations({ api, res, method }: MapOperations) {
     if ('property' in resource) {
       moreOperations = findPropertyOperations({ resource, method, api }).toArray()
     } else {
-      const types = rdf.clownface({ ...api, term: [...resource.types] })
-      moreOperations = findClassOperations(types, method).toArray()
+      const types = api.env.clownface({ ...api, term: [...resource.types] })
+      moreOperations = findClassOperations({ rdf: api.env, types, method }).toArray()
     }
 
     if (moreOperations.length) {
@@ -112,7 +112,7 @@ const prepareOperation: RequestHandler = function (req, res, next) {
   req.hydra.resource = {
     ...resource,
     async clownface(): Promise<GraphPointer<NamedNode, Dataset>> {
-      return rdf.clownface({
+      return req.hydra.api.env.clownface({
         term: this.term,
         dataset: await this.dataset(),
       })
@@ -129,7 +129,7 @@ const invokeOperation: OperationRequestHandler = async (req, res, next) => {
     const operationMap = mapOperations({ api, res })
     const allowedMethods = new Set(operationMap
       .filter((entry): entry is PotentialOperation => !!entry.operation)
-      .flatMap(({ operation }) => operation.out(rdf.ns.hydra.method).values))
+      .flatMap(({ operation }) => operation.out(api.env.ns.hydra.method).values))
 
     if (!allowedMethods.size) {
       warn('no operations found')

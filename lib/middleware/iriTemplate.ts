@@ -1,16 +1,16 @@
 import uriTemplateRoute from 'uri-template-route'
-import rdf from '@zazuko/env-node'
 import { RequestHandler, Router } from 'express'
 import type { GraphPointer } from 'clownface'
 import type { NamedNode } from '@rdfjs/types'
 import log from '../log.js'
-import Api from '../../Api.js'
+import { Api } from '../../Api.js'
+import Factory from '../factory.js'
 
 const { debug } = log('iriTemplate')
 
 const literalValueRegex = /^"(?<value>.+)"(@|\^\^)?((?<=@)(?<language>.*))?((?<=\^\^)(?<datatype>.*))?$/
 
-function createTermFromVariable({ template, value }: { template: GraphPointer; value: string }) {
+function createTermFromVariable({ template, value, rdf }: { template: GraphPointer; value: string; rdf: Factory }) {
   if (!rdf.ns.hydra.ExplicitRepresentation.equals(template.out(rdf.ns.hydra.variableRepresentation).term)) {
     return value
   }
@@ -33,7 +33,7 @@ function createTermFromVariable({ template, value }: { template: GraphPointer; v
   return values.map(parseValue)
 }
 
-function middleware(pointer: GraphPointer): RequestHandler {
+function middleware(pointer: GraphPointer, rdf: Factory): RequestHandler {
   const iriTemplateNode = rdf.clownface(pointer)
   const template = iriTemplateNode.out(rdf.ns.hydra.template).value
 
@@ -67,7 +67,7 @@ function middleware(pointer: GraphPointer): RequestHandler {
         return
       }
 
-      templateParams.addOut(property, createTermFromVariable({ template: iriTemplateNode, value }))
+      templateParams.addOut(property, createTermFromVariable({ template: iriTemplateNode, value, rdf }))
     })
 
     req.dataset = () => {
@@ -82,13 +82,13 @@ function middleware(pointer: GraphPointer): RequestHandler {
   })
 }
 
-export default function factory({ dataset, graph }: Pick<Api, 'dataset' | 'graph'>) {
+export default function factory({ dataset, graph, env: rdf }: Pick<Api, 'dataset' | 'graph' | 'env'>) {
   const node = rdf.clownface({ dataset, graph })
   const router = Router()
 
   node.has(rdf.ns.rdf.type, rdf.ns.hydra.IriTemplate).forEach(iriTemplateNode => {
     debug('Creating route for IriTemplate', iriTemplateNode.term.value)
-    router.use(middleware(iriTemplateNode))
+    router.use(middleware(iriTemplateNode, rdf))
   })
 
   return router

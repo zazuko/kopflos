@@ -1,34 +1,50 @@
 /* eslint-disable camelcase */
-import rdf from '@zazuko/env-node'
 import EcmaScriptLoader from 'rdf-loader-code/ecmaScript.js'
 import LoaderRegistryImpl, { LoaderRegistry } from 'rdf-loaders-registry'
 import EcmaScriptModuleLoader from 'rdf-loader-code/ecmaScriptModule.js'
 import EcmaScriptLiteralLoader from 'rdf-loader-code/ecmaScriptLiteral.js'
-import type { NamedNode, DatasetCore, Quad_Graph } from '@rdfjs/types'
+import type { NamedNode, Quad_Graph } from '@rdfjs/types'
+import type { DatasetExt } from '@zazuko/env'
 import { replaceDatasetIRI } from './lib/replaceIRI.js'
+import Factory from './lib/factory.js'
 
-interface ApiInit<D extends DatasetCore = DatasetCore> {
+interface ApiInit<D extends DatasetExt = DatasetExt> {
   term?: NamedNode
   dataset?: D
   graph?: NamedNode
   path?: string
   codePath?: string
+  factory: Factory<D>
 }
 
-class Api {
+export interface Api<D extends DatasetExt = DatasetExt> {
+  env: Factory<D>
   initialized: boolean
   path: string
   codePath: string
   graph?: Quad_Graph | undefined
-  dataset: DatasetCore
+  dataset: D
+  term: NamedNode | undefined
+  loaderRegistry: LoaderRegistry
+  init(): Promise<void>
+}
+
+export default class Impl<D extends DatasetExt = DatasetExt> implements Api<D> {
+  initialized: boolean
+  path: string
+  codePath: string
+  graph?: Quad_Graph | undefined
+  dataset: D
   private _term: NamedNode | undefined
   loaderRegistry: LoaderRegistry
   private _initialization?: Promise<void>
   readonly tasks: Array<() => Promise<void>>
+  readonly env: Factory<D>
 
-  constructor({ term, dataset, graph, path = '/api', codePath = process.cwd() }: ApiInit = { }) {
+  constructor({ term, dataset, graph, path = '/api', codePath = process.cwd(), factory }: ApiInit<D>) {
     this._term = term
-    this.dataset = dataset || rdf.dataset()
+    this.env = factory
+    this.dataset = dataset || factory.dataset()
     this.graph = graph
     this.path = path
     this.codePath = codePath
@@ -59,7 +75,7 @@ class Api {
 
   fromFile(filePath: string) {
     this.tasks.push(async () => {
-      rdf.dataset().addAll.call(this.dataset, await rdf.dataset().import(rdf.fromFile(filePath)))
+      this.env.dataset().addAll.call(this.dataset, await this.env.dataset().import(this.env.fromFile(filePath)))
     })
 
     return this
@@ -67,37 +83,35 @@ class Api {
 
   rebase(fromBaseIRI: string | NamedNode, toBaseIRI: string | NamedNode) {
     this.tasks.push(async () => {
-      this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset)
+      this.dataset = replaceDatasetIRI(fromBaseIRI, toBaseIRI, this.dataset, this.env)
     })
 
     return this
   }
 
-  static fromFile(filePath: string, options?: ApiInit) {
-    const api = new Api(options)
+  static fromFile(filePath: string, options: ApiInit) {
+    const api = new Impl(options)
 
     return api.fromFile(filePath)
   }
 
   async _beginInit() {
     if (!this.dataset) {
-      this.dataset = rdf.dataset()
+      this.dataset = this.env.dataset()
     }
 
     for (const task of this.tasks) {
       await task()
     }
 
-    const apiDoc = rdf.clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
+    const apiDoc = this.env.clownface({ dataset: this.dataset, term: this.term, graph: this.graph })
 
-    if (apiDoc.has(rdf.ns.rdf.type, rdf.ns.hydra.ApiDocumentation).terms.length === 0) {
-      apiDoc.addOut(rdf.ns.rdf.type, rdf.ns.hydra.ApiDocumentation)
+    if (apiDoc.has(this.env.ns.rdf.type, this.env.ns.hydra.ApiDocumentation).terms.length === 0) {
+      apiDoc.addOut(this.env.ns.rdf.type, this.env.ns.hydra.ApiDocumentation)
 
-      apiDoc.any().has(rdf.ns.rdf.type, rdf.ns.hydra.Class).forEach(supportedClass => {
-        apiDoc.addOut(rdf.ns.hydra.supportedClass, supportedClass)
+      apiDoc.any().has(this.env.ns.rdf.type, this.env.ns.hydra.Class).forEach(supportedClass => {
+        apiDoc.addOut(this.env.ns.hydra.supportedClass, supportedClass)
       })
     }
   }
 }
-
-export default Api

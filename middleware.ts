@@ -1,5 +1,4 @@
 import path from 'node:path'
-import rdf from '@zazuko/env-node'
 import { RequestHandler, Router } from 'express'
 import { middleware as absoluteUrl } from 'absolute-url'
 import { asyncMiddleware } from 'middleware-async'
@@ -14,7 +13,7 @@ import resource from './lib/middleware/resource.js'
 import waitFor from './lib/middleware/waitFor.js'
 import StoreResourceLoader from './StoreResourceLoader.js'
 import log from './lib/log.js'
-import Api from './Api.js'
+import { Api } from './Api.js'
 import { HydraBox, ResourceLoader } from './index.js'
 
 declare module 'express-serve-static-core' {
@@ -48,7 +47,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
 
     iri.search = ''
 
-    const term = rdf.namedNode(iri.toString())
+    const term = api.env.namedNode(iri.toString())
 
     debug(`${req.method} to ${term.value}`)
 
@@ -61,7 +60,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
     if (!api.term && api.path) {
       const apiIri = new URL(path.join(req.baseUrl, api.path), iri)
 
-      api.term = rdf.namedNode(apiIri.toString())
+      api.term = api.env.namedNode(apiIri.toString())
 
       debug(`api.term was not set. Will use: ${api.term.value}`)
     }

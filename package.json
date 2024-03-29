@@ -38,7 +38,6 @@
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "@rdfjs/express-handler": "^2.0.0",
-    "@zazuko/env-node": "^2.1.1",
     "absolute-url": "^2.0.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
@@ -69,6 +68,7 @@
     "@types/uri-template-route": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
+    "@zazuko/env-node": "^2.1.1",
     "alcaeus": "^3.0.0",
     "c8": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",

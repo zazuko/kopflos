@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import Api from '../../Api.js'
+import { Api } from '../../Api.js'
 
 export default function factory(api: Api) {
   const router = Router()

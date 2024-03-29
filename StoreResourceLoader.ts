@@ -1,24 +1,26 @@
 import type { NamedNode, Store } from '@rdfjs/types'
-import rdf from '@zazuko/env-node'
 import { isNamedNode } from 'is-graph-pointer'
+import Factory from './lib/factory.js'
 import { PropertyResource, Resource, ResourceLoader } from './index.js'
 
 export default class StoreResourceLoader implements ResourceLoader {
   readonly store: Store
+  private env: Factory
 
-  constructor({ store }: { store: Store }) {
+  constructor({ store, env }: { store: Store; env: Factory }) {
     this.store = store
+    this.env = env
   }
 
   async load(term: NamedNode): Promise<Resource | null> {
-    const dataset = await rdf.dataset().import(this.store.match(null, null, null, term))
+    const dataset = await this.env.dataset().import(this.store.match(null, null, null, term))
 
     if (dataset.size === 0) {
       return null
     }
 
-    const types = rdf.clownface({ dataset, term })
-      .out(rdf.ns.rdf.type)
+    const types = this.env.clownface({ dataset, term })
+      .out(this.env.ns.rdf.type)
       .filter(isNamedNode)
 
     return {
@@ -30,7 +32,7 @@ export default class StoreResourceLoader implements ResourceLoader {
       quadStream() {
         return dataset.toStream()
       },
-      types: rdf.termSet(types.terms),
+      types: this.env.termSet(types.terms),
     }
   }
 
@@ -41,7 +43,7 @@ export default class StoreResourceLoader implements ResourceLoader {
   }
 
   async forPropertyOperation(term: NamedNode): Promise<PropertyResource[]> {
-    const dataset = await rdf.dataset().import(this.store.match(null, null, term, null))
+    const dataset = await this.env.dataset().import(this.store.match(null, null, term, null))
     const result: PropertyResource[] = []
 
     for (const quad of dataset) {
