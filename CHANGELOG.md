@@ -1,5 +1,15 @@
 # @kopflos-cms/core
 
+## 0.2.0
+
+### Minor Changes
+
+- ed24e8d: RDF/JS Environment must be passed explicitly when initialising an API
+
+### Patch Changes
+
+- ed24e8d: `Api` exported also as interface
+
 ## 0.1.1
 
 ### Patch Changes
