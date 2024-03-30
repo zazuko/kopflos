@@ -2,6 +2,7 @@ import uriTemplateRoute from 'uri-template-route'
 import { RequestHandler, Router } from 'express'
 import type { GraphPointer } from 'clownface'
 import type { NamedNode } from '@rdfjs/types'
+import toStream from 'rdf-dataset-ext/toStream.js'
 import log from '../log.js'
 import { Api } from '../../Api.js'
 import Factory from '../factory.js'
@@ -75,7 +76,7 @@ function middleware(pointer: GraphPointer, rdf: Factory): RequestHandler {
     }
 
     req.quadStream = () => {
-      return templateParams.dataset.toStream()
+      return toStream(templateParams.dataset)
     }
 
     next()

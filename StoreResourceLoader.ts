@@ -1,19 +1,21 @@
-import type { NamedNode, Store } from '@rdfjs/types'
+import type { DatasetCore, NamedNode, Store } from '@rdfjs/types'
 import { isNamedNode } from 'is-graph-pointer'
+import fromStream from 'rdf-dataset-ext/fromStream.js'
+import toStream from 'rdf-dataset-ext/toStream.js'
 import Factory from './lib/factory.js'
 import { PropertyResource, Resource, ResourceLoader } from './index.js'
 
-export default class StoreResourceLoader implements ResourceLoader {
+export default class StoreResourceLoader<D extends DatasetCore> implements ResourceLoader<D> {
   readonly store: Store
-  private env: Factory
+  private env: Factory<D>
 
-  constructor({ store, env }: { store: Store; env: Factory }) {
+  constructor({ store, env }: { store: Store; env: Factory<D> }) {
     this.store = store
     this.env = env
   }
 
-  async load(term: NamedNode): Promise<Resource | null> {
-    const dataset = await this.env.dataset().import(this.store.match(null, null, null, term))
+  async load(term: NamedNode): Promise<Resource<D> | null> {
+    const dataset = await fromStream(this.env.dataset(), this.store.match(null, null, null, term))
 
     if (dataset.size === 0) {
       return null
@@ -30,7 +32,7 @@ export default class StoreResourceLoader implements ResourceLoader {
         return dataset
       },
       quadStream() {
-        return dataset.toStream()
+        return toStream(dataset)
       },
       types: this.env.termSet(types.terms),
     }
@@ -42,9 +44,9 @@ export default class StoreResourceLoader implements ResourceLoader {
     return resource ? [resource] : []
   }
 
-  async forPropertyOperation(term: NamedNode): Promise<PropertyResource[]> {
-    const dataset = await this.env.dataset().import(this.store.match(null, null, term, null))
-    const result: PropertyResource[] = []
+  async forPropertyOperation(term: NamedNode): Promise<PropertyResource<D>[]> {
+    const dataset = await fromStream(this.env.dataset(), this.store.match(null, null, term, null))
+    const result: PropertyResource<D>[] = []
 
     for (const quad of dataset) {
       if (quad.subject.termType !== 'NamedNode') continue

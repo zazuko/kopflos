@@ -2,43 +2,39 @@ import type { Readable } from 'stream'
 import type * as RDF from '@rdfjs/types'
 import type { GraphPointer } from 'clownface'
 import type { Request } from 'express'
-import type { Dataset } from '@zazuko/env/lib/Dataset.js'
-import middleware from './middleware.js'
-import Api from './Api.js'
+import type { Api } from './Api.js'
 
-export interface Resource {
+export { default as middleware } from './middleware.js'
+export { default as Api } from './Api.js'
+
+export interface Resource<D extends RDF.DatasetCore = RDF.DatasetCore> {
   term: RDF.NamedNode
   prefetchDataset: RDF.DatasetCore
-  dataset(): Promise<Dataset>
+  dataset(): Promise<D>
   quadStream(): RDF.Stream & Readable
   types: Set<RDF.NamedNode>
 }
 
-export interface PropertyResource extends Resource {
+export interface PropertyResource<D extends RDF.DatasetCore = RDF.DatasetCore> extends Resource<D> {
   property: RDF.Quad_Predicate
   object: RDF.NamedNode
 }
 
-export interface PotentialOperation {
-  resource: Resource | PropertyResource
+export interface PotentialOperation<D extends RDF.DatasetCore = RDF.DatasetCore> {
+  resource: Resource<D> | PropertyResource<D>
   operation: GraphPointer
 }
 
-export interface HydraBox {
-  api: Api
+export interface HydraBox<D extends RDF.DatasetCore = RDF.DatasetCore> {
+  api: Api<D>
   term: RDF.NamedNode
   store: RDF.Store
-  resource: Resource & { clownface(): Promise<GraphPointer<RDF.NamedNode, Dataset>> }
+  resource: Resource<D> & { clownface(): Promise<GraphPointer<RDF.NamedNode, D>> }
   operation: GraphPointer
-  operations: PotentialOperation[]
+  operations: PotentialOperation<D>[]
 }
 
-export interface ResourceLoader {
-  forClassOperation(term: RDF.NamedNode, req: Request): Promise<Resource[]>
-  forPropertyOperation(term: RDF.NamedNode, req: Request): Promise<PropertyResource[]>
-}
-
-export default {
-  middleware,
-  Api,
+export interface ResourceLoader<D extends RDF.DatasetCore = RDF.DatasetCore> {
+  forClassOperation(term: RDF.NamedNode, req: Request): Promise<Resource<D>[]>
+  forPropertyOperation(term: RDF.NamedNode, req: Request): Promise<PropertyResource<D>[]>
 }

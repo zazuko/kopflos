@@ -3,8 +3,6 @@ import { RequestHandler, Router, Response } from 'express'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import createError from 'http-errors'
 import { isGraphPointer } from 'is-graph-pointer'
-import type { NamedNode } from '@rdfjs/types'
-import type { Dataset } from '@zazuko/env/lib/Dataset.js'
 import { code } from '../namespaces.js'
 import log from '../log.js'
 import { HydraBoxMiddleware } from '../../middleware.js'
@@ -111,7 +109,7 @@ const prepareOperation: RequestHandler = function (req, res, next) {
 
   req.hydra.resource = {
     ...resource,
-    async clownface(): Promise<GraphPointer<NamedNode, Dataset>> {
+    async clownface() {
       return req.hydra.api.env.clownface({
         term: this.term,
         dataset: await this.dataset(),

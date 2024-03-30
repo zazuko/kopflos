@@ -14,6 +14,7 @@ describe('middleware/operation', () => {
 
   beforeEach(async () => {
     api = {
+      env: RDF,
       dataset: await RDF.dataset().import(RDF.fromFile(path.resolve(__dirname, 'support/operationTestCases.ttl'))),
       term: NS.api,
       loaderRegistry: {

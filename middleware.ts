@@ -5,7 +5,7 @@ import { asyncMiddleware } from 'middleware-async'
 import { defer } from 'promise-the-world'
 import rdfHandler from '@rdfjs/express-handler'
 import setLink from 'set-link'
-import type { Store } from '@rdfjs/types'
+import type { DatasetCore, Store } from '@rdfjs/types'
 import apiHeader from './lib/middleware/apiHeader.js'
 import iriTemplate from './lib/middleware/iriTemplate.js'
 import operation from './lib/middleware/operation.js'
@@ -29,14 +29,14 @@ export interface HydraBoxMiddleware {
   operations?: RequestHandler | RequestHandler[] | undefined
 }
 
-interface Options {
+interface Options<D extends DatasetCore> {
   baseIriFromRequest?: boolean
-  loader?: ResourceLoader
+  loader?: ResourceLoader<D>
   store?: Store
   middleware?: HydraBoxMiddleware
 }
 
-function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = {} }: Options) {
+function middleware<D extends DatasetCore>(api: Api<D>, { baseIriFromRequest, loader, store, middleware = {} }: Options<D>) {
   const init = defer()
   const router = Router()
 
@@ -51,7 +51,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
 
     debug(`${req.method} to ${term.value}`)
 
-    req.hydra = <HydraBox>{
+    req.hydra = <HydraBox<D>>{
       api,
       store,
       term,
@@ -92,7 +92,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
   if (loader) {
     router.use(resource({ loader }))
   } else if (store) {
-    router.use(resource({ loader: new StoreResourceLoader({ store }) }))
+    router.use(resource({ loader: new StoreResourceLoader({ store, env: api.env }) }))
   } else {
     throw new Error('no loader or store provided')
   }

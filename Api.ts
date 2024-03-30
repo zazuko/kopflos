@@ -3,12 +3,13 @@ import EcmaScriptLoader from 'rdf-loader-code/ecmaScript.js'
 import LoaderRegistryImpl, { LoaderRegistry } from 'rdf-loaders-registry'
 import EcmaScriptModuleLoader from 'rdf-loader-code/ecmaScriptModule.js'
 import EcmaScriptLiteralLoader from 'rdf-loader-code/ecmaScriptLiteral.js'
-import type { NamedNode, Quad_Graph } from '@rdfjs/types'
-import type { DatasetExt } from '@zazuko/env'
+import type { NamedNode, Quad_Graph, DatasetCore } from '@rdfjs/types'
+import addAll from 'rdf-dataset-ext/addAll.js'
+import fromStream from 'rdf-dataset-ext/fromStream.js'
 import { replaceDatasetIRI } from './lib/replaceIRI.js'
 import Factory from './lib/factory.js'
 
-interface ApiInit<D extends DatasetExt = DatasetExt> {
+interface ApiInit<D extends DatasetCore = DatasetCore> {
   term?: NamedNode
   dataset?: D
   graph?: NamedNode
@@ -17,7 +18,7 @@ interface ApiInit<D extends DatasetExt = DatasetExt> {
   factory: Factory<D>
 }
 
-export interface Api<D extends DatasetExt = DatasetExt> {
+export interface Api<D extends DatasetCore = DatasetCore> {
   env: Factory<D>
   initialized: boolean
   path: string
@@ -29,7 +30,7 @@ export interface Api<D extends DatasetExt = DatasetExt> {
   init(): Promise<void>
 }
 
-export default class Impl<D extends DatasetExt = DatasetExt> implements Api<D> {
+export default class Impl<D extends DatasetCore = DatasetCore> implements Api<D> {
   initialized: boolean
   path: string
   codePath: string
@@ -75,7 +76,7 @@ export default class Impl<D extends DatasetExt = DatasetExt> implements Api<D> {
 
   fromFile(filePath: string) {
     this.tasks.push(async () => {
-      this.env.dataset().addAll.call(this.dataset, await this.env.dataset().import(this.env.fromFile(filePath)))
+      addAll(this.dataset, await fromStream(this.env.dataset(), this.env.fromFile(filePath)))
     })
 
     return this

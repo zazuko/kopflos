@@ -31,6 +31,7 @@ function iriTemplateMappingBuilder({
   return {
     dataset,
     graph,
+    env: rdf,
   }
 }
 

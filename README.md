@@ -23,14 +23,26 @@ const store = new FlatMultiFileStore({
 ```
 
 An `Api` object contains the dataset of the API documentation, where to find it and where to find the code.
-The static method `.fromFile` reads the dataset from the given file and creates an `Api` object with the given options. 
+The static method `.fromFile` reads the dataset from the given file and creates an `Api` object with the given options.
 
 ```javascript
+import rdf from '@zazuko/env-node'
+
 const api = await Api.fromFile('api.ttl', {
+  factory: rdf,
   path: '/api',
   codePath: __dirname
 })
 ```
+
+The `factory` parameter is required, and must be an [RDF/JS Environment](https://npm.im/@rdfjs/environment), providing the following factories compatible with the following:
+
+- [DatasetCoreFactory](https://npm.im/@rdfjs/dataset)
+- [DataFactory](https://npm.im/@rdfjs/data-model)
+- [TermSetFactory](https://npm.im/@rdfjs/term-set)
+- [ClownfaceFactory](https://npm.im/clownface)
+- [NsBuildersFactory](https://npm.im/@tpluscode/rdf-ns-builders)
+- [FsUtilsFactory](https://npm.im/@rdfjs/@zazuko/rdf-utils-fs)
 
 Once both objects are created, the middleware can be used:
 
@@ -45,7 +57,7 @@ app.listen(9000)
 The operations must implement a [Express routing handler](http://expressjs.com/en/starter/basic-routing.html) interface (`(req, res, next) => {}`).
 @kopflos-cms/core adds the [@rdfjs/express-handler](https://github.com/rdfjs-base/express-handler) to handle incoming and outgoing RDF data.
 For `GET` requests with a matching IRI Template, the `.dataset()` and `.quadStream()` as defined by `express-handler` are also available to read the given variables.
-Additionally there is a `hydra` property assigned to `req` that contains more data about the request: 
+Additionally, there is a `hydra` property assigned to `req` that contains more data about the request: 
 
 ```javascript
   req.hydra = {

@@ -17,6 +17,7 @@ describe('@kopflos-cms/core', () => {
 
   beforeEach(() => {
     api = {
+      env: RDF,
       path: '/api',
       dataset: RDF.dataset(),
       async init() {},
@@ -114,7 +115,7 @@ describe('@kopflos-cms/core', () => {
         const path = '/test/api'
         const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${path}>; rel="${ns.hydra.apiDocumentation.value}"`)
 
-        server.app.use(hydraBox(new Api({ path }), {
+        server.app.use(hydraBox(new Api({ path, factory: RDF }), {
           loader: {
             forClassOperation: () => [],
             forPropertyOperation: () => [],
@@ -137,7 +138,7 @@ describe('@kopflos-cms/core', () => {
           RDF.quad(example.subject, example.predicate, RDF.literal('test')),
         ])
 
-        server.app.use(hydraBox(new Api({ dataset, path }), {
+        server.app.use(hydraBox(new Api({ dataset, path, factory: RDF }), {
           loader: {
             forClassOperation: () => [],
             forPropertyOperation: () => [],
@@ -161,7 +162,7 @@ describe('@kopflos-cms/core', () => {
         const path = '/test/api'
         const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${join(routerPath, path)}>; rel="${ns.hydra.apiDocumentation.value}"`)
 
-        router.use(hydraBox(new Api({ path }), {
+        router.use(hydraBox(new Api({ path, factory: RDF }), {
           loader: {
             forClassOperation: () => [],
             forPropertyOperation: () => [],
@@ -188,7 +189,7 @@ describe('@kopflos-cms/core', () => {
           RDF.quad(example.subject, example.predicate, RDF.literal('test')),
         ])
 
-        router.use(hydraBox(new Api({ dataset, path }), {
+        router.use(hydraBox(new Api({ dataset, path, factory: RDF }), {
           loader: {
             forClassOperation: () => [],
             forPropertyOperation: () => [],
@@ -213,7 +214,7 @@ describe('@kopflos-cms/core', () => {
           RDF.quad(example.subject, example.predicate, RDF.literal('test')),
         ])
 
-        server.app.use('/path/to/app', hydraBox(new Api({ dataset, path: '/api' }), {
+        server.app.use('/path/to/app', hydraBox(new Api({ dataset, path: '/api', factory: RDF }), {
           loader: {
             forClassOperation: () => [],
             forPropertyOperation: () => [],
