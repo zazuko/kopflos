@@ -6,7 +6,6 @@ import { middleware as absoluteUrl } from 'absolute-url'
 import setLink from 'set-link'
 import rdfHandler from '@rdfjs/express-handler'
 import apiHeader from '../lib/middleware/apiHeader.js'
-import * as ns from '../lib/namespaces.js'
 
 function createApp() {
   const app = express()
@@ -48,7 +47,7 @@ describe('middleware/apiHeader', () => {
     const response = request(app).get('/')
 
     await response.expect(res => {
-      const containsPath = new RegExp(`<http://example.app/sub-path/api>; rel="${ns.hydra.apiDocumentation.value}"`)
+      const containsPath = new RegExp(`<http://example.app/sub-path/api>; rel="${$rdf.ns.hydra.apiDocumentation.value}"`)
 
       assert.match(res.headers.link, containsPath)
     })

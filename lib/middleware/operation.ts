@@ -3,7 +3,6 @@ import { RequestHandler, Router, Response } from 'express'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import createError from 'http-errors'
 import { isGraphPointer } from 'is-graph-pointer'
-import { code } from '../namespaces.js'
 import log from '../log.js'
 import { HydraBoxMiddleware } from '../../middleware.js'
 import { Api } from '../../Api.js'
@@ -122,6 +121,7 @@ const prepareOperation: RequestHandler = function (req, res, next) {
 
 const invokeOperation: OperationRequestHandler = async (req, res, next) => {
   const { api } = req.hydra
+  const code = api.env.namespace('https://code.described.at/')
 
   if (!req.hydra.operation) {
     const operationMap = mapOperations({ api, res })

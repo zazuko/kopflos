@@ -68,7 +68,9 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use((req, res, next) => {
-      req.hydra = {}
+      req.hydra = {
+        api,
+      }
       res.locals = {
         hydra: {
           resources: [],

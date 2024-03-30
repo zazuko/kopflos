@@ -6,7 +6,6 @@ import express, { Router } from 'express'
 import ExpressAsPromise from 'express-as-promise'
 import sinon from 'sinon'
 import request from 'supertest'
-import * as ns from '../lib/namespaces.js'
 import Api from '../Api.js'
 import hydraBox from '../middleware.js'
 
@@ -113,7 +112,7 @@ describe('@kopflos-cms/core', () => {
     it('should use the path from the given Api object for the link header', async () => {
       await ExpressAsPromise.withServer(async server => {
         const path = '/test/api'
-        const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${path}>; rel="${ns.hydra.apiDocumentation.value}"`)
+        const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${path}>; rel="${RDF.ns.hydra.apiDocumentation.value}"`)
 
         server.app.use(hydraBox(new Api({ path, factory: RDF }), {
           loader: {
@@ -160,7 +159,7 @@ describe('@kopflos-cms/core', () => {
         const routerPath = '/router'
         const router = Router()
         const path = '/test/api'
-        const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${join(routerPath, path)}>; rel="${ns.hydra.apiDocumentation.value}"`)
+        const containsPath = new RegExp(`<http://[0-9.a-z]*:[0-9]*${join(routerPath, path)}>; rel="${RDF.ns.hydra.apiDocumentation.value}"`)
 
         router.use(hydraBox(new Api({ path, factory: RDF }), {
           loader: {

@@ -39,6 +39,7 @@ The `factory` parameter is required, and must be an [RDF/JS Environment](https:/
 
 - [DatasetCoreFactory](https://npm.im/@rdfjs/dataset)
 - [DataFactory](https://npm.im/@rdfjs/data-model)
+- [NamespaceFactory](https://npm.im/@rdfjs/namespace)
 - [TermSetFactory](https://npm.im/@rdfjs/term-set)
 - [ClownfaceFactory](https://npm.im/clownface)
 - [NsBuildersFactory](https://npm.im/@tpluscode/rdf-ns-builders)
