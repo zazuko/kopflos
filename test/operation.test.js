@@ -14,6 +14,7 @@ describe('middleware/operation', () => {
 
   beforeEach(async () => {
     api = {
+      env: RDF,
       dataset: await RDF.dataset().import(RDF.fromFile(path.resolve(__dirname, 'support/operationTestCases.ttl'))),
       term: NS.api,
       loaderRegistry: {
@@ -67,7 +68,9 @@ describe('middleware/operation', () => {
     // given
     const app = express()
     app.use((req, res, next) => {
-      req.hydra = {}
+      req.hydra = {
+        api,
+      }
       res.locals = {
         hydra: {
           resources: [],

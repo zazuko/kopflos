@@ -3,6 +3,7 @@ import { ok, strictEqual } from 'node:assert'
 import rdf from '@zazuko/env-node'
 import Api from '../Api.js'
 
+const factory = rdf
 const __dirname = new URL('.', import.meta.url).pathname
 
 describe('Api', () => {
@@ -12,34 +13,34 @@ describe('Api', () => {
 
   it('should assign the given dataset', () => {
     const dataset = rdf.dataset()
-    const api = new Api({ dataset })
+    const api = new Api({ dataset, factory })
 
     strictEqual(api.dataset, dataset)
   })
 
   it('should assign the given graph', () => {
     const graph = rdf.namedNode('http://example.org/graph')
-    const api = new Api({ graph })
+    const api = new Api({ graph, factory })
 
     strictEqual(api.graph, graph)
   })
 
   it('should assign the given path', () => {
     const path = '/api'
-    const api = new Api({ path })
+    const api = new Api({ path, factory })
 
     strictEqual(api.path, path)
   })
 
   describe('fromFile', () => {
     it('should be a method', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       strictEqual(typeof api.fromFile, 'function')
     })
 
     it('should return the Api instance', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       const result = api.fromFile('test')
 
@@ -47,7 +48,7 @@ describe('Api', () => {
     })
 
     it('should create a task', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       api.fromFile('test')
 
@@ -55,13 +56,13 @@ describe('Api', () => {
     })
 
     it('static call should be chainable', () => {
-      const api = Api.fromFile('foo').fromFile('bar')
+      const api = Api.fromFile('foo', { factory }).fromFile('bar')
 
       strictEqual(api.tasks.length, 2)
     })
 
     it('should load the API from the given file when init is called', async () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       api.fromFile(resolve(__dirname, 'support/api.ttl'))
       await api.init()
@@ -72,13 +73,13 @@ describe('Api', () => {
 
   describe('init', () => {
     it('should be a method', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       strictEqual(typeof api.init, 'function')
     })
 
     it('should be async', () => {
-      const api = new Api({ dataset: rdf.dataset() })
+      const api = new Api({ dataset: rdf.dataset(), factory })
 
       const result = api.init()
 
@@ -88,7 +89,7 @@ describe('Api', () => {
 
     it('should create a hydra:ApiDocumentation triple', async () => {
       const term = rdf.namedNode('http://example.org/api')
-      const api = new Api({ dataset: rdf.dataset(), term })
+      const api = new Api({ dataset: rdf.dataset(), term, factory })
 
       await api.init()
 
@@ -101,13 +102,13 @@ describe('Api', () => {
 
   describe('rebase', () => {
     it('should be a method', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       strictEqual(typeof api.rebase, 'function')
     })
 
     it('should return the Api instance', () => {
-      const api = new Api()
+      const api = new Api({ factory })
 
       const result = api.rebase()
 
@@ -122,7 +123,7 @@ describe('Api', () => {
           rdf.namedNode('http://example.org/P'),
           rdf.namedNode('http://example.org/O')),
         )
-      const api = new Api({ dataset })
+      const api = new Api({ dataset, factory })
 
       // when
       api.rebase('http://example.org/', 'http://example.com/')

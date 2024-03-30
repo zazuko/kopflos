@@ -1,12 +1,11 @@
 import path from 'node:path'
-import rdf from '@zazuko/env-node'
 import { RequestHandler, Router } from 'express'
 import { middleware as absoluteUrl } from 'absolute-url'
 import { asyncMiddleware } from 'middleware-async'
 import { defer } from 'promise-the-world'
 import rdfHandler from '@rdfjs/express-handler'
 import setLink from 'set-link'
-import type { Store } from '@rdfjs/types'
+import type { DatasetCore, Store } from '@rdfjs/types'
 import apiHeader from './lib/middleware/apiHeader.js'
 import iriTemplate from './lib/middleware/iriTemplate.js'
 import operation from './lib/middleware/operation.js'
@@ -14,7 +13,7 @@ import resource from './lib/middleware/resource.js'
 import waitFor from './lib/middleware/waitFor.js'
 import StoreResourceLoader from './StoreResourceLoader.js'
 import log from './lib/log.js'
-import Api from './Api.js'
+import { Api } from './Api.js'
 import { HydraBox, ResourceLoader } from './index.js'
 
 declare module 'express-serve-static-core' {
@@ -30,14 +29,14 @@ export interface HydraBoxMiddleware {
   operations?: RequestHandler | RequestHandler[] | undefined
 }
 
-interface Options {
+interface Options<D extends DatasetCore> {
   baseIriFromRequest?: boolean
-  loader?: ResourceLoader
+  loader?: ResourceLoader<D>
   store?: Store
   middleware?: HydraBoxMiddleware
 }
 
-function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = {} }: Options) {
+function middleware<D extends DatasetCore>(api: Api<D>, { baseIriFromRequest, loader, store, middleware = {} }: Options<D>) {
   const init = defer()
   const router = Router()
 
@@ -48,11 +47,11 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
 
     iri.search = ''
 
-    const term = rdf.namedNode(iri.toString())
+    const term = api.env.namedNode(iri.toString())
 
     debug(`${req.method} to ${term.value}`)
 
-    req.hydra = <HydraBox>{
+    req.hydra = <HydraBox<D>>{
       api,
       store,
       term,
@@ -61,7 +60,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
     if (!api.term && api.path) {
       const apiIri = new URL(path.join(req.baseUrl, api.path), iri)
 
-      api.term = rdf.namedNode(apiIri.toString())
+      api.term = api.env.namedNode(apiIri.toString())
 
       debug(`api.term was not set. Will use: ${api.term.value}`)
     }
@@ -93,7 +92,7 @@ function middleware(api: Api, { baseIriFromRequest, loader, store, middleware = 
   if (loader) {
     router.use(resource({ loader }))
   } else if (store) {
-    router.use(resource({ loader: new StoreResourceLoader({ store }) }))
+    router.use(resource({ loader: new StoreResourceLoader({ store, env: api.env }) }))
   } else {
     throw new Error('no loader or store provided')
   }

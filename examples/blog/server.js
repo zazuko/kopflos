@@ -1,5 +1,6 @@
 import express from 'express'
 import FlatMultiFileStore from 'rdf-store-fs/FlatMultiFileStore.js'
+import rdf from '@zazuko/env-node'
 import hydraBox from '../../middleware.js'
 import Api from '../../Api.js'
 import ResourceStore from './lib/ResourceStore.js'
@@ -13,6 +14,7 @@ async function main() {
   })
 
   const api = await Api.fromFile('api.ttl', {
+    factory: rdf,
     path: '/api',
     codePath: __dirname,
   })

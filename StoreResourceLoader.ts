@@ -1,24 +1,28 @@
-import type { NamedNode, Store } from '@rdfjs/types'
-import rdf from '@zazuko/env-node'
+import type { DatasetCore, NamedNode, Store } from '@rdfjs/types'
 import { isNamedNode } from 'is-graph-pointer'
+import fromStream from 'rdf-dataset-ext/fromStream.js'
+import toStream from 'rdf-dataset-ext/toStream.js'
+import Factory from './lib/factory.js'
 import { PropertyResource, Resource, ResourceLoader } from './index.js'
 
-export default class StoreResourceLoader implements ResourceLoader {
+export default class StoreResourceLoader<D extends DatasetCore> implements ResourceLoader<D> {
   readonly store: Store
+  private env: Factory<D>
 
-  constructor({ store }: { store: Store }) {
+  constructor({ store, env }: { store: Store; env: Factory<D> }) {
     this.store = store
+    this.env = env
   }
 
-  async load(term: NamedNode): Promise<Resource | null> {
-    const dataset = await rdf.dataset().import(this.store.match(null, null, null, term))
+  async load(term: NamedNode): Promise<Resource<D> | null> {
+    const dataset = await fromStream(this.env.dataset(), this.store.match(null, null, null, term))
 
     if (dataset.size === 0) {
       return null
     }
 
-    const types = rdf.clownface({ dataset, term })
-      .out(rdf.ns.rdf.type)
+    const types = this.env.clownface({ dataset, term })
+      .out(this.env.ns.rdf.type)
       .filter(isNamedNode)
 
     return {
@@ -28,9 +32,9 @@ export default class StoreResourceLoader implements ResourceLoader {
         return dataset
       },
       quadStream() {
-        return dataset.toStream()
+        return toStream(dataset)
       },
-      types: rdf.termSet(types.terms),
+      types: this.env.termSet(types.terms),
     }
   }
 
@@ -40,9 +44,9 @@ export default class StoreResourceLoader implements ResourceLoader {
     return resource ? [resource] : []
   }
 
-  async forPropertyOperation(term: NamedNode): Promise<PropertyResource[]> {
-    const dataset = await rdf.dataset().import(this.store.match(null, null, term, null))
-    const result: PropertyResource[] = []
+  async forPropertyOperation(term: NamedNode): Promise<PropertyResource<D>[]> {
+    const dataset = await fromStream(this.env.dataset(), this.store.match(null, null, term, null))
+    const result: PropertyResource<D>[] = []
 
     for (const quad of dataset) {
       if (quad.subject.termType !== 'NamedNode') continue

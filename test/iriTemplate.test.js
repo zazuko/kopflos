@@ -44,7 +44,7 @@ describe('middleware/iriTemplate', () => {
     const { dataset } = iriTemplateMappingBuilder({ template: '/1' })
     iriTemplateMappingBuilder({ dataset, template: '/2' })
 
-    app.use(middleware({ dataset }))
+    app.use(middleware({ dataset, env: rdf }))
 
     app.use((req, res, next) => {
       datasets[req.url] = req.dataset

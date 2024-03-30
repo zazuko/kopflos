@@ -13,14 +13,14 @@ describe('StoreResourceLoader', () => {
 
   it('should assign the given store', () => {
     const store = {}
-    const loader = new StoreResourceLoader({ store })
+    const loader = new StoreResourceLoader({ store, env: rdf })
 
     strictEqual(loader.store, store)
   })
 
   describe('.load', () => {
     it('should be a method', () => {
-      const loader = new StoreResourceLoader({ store: {} })
+      const loader = new StoreResourceLoader({ store: {}, env: rdf })
 
       strictEqual(typeof loader.load, 'function')
     })
@@ -31,7 +31,7 @@ describe('StoreResourceLoader', () => {
         baseIRI: 'http://example.org/',
         path: resolve(__dirname, 'support/store'),
       })
-      const loader = new StoreResourceLoader({ store })
+      const loader = new StoreResourceLoader({ store, env: rdf })
 
       const resource = await loader.load(term)
 
@@ -46,7 +46,7 @@ describe('StoreResourceLoader', () => {
         baseIRI: 'http://example.org/',
         path: resolve(__dirname, 'support/store'),
       })
-      const loader = new StoreResourceLoader({ store })
+      const loader = new StoreResourceLoader({ store, env: rdf })
 
       const resource = await loader.load(term)
       const dataset = await rdf.dataset().import(resource.quadStream())
@@ -59,7 +59,7 @@ describe('StoreResourceLoader', () => {
 
   describe('.forClassOperation', () => {
     it('should be a method', () => {
-      const loader = new StoreResourceLoader({ store: {} })
+      const loader = new StoreResourceLoader({ store: {}, env: rdf })
 
       strictEqual(typeof loader.forClassOperation, 'function')
     })
@@ -70,7 +70,7 @@ describe('StoreResourceLoader', () => {
         baseIRI: 'http://example.org/',
         path: resolve(__dirname, 'support/store'),
       })
-      const loader = new StoreResourceLoader({ store })
+      const loader = new StoreResourceLoader({ store, env: rdf })
 
       const resources = await loader.forClassOperation(term)
       const resource = resources[0]
@@ -83,7 +83,7 @@ describe('StoreResourceLoader', () => {
 
   describe('.forPropertyOperation', () => {
     it('should be a method', () => {
-      const loader = new StoreResourceLoader({ store: {} })
+      const loader = new StoreResourceLoader({ store: {}, env: rdf })
 
       strictEqual(typeof loader.forPropertyOperation, 'function')
     })
@@ -95,7 +95,7 @@ describe('StoreResourceLoader', () => {
         baseIRI: 'http://example.org/',
         path: resolve(__dirname, 'support/store'),
       })
-      const loader = new StoreResourceLoader({ store })
+      const loader = new StoreResourceLoader({ store, env: rdf })
 
       const resources = await loader.forPropertyOperation(link)
       const resource = resources[0]

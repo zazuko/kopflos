@@ -1,7 +1,8 @@
-import rdf from '@zazuko/env-node'
-import type { Term, Quad, DatasetCore, NamedNode } from '@rdfjs/types'
+import type { Term, Quad, DatasetCore, NamedNode, DataFactory } from '@rdfjs/types'
+import type { Environment } from '@rdfjs/environment/Environment.js'
+import Factory from './factory.js'
 
-export function replaceTermIRI<T extends Term>(oldIRI: string | NamedNode, newIRI: string | NamedNode, term: T): T {
+export function replaceTermIRI<T extends Term>(oldIRI: string | NamedNode, newIRI: string | NamedNode, term: T, factory: Environment<DataFactory>): T {
   const oldIRIString = typeof oldIRI === 'string' ? oldIRI : oldIRI.value
   const newIRIString = typeof newIRI === 'string' ? newIRI : newIRI.value
 
@@ -13,18 +14,18 @@ export function replaceTermIRI<T extends Term>(oldIRI: string | NamedNode, newIR
     return term as T
   }
 
-  return rdf.namedNode(newIRIString + term.value.slice(oldIRIString.length)) as T
+  return factory.namedNode(newIRIString + term.value.slice(oldIRIString.length)) as T
 }
 
-export function replaceQuadIRI(oldIRI: string | NamedNode, newIRI: string | NamedNode, quad: Quad) {
-  return rdf.quad(
-    replaceTermIRI(oldIRI, newIRI, quad.subject),
-    replaceTermIRI(oldIRI, newIRI, quad.predicate),
-    replaceTermIRI(oldIRI, newIRI, quad.object),
-    replaceTermIRI(oldIRI, newIRI, quad.graph),
+export function replaceQuadIRI(oldIRI: string | NamedNode, newIRI: string | NamedNode, quad: Quad, factory: Environment<DataFactory>) {
+  return factory.quad(
+    replaceTermIRI(oldIRI, newIRI, quad.subject, factory),
+    replaceTermIRI(oldIRI, newIRI, quad.predicate, factory),
+    replaceTermIRI(oldIRI, newIRI, quad.object, factory),
+    replaceTermIRI(oldIRI, newIRI, quad.graph, factory),
   )
 }
 
-export function replaceDatasetIRI(oldIRI: string | NamedNode, newIRI: string | NamedNode, dataset: DatasetCore) {
-  return rdf.dataset([...dataset].map(quad => replaceQuadIRI(oldIRI, newIRI, quad)))
+export function replaceDatasetIRI<D extends DatasetCore>(oldIRI: string | NamedNode, newIRI: string | NamedNode, dataset: D, factory: Factory<D>): D {
+  return factory.dataset([...dataset].map(quad => replaceQuadIRI(oldIRI, newIRI, quad, factory)))
 }
