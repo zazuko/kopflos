@@ -15,10 +15,18 @@ import StoreResourceLoader from './StoreResourceLoader.js'
 import log from './lib/log.js'
 import { Api } from './Api.js'
 import { HydraBox, ResourceLoader } from './index.js'
+import Factory, {ExtractDataset} from './lib/factory.js';
+import type { CombinedEnvironment } from '@zazuko/env-core/lib/extend.js'
+
+type ValuesArray<R extends Record<string, any>> = R[keyof R][];
+
+export interface AdditionalFactories {
+  core: Factory;
+}
 
 declare module 'express-serve-static-core' {
   interface Request {
-    hydra: HydraBox
+    hydra: HydraBox<CombinedEnvironment<ValuesArray<AdditionalFactories>>>;
   }
 }
 
@@ -36,7 +44,7 @@ interface Options<D extends DatasetCore> {
   middleware?: HydraBoxMiddleware
 }
 
-function middleware<D extends DatasetCore>(api: Api<D>, { baseIriFromRequest, loader, store, middleware = {} }: Options<D>) {
+function middleware<E extends Factory = Factory, D extends DatasetCore = ExtractDataset<E>>(api: Api<E>, { baseIriFromRequest, loader, store, middleware = {} }: Options<D>) {
   const init = defer()
   const router = Router()
 
@@ -51,7 +59,7 @@ function middleware<D extends DatasetCore>(api: Api<D>, { baseIriFromRequest, lo
 
     debug(`${req.method} to ${term.value}`)
 
-    req.hydra = <HydraBox<D>>{
+    req.hydra = <HydraBox<E>>{
       api,
       store,
       term,

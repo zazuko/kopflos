@@ -1,6 +1,6 @@
 import type { Term, Quad, DatasetCore, NamedNode, DataFactory } from '@rdfjs/types'
 import type { Environment } from '@rdfjs/environment/Environment.js'
-import Factory from './factory.js'
+import Factory, {ExtractDataset} from './factory.js'
 
 export function replaceTermIRI<T extends Term>(oldIRI: string | NamedNode, newIRI: string | NamedNode, term: T, factory: Environment<DataFactory>): T {
   const oldIRIString = typeof oldIRI === 'string' ? oldIRI : oldIRI.value
@@ -26,6 +26,6 @@ export function replaceQuadIRI(oldIRI: string | NamedNode, newIRI: string | Name
   )
 }
 
-export function replaceDatasetIRI<D extends DatasetCore>(oldIRI: string | NamedNode, newIRI: string | NamedNode, dataset: D, factory: Factory<D>): D {
-  return factory.dataset([...dataset].map(quad => replaceQuadIRI(oldIRI, newIRI, quad, factory)))
+export function replaceDatasetIRI<E extends Factory>(oldIRI: string | NamedNode, newIRI: string | NamedNode, dataset: ExtractDataset<E>, factory: E): ExtractDataset<E> {
+  return factory.dataset([...dataset].map(quad => replaceQuadIRI(oldIRI, newIRI, quad, factory))) as unknown as ExtractDataset<E>
 }
