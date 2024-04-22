@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.2.1
+
+### Patch Changes
+
+- 41951d7: Changed the generic interface to allow extending the runtime environment
+
 ## 0.2.0
 
 ### Minor Changes
