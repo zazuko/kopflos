@@ -1,6 +1,6 @@
-import type { Term, Quad, DatasetCore, NamedNode, DataFactory } from '@rdfjs/types'
+import type { Term, Quad, NamedNode, DataFactory } from '@rdfjs/types'
 import type { Environment } from '@rdfjs/environment/Environment.js'
-import Factory, {ExtractDataset} from './factory.js'
+import Factory, { ExtractDataset } from './factory.js'
 
 export function replaceTermIRI<T extends Term>(oldIRI: string | NamedNode, newIRI: string | NamedNode, term: T, factory: Environment<DataFactory>): T {
   const oldIRIString = typeof oldIRI === 'string' ? oldIRI : oldIRI.value
