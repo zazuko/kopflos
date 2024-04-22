@@ -7,5 +7,6 @@ import type FsUtilsFactory from '@zazuko/rdf-utils-fs/Factory.js'
 import type { NamespaceFactory } from '@rdfjs/namespace/Factory.js'
 
 type Factory<D extends DatasetCore = DatasetCore> = Environment<DatasetCoreFactory<Quad, Quad, D> | DataFactory | TermSetFactory | ClownfaceFactory | NsBuildersFactory | FsUtilsFactory | NamespaceFactory>
+export type ExtractDataset<This> = This extends DatasetCoreFactory ? ReturnType<This['dataset']> : never;
 
 export default Factory

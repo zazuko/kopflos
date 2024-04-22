@@ -1,8 +1,8 @@
-import type { Readable } from 'stream'
 import type * as RDF from '@rdfjs/types'
 import type { GraphPointer } from 'clownface'
 import type { Request } from 'express'
 import type { Api } from './Api.js'
+import Factory, { ExtractDataset } from './lib/factory.js'
 
 export { default as middleware } from './middleware.js'
 export { default as Api } from './Api.js'
@@ -11,7 +11,7 @@ export interface Resource<D extends RDF.DatasetCore = RDF.DatasetCore> {
   term: RDF.NamedNode
   prefetchDataset: RDF.DatasetCore
   dataset(): Promise<D>
-  quadStream(): RDF.Stream & Readable
+  quadStream(): RDF.Stream
   types: Set<RDF.NamedNode>
 }
 
@@ -25,8 +25,8 @@ export interface PotentialOperation<D extends RDF.DatasetCore = RDF.DatasetCore>
   operation: GraphPointer
 }
 
-export interface HydraBox<D extends RDF.DatasetCore = RDF.DatasetCore> {
-  api: Api<D>
+export interface HydraBox<E extends Factory = Factory, D extends RDF.DatasetCore = ExtractDataset<E>> {
+  api: Api<E>
   term: RDF.NamedNode
   store: RDF.Store
   resource: Resource<D> & { clownface(): Promise<GraphPointer<RDF.NamedNode, D>> }

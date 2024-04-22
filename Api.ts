@@ -3,49 +3,49 @@ import EcmaScriptLoader from 'rdf-loader-code/ecmaScript.js'
 import LoaderRegistryImpl, { LoaderRegistry } from 'rdf-loaders-registry'
 import EcmaScriptModuleLoader from 'rdf-loader-code/ecmaScriptModule.js'
 import EcmaScriptLiteralLoader from 'rdf-loader-code/ecmaScriptLiteral.js'
-import type { NamedNode, Quad_Graph, DatasetCore } from '@rdfjs/types'
+import type { NamedNode, Quad_Graph } from '@rdfjs/types'
 import addAll from 'rdf-dataset-ext/addAll.js'
 import fromStream from 'rdf-dataset-ext/fromStream.js'
 import { replaceDatasetIRI } from './lib/replaceIRI.js'
-import Factory from './lib/factory.js'
+import Factory, { ExtractDataset } from './lib/factory.js'
 
-interface ApiInit<D extends DatasetCore = DatasetCore> {
+export interface ApiInit<E extends Factory = Factory> {
   term?: NamedNode
-  dataset?: D
+  dataset?: ExtractDataset<E>
   graph?: NamedNode
   path?: string
   codePath?: string
-  factory: Factory<D>
+  factory: E
 }
 
-export interface Api<D extends DatasetCore = DatasetCore> {
-  env: Factory<D>
+export interface Api<E extends Factory = Factory> {
+  env: E
   initialized: boolean
   path: string
   codePath: string
   graph?: Quad_Graph | undefined
-  dataset: D
+  dataset: ExtractDataset<E>
   term: NamedNode | undefined
   loaderRegistry: LoaderRegistry
   init(): Promise<void>
 }
 
-export default class Impl<D extends DatasetCore = DatasetCore> implements Api<D> {
+export default class Impl<E extends Factory = Factory> implements Api<E> {
   initialized: boolean
   path: string
   codePath: string
   graph?: Quad_Graph | undefined
-  dataset: D
+  dataset: ExtractDataset<E>
   private _term: NamedNode | undefined
   loaderRegistry: LoaderRegistry
   private _initialization?: Promise<void>
   readonly tasks: Array<() => Promise<void>>
-  readonly env: Factory<D>
+  readonly env: E
 
-  constructor({ term, dataset, graph, path = '/api', codePath = process.cwd(), factory }: ApiInit<D>) {
+  constructor({ term, dataset, graph, path = '/api', codePath = process.cwd(), factory }: ApiInit<E>) {
     this._term = term
     this.env = factory
-    this.dataset = dataset || factory.dataset()
+    this.dataset = (dataset || factory.dataset()) as unknown as ExtractDataset<E>
     this.graph = graph
     this.path = path
     this.codePath = codePath
@@ -98,7 +98,7 @@ export default class Impl<D extends DatasetCore = DatasetCore> implements Api<D>
 
   async _beginInit() {
     if (!this.dataset) {
-      this.dataset = this.env.dataset()
+      this.dataset = this.env.dataset() as unknown as ExtractDataset<E>
     }
 
     for (const task of this.tasks) {
