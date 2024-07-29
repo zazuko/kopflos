@@ -1,6 +1,0 @@
-PREFIX api: <http://localhost:9000/api/schema/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-With Class api:Blog {
-    Expect Property rdfs:label "My Blog"
-}

@@ -2,14 +2,5 @@
   "extends": [ "@tpluscode" ],
   "env": {
     "mocha": true
-  },
-  "overrides": [
-    {
-      "files": ["examples/**/*.js"],
-      "rules": {
-        "no-console": "off",
-        "import/no-extraneous-dependencies": "off"
-      }
-    }
-  ]
+  }
 }
