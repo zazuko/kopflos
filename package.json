@@ -1,34 +1,14 @@
 {
-  "name": "@kopflos-cms/core",
-  "description": "Hydra middleware for web APIs",
-  "version": "0.2.1",
-  "main": "index.js",
-  "type": "module",
+  "name": "@zazuko/kopflos",
+  "description": "RDF-based web APIs",
+  "private": true,
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "c8 mocha",
-    "build": "tsc",
-    "prepack": "npm run build",
     "release": "changeset publish"
   },
-  "files": [
-    "*.js",
-    "*.d.ts",
-    "lib/**/*.js",
-    "lib/**/*.d.ts"
-  ],
   "author": "Zazuko GmbH",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/zazuko/kopflos.git"
-  },
-  "bugs": {
-    "url": "https://github.com/zazuko/kopflos/issues"
-  },
-  "homepage": "https://github.com/zazuko/kopflos",
-  "dependencies": {
-  },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
     "@tpluscode/eslint-config": "^0.4.9",
@@ -41,10 +21,12 @@
     "c8": "^10.1.2",
     "eslint-import-resolver-typescript": "^3.6.1",
     "mocha": "^10.7.0",
-    "sinon": "^18.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "mocha": {
     "extensions": [
       "ts"

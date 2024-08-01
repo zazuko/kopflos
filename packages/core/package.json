@@ -1,0 +1,33 @@
+{
+  "name": "@kopflos-cms/core",
+  "description": "RDF-based web APIs",
+  "version": "0.2.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts"
+  ],
+  "author": "Zazuko GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/zazuko/kopflos/issues"
+  },
+  "homepage": "https://github.com/zazuko/kopflos",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "sinon": "^18.0.0"
+  }
+}
