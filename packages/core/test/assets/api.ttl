@@ -1,11 +1,24 @@
+PREFIX code: <https://code.described.at/>
 prefix kopflos: <https://kopflos.described.at/>
 
 <config>
   a kopflos:Config ;
-  kopflos:api <https://example.com/api> ;
-  kopflos:api <https://example.org/api> ;
+  kopflos:api <https://example.com/api1> ;
+  kopflos:api <https://example.org/api2> ;
 .
 
-<https://example.com/api> a kopflos:Api .
+<https://example.com/api1> a kopflos:Api .
 
-<https://example.org/api> a kopflos:Api .
+<https://example.org/api2> a kopflos:Api .
+
+<https://example.com/FooShape>
+  a kopflos:ResourceShape ;
+  kopflos:api <https://example.com/api1> ;
+  kopflos:resourceLoader [
+    code:implementedBy """
+      function(iri, { env }) {
+        return env.dataset().toStream()
+      }
+    """^^code:EcmaScript ;
+  ] ;
+.
