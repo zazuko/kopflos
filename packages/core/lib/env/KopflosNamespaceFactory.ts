@@ -3,7 +3,7 @@ import type { NamespaceFactory } from '@rdfjs/namespace/Factory.js'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 
-type KopflosTerms = 'api' | 'Config'
+type KopflosTerms = 'api' | 'Config' | 'Api'
 
 declare module '@tpluscode/rdf-ns-builders' {
   interface CustomNamespaces {

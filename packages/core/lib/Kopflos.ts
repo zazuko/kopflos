@@ -19,7 +19,7 @@ export class Kopflos {
   declare apis: MultiPointer
 
   constructor(graph: AnyPointer) {
-    this.apis = graph.has(env.ns.rdf.type, env.ns.kopflos.Config).out(env.ns.kopflos.api)
+    this.apis = graph.any().has(env.ns.rdf.type, env.ns.kopflos.Api)
   }
 
   async handleRequest(req: KopflosRequest): Promise<KopflosResponse> {

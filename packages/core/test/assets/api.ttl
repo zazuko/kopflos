@@ -5,3 +5,7 @@ prefix kopflos: <https://kopflos.described.at/>
   kopflos:api <https://example.com/api> ;
   kopflos:api <https://example.org/api> ;
 .
+
+<https://example.com/api> a kopflos:Api .
+
+<https://example.org/api> a kopflos:Api .
