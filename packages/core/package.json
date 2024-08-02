@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "test": "mocha",
     "build": "tsc",
     "prepack": "npm run build"
   },
@@ -43,6 +44,8 @@
     "sinon": "^18.0.0"
   },
   "mocha": {
+    "extension": ["ts"],
+    "spec": "test/**/*.test.ts",
     "loader": "ts-node/esm"
   }
 }

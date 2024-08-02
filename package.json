@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
-    "test": "c8 mocha",
+    "test": "mocha",
     "release": "changeset publish"
   },
   "author": "Zazuko GmbH",
