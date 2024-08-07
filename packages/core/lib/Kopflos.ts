@@ -37,8 +37,10 @@ interface Clients {
   parsed: ParsingClient
 }
 
+type Endpoint = string | EndpointOptions | Clients
+
 export interface KopflosConfig {
-  sparql: Record<string, EndpointOptions | Clients>
+  sparql: Record<string, Endpoint> & { default: Endpoint }
 }
 
 interface Options {

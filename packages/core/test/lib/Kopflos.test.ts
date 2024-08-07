@@ -4,7 +4,11 @@ import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 
 describe('lib/Kopflos', () => {
-  const config = {} as unknown as KopflosConfig
+  const config: KopflosConfig = {
+    sparql: {
+      default: 'http://localhost:8080/sparql',
+    },
+  }
 
   describe('constructor', () => {
     it('initializes pointer', async () => {

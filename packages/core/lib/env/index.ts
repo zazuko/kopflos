@@ -3,11 +3,13 @@ import type { KopflosConfig } from '../Kopflos.js'
 import { KopflosNamespaceFactory } from './KopflosNamespaceFactory.js'
 import { CodeLoadersFactory } from './CodeLoadersFactory.js'
 import SparqlClientFactory from './SparqlClientFactory.js'
+import KopflosFactory from './KopflosFactory.js'
 
-export function createEnv({ sparql }: KopflosConfig) {
+export function createEnv(config: KopflosConfig) {
   return new Environment([
+    KopflosFactory(config),
     KopflosNamespaceFactory,
-    SparqlClientFactory(sparql),
+    SparqlClientFactory,
     CodeLoadersFactory,
   ], { parent })
 }
