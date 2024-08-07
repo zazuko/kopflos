@@ -28,8 +28,8 @@ describe('lib/env/SparqlClientFactory', () => {
     // then
     expect(factory.sparql.default.stream).to.be.instanceOf(StreamClient)
     expect(factory.sparql.default.parsed).to.be.instanceOf(ParsingClient)
-    expect(factory.sparql.default.stream.endpointUrl).to.equal('http://example.com/sparql')
-    expect(factory.sparql.default.parsed.endpointUrl).to.equal('http://example.com/sparql')
+    expect(factory.sparql.default.stream).to.have.property('endpointUrl', 'http://example.com/sparql')
+    expect(factory.sparql.default.parsed).to.have.property('endpointUrl', 'http://example.com/sparql')
   })
 
   it('initializes clients from endpoint config', () => {
@@ -57,10 +57,10 @@ describe('lib/env/SparqlClientFactory', () => {
     // then
     expect(factory.sparql.default.stream).to.be.instanceOf(StreamClient)
     expect(factory.sparql.default.parsed).to.be.instanceOf(ParsingClient)
-    expect(factory.sparql.default.stream.endpointUrl).to.equal('http://example.com/sparql')
-    expect(factory.sparql.default.parsed.endpointUrl).to.equal('http://example.com/sparql')
-    expect(factory.sparql.default.stream.updateUrl).to.equal('http://example.com/update')
-    expect(factory.sparql.default.parsed.updateUrl).to.equal('http://example.com/update')
+    expect(factory.sparql.default.stream).to.have.property('endpointUrl', 'http://example.com/sparql')
+    expect(factory.sparql.default.parsed).to.have.property('endpointUrl', 'http://example.com/sparql')
+    expect(factory.sparql.default.stream).to.have.property('updateUrl', 'http://example.com/update')
+    expect(factory.sparql.default.parsed).to.have.property('updateUrl', 'http://example.com/update')
   })
 
   it('initializes clients from client instance', () => {
