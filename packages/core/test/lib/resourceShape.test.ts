@@ -84,5 +84,22 @@ describe('lib/resourceShape', () => {
       })
       expect(results).to.have.length(1)
     })
+
+    it('finds matching resource by property usage of resource shape with target node', async () => {
+      // given
+      const kopflos = new Kopflos(rdf.clownface(), options)
+
+      // when
+      const results = await defaultResourceShapeLookup(ex['foo/location'], kopflos)
+
+      // then
+      expect(results[0]).to.deep.contain({
+        api: ex.api,
+        resourceShape: ex.FooShape,
+        parent: ex.foo,
+        property: rdf.ns.schema.location,
+      })
+      expect(results).to.have.length(1)
+    })
   })
 })

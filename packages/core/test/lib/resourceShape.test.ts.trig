@@ -62,3 +62,20 @@ GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-b
       ] ;
   .
 }
+
+GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-property-usage-of-resource-shape-with-target-node> {
+# resources
+  ex:foo
+    schema:location ex:foo\/location .
+
+  # api
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetNode ex:foo ;
+    kopflos:api ex:api ;
+    sh:property
+      [
+        sh:path schema:location ;
+      ] ;
+  .
+}

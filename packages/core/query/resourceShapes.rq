@@ -4,26 +4,21 @@ prefix kopflos: <https://kopflos.described.at/>
 
 SELECT distinct ?api ?resource ?parent ?resourceShape ?property ?type {
   {
-    ?resourceShape a kopflos:ResourceShape ;
-      sh:targetClass ?targetClass .
-    ?type rdfs:subClassOf* ?targetClass .
-    ?resource a ?type .
-  }
-  UNION
-  {
-    ?resourceShape a kopflos:ResourceShape ;
-      sh:targetNode ?resource .
-  }
-  UNION
-  {
-    ?resourceShape a kopflos:ResourceShape ;
-      sh:property/sh:path ?property ;
-      sh:targetClass ?type  .
-    ?parent ?property ?resource .
-    ?parent a ?type .
+    ?resourceShape a kopflos:ResourceShape .
+    ?resourceShape kopflos:api ?api .
+
+    {
+      ?resourceShape sh:targetClass ?targetClass .
+      ?type rdfs:subClassOf* ?targetClass .
+      ?candidate a ?type .
+    } UNION {
+      ?resourceShape sh:targetNode ?candidate .
+    }
   }
 
-  ?resourceShape kopflos:api ?api .
-
-  FILTER(isiri(?resource))
+  OPTIONAL {
+    ?resourceShape sh:property/sh:path ?property .
+    ?candidate ?property ?resource .
+    BIND(?candidate as ?parent)
+  }
 }
