@@ -46,6 +46,7 @@ describe('lib/Kopflos', () => {
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.Shape,
+          subject: ex.foo,
         }],
         resourceLoaderLookup: async () => undefined,
       })
@@ -66,6 +67,7 @@ describe('lib/Kopflos', () => {
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.FooShape,
+          subject: ex.foo,
         }],
         handlerLookup: async () => undefined,
       })
@@ -86,6 +88,7 @@ describe('lib/Kopflos', () => {
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.FooShape,
+          subject: ex.foo,
         }],
         handlerLookup: async () => async () => ({
           status: 200,

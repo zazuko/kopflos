@@ -4,7 +4,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kopflos: <https://kopflos.described.at/>
 PREFIX ex: <http://example.org/>
 
-GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-directly-matching-resource> {
+GRAPH <default-resource-shape-lookup/when-directly-matching-resource-shape-is-available> {
 # api
   ex:api a kopflos:Api .
 
@@ -15,25 +15,13 @@ GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-directly-matching-r
   .
 }
 
-GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-type> {
+GRAPH <default-resource-shape-lookup/when-class-targeting-resource-shape-is-available> {
 # resources
   ex:foo a ex:Foo .
-
-  # api
-  ex:api a kopflos:Api .
-
-  ex:FooShape
-    a kopflos:ResourceShape ;
-    sh:targetClass ex:Foo ;
-    kopflos:api ex:api ;
-  .
-}
-
-GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-super-type> {
-# resources
   ex:baz a ex:Baz .
   ex:Baz rdfs:subClassOf ex:Bar .
   ex:Bar rdfs:subClassOf ex:Foo .
+  ex:xyz a ex:Xyz .
 
   # api
   ex:api a kopflos:Api .
@@ -45,7 +33,7 @@ GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-b
   .
 }
 
-GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-property-usage> {
+GRAPH <default-resource-shape-lookup/when-class-targeting-resource-shapes-has-property-shape> {
 # resources
   ex:foo
     a ex:Foo ;
@@ -63,7 +51,7 @@ GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-b
   .
 }
 
-GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-property-usage-of-resource-shape-with-target-node> {
+GRAPH <default-resource-shape-lookup/when-node-targeting-resource-shapes-has-property-shape> {
 # resources
   ex:foo
     schema:location ex:foo\/location .

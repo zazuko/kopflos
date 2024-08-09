@@ -88,7 +88,7 @@ export function createStore(base: string, options: Options = {}) {
 }
 
 function testGraph(test: Mocha.Test): NamedNode {
-  return rdf.namedNode(encodeURI(test.titlePath().map(removeSpaces).join('/')))
+  return rdf.namedNode(encodeURI(test.titlePath().slice(1, -1).map(removeSpaces).join('/')))
 }
 
 function removeSpaces(arg: string) {
