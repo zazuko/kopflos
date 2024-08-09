@@ -46,7 +46,6 @@ describe('lib/resourceShape', () => {
       expect(results[0]).to.deep.contain({
         api: ex.api,
         resourceShape: ex.FooShape,
-        type: ex.Foo,
       })
       expect(results).to.have.length(1)
     })
@@ -62,7 +61,6 @@ describe('lib/resourceShape', () => {
       expect(results[0]).to.deep.contain({
         api: ex.api,
         resourceShape: ex.FooShape,
-        type: ex.Baz,
       })
       expect(results).to.have.length(1)
     })
@@ -78,7 +76,6 @@ describe('lib/resourceShape', () => {
       expect(results[0]).to.deep.contain({
         api: ex.api,
         resourceShape: ex.FooShape,
-        type: ex.Foo,
         parent: ex.foo,
         property: rdf.ns.schema.location,
       })

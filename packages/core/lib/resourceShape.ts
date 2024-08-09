@@ -11,7 +11,6 @@ interface ResourceShapeDirectMatch {
 interface ResourceShapeTypeMatch {
   api: NamedNode
   resourceShape: NamedNode
-  type: NamedNode
 }
 
 interface ResourceShapeObjectMatch {
