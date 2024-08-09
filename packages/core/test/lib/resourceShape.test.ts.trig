@@ -1,0 +1,64 @@
+PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-directly-matching-resource> {
+# api
+  ex:api a kopflos:Api .
+
+  ex:barShape
+    a kopflos:ResourceShape ;
+    sh:targetNode ex:bar ;
+    kopflos:api ex:api ;
+  .
+}
+
+GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-type> {
+# resources
+  ex:foo a ex:Foo .
+
+  # api
+  ex:api a kopflos:Api .
+
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetClass ex:Foo ;
+    kopflos:api ex:api ;
+  .
+}
+
+GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-super-type> {
+# resources
+  ex:baz a ex:Baz .
+  ex:Baz rdfs:subClassOf ex:Bar .
+  ex:Bar rdfs:subClassOf ex:Foo .
+
+  # api
+  ex:api a kopflos:Api .
+
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetClass ex:Foo ;
+    kopflos:api ex:api ;
+  .
+}
+
+GRAPH <lib/resourceShape/default-resource-shape-lookup/finds-matching-resource-by-property-usage> {
+# resources
+  ex:foo
+    a ex:Foo ;
+    schema:location ex:foo\/location .
+
+  # api
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetClass ex:Foo ;
+    kopflos:api ex:api ;
+    sh:property
+      [
+        sh:path schema:location ;
+      ] ;
+  .
+}

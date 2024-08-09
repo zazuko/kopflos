@@ -1,0 +1,25 @@
+PREFIX ex: <http://example.org/>
+PREFIX code: <https://code.described.at/>
+prefix kopflos: <https://kopflos.described.at/>
+
+ex:config
+  a kopflos:Config ;
+  kopflos:api ex:api1 ;
+  kopflos:api ex:api2 ;
+.
+
+ex:api1 a kopflos:Api .
+
+ex:api2 a kopflos:Api .
+
+ex:FooShape
+  a kopflos:ResourceShape ;
+  kopflos:api ex:api1 ;
+  kopflos:resourceLoader [
+    code:implementedBy """
+      function(iri, { env }) {
+        return env.dataset().toStream()
+      }
+    """^^code:EcmaScript ;
+  ] ;
+.

@@ -1,4 +1,0 @@
-PREFIX schema: <http://schema.org/>
-<https://example.com/foo> a <https://example.com/Foo> .
-
-<https://example.com/foo> schema:location <https://example.com/foo/location> .
