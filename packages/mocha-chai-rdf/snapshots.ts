@@ -4,6 +4,7 @@ import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import rdf from '@zazuko/env-node'
 
 declare global {
+  /* eslint-disable @typescript-eslint/no-namespace */
   namespace Chai {
     interface Assertion {
       canonical: Assertion
