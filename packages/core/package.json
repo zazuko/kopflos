@@ -9,6 +9,9 @@
     "build": "tsc",
     "prepack": "npm run build"
   },
+  "exports": {
+    "./*.js": "./*.js"
+  },
   "files": [
     "*.js",
     "*.d.ts",

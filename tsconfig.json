@@ -6,6 +6,7 @@
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "skipLibCheck": true
   }
 }
