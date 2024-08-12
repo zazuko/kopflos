@@ -9,7 +9,7 @@ import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js
 import defaultResourceShapeLookup from './resourceShape.js'
 import { responseOr } from './responseOr.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
-import { findResourceLoader } from './resourceLoader.js'
+import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
 
@@ -104,7 +104,7 @@ export default class implements Kopflos {
 
     const loader = await resourceLoaderLookup(resourceShape, this.env)
 
-    return loader || new Error('No loader found')
+    return loader || fromOwnGraph
   }
 
   async loadResource(iri: NamedNode, loader: ResourceLoader): Promise<AnyPointer> {

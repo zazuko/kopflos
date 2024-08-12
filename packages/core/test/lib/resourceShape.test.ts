@@ -1,11 +1,11 @@
 import rdf from '@zazuko/env-node'
 import { expect } from 'chai'
+import { createStore } from 'mocha-chai-rdf/store.js'
 import defaultResourceShapeLookup from '../../lib/resourceShape.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import inMemoryClients from '../support/in-memory-clients.js'
 import { ex } from '../support/ns.js'
-import { createStore } from '../support/testData.js'
 
 describe('lib/resourceShape', () => {
   let options: KopflosConfig
@@ -14,7 +14,7 @@ describe('lib/resourceShape', () => {
   beforeEach(async function () {
     options = {
       sparql: {
-        default: inMemoryClients(this.store!),
+        default: inMemoryClients(this.store),
       },
     }
   })

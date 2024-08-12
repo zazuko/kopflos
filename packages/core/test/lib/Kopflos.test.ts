@@ -1,7 +1,7 @@
 import { expect } from 'chai'
+import { createStore } from 'mocha-chai-rdf/store.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import { createStore } from '../support/testData.js'
 import { ex } from '../support/ns.js'
 
 describe('lib/Kopflos', () => {
@@ -38,27 +38,6 @@ describe('lib/Kopflos', () => {
 
       // then
       expect(response).to.have.property('status', 404)
-    })
-
-    it('returns error if no resource loader is found', async function () {
-      // given
-      const kopflos = new Kopflos(this.graph, config, {
-        resourceShapeLookup: async () => [{
-          api: ex.api,
-          resourceShape: ex.Shape,
-          subject: ex.foo,
-        }],
-        resourceLoaderLookup: async () => undefined,
-      })
-
-      // when
-      const response = await kopflos.handleRequest({
-        iri: ex.foo,
-        headers: {},
-      })
-
-      // then
-      expect(response).to.be.an('error')
     })
 
     it('returns error if no handler is found', async function () {

@@ -36,3 +36,11 @@ export async function findResourceLoader(resourceShape: GraphPointer, env: Kopfl
 
   return env.load<ResourceLoader>(resourceLoader)
 }
+
+export const describe: ResourceLoader = (iri, { env }) => {
+  return env.sparql.default.stream.query.construct(`DESCRIBE <${iri.value}>`)
+}
+
+export const fromOwnGraph: ResourceLoader = (iri, { env }) => {
+  return env.sparql.default.stream.query.construct(`CONSTRUCT { ?s ?p ?o } WHERE { GRAPH <${iri.value}> { ?s ?p ?o } }`)
+}
