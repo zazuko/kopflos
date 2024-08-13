@@ -12,7 +12,7 @@ describe('lib/resourceLoader', () => {
 
   let kopflos: Kopflos
   beforeEach(async function () {
-    kopflos = new Kopflos(rdf.clownface(), {
+    kopflos = new Kopflos({
       sparql: {
         default: inMemoryClients(this.store),
       },

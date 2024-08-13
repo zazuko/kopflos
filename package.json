@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
-    "@tpluscode/eslint-config": "^0.4.9",
+    "@tpluscode/eslint-config": "^0.5",
     "@types/chai": "^4.3.16",
     "@types/debug": "^4.1.12",
     "@types/mocha": "^10.0.7",
