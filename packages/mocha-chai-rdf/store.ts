@@ -3,11 +3,12 @@ import * as url from 'node:url'
 import * as Oxigraph from 'oxigraph'
 import type { NamespaceBuilder } from '@rdfjs/namespace'
 import rdf from '@zazuko/env-node'
-import type { NamedNode, Quad_Graph } from '@rdfjs/types'
+import type { DatasetCore, NamedNode, Quad_Graph } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 
 declare module 'mocha' {
   interface Context {
+    dataset: DatasetCore
     graph: AnyPointer
     store: Oxigraph.Store
   }
@@ -56,9 +57,18 @@ export function createStore(base: string, options: Options = {}) {
 
     function assertNotEmpty() {
       if (dataset.size === 0) {
-        throw new Error(`Test data not found in GRAPH <${encodeURI(graph.value)}>`)
+        const graphName = rdf.defaultGraph().equals(graph) ? '' : `in GRAPH <${graph.value}>`
+        throw new Error(`Test data not found ${graphName}`)
       }
     }
+
+    Object.defineProperty(this, 'dataset', {
+      get() {
+        assertNotEmpty()
+        return dataset
+      },
+      configurable: true,
+    })
 
     Object.defineProperty(this, 'graph', {
       get() {
@@ -79,6 +89,8 @@ export function createStore(base: string, options: Options = {}) {
     const cleanup = this.test?.title.includes('before all') ? after : afterEach
     cleanup(() => {
       /* eslint-disable @typescript-eslint/ban-ts-comment */
+      // @ts-ignore
+      delete this.dataset
       // @ts-ignore
       delete this.graph
       // @ts-ignore

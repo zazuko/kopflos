@@ -3,6 +3,8 @@ import type { DatasetCore, NamedNode, Stream } from '@rdfjs/types'
 import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
+import { CONSTRUCT } from '@tpluscode/sparql-builder'
+import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
@@ -43,20 +45,33 @@ export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
 }
 
-interface Options {
+export interface Options {
+  dataset?: DatasetCore
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
 }
 
-export default class implements Kopflos {
-  readonly apis: MultiPointer
+type Dataset = ReturnType<KopflosEnvironment['dataset']>
+
+export default class Impl implements Kopflos {
+  readonly dataset: Dataset
   readonly env: KopflosEnvironment
 
-  constructor(private graph: AnyPointer, private readonly config: KopflosConfig, private readonly options: Options = {}) {
+  constructor(private readonly config: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv(config)
 
-    this.apis = graph.any().has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
+    this.dataset = this.env.dataset([
+      ...options.dataset || [],
+    ])
+  }
+
+  get graph() {
+    return this.env.clownface({ dataset: this.dataset })
+  }
+
+  get apis(): MultiPointer {
+    return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
   async handleRequest(req: KopflosRequest): Promise<KopflosResponse> {
@@ -120,6 +135,22 @@ export default class implements Kopflos {
 
     return handler || {
       status: 405,
+    }
+  }
+
+  static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
+    const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
+    const quads = CONSTRUCT`?s ?p ?o `
+      .WHERE`
+        GRAPH ?g {
+          ?s ?p ?o
+        }
+        
+        FILTER (?g ${IN(...graphsIris)})
+      `.execute(kopflos.env.sparql.default.stream)
+
+    for await (const quad of quads) {
+      kopflos.dataset.add(quad)
     }
   }
 }

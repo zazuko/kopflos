@@ -23,7 +23,7 @@ describe('lib/resourceShape', () => {
     context('when directly matching resource shape is available', () => {
       it('is found by resource IRI', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex.bar, kopflos)
@@ -39,7 +39,7 @@ describe('lib/resourceShape', () => {
 
       it('does not find anything when requested resource does not match that shape', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex.boo, kopflos)
@@ -52,7 +52,7 @@ describe('lib/resourceShape', () => {
     context('when class targeting resource shape is available', () => {
       it('is found when requested resource has that type', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex.foo, kopflos)
@@ -68,7 +68,7 @@ describe('lib/resourceShape', () => {
 
       it('is found when requested resource has derived type', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex.baz, kopflos)
@@ -84,7 +84,7 @@ describe('lib/resourceShape', () => {
 
       it('find nothing when a resource exists but has a different type', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex.xyz, kopflos)
@@ -97,7 +97,7 @@ describe('lib/resourceShape', () => {
     context('when class targeting resource shapes has property shape', () => {
       it('finds matching resource by property usage of class targeting shape', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex['foo/location'], kopflos)
@@ -117,7 +117,7 @@ describe('lib/resourceShape', () => {
     context('when node targeting resource shapes has property shape', () => {
       it('finds matching resource by property usage of resource shape with target node', async () => {
         // given
-        const kopflos = new Kopflos(rdf.clownface(), options)
+        const kopflos = new Kopflos(options)
 
         // when
         const results = await defaultResourceShapeLookup(ex['foo/location'], kopflos)

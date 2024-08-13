@@ -16,7 +16,9 @@ describe('lib/Kopflos', () => {
   describe('constructor', () => {
     it('initializes pointer', async function () {
       // when
-      const kopflos = new Kopflos(this.graph, config)
+      const kopflos = new Kopflos(config, {
+        dataset: this.dataset,
+      })
 
       // then
       expect(kopflos.apis.terms).to.deep.eq([ex.api1, ex.api2])
@@ -26,7 +28,8 @@ describe('lib/Kopflos', () => {
   describe('handleRequest', () => {
     it('returns 404 if no resource shape is found', async function () {
       // given
-      const kopflos = new Kopflos(this.graph, config, {
+      const kopflos = new Kopflos(config, {
+        dataset: this.dataset,
         resourceShapeLookup: async () => [],
       })
 
@@ -42,7 +45,8 @@ describe('lib/Kopflos', () => {
 
     it('returns error if no handler is found', async function () {
       // given
-      const kopflos = new Kopflos(this.graph, config, {
+      const kopflos = new Kopflos(config, {
+        dataset: this.dataset,
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.FooShape,
@@ -63,7 +67,8 @@ describe('lib/Kopflos', () => {
 
     it('returns result from handler', async function () {
       // given
-      const kopflos = new Kopflos(this.graph, config, {
+      const kopflos = new Kopflos(config, {
+        dataset: this.dataset,
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.FooShape,

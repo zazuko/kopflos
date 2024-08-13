@@ -1,0 +1,26 @@
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+GRAPH ex:PublicApi {
+  ex:PublicApi a kopflos:Api .
+
+  ex:PublicConfig
+    a kopflos:Config ;
+    kopflos:api ex:PublicApi ;
+  .
+
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PublicApi ;
+    sh:targetClass ex:Person ;
+    kopflos:handler [
+      kopflos:method "GET" ;
+    ], [
+      kopflos:method "PUT" ;
+    ] ;
+}
+
+GRAPH ex:PrivateApi {
+  ex:PrivateApi a kopflos:Api .
+}
