@@ -1,16 +1,26 @@
 import type { AnyPointer, GraphPointer } from 'clownface'
+import type { NamedNode } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
 import type { Kopflos, KopflosResponse } from './Kopflos.js'
 import type { ResourceShapeMatch } from './resourceShape.js'
 
-export interface Handler {
-  (arg: {
-    resourceShape: GraphPointer
-    env: KopflosEnvironment
-    resource: GraphPointer
-    root: GraphPointer | undefined
-  }): KopflosResponse | Promise<KopflosResponse>
+export interface HandlerArgs {
+  resourceShape: GraphPointer
+  env: KopflosEnvironment
+  subject: GraphPointer
+  property: NamedNode | undefined
+  object: GraphPointer | undefined
 }
+
+export interface SubjectHandler {
+  (arg: HandlerArgs): KopflosResponse | Promise<KopflosResponse>
+}
+
+export interface ObjectHandler {
+  (arg: Required<HandlerArgs>): KopflosResponse | Promise<KopflosResponse>
+}
+
+export type Handler = SubjectHandler | ObjectHandler
 
 export interface HandlerLookup {
   (match: ResourceShapeMatch, kopflos: Kopflos): Promise<Handler | undefined>

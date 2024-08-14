@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/Kopflos handleRequest property handlers returns result from handler 1`] = `
+Object {
+  "body": "{
+  \\"subject\\": \\"http://example.org/foo\\",
+  \\"property\\": \\"http://example.org/bar\\",
+  \\"object\\": \\"http://example.org/baz\\"
+}",
+  "status": 200,
+}
+`;
+
+exports[`lib/Kopflos handleRequest returns result from handler 1`] = `
+Object {
+  "body": "{
+  \\"subject\\": \\"http://example.org/foo\\"
+}",
+  "status": 200,
+}
+`;

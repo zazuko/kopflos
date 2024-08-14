@@ -1,8 +1,11 @@
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
+import 'mocha-chai-rdf/snapshots.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../support/ns.js'
+import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
+import type { Handler } from '../../lib/handler.js'
 
 describe('lib/Kopflos', () => {
   const config: KopflosConfig = {
@@ -11,7 +14,7 @@ describe('lib/Kopflos', () => {
     },
   }
 
-  before(createStore(import.meta.url))
+  before(createStore(import.meta.url, { format: 'trig', includeDefaultGraph: true }))
 
   describe('constructor', () => {
     it('initializes pointer', async function () {
@@ -74,10 +77,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => async () => ({
-          status: 200,
-          body: 'Foo',
-        }),
+        handlerLookup: async () => testHandler,
       })
 
       // when
@@ -87,10 +87,42 @@ describe('lib/Kopflos', () => {
       })
 
       // then
-      expect(response).to.deep.eq({
-        status: 200,
-        body: 'Foo',
+      expect(response).toMatchSnapshot()
+    })
+
+    describe('property handlers', () => {
+      it('returns result from handler', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.dataset,
+          resourceShapeLookup: async () => [<ResourceShapeObjectMatch>{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+            property: ex.bar,
+            object: ex.baz,
+          }],
+          handlerLookup: async () => testHandler,
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.baz,
+          headers: {},
+        })
+
+        // then
+        expect(response).toMatchSnapshot()
       })
     })
   })
+})
+
+const testHandler: Handler = ({ subject, property, object }) => ({
+  status: 200,
+  body: JSON.stringify({
+    subject: subject.value,
+    property: property?.value,
+    object: object?.value,
+  }, null, 2),
 })

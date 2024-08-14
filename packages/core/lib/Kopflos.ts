@@ -12,7 +12,7 @@ import defaultResourceShapeLookup from './resourceShape.js'
 import { responseOr } from './responseOr.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
-import type { Handler, HandlerLookup } from './handler.js'
+import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
 
 interface KopflosRequest {
@@ -80,19 +80,19 @@ export default class Impl implements Kopflos {
 
       return responseOr(this.findResourceLoader(resourceShape), loader => {
         return responseOr(this.loadResource(req.iri, loader), resourceGraph => {
-          let root: GraphPointer | undefined
-          if ('subject' in resourceShapeMatch) {
-            root = resourceGraph.node(resourceShapeMatch.subject)
+          const args: HandlerArgs = {
+            resourceShape,
+            env: this.env,
+            subject: resourceGraph.node(resourceShapeMatch.subject),
+            property: undefined,
+            object: undefined,
+          }
+          if ('property' in resourceShapeMatch) {
+            args.property = resourceShapeMatch.property
+            args.object = resourceGraph.node(resourceShapeMatch.object)
           }
 
-          return responseOr(this.loadHandler(resourceShapeMatch), handler => {
-            return handler({
-              resourceShape,
-              env: this.env,
-              resource: resourceGraph.node(req.iri),
-              root,
-            })
-          })
+          return responseOr(this.loadHandler(resourceShapeMatch), handler => handler(args))
         })
       })
     })
