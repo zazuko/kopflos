@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
 import type { DatasetCore, NamedNode, Stream } from '@rdfjs/types'
-import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
+import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
@@ -15,8 +15,12 @@ import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
 
+export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE'] as const
+type HttpMethod = (typeof HTTP_METHODS)[number];
+
 interface KopflosRequest {
   iri: NamedNode
+  method: HttpMethod
   headers: IncomingHttpHeaders
 }
 
@@ -79,7 +83,12 @@ export default class Impl implements Kopflos {
       const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
 
       return responseOr(this.findResourceLoader(resourceShape), loader => {
-        return responseOr(this.loadResource(req.iri, loader), resourceGraph => {
+        const coreRepresentation = loader(req.iri, this)
+
+        return responseOr(this.loadHandler(req.method, resourceShapeMatch, coreRepresentation), async handler => {
+          const resourceGraph = this.env.clownface({
+            dataset: await this.env.dataset().import(coreRepresentation),
+          })
           const args: HandlerArgs = {
             resourceShape,
             env: this.env,
@@ -92,7 +101,7 @@ export default class Impl implements Kopflos {
             args.object = resourceGraph.node(resourceShapeMatch.object)
           }
 
-          return responseOr(this.loadHandler(resourceShapeMatch), handler => handler(args))
+          return handler(args)
         })
       })
     })
@@ -122,20 +131,23 @@ export default class Impl implements Kopflos {
     return loader || fromOwnGraph
   }
 
-  async loadResource(iri: NamedNode, loader: ResourceLoader): Promise<AnyPointer> {
-    const stream = loader(iri, { env: this.env })
-    const dataset = await this.env.dataset().import(stream)
-    return this.env.clownface({ dataset })
-  }
-
-  async loadHandler(resourceShapeMatch: ResourceShapeMatch): Promise<Handler | KopflosResponse> {
+  async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
     const handlerLookup = this.options.handlerLookup || loadHandler
 
     const handler = await handlerLookup(resourceShapeMatch, this)
 
-    return handler || {
-      status: 405,
+    if (handler) {
+      return handler
     }
+
+    if (method === 'GET' || method === 'HEAD') {
+      return {
+        status: 200,
+        body: coreRepresentation,
+      }
+    }
+
+    return { status: 405 }
   }
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {

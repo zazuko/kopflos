@@ -19,3 +19,13 @@ Object {
   "status": 200,
 }
 `;
+
+exports[`lib/Kopflos handleRequest when no handler is found when method is GET forwards core representation 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .
+"
+`;
+
+exports[`lib/Kopflos handleRequest when no handler is found when method is HEAD forwards core representation 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .
+"
+`;

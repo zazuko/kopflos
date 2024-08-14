@@ -23,7 +23,7 @@ export interface ObjectHandler {
 export type Handler = SubjectHandler | ObjectHandler
 
 export interface HandlerLookup {
-  (match: ResourceShapeMatch, kopflos: Kopflos): Promise<Handler | undefined>
+  (match: ResourceShapeMatch, kopflos: Kopflos): Promise<Handler | undefined> | Handler | undefined
 }
 
 export function loadHandler({ resourceShape, ...rest }: ResourceShapeMatch, { apis, env }: Kopflos) {
