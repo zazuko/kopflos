@@ -14,9 +14,7 @@ import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
-
-export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE'] as const
-type HttpMethod = (typeof HTTP_METHODS)[number];
+import type { HttpMethod } from './httpMethods.js'
 
 interface KopflosRequest {
   iri: NamedNode
@@ -47,6 +45,7 @@ type Endpoint = string | EndpointOptions | Clients
 
 export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
+  codeBase?: string
 }
 
 export interface Options {
@@ -143,7 +142,7 @@ export default class Impl implements Kopflos {
   async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
     const handlerLookup = this.options.handlerLookup || loadHandler
 
-    const handler = await handlerLookup(resourceShapeMatch, this)
+    const handler = await handlerLookup(resourceShapeMatch, method, this)
 
     if (handler) {
       return handler
