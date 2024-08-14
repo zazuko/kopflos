@@ -4,10 +4,11 @@ import 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
-import Kopflos, { HTTP_METHODS } from '../../lib/Kopflos.js'
+import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../support/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
 import type { Handler } from '../../lib/handler.js'
+import HttpMethods from '../../lib/httpMethods.js'
 
 describe('lib/Kopflos', () => {
   const config: KopflosConfig = {
@@ -102,7 +103,7 @@ describe('lib/Kopflos', () => {
         })
       }
 
-      for (const method of HTTP_METHODS.filter(m => m !== 'GET' && m !== 'HEAD')) {
+      for (const method of HttpMethods.filter(m => m !== 'GET' && m !== 'HEAD')) {
         context('when method is ' + method, () => {
           it('returns error', async function () {
             // given
@@ -157,7 +158,7 @@ describe('lib/Kopflos', () => {
       })
 
       context('when no handler is found', () => {
-        for (const method of HTTP_METHODS) {
+        for (const method of HttpMethods) {
           context('when method is ' + method, () => {
             it('returns 405', async function () {
               // given

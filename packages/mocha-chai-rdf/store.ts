@@ -28,9 +28,10 @@ interface GraphSourceOptions {
 
 type Options = (DatasetSourceOptions | GraphSourceOptions) & {
   baseIri?: string | NamespaceBuilder
+  sliceTestPath?: [number, number]
 }
 
-export function createStore(base: string, options: Options = {}) {
+export function createStore(base: string, { sliceTestPath = [1, -1], ...options }: Options = { }) {
   const format = options.format ?? 'ttl'
   let loadAll = true
   let includeDefaultGraph = false
@@ -48,7 +49,7 @@ export function createStore(base: string, options: Options = {}) {
 
     let graph: Quad_Graph | undefined
     if (this.currentTest && !loadAll) {
-      graph = testGraph(this.currentTest)
+      graph = testGraph(this.currentTest, sliceTestPath)
       dataset = dataset
         .filter((quad) => {
           return quad.graph.equals(graph) || (includeDefaultGraph && quad.graph.equals(rdf.defaultGraph()))
@@ -116,8 +117,8 @@ export function createStore(base: string, options: Options = {}) {
   }
 }
 
-function testGraph(test: Mocha.Test): NamedNode {
-  return rdf.namedNode(encodeURI(test.titlePath().slice(1, -1).map(removeSpaces).join('/')))
+function testGraph(test: Mocha.Test, slice: [number, number]): NamedNode {
+  return rdf.namedNode(encodeURI(test.titlePath().slice(...slice).map(removeSpaces).join('/')))
 }
 
 function removeSpaces(arg: string) {
