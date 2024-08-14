@@ -25,7 +25,7 @@ interface KopflosRequest {
 }
 
 type ResultBody = Stream | DatasetCore | GraphPointer | Error
-type ResultEnvelope = {
+export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
@@ -35,7 +35,7 @@ export type KopflosResponse = ResultBody | ResultEnvelope
 export interface Kopflos {
   get env(): KopflosEnvironment
   get apis(): MultiPointer
-  handleRequest(req: KopflosRequest): Promise<KopflosResponse>
+  handleRequest(req: KopflosRequest): Promise<ResultEnvelope>
 }
 
 interface Clients {
@@ -78,8 +78,8 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async handleRequest(req: KopflosRequest): Promise<KopflosResponse> {
-    return responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
+  async handleRequest(req: KopflosRequest): Promise<ResultEnvelope> {
+    const result = await responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
       const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
 
       return responseOr(this.findResourceLoader(resourceShape), loader => {
@@ -105,6 +105,15 @@ export default class Impl implements Kopflos {
         })
       })
     })
+
+    if (this.isEnvelope(result)) {
+      return result
+    }
+
+    return {
+      status: 200,
+      body: result,
+    }
   }
 
   async findResourceShape(iri: NamedNode): Promise<ResourceShapeMatch | KopflosResponse> {
@@ -140,7 +149,7 @@ export default class Impl implements Kopflos {
       return handler
     }
 
-    if (method === 'GET' || method === 'HEAD') {
+    if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
       return {
         status: 200,
         body: coreRepresentation,
@@ -148,6 +157,10 @@ export default class Impl implements Kopflos {
     }
 
     return { status: 405 }
+  }
+
+  private isEnvelope(arg: KopflosResponse): arg is ResultEnvelope {
+    return 'body' in arg || 'status' in arg
   }
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {

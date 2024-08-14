@@ -155,6 +155,37 @@ describe('lib/Kopflos', () => {
         // then
         expect(response).toMatchSnapshot()
       })
+
+      context('when no handler is found', () => {
+        for (const method of HTTP_METHODS) {
+          context('when method is ' + method, () => {
+            it('returns 405', async function () {
+              // given
+              const kopflos = new Kopflos(config, {
+                dataset: this.dataset,
+                resourceShapeLookup: async () => [<ResourceShapeObjectMatch>{
+                  api: ex.api,
+                  resourceShape: ex.FooShape,
+                  subject: ex.foo,
+                  property: ex.bar,
+                  object: ex.baz,
+                }],
+                handlerLookup: async () => undefined,
+              })
+
+              // when
+              const response = await kopflos.handleRequest({
+                iri: ex.baz,
+                method,
+                headers: {},
+              })
+
+              // then
+              expect(response.status).to.eq(405)
+            })
+          })
+        }
+      })
     })
   })
 })
