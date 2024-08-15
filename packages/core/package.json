@@ -10,7 +10,8 @@
     "prepack": "npm run build"
   },
   "exports": {
-    "./*.js": "./*.js"
+    ".": "./index.js",
+    "./resourceLoaders.js": "./resourceLoaders.js"
   },
   "files": [
     "*.js",
@@ -53,6 +54,7 @@
   "mocha": {
     "extension": ["ts"],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm"
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
   }
 }
