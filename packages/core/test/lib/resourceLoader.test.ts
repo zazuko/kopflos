@@ -14,7 +14,7 @@ describe('lib/resourceLoader', () => {
   beforeEach(async function () {
     kopflos = new Kopflos({
       sparql: {
-        default: inMemoryClients(this.store),
+        default: inMemoryClients(this.rdf),
       },
     })
   })

@@ -5,12 +5,19 @@ import type { NamespaceBuilder } from '@rdfjs/namespace'
 import rdf from '@zazuko/env-node'
 import type { DatasetCore, NamedNode, Quad_Graph } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
+import type { StreamClient } from 'sparql-http-client/StreamClient.js'
+import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
+import * as clients from './sparql-clients.js'
 
 declare module 'mocha' {
   interface Context {
-    dataset: DatasetCore
-    graph: AnyPointer
-    store: Oxigraph.Store
+    rdf: {
+      dataset: DatasetCore
+      graph: AnyPointer
+      store: Oxigraph.Store
+      streamClient: StreamClient
+      parsingClient: ParsingClient
+    }
   }
 }
 
@@ -62,25 +69,18 @@ export function createStore(base: string, options: Options = {}) {
       }
     }
 
-    Object.defineProperty(this, 'dataset', {
-      get() {
-        assertNotEmpty()
-        return dataset
-      },
-      configurable: true,
-    })
+    const rdfFixture = {
+      dataset,
+      graph: rdf.clownface({ dataset }),
+      store,
+      streamClient: clients.streamClient(store),
+      parsingClient: clients.parsingClient(store),
+    }
 
-    Object.defineProperty(this, 'graph', {
+    Object.defineProperty(this, 'rdf', {
       get() {
         assertNotEmpty()
-        return rdf.clownface({ dataset })
-      },
-      configurable: true,
-    })
-    Object.defineProperty(this, 'store', {
-      get() {
-        assertNotEmpty()
-        return store
+        return rdfFixture
       },
       configurable: true,
     })
@@ -90,11 +90,7 @@ export function createStore(base: string, options: Options = {}) {
     cleanup(() => {
       /* eslint-disable @typescript-eslint/ban-ts-comment */
       // @ts-ignore
-      delete this.dataset
-      // @ts-ignore
-      delete this.graph
-      // @ts-ignore
-      delete this.store
+      delete this.rdf
     })
   }
 }
