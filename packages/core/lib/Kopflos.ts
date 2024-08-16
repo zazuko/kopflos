@@ -1,9 +1,10 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
 import type { DatasetCore, NamedNode, Stream } from '@rdfjs/types'
 import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
-import type { Options as EndpointOptions } from 'sparql-http-client/StreamClient.js'
+import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
+import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { KopflosEnvironment } from './env/index.js'
-import env from './env/index.js'
+import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
 import defaultResourceShapeLookup from './resourceShape.js'
 import { responseOr } from './responseOr.js'
@@ -31,8 +32,15 @@ export interface Kopflos {
   handleRequest(req: KopflosRequest): Promise<KopflosResponse>
 }
 
+interface Clients {
+  stream: StreamClient
+  parsed: ParsingClient
+}
+
+type Endpoint = string | EndpointOptions | Clients
+
 export interface KopflosConfig {
-  sparql: Record<string, EndpointOptions>
+  sparql: Record<string, Endpoint> & { default: Endpoint }
 }
 
 interface Options {
@@ -43,10 +51,12 @@ interface Options {
 
 export default class implements Kopflos {
   readonly apis: MultiPointer
-  readonly env: KopflosEnvironment = env
+  readonly env: KopflosEnvironment
 
   constructor(private graph: AnyPointer, private readonly config: KopflosConfig, private readonly options: Options = {}) {
-    this.apis = graph.any().has(env.ns.rdf.type, env.ns.kopflos.Api)
+    this.env = createEnv(config)
+
+    this.apis = graph.any().has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
   async handleRequest(req: KopflosRequest): Promise<KopflosResponse> {

@@ -1,19 +1,20 @@
+PREFIX ex: <http://example.org/>
 PREFIX code: <https://code.described.at/>
 prefix kopflos: <https://kopflos.described.at/>
 
-<config>
+ex:config
   a kopflos:Config ;
-  kopflos:api <https://example.com/api1> ;
-  kopflos:api <https://example.org/api2> ;
+  kopflos:api ex:api1 ;
+  kopflos:api ex:api2 ;
 .
 
-<https://example.com/api1> a kopflos:Api .
+ex:api1 a kopflos:Api .
 
-<https://example.org/api2> a kopflos:Api .
+ex:api2 a kopflos:Api .
 
-<https://example.com/FooShape>
+ex:FooShape
   a kopflos:ResourceShape ;
-  kopflos:api <https://example.com/api1> ;
+  kopflos:api ex:api1 ;
   kopflos:resourceLoader [
     code:implementedBy """
       function(iri, { env }) {

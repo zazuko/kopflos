@@ -1,0 +1,69 @@
+PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+GRAPH <default-resource-shape-lookup/when-directly-matching-resource-shape-is-available> {
+# api
+  ex:api a kopflos:Api .
+
+  ex:barShape
+    a kopflos:ResourceShape ;
+    sh:targetNode ex:bar ;
+    kopflos:api ex:api ;
+  .
+}
+
+GRAPH <default-resource-shape-lookup/when-class-targeting-resource-shape-is-available> {
+# resources
+  ex:foo a ex:Foo .
+  ex:baz a ex:Baz .
+  ex:Baz rdfs:subClassOf ex:Bar .
+  ex:Bar rdfs:subClassOf ex:Foo .
+  ex:xyz a ex:Xyz .
+
+  # api
+  ex:api a kopflos:Api .
+
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetClass ex:Foo ;
+    kopflos:api ex:api ;
+  .
+}
+
+GRAPH <default-resource-shape-lookup/when-class-targeting-resource-shapes-has-property-shape> {
+# resources
+  ex:foo
+    a ex:Foo ;
+    schema:location ex:foo\/location .
+
+  # api
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetClass ex:Foo ;
+    kopflos:api ex:api ;
+    sh:property
+      [
+        sh:path schema:location ;
+      ] ;
+  .
+}
+
+GRAPH <default-resource-shape-lookup/when-node-targeting-resource-shapes-has-property-shape> {
+# resources
+  ex:foo
+    schema:location ex:foo\/location .
+
+  # api
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:targetNode ex:foo ;
+    kopflos:api ex:api ;
+    sh:property
+      [
+        sh:path schema:location ;
+      ] ;
+  .
+}

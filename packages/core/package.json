@@ -41,7 +41,9 @@
   "devDependencies": {
     "@types/sparql-http-client": "^3.0.0",
     "chai": "^4.5.0",
-    "sinon": "^18.0.0"
+    "oxigraph": "^0.4.0-alpha.7",
+    "sinon": "^18.0.0",
+    "into-stream": "^8.0.1"
   },
   "mocha": {
     "extension": ["ts"],

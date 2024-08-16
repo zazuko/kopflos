@@ -1,0 +1,24 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+prefix kopflos: <https://kopflos.described.at/>
+
+SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object {
+  ?resourceShape a kopflos:ResourceShape .
+  ?resourceShape kopflos:api ?api .
+
+  {
+    ?resourceShape sh:targetClass ?targetClass .
+    ?type rdfs:subClassOf* ?targetClass .
+    ?subject a ?type .
+  } UNION {
+    ?resourceShape sh:targetNode ?subject .
+  }
+
+  optional {
+    ?resourceShape sh:property/sh:path ?property .
+    ?subject ?property ?object .
+  }
+
+  VALUES ?resource { sh:this }
+  FILTER (?resource = ?subject || ?resource = ?object)
+}
