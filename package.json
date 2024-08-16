@@ -2,6 +2,7 @@
   "name": "@zazuko/kopflos",
   "description": "RDF-based web APIs",
   "private": true,
+  "type": "module",
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "mocha",

@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
-      - run: npx c8 --reporter lcovonly npm run --ws test
+      - run: npx c8 --all --reporter lcovonly npm run --ws --if-present test
       - name: Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -38,4 +38,4 @@ jobs:
         with:
           node-version: lts/*
       - run: npm ci
-      - run: npm run -ws build
+      - run: npm run -ws --if-present build
