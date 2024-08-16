@@ -18,19 +18,16 @@ export async function findResourceLoader(resourceShape: GraphPointer, env: Kopfl
 
   resourceLoader = resourceShape
     .out(env.ns.kopflos.resourceLoader)
-    .out(env.ns.code.implementedBy)
 
   if (!isGraphPointer(resourceLoader)) {
     const api = resourceShape.in(env.ns.kopflos.api)
     resourceLoader = api
       .out(env.ns.kopflos.resourceLoader)
-      .out(env.ns.code.implementedBy)
 
     if (!isGraphPointer(resourceLoader)) {
       resourceLoader = api
         .in(env.ns.kopflos.api)
         .out(env.ns.kopflos.resourceLoader)
-        .out(env.ns.code.implementedBy)
     }
   }
 
