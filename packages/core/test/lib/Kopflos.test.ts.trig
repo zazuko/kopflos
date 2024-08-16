@@ -18,7 +18,11 @@ ex:FooShape
   kopflos:resourceLoader [
     code:implementedBy """
       function(iri, { env }) {
-        return env.dataset().toStream()
+        return env.clownface()
+          .namedNode(iri)
+          .addOut(env.ns.rdf.type, env.ns.schema.Thing)
+          .dataset
+          .toStream()
       }
     """^^code:EcmaScript ;
   ] ;

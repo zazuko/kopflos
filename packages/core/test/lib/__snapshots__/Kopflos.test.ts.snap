@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/Kopflos handleRequest property handlers returns result from handler 1`] = `
+Object {
+  "body": "{
+  \\"subject\\": \\"http://example.org/foo\\",
+  \\"property\\": \\"http://example.org/bar\\",
+  \\"object\\": \\"http://example.org/baz\\"
+}",
+  "status": 200,
+}
+`;
+
+exports[`lib/Kopflos handleRequest returns result from handler 1`] = `
+Object {
+  "body": "{
+  \\"subject\\": \\"http://example.org/foo\\"
+}",
+  "status": 200,
+}
+`;
+
+exports[`lib/Kopflos handleRequest when no handler is found when method is GET forwards core representation 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .
+"
+`;
+
+exports[`lib/Kopflos handleRequest when no handler is found when method is HEAD forwards core representation 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .
+"
+`;

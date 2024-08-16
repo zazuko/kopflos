@@ -2,11 +2,10 @@ import type { AnyPointer, GraphPointer } from 'clownface'
 import { isGraphPointer } from 'is-graph-pointer'
 import type { NamedNode, Stream } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
+import type { Kopflos } from './Kopflos.js'
 
 export interface ResourceLoader {
-  (iri: NamedNode, opts: {
-    env: KopflosEnvironment
-  }): Stream
+  (iri: NamedNode, instance: Kopflos): Stream
 }
 
 export interface ResourceLoaderLookup {

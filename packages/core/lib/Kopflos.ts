@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
 import type { DatasetCore, NamedNode, Stream } from '@rdfjs/types'
-import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
+import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
@@ -12,16 +12,20 @@ import defaultResourceShapeLookup from './resourceShape.js'
 import { responseOr } from './responseOr.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
-import type { Handler, HandlerLookup } from './handler.js'
+import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
+
+export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE'] as const
+type HttpMethod = (typeof HTTP_METHODS)[number];
 
 interface KopflosRequest {
   iri: NamedNode
+  method: HttpMethod
   headers: IncomingHttpHeaders
 }
 
 type ResultBody = Stream | DatasetCore | GraphPointer | Error
-type ResultEnvelope = {
+export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
@@ -31,7 +35,7 @@ export type KopflosResponse = ResultBody | ResultEnvelope
 export interface Kopflos {
   get env(): KopflosEnvironment
   get apis(): MultiPointer
-  handleRequest(req: KopflosRequest): Promise<KopflosResponse>
+  handleRequest(req: KopflosRequest): Promise<ResultEnvelope>
 }
 
 interface Clients {
@@ -74,28 +78,42 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async handleRequest(req: KopflosRequest): Promise<KopflosResponse> {
-    return responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
+  async handleRequest(req: KopflosRequest): Promise<ResultEnvelope> {
+    const result = await responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
       const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
 
       return responseOr(this.findResourceLoader(resourceShape), loader => {
-        return responseOr(this.loadResource(req.iri, loader), resourceGraph => {
-          let root: GraphPointer | undefined
-          if ('subject' in resourceShapeMatch) {
-            root = resourceGraph.node(resourceShapeMatch.subject)
+        const coreRepresentation = loader(req.iri, this)
+
+        return responseOr(this.loadHandler(req.method, resourceShapeMatch, coreRepresentation), async handler => {
+          const resourceGraph = this.env.clownface({
+            dataset: await this.env.dataset().import(coreRepresentation),
+          })
+          const args: HandlerArgs = {
+            resourceShape,
+            env: this.env,
+            subject: resourceGraph.node(resourceShapeMatch.subject),
+            property: undefined,
+            object: undefined,
+          }
+          if ('property' in resourceShapeMatch) {
+            args.property = resourceShapeMatch.property
+            args.object = resourceGraph.node(resourceShapeMatch.object)
           }
 
-          return responseOr(this.loadHandler(resourceShapeMatch), handler => {
-            return handler({
-              resourceShape,
-              env: this.env,
-              resource: resourceGraph.node(req.iri),
-              root,
-            })
-          })
+          return handler(args)
         })
       })
     })
+
+    if (this.isEnvelope(result)) {
+      return result
+    }
+
+    return {
+      status: 200,
+      body: result,
+    }
   }
 
   async findResourceShape(iri: NamedNode): Promise<ResourceShapeMatch | KopflosResponse> {
@@ -122,20 +140,27 @@ export default class Impl implements Kopflos {
     return loader || fromOwnGraph
   }
 
-  async loadResource(iri: NamedNode, loader: ResourceLoader): Promise<AnyPointer> {
-    const stream = loader(iri, { env: this.env })
-    const dataset = await this.env.dataset().import(stream)
-    return this.env.clownface({ dataset })
-  }
-
-  async loadHandler(resourceShapeMatch: ResourceShapeMatch): Promise<Handler | KopflosResponse> {
+  async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
     const handlerLookup = this.options.handlerLookup || loadHandler
 
     const handler = await handlerLookup(resourceShapeMatch, this)
 
-    return handler || {
-      status: 405,
+    if (handler) {
+      return handler
     }
+
+    if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
+      return {
+        status: 200,
+        body: coreRepresentation,
+      }
+    }
+
+    return { status: 405 }
+  }
+
+  private isEnvelope(arg: KopflosResponse): arg is ResultEnvelope {
+    return 'body' in arg || 'status' in arg
   }
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
