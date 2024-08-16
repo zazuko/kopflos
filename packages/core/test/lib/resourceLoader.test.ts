@@ -38,4 +38,11 @@ describe('lib/resourceLoader', () => {
       expect(dataset).canonical.toMatchSnapshot()
     })
   })
+
+  describe('findResourceLoader', () => {
+    context('when resource shape has a resource loader', () => {
+      it('will be used', async () => {
+      })
+    })
+  })
 })
