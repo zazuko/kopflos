@@ -10,7 +10,8 @@
     "prepack": "npm run build"
   },
   "exports": {
-    "./*.js": "./*.js"
+    ".": "./index.js",
+    "./resourceLoaders.js": "./resourceLoaders.js"
   },
   "files": [
     "*.js",
@@ -43,16 +44,20 @@
     "sparql-http-client": "^3.0.0"
   },
   "devDependencies": {
+    "@types/sinon": "^17.0.3",
+    "@types/sinon-chai": "^3.2.12",
     "@types/sparql-http-client": "^3.0.0",
     "chai": "^4.5.0",
     "mocha-chai-rdf": "*",
     "oxigraph": "^0.4.0-alpha.7",
     "sinon": "^18.0.0",
+    "sinon-chai": "^3.0.0",
     "into-stream": "^8.0.1"
   },
   "mocha": {
     "extension": ["ts"],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm"
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
   }
 }

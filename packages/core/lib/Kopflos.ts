@@ -11,7 +11,7 @@ import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js
 import defaultResourceShapeLookup from './resourceShape.js'
 import { responseOr } from './responseOr.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
-import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
+import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
@@ -176,5 +176,7 @@ export default class Impl implements Kopflos {
     for await (const quad of quads) {
       kopflos.dataset.add(quad)
     }
+
+    await insertShorthands(kopflos)
   }
 }
