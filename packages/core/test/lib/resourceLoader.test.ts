@@ -1,26 +1,32 @@
-import rdf from '@zazuko/env-node'
+import rdf, { Environment } from '@zazuko/env-node'
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import sinon from 'sinon'
 import * as loader from '../../lib/resourceLoader.js'
 import { ex } from '../support/ns.js'
+import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import inMemoryClients from '../support/in-memory-clients.js'
 import 'mocha-chai-rdf/snapshots.js'
 import { findResourceLoader } from '../../lib/resourceLoader.js'
 import type { KopflosEnvironment } from '../../lib/env/index.js'
+import { createEnv } from '../../lib/env/index.js'
 
 describe('lib/resourceLoader', () => {
+  function config(ctx: Mocha.Context): KopflosConfig {
+    return {
+      sparql: {
+        default: inMemoryClients(ctx.store),
+      },
+    }
+  }
+
   describe('built-in loaders', () => {
     let kopflos: Kopflos
 
     beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true }))
     beforeEach(async function () {
-      kopflos = new Kopflos({
-        sparql: {
-          default: inMemoryClients(this.store),
-        },
-      })
+      kopflos = new Kopflos(config(this))
     })
 
     describe('describe', () => {
@@ -47,11 +53,17 @@ describe('lib/resourceLoader', () => {
   describe('findResourceLoader', () => {
     beforeEach(createStore(import.meta.url, { format: 'trig' }))
 
-    let env: sinon.SinonStubbedInstance<KopflosEnvironment>
-    beforeEach(() => {
-      env = {
-        load: sinon.stub(),
-      } as unknown as sinon.SinonStubbedInstance<KopflosEnvironment>
+    class StubbedLoader {
+      declare load: sinon.SinonStub
+
+      init() {
+        this.load = sinon.stub()
+      }
+    }
+
+    let env: KopflosEnvironment
+    beforeEach(function () {
+      env = new Environment([StubbedLoader], { parent: createEnv(config(this)) })
     })
 
     context('when resource shape has a resource loader', () => {
@@ -68,11 +80,34 @@ describe('lib/resourceLoader', () => {
         }))
       })
     })
-  })
 
-  describe('findResourceLoader', () => {
-    context('when resource shape has a resource loader', () => {
-      it('will be used', async () => {
+    context('when resource shape has no resource loader', () => {
+      it('API loader will be used', async function () {
+        // given
+        const resourceShape = this.graph.node(ex.PersonShape)
+
+        // when
+        await findResourceLoader(resourceShape, env)
+
+        // then
+        expect(env.load).to.have.been.calledWith(sinon.match({
+          term: ex.ApiResourceLoader,
+        }))
+      })
+    })
+
+    context('when resource shape and API have no loaders', () => {
+      it('loader from k:Config will be used', async function () {
+        // given
+        const resourceShape = this.graph.node(ex.PersonShape)
+
+        // when
+        await findResourceLoader(resourceShape, env)
+
+        // then
+        expect(env.load).to.have.been.calledWith(sinon.match({
+          term: ex.ConfigResourceLoader,
+        }))
       })
     })
   })

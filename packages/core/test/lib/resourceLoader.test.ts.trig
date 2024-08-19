@@ -32,3 +32,40 @@ GRAPH <findResourceLoader/when-resource-shape-has-a-resource-loader> {
     kopflos:resourceLoader ex:ResourceLoader3 ;
   .
 }
+
+GRAPH <findResourceLoader/when-resource-shape-has-no-resource-loader> {
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PeopleApi ;
+    sh:targetNode ex:Person ;
+  .
+
+  ex:PeopleApi
+    a kopflos:Api ;
+    kopflos:config ex:Config ;
+    kopflos:resourceLoader ex:ApiResourceLoader ;
+  .
+
+  ex:Config
+    a kopflos:Config ;
+    kopflos:resourceLoader ex:ResourceLoader3 ;
+  .
+}
+
+GRAPH <findResourceLoader/when-resource-shape-and-API-have-no-loaders> {
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PeopleApi ;
+    sh:targetNode ex:Person ;
+  .
+
+  ex:PeopleApi
+    a kopflos:Api ;
+    kopflos:config ex:Config ;
+  .
+
+  ex:Config
+    a kopflos:Config ;
+    kopflos:resourceLoader ex:ConfigResourceLoader ;
+  .
+}
