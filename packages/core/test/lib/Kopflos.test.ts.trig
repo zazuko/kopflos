@@ -15,8 +15,7 @@ ex:api2 a kopflos:Api .
 ex:FooShape
   a kopflos:ResourceShape ;
   kopflos:api ex:api1 ;
-  kopflos:resourceLoader [
-    code:implementedBy """
+  kopflos:resourceLoader """
       function(iri, { env }) {
         return env.clownface()
           .namedNode(iri)
@@ -25,5 +24,4 @@ ex:FooShape
           .toStream()
       }
     """^^code:EcmaScript ;
-  ] ;
 .

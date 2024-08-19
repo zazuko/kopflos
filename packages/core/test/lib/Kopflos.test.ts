@@ -23,7 +23,7 @@ describe('lib/Kopflos', () => {
     it('initializes pointer', async function () {
       // when
       const kopflos = new Kopflos(config, {
-        dataset: this.dataset,
+        dataset: this.rdf.dataset,
       })
 
       // then
@@ -35,8 +35,9 @@ describe('lib/Kopflos', () => {
     it('returns 404 if no resource shape is found', async function () {
       // given
       const kopflos = new Kopflos(config, {
-        dataset: this.dataset,
+        dataset: this.rdf.dataset,
         resourceShapeLookup: async () => [],
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
       // when
@@ -53,13 +54,14 @@ describe('lib/Kopflos', () => {
     it('returns result from handler', async function () {
       // given
       const kopflos = new Kopflos(config, {
-        dataset: this.dataset,
+        dataset: this.rdf.dataset,
         resourceShapeLookup: async () => [{
           api: ex.api,
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
         handlerLookup: async () => testHandler,
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
       // when
@@ -79,7 +81,7 @@ describe('lib/Kopflos', () => {
           it('forwards core representation', async function () {
             // given
             const kopflos = new Kopflos(config, {
-              dataset: this.dataset,
+              dataset: this.rdf.dataset,
               resourceShapeLookup: async () => [{
                 api: ex.api,
                 resourceShape: ex.FooShape,
@@ -108,7 +110,7 @@ describe('lib/Kopflos', () => {
           it('returns error', async function () {
             // given
             const kopflos = new Kopflos(config, {
-              dataset: this.dataset,
+              dataset: this.rdf.dataset,
               resourceShapeLookup: async () => [{
                 api: ex.api,
                 resourceShape: ex.FooShape,
@@ -144,6 +146,7 @@ describe('lib/Kopflos', () => {
             object: ex.baz,
           }],
           handlerLookup: async () => testHandler,
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
         // when
@@ -172,6 +175,7 @@ describe('lib/Kopflos', () => {
                   object: ex.baz,
                 }],
                 handlerLookup: async () => undefined,
+                resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
               })
 
               // when

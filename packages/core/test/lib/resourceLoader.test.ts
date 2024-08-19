@@ -16,7 +16,7 @@ describe('lib/resourceLoader', () => {
   function config(ctx: Mocha.Context): KopflosConfig {
     return {
       sparql: {
-        default: inMemoryClients(ctx.store),
+        default: inMemoryClients(ctx.rdf),
       },
     }
   }
@@ -24,7 +24,7 @@ describe('lib/resourceLoader', () => {
   describe('built-in loaders', () => {
     let kopflos: Kopflos
 
-    beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true }))
+    beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true, baseIri: ex }))
     beforeEach(async function () {
       kopflos = new Kopflos(config(this))
     })
@@ -69,7 +69,7 @@ describe('lib/resourceLoader', () => {
     context('when resource shape has a resource loader', () => {
       it('it will be used', async function () {
         // given
-        const resourceShape = this.graph.node(ex.PersonShape)
+        const resourceShape = this.rdf.graph.node(ex.PersonShape)
 
         // when
         await findResourceLoader(resourceShape, env)
@@ -84,7 +84,7 @@ describe('lib/resourceLoader', () => {
     context('when resource shape has no resource loader', () => {
       it('API loader will be used', async function () {
         // given
-        const resourceShape = this.graph.node(ex.PersonShape)
+        const resourceShape = this.rdf.graph.node(ex.PersonShape)
 
         // when
         await findResourceLoader(resourceShape, env)
@@ -99,7 +99,7 @@ describe('lib/resourceLoader', () => {
     context('when resource shape and API have no loaders', () => {
       it('loader from k:Config will be used', async function () {
         // given
-        const resourceShape = this.graph.node(ex.PersonShape)
+        const resourceShape = this.rdf.graph.node(ex.PersonShape)
 
         // when
         await findResourceLoader(resourceShape, env)

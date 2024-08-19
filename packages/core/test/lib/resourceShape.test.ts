@@ -14,7 +14,7 @@ describe('lib/resourceShape', () => {
   beforeEach(async function () {
     options = {
       sparql: {
-        default: inMemoryClients(this.store),
+        default: inMemoryClients(this.rdf),
       },
     }
   })

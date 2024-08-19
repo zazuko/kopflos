@@ -19,7 +19,7 @@ describe('lib/handler', () => {
       config = {
         codeBase: __dirname,
         sparql: {
-          default: inMemoryClients(this.store),
+          default: inMemoryClients(this.rdf),
         },
       }
     })
@@ -28,7 +28,7 @@ describe('lib/handler', () => {
       it('finds matching handler', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeTypeMatch = {
           api: ex.api,
@@ -46,7 +46,7 @@ describe('lib/handler', () => {
       it('finds GET handler when method is HEAD', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeTypeMatch = {
           api: ex.api,
@@ -64,7 +64,7 @@ describe('lib/handler', () => {
       it('finds handler for HEAD even if GET also exists', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeTypeMatch = {
           api: ex.api,
@@ -82,7 +82,7 @@ describe('lib/handler', () => {
       it('finds matching handler when case does not match', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeTypeMatch = {
           api: ex.api,
@@ -102,7 +102,7 @@ describe('lib/handler', () => {
       it('finds matching handler', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeObjectMatch = {
           api: ex.api,
@@ -122,7 +122,7 @@ describe('lib/handler', () => {
       it('finds GET handler when method is HEAD', async function () {
         // given
         const kopflos = new Kopflos(config, {
-          dataset: this.dataset,
+          dataset: this.rdf.dataset,
         })
         const match: ResourceShapeObjectMatch = {
           api: ex.api,
