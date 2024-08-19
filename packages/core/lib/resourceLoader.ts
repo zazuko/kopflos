@@ -2,12 +2,11 @@ import type { AnyPointer, GraphPointer } from 'clownface'
 import { isGraphPointer } from 'is-graph-pointer'
 import type { NamedNode, Stream } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
-import type Kopflos from './Kopflos.js'
+import type KopflosInstance from './Kopflos.js'
+import type { Kopflos } from './Kopflos.js'
 
 export interface ResourceLoader {
-  (iri: NamedNode, opts: {
-    env: KopflosEnvironment
-  }): Stream
+  (iri: NamedNode, instance: Kopflos): Stream
 }
 
 export interface ResourceLoaderLookup {
@@ -47,7 +46,7 @@ export const fromOwnGraph: ResourceLoader = (iri, { env }) => {
 }
 
 const shorthandInserted = new WeakSet<Kopflos>()
-export async function insertShorthands(kopflos: Kopflos) {
+export async function insertShorthands(kopflos: KopflosInstance) {
   if (!shorthandInserted.has(kopflos)) {
     const { env } = kopflos
     const shorthands = env.fromFile(new URL('../graphs/shorthands.ttl', import.meta.url))

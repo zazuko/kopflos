@@ -4,7 +4,7 @@ import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import { code } from '@zazuko/vocabulary-extras-builders'
 
-type Properties = 'api' | 'resourceLoader' | 'handler'
+type Properties = 'api' | 'resourceLoader' | 'handler' | 'method'
 type Classes = 'Config' | 'Api'
 type Shorthands = 'DescribeLoader' | 'OwnGraphLoader'
 
