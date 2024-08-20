@@ -1,0 +1,10 @@
+PREFIX code: <https://code.described.at/>
+PREFIX kopflos: <https://kopflos.described.at/>
+
+kopflos:DescribeLoader
+  a code:EcmaScriptModule ;
+  code:link <node:@kopflos-cms/core/resourceLoaders.js#describe> .
+
+kopflos:OwnGraphLoader
+  a code:EcmaScriptModule ;
+  code:link <node:@kopflos-cms/core/resourceLoaders.js#fromOwnGraph> .

@@ -7,12 +7,19 @@ import rdf from '@zazuko/env-node'
 import type { DatasetCore, NamedNode, Quad_Graph } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 import type { Dataset } from '@zazuko/env/lib/Dataset.js'
+import type { StreamClient } from 'sparql-http-client/StreamClient.js'
+import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
+import * as clients from './sparql-clients.js'
 
 declare module 'mocha' {
   interface Context {
-    dataset: DatasetCore
-    graph: AnyPointer
-    store: Oxigraph.Store
+    rdf: {
+      dataset: DatasetCore
+      graph: AnyPointer
+      store: Oxigraph.Store
+      streamClient: StreamClient
+      parsingClient: ParsingClient
+    }
   }
 }
 
@@ -32,6 +39,9 @@ type Options = (DatasetSourceOptions | GraphSourceOptions) & {
 }
 
 export function createStore(base: string, { sliceTestPath = [1, -1], ...options }: Options = { }) {
+  const baseIRI: string | undefined = typeof options.baseIri === 'string'
+    ? options.baseIri
+    : options.baseIri?.().value
   const format = options.format ?? 'ttl'
   let loadAll = true
   let includeDefaultGraph = false
@@ -45,7 +55,9 @@ export function createStore(base: string, { sliceTestPath = [1, -1], ...options 
 
     const path = url.fileURLToPath(new url.URL(`${base}.${format}`))
 
-    let dataset: Dataset = await rdf.dataset().import(rdf.fromFile(path))
+    let dataset: Dataset = await rdf.dataset().import(rdf.fromFile(path, {
+      baseIRI,
+    }))
 
     let graph: Quad_Graph | undefined
     if (this.currentTest && !loadAll) {
@@ -80,25 +92,18 @@ export function createStore(base: string, { sliceTestPath = [1, -1], ...options 
       )
     }
 
-    Object.defineProperty(this, 'dataset', {
-      get() {
-        assertNotEmpty()
-        return dataset
-      },
-      configurable: true,
-    })
+    const rdfFixture = {
+      dataset,
+      graph: rdf.clownface({ dataset }),
+      store,
+      streamClient: clients.streamClient(store),
+      parsingClient: clients.parsingClient(store),
+    }
 
-    Object.defineProperty(this, 'graph', {
+    Object.defineProperty(this, 'rdf', {
       get() {
         assertNotEmpty()
-        return rdf.clownface({ dataset })
-      },
-      configurable: true,
-    })
-    Object.defineProperty(this, 'store', {
-      get() {
-        assertNotEmpty()
-        return store
+        return rdfFixture
       },
       configurable: true,
     })
@@ -108,11 +113,7 @@ export function createStore(base: string, { sliceTestPath = [1, -1], ...options 
     cleanup(() => {
       /* eslint-disable @typescript-eslint/ban-ts-comment */
       // @ts-ignore
-      delete this.dataset
-      // @ts-ignore
-      delete this.graph
-      // @ts-ignore
-      delete this.store
+      delete this.rdf
     })
   }
 }
