@@ -23,7 +23,6 @@ export default (options: KopflosConfig): RequestHandler => {
     }))
     .use(rdfHandler({
       factory,
-      sendTriples: true,
     }))
     .use(asyncMiddleware(async (req, res, next) => {
       const result = await kopflos.handleRequest({
