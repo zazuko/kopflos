@@ -46,6 +46,7 @@ type Endpoint = string | EndpointOptions | Clients
 export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
+  apiGraphs?: Array<NamedNode | string>
 }
 
 export interface Options {

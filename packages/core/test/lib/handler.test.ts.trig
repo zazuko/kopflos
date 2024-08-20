@@ -28,6 +28,14 @@ GRAPH <loadHandler> {
             a code:EcmaScriptModule ;
             code:link <file:../support/handlers.js#headArticle> ;
           ] ;
+      ],
+      [
+        kopflos:method "X-FOOBAR" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/typo.js#headArticle> ;
+          ] ;
       ] ;
   .
 

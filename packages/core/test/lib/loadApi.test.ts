@@ -4,9 +4,9 @@ import rdf from '@zazuko/env-node'
 import { code } from '@zazuko/vocabulary-extras-builders'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import { ex, kopflos } from '../support/ns.js'
+import { ex, kopflos } from '../../../testing-helpers/ns.js'
 import * as resourceLoaders from '../../resourceLoaders.js'
-import inMemoryClients from '../support/in-memory-clients.js'
+import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 
 describe('loadApi', () => {
   let config: KopflosConfig

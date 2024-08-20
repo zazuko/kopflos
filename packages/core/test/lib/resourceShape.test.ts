@@ -4,8 +4,8 @@ import { createStore } from 'mocha-chai-rdf/store.js'
 import defaultResourceShapeLookup from '../../lib/resourceShape.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import inMemoryClients from '../support/in-memory-clients.js'
-import { ex } from '../support/ns.js'
+import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
+import { ex } from '../../../testing-helpers/ns.js'
 
 describe('lib/resourceShape', () => {
   let options: KopflosConfig
