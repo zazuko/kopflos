@@ -37,6 +37,7 @@ describe('lib/Kopflos', () => {
       const kopflos = new Kopflos(config, {
         dataset: this.rdf.dataset,
         resourceShapeLookup: async () => [],
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
       // when
@@ -60,6 +61,7 @@ describe('lib/Kopflos', () => {
           subject: ex.foo,
         }],
         handlerLookup: async () => testHandler,
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
       // when
@@ -79,7 +81,7 @@ describe('lib/Kopflos', () => {
           it('forwards core representation', async function () {
             // given
             const kopflos = new Kopflos(config, {
-              dataset: this.dataset,
+              dataset: this.rdf.dataset,
               resourceShapeLookup: async () => [{
                 api: ex.api,
                 resourceShape: ex.FooShape,
@@ -144,6 +146,7 @@ describe('lib/Kopflos', () => {
             object: ex.baz,
           }],
           handlerLookup: async () => testHandler,
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
         // when
@@ -172,6 +175,7 @@ describe('lib/Kopflos', () => {
                   object: ex.baz,
                 }],
                 handlerLookup: async () => undefined,
+                resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
               })
 
               // when

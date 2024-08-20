@@ -39,6 +39,9 @@ type Options = (DatasetSourceOptions | GraphSourceOptions) & {
 }
 
 export function createStore(base: string, { sliceTestPath = [1, -1], ...options }: Options = { }) {
+  const baseIRI: string | undefined = typeof options.baseIri === 'string'
+    ? options.baseIri
+    : options.baseIri?.().value
   const format = options.format ?? 'ttl'
   let loadAll = true
   let includeDefaultGraph = false
@@ -52,7 +55,9 @@ export function createStore(base: string, { sliceTestPath = [1, -1], ...options 
 
     const path = url.fileURLToPath(new url.URL(`${base}.${format}`))
 
-    let dataset: Dataset = await rdf.dataset().import(rdf.fromFile(path))
+    let dataset: Dataset = await rdf.dataset().import(rdf.fromFile(path, {
+      baseIRI,
+    }))
 
     let graph: Quad_Graph | undefined
     if (this.currentTest && !loadAll) {
