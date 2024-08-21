@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.2
+
+### Patch Changes
+
+- 673f9a2: When handling object requests, Core Representation of the object was loaded instead of subject
+
 ## 0.3.0-beta.1
 
 ### Patch Changes
