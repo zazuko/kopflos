@@ -1,4 +1,2 @@
 ignore:
-  - "examples"
-  - "test"
-  - "**/*.js"
+  - packages/mocha-chai-rdf

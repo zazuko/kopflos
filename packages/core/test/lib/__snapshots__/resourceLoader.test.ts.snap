@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/resourceLoader built-in loaders describe should return a stream of a DESCRIBE query 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in default graph\\" .
+<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph bar\\" .
+<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph foo\\" .
+"
+`;
+
+exports[`lib/resourceLoader built-in loaders fromOwnGraph should contents of correct graph 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph foo\\" .
+"
+`;
+
+exports[`lib/resourceLoader describe should return a stream of a DESCRIBE query 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in default graph\\" .
+<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph bar\\" .
+<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph foo\\" .
+"
+`;
+
+exports[`lib/resourceLoader fromOwnGraph should contents of correct graph 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> \\"in graph foo\\" .
+"
+`;

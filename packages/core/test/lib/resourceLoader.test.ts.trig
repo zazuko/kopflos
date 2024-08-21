@@ -1,0 +1,71 @@
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ex: <http://example.org/>
+
+ex:foo rdf:label "in default graph".
+
+graph ex:foo {
+  ex:foo rdf:label "in graph foo".
+}
+
+graph ex:bar {
+  ex:foo rdf:label "in graph bar".
+}
+
+GRAPH <findResourceLoader/when-resource-shape-has-a-resource-loader> {
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PeopleApi ;
+    sh:targetNode ex:Person ;
+    kopflos:resourceLoader ex:PersonResourceLoader ;
+  .
+
+  ex:PeopleApi
+    a kopflos:Api ;
+    kopflos:config ex:Config ;
+    kopflos:resourceLoader ex:ResourceLoader2 ;
+  .
+
+  ex:Config
+    a kopflos:Config ;
+    kopflos:resourceLoader ex:ResourceLoader3 ;
+  .
+}
+
+GRAPH <findResourceLoader/when-resource-shape-has-no-resource-loader> {
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PeopleApi ;
+    sh:targetNode ex:Person ;
+  .
+
+  ex:PeopleApi
+    a kopflos:Api ;
+    kopflos:config ex:Config ;
+    kopflos:resourceLoader ex:ApiResourceLoader ;
+  .
+
+  ex:Config
+    a kopflos:Config ;
+    kopflos:resourceLoader ex:ResourceLoader3 ;
+  .
+}
+
+GRAPH <findResourceLoader/when-resource-shape-and-API-have-no-loaders> {
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    kopflos:api ex:PeopleApi ;
+    sh:targetNode ex:Person ;
+  .
+
+  ex:PeopleApi
+    a kopflos:Api ;
+    kopflos:config ex:Config ;
+  .
+
+  ex:Config
+    a kopflos:Config ;
+    kopflos:resourceLoader ex:ConfigResourceLoader ;
+  .
+}
