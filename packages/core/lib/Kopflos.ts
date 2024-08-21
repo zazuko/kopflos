@@ -83,7 +83,7 @@ export default class Impl implements Kopflos {
       const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
 
       return responseOr(this.findResourceLoader(resourceShape), loader => {
-        const coreRepresentation = loader(req.iri, this)
+        const coreRepresentation = loader(resourceShapeMatch.subject, this)
 
         return responseOr(this.loadHandler(req.method, resourceShapeMatch, coreRepresentation), async handler => {
           const resourceGraph = this.env.clownface({
