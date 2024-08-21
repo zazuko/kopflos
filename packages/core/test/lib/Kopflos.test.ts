@@ -3,6 +3,7 @@ import { createStore } from 'mocha-chai-rdf/store.js'
 import 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
+import sinon from 'sinon'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
@@ -158,6 +159,33 @@ describe('lib/Kopflos', () => {
 
         // then
         expect(response).toMatchSnapshot()
+      })
+
+      it('loads core representation of matched subject', async function () {
+        // given
+        const resourceLoader = sinon.stub().returns(rdf.dataset().toStream())
+        const kopflos = new Kopflos(config, {
+          dataset: this.dataset,
+          resourceShapeLookup: async () => [<ResourceShapeObjectMatch>{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+            property: ex.bar,
+            object: ex.baz,
+          }],
+          handlerLookup: async () => testHandler,
+          resourceLoaderLookup: async () => resourceLoader,
+        })
+
+        // when
+        await kopflos.handleRequest({
+          iri: ex.baz,
+          method: 'GET',
+          headers: {},
+        })
+
+        // then
+        expect(resourceLoader).to.have.been.calledWith(ex.foo, kopflos)
       })
 
       context('when no handler is found', () => {
