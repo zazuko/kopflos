@@ -37,6 +37,16 @@ describe('@kopflos-cms/express', () => {
         .expect(200, 'not found')
     })
 
+    it('must not stall after first request', async () => {
+      await request(app)
+        .get('/not-found')
+        .expect(404)
+
+      await request(app)
+        .get('/not-found')
+        .expect(404)
+    })
+
     context('request to resource without explicit handler', () => {
       it('should should return Core representation', async () => {
         const response = await request(app)

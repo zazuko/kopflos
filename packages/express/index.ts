@@ -12,15 +12,18 @@ import asyncMiddleware from 'middleware-async'
 export default (options: KopflosConfig): RequestHandler => {
   const kopflos = new Kopflos(options)
 
+  const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
+    await Kopflos.fromGraphs(kopflos, ...graphs)
+  })
+
   return Router()
-    .use(onetime(async (req, res, next) => {
-      if (options.apiGraphs) {
-        await Kopflos.fromGraphs(kopflos, ...options.apiGraphs)
-      } else {
+    .use((req, res, next) => {
+      if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
       }
-      next()
-    }))
+
+      loadApiGraphs(options.apiGraphs).then(next).catch(next)
+    })
     .use(rdfHandler({
       factory,
     }))
