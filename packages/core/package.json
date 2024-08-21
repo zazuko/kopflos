@@ -17,7 +17,9 @@
     "*.js",
     "*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.d.ts"
+    "lib/**/*.d.ts",
+    "graphs",
+    "query"
   ],
   "author": "Zazuko GmbH",
   "license": "MIT",
