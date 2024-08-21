@@ -1,5 +1,15 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.0
+
+### Minor Changes
+
+- 77cfe87: Reboot library agnostic of express or other host
+
+### Patch Changes
+
+- 528bfd2: Implemented SPARQL-base Resource Shape lookup
+
 ## 0.2.1
 
 ### Patch Changes
