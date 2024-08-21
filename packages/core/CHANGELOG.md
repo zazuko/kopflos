@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.1
+
+### Patch Changes
+
+- fe2793d: Missing resources in package
+
 ## 0.3.0-beta.0
 
 ### Minor Changes
