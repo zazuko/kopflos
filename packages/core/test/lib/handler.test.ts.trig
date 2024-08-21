@@ -1,0 +1,86 @@
+PREFIX code: <https://code.described.at/>
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+GRAPH <loadHandler> {
+  ex:api
+    a kopflos:Api .
+
+  ex:ArticleShape
+    a kopflos:ResourceShape ;
+    sh:targetClass schema:Article ;
+    kopflos:api ex:api ;
+    kopflos:handler
+      [
+        kopflos:method "GET" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/handlers.js#getArticle> ;
+          ] ;
+      ],
+      [
+        kopflos:method "HEAD" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/handlers.js#headArticle> ;
+          ] ;
+      ],
+      [
+        kopflos:method "X-FOOBAR" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/typo.js#headArticle> ;
+          ] ;
+      ] ;
+  .
+
+
+  ex:PersonShape
+    a kopflos:ResourceShape ;
+    sh:targetClass schema:Person ;
+    kopflos:api ex:api ;
+    kopflos:handler
+      [
+        kopflos:method "GET" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/handlers.js#getPerson> ;
+          ] ;
+      ],
+      [
+        kopflos:method "put" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../support/handlers.js#putPerson> ;
+          ] ;
+      ] ;
+    sh:property
+      [
+        sh:path schema:knows ;
+        kopflos:handler
+          [
+            kopflos:method "GET" ;
+            code:implementedBy
+              [
+                a code:EcmaScriptModule ;
+                code:link <file:../support/handlers.js#getFriends> ;
+              ] ;
+          ],
+          [
+            kopflos:method "POST" ;
+            code:implementedBy
+              [
+                a code:EcmaScriptModule ;
+                code:link <file:../support/handlers.js#postFriends> ;
+              ] ;
+          ] ;
+      ] ;
+  .
+}

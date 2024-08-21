@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/express configured api graphs request to resource with GET handler should should return Core representation 1`] = `
+Array [
+  Object {
+    "@id": "http://example.org/with-handler",
+    "http://schema.org/name": "from handler code",
+  },
+]
+`;
+
+exports[`@kopflos-cms/express configured api graphs request to resource with GET handler should support content negotiation 1`] = `
+"<http://example.org/with-handler> <http://schema.org/name> \\"from handler code\\" .
+"
+`;
+
+exports[`@kopflos-cms/express configured api graphs request to resource without explicit handler should should return Core representation 1`] = `
+Array [
+  Object {
+    "@id": "http://example.org/no-handler",
+    "http://www.w3.org/2000/01/rdf-schema#label": "No handler",
+  },
+  Object {
+    "@id": "http://example.org/no-handler",
+    "@type": "http://example.org/NoHandler",
+  },
+]
+`;
+
+exports[`@kopflos-cms/express configured api graphs request to resource without explicit handler should support content negotiation 1`] = `
+"<http://example.org/no-handler> <http://www.w3.org/2000/01/rdf-schema#label> \\"No handler\\" .
+<http://example.org/no-handler> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/NoHandler> .
+"
+`;
+
+exports[`@kopflos-cms/express request to resource with GET handler should should return Core representation 1`] = `
+Array [
+  Object {
+    "@id": "http://example.org/with-handler",
+    "http://schema.org/name": "from handler code",
+  },
+]
+`;
+
+exports[`@kopflos-cms/express request to resource with GET handler should support content negotiation 1`] = `
+"<http://example.org/with-handler> <http://schema.org/name> \\"from handler code\\" .
+"
+`;
+
+exports[`@kopflos-cms/express request to resource without explicit handler should should return Core representation 1`] = `
+Array [
+  Object {
+    "@id": "http://example.org/no-handler",
+    "http://www.w3.org/2000/01/rdf-schema#label": "No handler",
+  },
+  Object {
+    "@id": "http://example.org/no-handler",
+    "@type": "http://example.org/NoHandler",
+  },
+]
+`;
+
+exports[`@kopflos-cms/express request to resource without explicit handler should support content negotiation 1`] = `
+"<http://example.org/no-handler> <http://www.w3.org/2000/01/rdf-schema#label> \\"No handler\\" .
+<http://example.org/no-handler> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/NoHandler> .
+"
+`;

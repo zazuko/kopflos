@@ -1,3 +1,3 @@
-# @kopflos-cms/core
+# kopflos
 
-TBD
+Headless, RDF-rich CMS
