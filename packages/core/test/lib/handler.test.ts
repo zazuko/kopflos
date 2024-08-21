@@ -1,11 +1,11 @@
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { expect } from 'chai'
 import rdf from '@zazuko/env-node'
-import { defaultHandlerLookup as loadHandler, Kopflos } from '../../index.js'
+import Kopflos, { defaultHandlerLookup as loadHandler } from '../../index.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
-import inMemoryClients from '../support/in-memory-clients.js'
+import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import type { ResourceShapeObjectMatch, ResourceShapeTypeMatch } from '../../lib/resourceShape.js'
-import { ex } from '../support/ns.js'
+import { ex } from '../../../testing-helpers/ns.js'
 import * as handlers from '../support/handlers.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
@@ -95,6 +95,21 @@ describe('lib/handler', () => {
 
         // then
         expect(handler).to.eq(handlers.putPerson)
+      })
+
+      it('throws when handler fails to load', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapeTypeMatch = {
+          api: ex.api,
+          resourceShape: ex.ArticleShape,
+          subject: ex.JohnDoe,
+        }
+
+        // then
+        await expect(loadHandler(match, 'X-FOOBAR', kopflos)).to.be.rejected
       })
     })
 
