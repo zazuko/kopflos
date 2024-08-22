@@ -15,6 +15,7 @@ import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLo
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandler } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
+import log from './log.js'
 
 interface KopflosRequest {
   iri: NamedNode
@@ -68,6 +69,14 @@ export default class Impl implements Kopflos {
     this.dataset = this.env.dataset([
       ...options.dataset || [],
     ])
+
+    log.info('Kopflos initialized')
+    log.debug('Options %O', {
+      sparqlEndpoints: Object.keys(this.env.sparql),
+      resourceShapeLookup: options.resourceShapeLookup?.name ?? 'default',
+      resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
+      handlerLookup: options.handlerLookup?.name ?? 'default',
+    })
   }
 
   get graph() {
@@ -121,13 +130,27 @@ export default class Impl implements Kopflos {
 
     return responseOr(resourceShapeLookup(iri, this), async candidates => {
       if (candidates.length === 0) {
+        log.info('Resource shape not found for %s', iri.value)
         return { status: 404 }
       }
 
       if (candidates.length > 1) {
+        log.error('Multiple resource shapes found %O', candidates.map(c => c.resourceShape.value))
         return new Error('Multiple resource shapes found')
       }
 
+      if (log.enabledFor('debug')) {
+        const logMatch: Record<string, string> = {
+          resourceShape: candidates[0].resourceShape.value,
+          subject: candidates[0].subject.value,
+        }
+        if ('property' in candidates[0]) {
+          logMatch.property = candidates[0].property.value
+          logMatch.object = candidates[0].object.value
+        }
+
+        log.debug('Resource shape matched %O', logMatch)
+      }
       return candidates[0]
     })
   }
@@ -137,7 +160,12 @@ export default class Impl implements Kopflos {
 
     const loader = await resourceLoaderLookup(resourceShape, this.env)
 
-    return loader || fromOwnGraph
+    if (loader) {
+      return loader
+    }
+
+    log.debug('Using default loader')
+    return fromOwnGraph
   }
 
   async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
@@ -150,12 +178,14 @@ export default class Impl implements Kopflos {
     }
 
     if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
+      log.info('No handler found. Returning Core representation')
       return {
         status: 200,
         body: coreRepresentation,
       }
     }
 
+    log.info('No handler found')
     return { status: 405 }
   }
 
@@ -165,6 +195,8 @@ export default class Impl implements Kopflos {
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
     const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
+    log.info('Loading graphs %O', graphsIris.map(g => g.value))
+
     const quads = CONSTRUCT`?s ?p ?o `
       .WHERE`
         GRAPH ?g {
@@ -179,5 +211,7 @@ export default class Impl implements Kopflos {
     }
 
     await insertShorthands(kopflos)
+
+    log.info('Graphs loaded. Dataset now contains %d quads', kopflos.dataset.size)
   }
 }

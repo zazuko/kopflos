@@ -4,6 +4,7 @@ import type { KopflosEnvironment } from './env/index.js'
 import type { Kopflos, KopflosResponse } from './Kopflos.js'
 import type { ResourceShapeMatch } from './resourceShape.js'
 import type { HttpMethod } from './httpMethods.js'
+import { logCode } from './log.js'
 
 export interface HandlerArgs {
   resourceShape: GraphPointer
@@ -42,7 +43,9 @@ export function loadHandler({ resourceShape, ...rest }: ResourceShapeMatch, meth
     .out(env.ns.kopflos.handler)
     .filter(matchingMethod(env, method))
 
-  return env.load<Handler>(handler.out(env.ns.code.implementedBy))
+  const impl = handler.out(env.ns.code.implementedBy)
+  logCode(impl, 'handler')
+  return env.load<Handler>(impl)
 }
 
 function matchingMethod(env: KopflosEnvironment, requestMethod: HttpMethod): Parameters<AnyPointer['filter']>[0] {

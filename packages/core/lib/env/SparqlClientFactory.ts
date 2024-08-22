@@ -4,6 +4,7 @@ import type { ParsingClient as IParsingClient } from 'sparql-http-client/Parsing
 import ParsingClient from 'sparql-http-client/ParsingClient.js'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type { DataFactory, DatasetCoreFactory } from '@rdfjs/types'
+import LoggingSparqlClient from '../LoggingSparqlClient.js'
 import type { KopflosFactory } from './KopflosFactory.js'
 
 export interface Clients {
@@ -27,13 +28,16 @@ export default class implements SparqlClientFactory {
         }
 
         return [key, {
-          stream: new StreamClient(endpointConfig),
-          parsed: new ParsingClient(endpointConfig),
+          stream: new LoggingSparqlClient(new StreamClient(endpointConfig)),
+          parsed: new LoggingSparqlClient(new ParsingClient(endpointConfig)),
         }]
       }
 
       if ('stream' in endpointOrClients) {
-        return [key, endpointOrClients]
+        return [key, {
+          parsed: new LoggingSparqlClient(endpointOrClients.parsed),
+          stream: new LoggingSparqlClient(endpointOrClients.stream),
+        }]
       }
 
       const endpointConfig = {
@@ -42,8 +46,8 @@ export default class implements SparqlClientFactory {
       }
 
       return [key, {
-        stream: new StreamClient(endpointConfig),
-        parsed: new ParsingClient(endpointConfig),
+        stream: new LoggingSparqlClient(new StreamClient(endpointConfig)),
+        parsed: new LoggingSparqlClient(new ParsingClient(endpointConfig)),
       }]
     }))
   }
