@@ -34,6 +34,6 @@ const select = fs.readFileSync(path.resolve(__dirname, '../query/resourceShapes.
 
 export default async (iri: NamedNode, instance: Kopflos) => {
   return instance.env.sparql.default.parsed.query.select(
-    select.replace('sh:this', `<${iri.value}>`),
+    select.replaceAll('sh:this', `<${iri.value}>`),
   ) as unknown as Promise<ResourceShapeMatch[]>
 }
