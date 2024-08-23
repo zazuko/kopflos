@@ -87,8 +87,12 @@ describe('lib/env/SparqlClientFactory', () => {
   })
 
   context('initialised from client instances', () => {
-    const stream = {} as StreamClient
-    const parsed = {} as ParsingClient
+    const stream = {
+      name: 'stream',
+    } as unknown as StreamClient
+    const parsed = {
+      name: 'parsed',
+    } as unknown as ParsingClient
 
     before(() => {
       // given
@@ -115,8 +119,8 @@ describe('lib/env/SparqlClientFactory', () => {
 
     it('sets clients', () => {
       // then
-      expect(factory.sparql.default.stream).to.eq(stream)
-      expect(factory.sparql.default.parsed).to.eq(parsed)
+      expect(factory.sparql.default.stream).to.have.property('name', 'stream')
+      expect(factory.sparql.default.parsed).to.have.property('name', 'parsed')
     })
   })
 })

@@ -4,6 +4,7 @@ import type { NamedNode, Stream } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
 import type KopflosInstance from './Kopflos.js'
 import type { Kopflos } from './Kopflos.js'
+import { logCode } from './log.js'
 
 export interface ResourceLoader {
   (iri: NamedNode, instance: Kopflos): Stream
@@ -31,6 +32,7 @@ export async function findResourceLoader(resourceShape: GraphPointer, env: Kopfl
     }
   }
 
+  logCode(resourceLoader, 'resource loader')
   return env.load<ResourceLoader>(resourceLoader)
 }
 
