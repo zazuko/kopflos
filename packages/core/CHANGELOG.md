@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.4
+
+### Patch Changes
+
+- 0b960fa: Fixes runtime error when executing logged queries
+
 ## 0.3.0-beta.3
 
 ### Patch Changes
