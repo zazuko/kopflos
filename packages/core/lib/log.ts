@@ -24,10 +24,10 @@ export function decorateClient<C extends ParsingClient | StreamClient>(client: C
     get(target: C, p: string | symbol) {
       if (p === 'query') {
         return {
-          select: queryLogger(target.query.select),
-          construct: queryLogger(target.query.construct),
-          ask: queryLogger(target.query.ask),
-          update: target.query.update,
+          select: queryLogger(target.query.select.bind(target.query)),
+          construct: queryLogger(target.query.construct.bind(target.query)),
+          ask: queryLogger(target.query.ask.bind(target.query)),
+          update: target.query.update.bind(target.query),
         }
       }
 
