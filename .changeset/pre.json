@@ -7,9 +7,11 @@
     "mocha-chai-rdf": "0.0.0"
   },
   "changesets": [
+    "few-cars-stare",
     "fluffy-turkeys-return",
     "hot-suits-suffer",
     "lazy-balloons-watch",
+    "poor-bags-bake",
     "rich-meals-sing",
     "six-carpets-bathe",
     "witty-glasses-fail"

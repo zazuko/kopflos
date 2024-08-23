@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- 619d7f2: Object request would be incorrectly handled by subject handler
+- 13f029c: feat: add logging
+
 ## 0.3.0-beta.2
 
 ### Patch Changes
