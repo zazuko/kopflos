@@ -9,7 +9,7 @@ import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
 import defaultResourceShapeLookup from './resourceShape.js'
-import { responseOr } from './responseOr.js'
+import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
@@ -78,33 +78,40 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async handleRequest(req: KopflosRequest): Promise<ResultEnvelope> {
-    const result = await responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
-      const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
-
-      return responseOr(this.findResourceLoader(resourceShape), loader => {
-        const coreRepresentation = loader(resourceShapeMatch.subject, this)
-
-        return responseOr(this.loadHandler(req.method, resourceShapeMatch, coreRepresentation), async handler => {
-          const resourceGraph = this.env.clownface({
-            dataset: await this.env.dataset().import(coreRepresentation),
-          })
-          const args: HandlerArgs = {
-            resourceShape,
-            env: this.env,
-            subject: resourceGraph.node(resourceShapeMatch.subject),
-            property: undefined,
-            object: undefined,
-          }
-          if ('property' in resourceShapeMatch) {
-            args.property = resourceShapeMatch.property
-            args.object = resourceGraph.node(resourceShapeMatch.object)
-          }
-
-          return handler(args)
-        })
-      })
+  async getResponse(req: KopflosRequest): Promise<KopflosResponse> {
+    const resourceShapeMatch = await this.findResourceShape(req.iri)
+    if (isResponse(resourceShapeMatch)) {
+      return resourceShapeMatch
+    }
+    const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
+    const loader = await this.findResourceLoader(resourceShape)
+    if (isResponse(loader)) {
+      return loader
+    }
+    const coreRepresentation = loader(resourceShapeMatch.subject, this)
+    const handler = await this.loadHandler(req.method, resourceShapeMatch, coreRepresentation)
+    if (isResponse(handler)) {
+      return handler
+    }
+    const resourceGraph = this.env.clownface({
+      dataset: await this.env.dataset().import(coreRepresentation),
     })
+    const args: HandlerArgs = {
+      resourceShape,
+      env: this.env,
+      subject: resourceGraph.node(resourceShapeMatch.subject),
+      property: undefined,
+      object: undefined,
+    }
+    if ('property' in resourceShapeMatch) {
+      args.property = resourceShapeMatch.property
+      args.object = resourceGraph.node(resourceShapeMatch.object)
+    }
+    return handler(args)
+  }
+
+  async handleRequest(req: KopflosRequest): Promise<ResultEnvelope> {
+    const result = await this.getResponse(req)
 
     if (this.isEnvelope(result)) {
       return result
@@ -119,17 +126,19 @@ export default class Impl implements Kopflos {
   async findResourceShape(iri: NamedNode): Promise<ResourceShapeMatch | KopflosResponse> {
     const resourceShapeLookup = this.options.resourceShapeLookup || defaultResourceShapeLookup
 
-    return responseOr(resourceShapeLookup(iri, this), async candidates => {
-      if (candidates.length === 0) {
-        return { status: 404 }
-      }
+    const candidates = await resourceShapeLookup(iri, this)
+    if (isResponse(candidates)) {
+      return candidates
+    }
+    if (candidates.length === 0) {
+      return { status: 404 }
+    }
 
-      if (candidates.length > 1) {
-        return new Error('Multiple resource shapes found')
-      }
+    if (candidates.length > 1) {
+      return new Error('Multiple resource shapes found')
+    }
 
-      return candidates[0]
-    })
+    return candidates[0]
   }
 
   async findResourceLoader(resourceShape: GraphPointer): Promise<ResourceLoader | KopflosResponse> {
