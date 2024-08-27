@@ -28,6 +28,22 @@ ex:api {
             code:link <file:handlers/get-with-handler.js#default>
           ] ;
       ] ;
+  .
+
+  ex:BodyHandlerShape
+    a kl:ResourceShape ;
+    kl:api ex:ZazukoApi ;
+    sh:targetNode ex:body-handler ;
+    kl:handler
+      [
+        kl:method "GET", "POST" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:handlers/body-handler.js#default>
+          ] ;
+      ] ;
+  .
 }
 
 ex:no-handler {
@@ -41,5 +57,11 @@ ex:with-handler {
   ex:with-handler
     a ex:WithHandler ;
     rdfs:label "With handler" ;
+  .
+}
+
+ex:body-handler {
+  ex:body-handler
+    a ex:BodyHandler ;
   .
 }

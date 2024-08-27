@@ -4,7 +4,7 @@ import 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
-import type { KopflosConfig } from '../../lib/Kopflos.js'
+import type { KopflosConfig, Body } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
@@ -46,6 +46,8 @@ describe('lib/Kopflos', () => {
         iri: ex.foo,
         method: 'GET',
         headers: {},
+        body: undefined,
+        query: {},
       })
 
       // then
@@ -70,10 +72,78 @@ describe('lib/Kopflos', () => {
         iri: ex.foo,
         method: 'GET',
         headers: {},
+        body: undefined,
+        query: {},
       })
 
       // then
       expect(response).toMatchSnapshot()
+    })
+
+    context('body', () => {
+      it('can be undefined', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: async () => ({ body }) => {
+            return {
+              status: 200,
+              body: JSON.stringify({ body: !!body }),
+            }
+          },
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: undefined,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.deep.eq('{"body":false}')
+      })
+
+      it('is forwarded to handler when defined', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: async () => ({ body }) => {
+            return {
+              status: 200,
+              body: JSON.stringify({ body: !!body }),
+            }
+          },
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {
+
+          } as unknown as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.deep.eq('{"body":true}')
+      })
     })
 
     context('when no handler is found', () => {
@@ -96,6 +166,8 @@ describe('lib/Kopflos', () => {
               iri: ex.foo,
               method,
               headers: {},
+              body: undefined,
+              query: {},
             }) as unknown as { status: number; body: Stream }
 
             // then
@@ -125,6 +197,8 @@ describe('lib/Kopflos', () => {
               iri: ex.foo,
               method,
               headers: {},
+              body: undefined,
+              query: {},
             })
 
             // then
@@ -155,6 +229,8 @@ describe('lib/Kopflos', () => {
           iri: ex.baz,
           method: 'GET',
           headers: {},
+          body: undefined,
+          query: {},
         })
 
         // then
@@ -182,6 +258,8 @@ describe('lib/Kopflos', () => {
           iri: ex.baz,
           method: 'GET',
           headers: {},
+          body: undefined,
+          query: {},
         })
 
         // then
@@ -211,6 +289,8 @@ describe('lib/Kopflos', () => {
                 iri: ex.baz,
                 method,
                 headers: {},
+                body: undefined,
+                query: {},
               })
 
               // then

@@ -5,6 +5,8 @@ import request from 'supertest'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import 'mocha-chai-rdf/snapshots.js'
 import { expect } from 'chai'
+import { ntriples, turtle } from '@tpluscode/rdf-string'
+import rdf from '@zazuko/env-node'
 import { ex } from '../../testing-helpers/ns.js'
 import kopflos from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
@@ -123,6 +125,34 @@ describe('@kopflos-cms/express', () => {
           .expect(200)
           .expect('x-handler', 'get-with-handler.js')
       })
+    })
+
+    context('request with body', () => {
+      it('should be undefined on GET requests', async () => {
+        const { body } = await request(app)
+          .get('/body-handler')
+          .send(turtle`<> a ${ex.Foo} .`.toString())
+          .set('host', 'example.org')
+          .set('accept', 'application/n-triples')
+          .expect(200)
+
+        expect(body).to.be.empty
+      })
+
+      for (const type of ['stream', 'dataset', 'pointer']) {
+        it(`body can be accessed as ${type}`, async () => {
+          const response = await request(app)
+            .post('/body-handler')
+            .query({ type })
+            .set('content-type', 'text/turtle')
+            .send(turtle`<> a ${ex.Foo} .`.toString())
+            .set('host', 'example.org')
+            .set('accept', 'application/n-triples')
+            .expect(200)
+
+          expect(response.text).to.eq(ntriples`<http://example.org/body-handler> ${rdf.ns.rdf.type} ${ex.Foo} .\n`.toString())
+        })
+      }
     })
   })
 
