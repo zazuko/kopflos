@@ -1,5 +1,16 @@
 # @kopflos-cms/express
 
+## 0.0.1-beta.2
+
+### Patch Changes
+
+- 14705ba: Adding support for accessing request body
+- Updated dependencies [b691125]
+- Updated dependencies [14705ba]
+- Updated dependencies [14705ba]
+- Updated dependencies [2ee7a70]
+  - @kopflos-cms/core@0.3.0-beta.5
+
 ## 0.0.1-beta.1
 
 ### Patch Changes

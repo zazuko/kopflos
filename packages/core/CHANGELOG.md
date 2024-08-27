@@ -1,5 +1,14 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- b691125: Made the resource shape query explicitly require type `kl:ResourceShape`
+- 14705ba: More precise typing of core interfaces
+- 14705ba: Adding support for accessing request body
+- 2ee7a70: Allow a multiple values of `kl:method` on a handler
+
 ## 0.3.0-beta.4
 
 ### Patch Changes
