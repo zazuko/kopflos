@@ -14,7 +14,7 @@ export class BodyWrapper implements Body {
   constructor(private readonly env: Environment<DatasetFactoryExt | ClownfaceFactory>, private readonly term: NamedNode, private readonly req: Readable & Pick<Request, 'quadStream'>) {
     Object.defineProperty(this, 'dataset', {
       get: onetime(() => {
-        this.env.dataset().import(this.quadStream)
+        return this.env.dataset().import(this.quadStream)
       }),
     })
   }
