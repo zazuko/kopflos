@@ -1,5 +1,7 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
-import type { DatasetCore, NamedNode, Stream } from '@rdfjs/types'
+import type { parse } from 'node:querystring'
+import type { ReadableStream } from 'node:stream/web'
+import type { DatasetCore, NamedNode, Stream, Term } from '@rdfjs/types'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
@@ -17,10 +19,23 @@ import { loadHandler } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
 
-interface KopflosRequest {
+type Dataset = ReturnType<KopflosEnvironment['dataset']>
+
+export interface Body<D extends DatasetCore = Dataset> {
+  quadStream: Stream
+  dataset: Promise<D>
+  pointer(): Promise<GraphPointer<NamedNode, D>>
+  raw: ReadableStream
+}
+
+export type Query = ReturnType<typeof parse>
+
+interface KopflosRequest<D extends DatasetCore = DatasetCore> {
   iri: NamedNode
   method: HttpMethod
   headers: IncomingHttpHeaders
+  body: Body<D> | undefined
+  query: Query
 }
 
 type ResultBody = Stream | DatasetCore | GraphPointer | Error
@@ -31,10 +46,10 @@ export interface ResultEnvelope {
 }
 export type KopflosResponse = ResultBody | ResultEnvelope
 
-export interface Kopflos {
+export interface Kopflos<D extends DatasetCore = Dataset> {
   get env(): KopflosEnvironment
-  get apis(): MultiPointer
-  handleRequest(req: KopflosRequest): Promise<ResultEnvelope>
+  get apis(): MultiPointer<Term, D>
+  handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
 }
 
 interface Clients {
@@ -56,8 +71,6 @@ export interface Options {
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
 }
-
-type Dataset = ReturnType<KopflosEnvironment['dataset']>
 
 export default class Impl implements Kopflos {
   readonly dataset: Dataset
@@ -83,11 +96,11 @@ export default class Impl implements Kopflos {
     return this.env.clownface({ dataset: this.dataset })
   }
 
-  get apis(): MultiPointer {
+  get apis(): MultiPointer<Term, Dataset> {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async handleRequest(req: KopflosRequest): Promise<ResultEnvelope> {
+  async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {
     const result = await responseOr(this.findResourceShape(req.iri), (resourceShapeMatch: ResourceShapeMatch) => {
       const resourceShape = this.graph.node(resourceShapeMatch.resourceShape)
 
@@ -99,6 +112,7 @@ export default class Impl implements Kopflos {
             dataset: await this.env.dataset().import(coreRepresentation),
           })
           const args: HandlerArgs = {
+            ...req,
             resourceShape,
             env: this.env,
             subject: resourceGraph.node(resourceShapeMatch.subject),
