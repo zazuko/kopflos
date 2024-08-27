@@ -18,18 +18,20 @@ export interface HandlerArgs<D extends DatasetCore = Dataset> {
   query: Query
 }
 
+type OptionalPromise<T> = T | Promise<T>
+
 export interface SubjectHandler {
-  (arg: HandlerArgs): KopflosResponse | Promise<KopflosResponse>
+  (arg: HandlerArgs): OptionalPromise<KopflosResponse>
 }
 
 export interface ObjectHandler {
-  (arg: Required<HandlerArgs>): KopflosResponse | Promise<KopflosResponse>
+  (arg: Required<HandlerArgs>): OptionalPromise<KopflosResponse>
 }
 
 export type Handler = SubjectHandler | ObjectHandler
 
 export interface HandlerLookup {
-  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Promise<Handler | undefined> | Handler | undefined
+  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): OptionalPromise<Handler | undefined>
 }
 
 export function loadHandler({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, { apis, env }: Kopflos) {
