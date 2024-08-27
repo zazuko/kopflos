@@ -6,17 +6,19 @@ import type { Environment } from '@rdfjs/environment/Environment.js'
 import type ClownfaceFactory from 'clownface/Factory.js'
 import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import type { DatasetFactoryExt } from '@zazuko/env/lib/DatasetFactoryExt.js'
-import onetime from 'onetime'
 
 export class BodyWrapper implements Body {
-  declare dataset: Promise<Dataset>
+  private _dataset?: Promise<Dataset>
 
   constructor(private readonly env: Environment<DatasetFactoryExt | ClownfaceFactory>, private readonly term: NamedNode, private readonly req: Readable & Pick<Request, 'quadStream'>) {
-    Object.defineProperty(this, 'dataset', {
-      get: onetime(() => {
-        return this.env.dataset().import(this.quadStream)
-      }),
-    })
+
+  }
+
+  get dataset(): Promise<Dataset> {
+    if (!this._dataset) {
+      this._dataset = this.env.dataset().import(this.quadStream)
+    }
+    return this._dataset
   }
 
   get quadStream() {
