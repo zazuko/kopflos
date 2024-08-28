@@ -4,7 +4,7 @@ import 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
-import type { KopflosConfig, Body } from '../../lib/Kopflos.js'
+import type { KopflosConfig, Body, Options } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
@@ -80,6 +80,51 @@ describe('lib/Kopflos', () => {
       expect(response).toMatchSnapshot()
     })
 
+    context('when errors occur', () => {
+      const passingFunctions = {
+        resourceShapeLookup: async () => [{
+          api: ex.api,
+          resourceShape: ex.FooShape,
+          subject: ex.foo,
+        }],
+        handlerLookup: async () => testHandler,
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+      }
+
+      const throws = async () => {
+        throw new Error('Error')
+      }
+      const failingFunctions: [string, Partial<Options>][] = [
+        ['resourceShapeLookup', { resourceShapeLookup: throws }],
+        ['resourceLoaderLookup', { resourceLoaderLookup: throws }],
+        ['handlerLookup', { handlerLookup: throws }],
+        ['handler', { handlerLookup: () => throws }],
+      ]
+
+      for (const [name, failingFunction] of failingFunctions) {
+        it('they are handled gracefully, occurring in ' + name, async function () {
+          // given
+          const kopflos = new Kopflos(config, {
+            dataset: this.rdf.dataset,
+            ...passingFunctions,
+            ...failingFunction,
+          })
+
+          // when
+          const response = await kopflos.handleRequest({
+            iri: ex.foo,
+            method: 'GET',
+            headers: {},
+            body: undefined,
+            query: {},
+          })
+
+          // then
+          expect(response.status).to.eq(500)
+        })
+      }
+    })
+
     context('body', () => {
       it('can be undefined', async function () {
         // given
@@ -135,9 +180,7 @@ describe('lib/Kopflos', () => {
           iri: ex.foo,
           method: 'GET',
           headers: {},
-          body: {
-
-          } as unknown as Body,
+          body: {} as unknown as Body,
           query: {},
         })
 
