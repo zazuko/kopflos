@@ -94,15 +94,18 @@ describe('lib/Kopflos', () => {
       const throws = async () => {
         throw new Error('Error')
       }
-      const failingFunctions: [string, Partial<Options>][] = [
-        ['resourceShapeLookup', { resourceShapeLookup: throws }],
-        ['resourceLoaderLookup', { resourceLoaderLookup: throws }],
-        ['handlerLookup', { handlerLookup: throws }],
-        ['handler', { handlerLookup: () => throws }],
-      ]
+      const throwsNonError = async () => {
+        throw 'Error'
+      }
+      const failingFunctions: [string, Partial<Options>][] = [throws, throwsNonError].flatMap(fun => [
+        ['resourceShapeLookup ' + fun.name, { resourceShapeLookup: fun }],
+        ['resourceLoaderLookup ' + fun.name, { resourceLoaderLookup: fun }],
+        ['handlerLookup ' + fun.name, { handlerLookup: fun }],
+        ['handler ' + fun.name, { handlerLookup: () => fun }],
+      ])
 
       for (const [name, failingFunction] of failingFunctions) {
-        it('they are handled gracefully, occurring in ' + name, async function () {
+        it('they are handled gracefully when ' + name, async function () {
           // given
           const kopflos = new Kopflos(config, {
             dataset: this.rdf.dataset,
