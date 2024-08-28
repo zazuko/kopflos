@@ -95,6 +95,7 @@ describe('lib/Kopflos', () => {
         throw new Error('Error')
       }
       const throwsNonError = async () => {
+        // eslint-disable-next-line no-throw-literal
         throw 'Error'
       }
       const failingFunctions: [string, Partial<Options>][] = [throws, throwsNonError].flatMap(fun => [
