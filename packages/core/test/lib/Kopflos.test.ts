@@ -80,6 +80,72 @@ describe('lib/Kopflos', () => {
       expect(response).toMatchSnapshot()
     })
 
+    context('headers', () => {
+      it('are always forwarded to handler', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: async () => ({ headers }) => {
+            return {
+              status: 200,
+              body: JSON.stringify({ headers }),
+            }
+          },
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {
+            accept: 'foo/bar',
+          },
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.deep.eq('{"headers":{"accept":"foo/bar"}}')
+      })
+
+      it('are forwarded to handler when empty', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: async () => ({ headers }) => {
+            return {
+              status: 200,
+              body: JSON.stringify({ headers: Object.keys(headers).length }),
+            }
+          },
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.deep.eq('{"headers":0}')
+      })
+    })
+
     context('when errors occur', () => {
       const passingFunctions = {
         resourceShapeLookup: async () => [{

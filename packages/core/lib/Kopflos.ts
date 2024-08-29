@@ -120,6 +120,7 @@ export default class Impl implements Kopflos {
     })
     const args: HandlerArgs = {
       ...req,
+      headers: req.headers,
       resourceShape,
       env: this.env,
       subject: resourceGraph.node(resourceShapeMatch.subject),

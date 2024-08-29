@@ -1,3 +1,4 @@
+import type { IncomingHttpHeaders } from 'node:http'
 import type { AnyPointer, GraphPointer } from 'clownface'
 import type { DatasetCore, NamedNode } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
@@ -16,6 +17,7 @@ export interface HandlerArgs<D extends DatasetCore = Dataset> {
   object: GraphPointer<NamedNode, D> | undefined
   body: Body<D> | undefined
   query: Query
+  headers: IncomingHttpHeaders
 }
 
 export interface SubjectHandler {
