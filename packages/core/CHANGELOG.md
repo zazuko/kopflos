@@ -1,5 +1,13 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.6
+
+### Patch Changes
+
+- 2b107ef: Catch errors in kopflos handler and send as a 500 response
+- b94672f: Body is now always present in handler argument. Use `this.body.isRdf` to check if it can be parsed as RDF according to the Accept header. `this.body.raw` now returns the `IncomingMessage` object to allow parsing bodies using [`co-body`](https://npm.im/co-body) or similar.
+- 67bd393: Expose request headers to kopflos handler
+
 ## 0.3.0-beta.5
 
 ### Patch Changes
