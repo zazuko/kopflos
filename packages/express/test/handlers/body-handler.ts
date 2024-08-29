@@ -17,12 +17,13 @@ const handler: Handler = async function (req) {
       case 'pointer':
         body = (await req.body.pointer()).dataset
         break
-      case 'json':
+      case 'json': {
         const parsed = await coBody(req.body.raw)
         body = JSON.stringify({
           bar: parsed.foo,
         })
         headers['content-type'] = 'application/json'
+      }
         break
     }
   }
