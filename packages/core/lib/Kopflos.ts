@@ -1,6 +1,5 @@
-import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
+import type { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
 import type { parse } from 'node:querystring'
-import type { ReadableStream } from 'node:stream/web'
 import type { DatasetCore, NamedNode, Stream, Term } from '@rdfjs/types'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
@@ -22,10 +21,11 @@ import log from './log.js'
 type Dataset = ReturnType<KopflosEnvironment['dataset']>
 
 export interface Body<D extends DatasetCore = Dataset> {
+  isRDF: boolean
   quadStream: Stream
   dataset: Promise<D>
   pointer(): Promise<GraphPointer<NamedNode, D>>
-  raw: ReadableStream
+  raw: IncomingMessage
 }
 
 export type Query = ReturnType<typeof parse>
@@ -34,7 +34,7 @@ interface KopflosRequest<D extends DatasetCore = DatasetCore> {
   iri: NamedNode
   method: HttpMethod
   headers: IncomingHttpHeaders
-  body: Body<D> | undefined
+  body: Body<D>
   query: Query
 }
 

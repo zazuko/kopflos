@@ -1,18 +1,21 @@
-import { Readable } from 'node:stream'
+import { IncomingMessage } from 'node:http'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import rdf from '@zazuko/env-node'
+import type { Request } from 'express'
 import { BodyWrapper } from '../BodyWrapper.js'
 import { ex } from '../../testing-helpers/ns.js'
 
 describe('BodyWrapper', () => {
+  class FakeRequest extends IncomingMessage {
+    declare quadStream: Pick<Request, 'quadStream'>['quadStream']
+  }
+
   describe('.dataset', () => {
     it('consumes stream only once', async () => {
       // given
       const quadStream = sinon.stub().returns(rdf.dataset().toStream())
-      const req = new (class extends Readable {
-        quadStream = quadStream
-      })()
+      const req = sinon.createStubInstance(FakeRequest, { quadStream })
       const body = new BodyWrapper(rdf, ex.foo, req)
 
       // when
@@ -28,9 +31,7 @@ describe('BodyWrapper', () => {
     it('consumes stream only once', async () => {
       // given
       const quadStream = sinon.stub().returns(rdf.dataset().toStream())
-      const req = new (class extends Readable {
-        quadStream = quadStream
-      })()
+      const req = sinon.createStubInstance(FakeRequest, { quadStream })
       const body = new BodyWrapper(rdf, ex.foo, req)
 
       // when
