@@ -15,7 +15,7 @@ export interface HandlerArgs<D extends DatasetCore = Dataset> {
   subject: GraphPointer<NamedNode, D>
   property: NamedNode | undefined
   object: GraphPointer<NamedNode, D> | undefined
-  body: Body<D> | undefined
+  body: Body<D>
   query: Query
   headers: IncomingHttpHeaders
 }
