@@ -8,7 +8,15 @@ import { ex } from '../../testing-helpers/ns.js'
 
 describe('BodyWrapper', () => {
   class FakeRequest extends IncomingMessage {
-    declare quadStream: Pick<Request, 'quadStream'>['quadStream']
+    get quadStream(): Pick<Request, 'quadStream'>['quadStream'] {
+      return this._quadStream
+    }
+
+    set quadStream(value: Pick<Request, 'quadStream'>['quadStream']) {
+      this._quadStream = value
+    }
+
+    private declare _quadStream: Pick<Request, 'quadStream'>['quadStream']
   }
 
   describe('.dataset', () => {
