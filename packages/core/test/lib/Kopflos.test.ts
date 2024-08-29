@@ -46,7 +46,7 @@ describe('lib/Kopflos', () => {
         iri: ex.foo,
         method: 'GET',
         headers: {},
-        body: undefined,
+        body: {} as Body,
         query: {},
       })
 
@@ -72,7 +72,7 @@ describe('lib/Kopflos', () => {
         iri: ex.foo,
         method: 'GET',
         headers: {},
-        body: undefined,
+        body: {} as Body,
         query: {},
       })
 
@@ -106,7 +106,7 @@ describe('lib/Kopflos', () => {
           headers: {
             accept: 'foo/bar',
           },
-          body: undefined,
+          body: {} as Body,
           query: {},
         })
 
@@ -137,7 +137,7 @@ describe('lib/Kopflos', () => {
           iri: ex.foo,
           method: 'GET',
           headers: {},
-          body: undefined,
+          body: {} as Body,
           query: {},
         })
 
@@ -185,7 +185,7 @@ describe('lib/Kopflos', () => {
             iri: ex.foo,
             method: 'GET',
             headers: {},
-            body: undefined,
+            body: {} as Body,
             query: {},
           })
 
@@ -196,37 +196,6 @@ describe('lib/Kopflos', () => {
     })
 
     context('body', () => {
-      it('can be undefined', async function () {
-        // given
-        const kopflos = new Kopflos(config, {
-          dataset: this.rdf.dataset,
-          resourceShapeLookup: async () => [{
-            api: ex.api,
-            resourceShape: ex.FooShape,
-            subject: ex.foo,
-          }],
-          handlerLookup: async () => ({ body }) => {
-            return {
-              status: 200,
-              body: JSON.stringify({ body: !!body }),
-            }
-          },
-          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
-        })
-
-        // when
-        const response = await kopflos.handleRequest({
-          iri: ex.foo,
-          method: 'GET',
-          headers: {},
-          body: undefined,
-          query: {},
-        })
-
-        // then
-        expect(response.body).to.deep.eq('{"body":false}')
-      })
-
       it('is forwarded to handler when defined', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -250,7 +219,7 @@ describe('lib/Kopflos', () => {
           iri: ex.foo,
           method: 'GET',
           headers: {},
-          body: {} as unknown as Body,
+          body: {} as Body,
           query: {},
         })
 
@@ -279,7 +248,7 @@ describe('lib/Kopflos', () => {
               iri: ex.foo,
               method,
               headers: {},
-              body: undefined,
+              body: {} as Body,
               query: {},
             }) as unknown as { status: number; body: Stream }
 
@@ -310,7 +279,7 @@ describe('lib/Kopflos', () => {
               iri: ex.foo,
               method,
               headers: {},
-              body: undefined,
+              body: {} as Body,
               query: {},
             })
 
@@ -342,7 +311,7 @@ describe('lib/Kopflos', () => {
           iri: ex.baz,
           method: 'GET',
           headers: {},
-          body: undefined,
+          body: {} as Body,
           query: {},
         })
 
@@ -371,7 +340,7 @@ describe('lib/Kopflos', () => {
           iri: ex.baz,
           method: 'GET',
           headers: {},
-          body: undefined,
+          body: {} as Body,
           query: {},
         })
 
@@ -402,7 +371,7 @@ describe('lib/Kopflos', () => {
                 iri: ex.baz,
                 method,
                 headers: {},
-                body: undefined,
+                body: {} as Body,
                 query: {},
               })
 

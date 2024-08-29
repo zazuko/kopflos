@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream'
+import type { IncomingMessage } from 'node:http'
 import type { Request } from 'express'
 import type { NamedNode } from '@rdfjs/types'
 import type { Body } from '@kopflos-cms/core'
@@ -10,8 +10,12 @@ import type { DatasetFactoryExt } from '@zazuko/env/lib/DatasetFactoryExt.js'
 export class BodyWrapper implements Body {
   private _dataset?: Promise<Dataset>
 
-  constructor(private readonly env: Environment<DatasetFactoryExt | ClownfaceFactory>, private readonly term: NamedNode, private readonly req: Readable & Pick<Request, 'quadStream'>) {
+  constructor(private readonly env: Environment<DatasetFactoryExt | ClownfaceFactory>, private readonly term: NamedNode, private readonly req: IncomingMessage & Pick<Request, 'quadStream'>) {
 
+  }
+
+  get isRDF() {
+    return !!this.req.quadStream
   }
 
   get dataset(): Promise<Dataset> {
@@ -22,7 +26,11 @@ export class BodyWrapper implements Body {
   }
 
   get quadStream() {
-    return this.req.quadStream!()
+    if (!this.req.quadStream) {
+      throw new Error('Request body is not an RDF stream. Was the correct Accept header set? Use this.body.isRDF to check before accessing.')
+    }
+
+    return this.req.quadStream()
   }
 
   async pointer() {
@@ -33,6 +41,6 @@ export class BodyWrapper implements Body {
   }
 
   get raw() {
-    return Readable.toWeb(this.req)
+    return this.req
   }
 }
