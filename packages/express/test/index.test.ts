@@ -153,6 +153,20 @@ describe('@kopflos-cms/express', () => {
           expect(response.text).to.eq(ntriples`<http://example.org/body-handler> ${rdf.ns.rdf.type} ${ex.Foo} .\n`.toString())
         })
       }
+
+      it('can parse body directly', async () => {
+        const { body } = await request(app)
+          .get('/body-handler')
+          .query({ type: 'json' })
+          .send({ foo: 'baz' })
+          .set('content-type', 'application/json')
+          .set('host', 'example.org')
+          .expect(200)
+
+        expect(body).to.deep.eq({
+          bar: 'baz',
+        })
+      })
     })
   })
 
