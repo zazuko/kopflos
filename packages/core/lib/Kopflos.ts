@@ -24,9 +24,7 @@ type Dataset = ReturnType<KopflosEnvironment['dataset']>
 export interface Body<D extends DatasetCore = Dataset> {
   quadStream: Stream
   dataset: Promise<D>
-
   pointer(): Promise<GraphPointer<NamedNode, D>>
-
   raw: ReadableStream
 }
 
@@ -41,20 +39,16 @@ interface KopflosRequest<D extends DatasetCore = DatasetCore> {
 }
 
 type ResultBody = Stream | DatasetCore | GraphPointer | Error
-
 export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
 }
-
 export type KopflosResponse = ResultBody | ResultEnvelope
 
 export interface Kopflos<D extends DatasetCore = Dataset> {
   get env(): KopflosEnvironment
-
   get apis(): MultiPointer<Term, D>
-
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
 }
 
