@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.7
+
+### Patch Changes
+
+- a11dda5: Improve logging and error handling
+
 ## 0.3.0-beta.6
 
 ### Patch Changes
