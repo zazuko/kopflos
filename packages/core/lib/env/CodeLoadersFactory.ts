@@ -17,7 +17,7 @@ export class CodeLoadersFactory {
     esmLoader.register(this.registry)
     cjsLoader.register(this.registry)
 
-    log.info('Code loader initialized. Base code path: %s', this.codeBase)
+    log.info(`Code loader initialized. Base code path: ${this.codeBase}`)
   }
 
   load<T>(code: AnyPointer): Promise<T> | T | undefined {
