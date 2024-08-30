@@ -4,7 +4,7 @@ import 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
-import type { KopflosConfig, Body, Options } from '../../lib/Kopflos.js'
+import type { KopflosConfig, Body, Options, KopflosResponse } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
@@ -78,6 +78,32 @@ describe('lib/Kopflos', () => {
 
       // then
       expect(response).toMatchSnapshot()
+    })
+
+    it('guards against falsy handler result', async function () {
+      // given
+      const kopflos = new Kopflos(config, {
+        dataset: this.rdf.dataset,
+        resourceShapeLookup: async () => [{
+          api: ex.api,
+          resourceShape: ex.FooShape,
+          subject: ex.foo,
+        }],
+        handlerLookup: async () => () => undefined as unknown as KopflosResponse,
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+      })
+
+      // when
+      const response = await kopflos.handleRequest({
+        iri: ex.foo,
+        method: 'GET',
+        headers: {},
+        body: {} as Body,
+        query: {},
+      })
+
+      // then
+      expect(response.status).to.eq(500)
     })
 
     context('headers', () => {

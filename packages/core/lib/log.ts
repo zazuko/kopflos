@@ -14,9 +14,9 @@ export function logCode(code: AnyPointer, kind: string) {
     return
   }
   if (isNamedNode(code)) {
-    return log.debug('Loading %s %s', kind, code.value)
+    return log.debug(`Loading ${kind} ${code.value}`)
   }
-  log.debug('Loading %s from %s', kind, code.out(ns.code.link).value)
+  log.debug(`Loading ${kind} from ${code.out(ns.code.link).value}`)
 }
 
 export function decorateClient<C extends ParsingClient | StreamClient>(client: C): C {
@@ -39,7 +39,7 @@ export function decorateClient<C extends ParsingClient | StreamClient>(client: C
 function queryLogger<Q extends(query: string) => ReturnType<Q>>(query: Q): Q {
   return ((q: string) => {
     if (queryLog.enabledFor('debug')) {
-      queryLog.debug('Executing query %s', q)
+      queryLog.debug('Executing query', q)
     }
     return query(q)
   }) as Q

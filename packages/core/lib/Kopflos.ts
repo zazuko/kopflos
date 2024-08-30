@@ -84,7 +84,7 @@ export default class Impl implements Kopflos {
     ])
 
     log.info('Kopflos initialized')
-    log.debug('Options %O', {
+    log.debug('Options', {
       sparqlEndpoints: Object.keys(this.env.sparql),
       resourceShapeLookup: options.resourceShapeLookup?.name ?? 'default',
       resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
@@ -135,11 +135,18 @@ export default class Impl implements Kopflos {
   }
 
   async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {
+    log.info(`${req.method} ${req.iri.value}`)
+    log.debug('Request headers', req.headers)
+
     let result: KopflosResponse
     try {
       result = await this.getResponse(req)
-    } catch (e: Error | unknown) {
-      const error = e instanceof Error ? e : new Error(String(e))
+    } catch (cause: Error | unknown) {
+      const error = cause instanceof Error
+        ? cause
+        : typeof cause === 'string'
+          ? new Error(cause)
+          : new Error('Unknown error', { cause })
       log.error(error)
       return {
         status: 500,
@@ -147,14 +154,23 @@ export default class Impl implements Kopflos {
       }
     }
 
-    if (this.isEnvelope(result)) {
-      return result
+    if (!result) {
+      log.error('Undefined result returned from handler')
+      return {
+        status: 500,
+        body: new Error('Handler did not return a result'),
+      }
     }
 
-    return {
-      status: 200,
-      body: result,
+    if (!this.isEnvelope(result)) {
+      result = {
+        status: 200,
+        body: result,
+      }
     }
+
+    log.info('Response status', result.status)
+    return result
   }
 
   async findResourceShape(iri: NamedNode): Promise<ResourceShapeMatch | KopflosResponse> {
@@ -165,12 +181,12 @@ export default class Impl implements Kopflos {
       return candidates
     }
     if (candidates.length === 0) {
-      log.info('Resource shape not found for %s', iri.value)
+      log.info(`Resource shape not found for ${iri.value}`)
       return { status: 404 }
     }
 
     if (candidates.length > 1) {
-      log.error('Multiple resource shapes found %O', candidates.map(c => c.resourceShape.value))
+      log.error('Multiple resource shapes found:', candidates.map(c => c.resourceShape.value))
       return new Error('Multiple resource shapes found')
     }
 
@@ -184,7 +200,7 @@ export default class Impl implements Kopflos {
         logMatch.object = candidates[0].object.value
       }
 
-      log.debug('Resource shape matched %O', logMatch)
+      log.debug('Resource shape matched:', logMatch)
     }
     return candidates[0]
   }
@@ -229,7 +245,7 @@ export default class Impl implements Kopflos {
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
     const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
-    log.info('Loading graphs %O', graphsIris.map(g => g.value))
+    log.info('Loading graphs', graphsIris.map(g => g.value))
 
     const quads = CONSTRUCT`?s ?p ?o `
       .WHERE`
@@ -246,6 +262,6 @@ export default class Impl implements Kopflos {
 
     await insertShorthands(kopflos)
 
-    log.info('Graphs loaded. Dataset now contains %d quads', kopflos.dataset.size)
+    log.info(`Graphs loaded. Dataset now contains ${kopflos.dataset.size} quads`)
   }
 }
