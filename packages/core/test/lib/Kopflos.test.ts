@@ -106,6 +106,36 @@ describe('lib/Kopflos', () => {
       expect(response.status).to.eq(500)
     })
 
+    it('wraps plain handler result in 200 result envelope', async function () {
+      // given
+      const body = rdf.dataset()
+      const kopflos = new Kopflos(config, {
+        dataset: this.rdf.dataset,
+        resourceShapeLookup: async () => [{
+          api: ex.api,
+          resourceShape: ex.FooShape,
+          subject: ex.foo,
+        }],
+        handlerLookup: async () => () => body,
+        resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+      })
+
+      // when
+      const response = await kopflos.handleRequest({
+        iri: ex.foo,
+        method: 'GET',
+        headers: {},
+        body: {} as Body,
+        query: {},
+      })
+
+      // then
+      expect(response).to.deep.eq({
+        status: 200,
+        body,
+      })
+    })
+
     context('headers', () => {
       it('are always forwarded to handler', async function () {
         // given
