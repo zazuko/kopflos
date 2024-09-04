@@ -1,0 +1,67 @@
+PREFIX code: <https://code.described.at/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+ex:api {
+  ex:ZazukoApi
+    a kl:Api ;
+  .
+
+  ex:NoHandlerShape
+    a kl:ResourceShape ;
+    kl:api ex:ZazukoApi ;
+    sh:targetClass ex:NoHandler ;
+  .
+
+  ex:WithHandlerShape
+    a kl:ResourceShape ;
+    kl:api ex:ZazukoApi ;
+    sh:targetNode ex:with-handler ;
+    kl:handler
+      [
+        kl:method "GET" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:handlers/get-with-handler.js#default>
+          ] ;
+      ] ;
+  .
+
+  ex:BodyHandlerShape
+    a kl:ResourceShape ;
+    kl:api ex:ZazukoApi ;
+    sh:targetNode ex:body-handler ;
+    kl:handler
+      [
+        kl:method "GET", "POST" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:handlers/body-handler.js#default>
+          ] ;
+      ] ;
+  .
+}
+
+ex:no-handler {
+  ex:no-handler
+    a ex:NoHandler ;
+    rdfs:label "No handler" ;
+  .
+}
+
+ex:with-handler {
+  ex:with-handler
+    a ex:WithHandler ;
+    rdfs:label "With handler" ;
+  .
+}
+
+ex:body-handler {
+  ex:body-handler
+    a ex:BodyHandler ;
+  .
+}

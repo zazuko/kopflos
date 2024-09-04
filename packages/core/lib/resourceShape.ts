@@ -3,21 +3,22 @@ import * as path from 'node:path'
 import type { NamedNode } from '@rdfjs/types'
 import type { Kopflos, KopflosResponse } from './Kopflos.js'
 
-interface ResourceShapeDirectMatch {
+export interface ResourceShapeDirectMatch {
   api: NamedNode
   resourceShape: NamedNode
   subject: NamedNode
 }
 
-interface ResourceShapeTypeMatch {
+export interface ResourceShapeTypeMatch {
   api: NamedNode
   resourceShape: NamedNode
   subject: NamedNode
 }
 
-interface ResourceShapeObjectMatch {
+export interface ResourceShapeObjectMatch {
   api: NamedNode
   resourceShape: NamedNode
+  subject: NamedNode
   property: NamedNode
   object: NamedNode
 }
@@ -33,6 +34,6 @@ const select = fs.readFileSync(path.resolve(__dirname, '../query/resourceShapes.
 
 export default async (iri: NamedNode, instance: Kopflos) => {
   return instance.env.sparql.default.parsed.query.select(
-    select.replace('sh:this', `<${iri.value}>`),
+    select.replaceAll('sh:this', `<${iri.value}>`),
   ) as unknown as Promise<ResourceShapeMatch[]>
 }

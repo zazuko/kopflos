@@ -1,0 +1,28 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "@kopflos-cms/core": "0.2.1",
+    "@kopflos-cms/express": "0.0.0",
+    "mocha-chai-rdf": "0.0.0"
+  },
+  "changesets": [
+    "few-cars-stare",
+    "flat-boxes-talk",
+    "fluffy-turkeys-return",
+    "gold-donkeys-change",
+    "hot-suits-suffer",
+    "lazy-balloons-watch",
+    "perfect-monkeys-tap",
+    "poor-bags-bake",
+    "popular-lizards-cough",
+    "rich-meals-sing",
+    "shy-trains-hunt",
+    "six-carpets-bathe",
+    "smooth-days-fold",
+    "spotty-steaks-train",
+    "strong-geckos-heal",
+    "sweet-roses-cry",
+    "witty-glasses-fail"
+  ]
+}
