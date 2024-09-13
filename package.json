@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --quiet --ignore-path .gitignore",
-    "test": "mocha",
+    "test": "npm run --ws --if-present test",
     "release": "changeset publish"
   },
   "author": "Zazuko GmbH",
