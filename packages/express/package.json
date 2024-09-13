@@ -37,7 +37,7 @@
     "@types/supertest": "^6.0.2",
     "chai": "^4.5.0",
     "co-body": "^6.2.0",
-    "mocha-chai-rdf": "*",
+    "mocha-chai-rdf": "^0.1.1",
     "sinon": "^18.0.0",
     "supertest": "^7.0.0"
   },

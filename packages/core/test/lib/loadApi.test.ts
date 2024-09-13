@@ -58,7 +58,7 @@ describe('loadApi', () => {
 
           // then
           const type = instance.graph.node(shorthand).out(rdf.ns.rdf.type)
-          expect(type).term.to.eq(code.EcmaScriptModule)
+          expect(type).to.eq(code.EcmaScriptModule)
         })
 
         it('which can be loaded', async () => {

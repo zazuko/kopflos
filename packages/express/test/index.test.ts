@@ -3,8 +3,8 @@ import type { Express } from 'express'
 import express from 'express'
 import request from 'supertest'
 import { createStore } from 'mocha-chai-rdf/store.js'
-import 'mocha-chai-rdf/snapshots.js'
-import { expect } from 'chai'
+import snapshots from 'mocha-chai-rdf/snapshots.js'
+import { expect, use } from 'chai'
 import { ntriples, turtle } from '@tpluscode/rdf-string'
 import rdf from '@zazuko/env-node'
 import { ex } from '../../testing-helpers/ns.js'
@@ -12,6 +12,8 @@ import kopflos from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 
 describe('@kopflos-cms/express', () => {
+  use(snapshots)
+
   let app: Express
 
   beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true, sliceTestPath: [2, -1] }))

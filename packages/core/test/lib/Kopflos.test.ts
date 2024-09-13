@@ -1,6 +1,6 @@
-import { expect } from 'chai'
+import { expect, use } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
-import 'mocha-chai-rdf/snapshots.js'
+import snapshots from 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
@@ -12,6 +12,8 @@ import type { Handler } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
 
 describe('lib/Kopflos', () => {
+  use(snapshots)
+
   const config: KopflosConfig = {
     sparql: {
       default: 'http://localhost:8080/sparql',
