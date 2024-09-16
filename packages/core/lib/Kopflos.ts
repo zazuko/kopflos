@@ -6,6 +6,7 @@ import type { Options as EndpointOptions, StreamClient } from 'sparql-http-clien
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
+import type { Client } from 'sparql-http-client'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
@@ -57,7 +58,7 @@ interface Clients {
   parsed: ParsingClient
 }
 
-type Endpoint = string | EndpointOptions | Clients
+type Endpoint = string | EndpointOptions | Clients | Client
 
 export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
@@ -85,7 +86,13 @@ export default class Impl implements Kopflos {
 
     log.info('Kopflos initialized')
     log.debug('Options', {
-      sparqlEndpoints: Object.keys(this.env.sparql),
+      sparqlEndpoints: Object.fromEntries(Object.entries(this.env.sparql).map(([key, value]) => {
+        return [key, {
+          endpointUrl: value.parsed.endpointUrl,
+          updateUrl: value.parsed.updateUrl,
+          storeUrl: value.parsed.storeUrl,
+        }]
+      })),
       resourceShapeLookup: options.resourceShapeLookup?.name ?? 'default',
       resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
       handlerLookup: options.handlerLookup?.name ?? 'default',

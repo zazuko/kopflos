@@ -41,8 +41,8 @@ export default class implements SparqlClientFactory {
       }
 
       const endpointConfig = {
-        factory: this,
         ...endpointOrClients,
+        factory: this,
       }
 
       return [key, {
