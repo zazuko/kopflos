@@ -50,7 +50,7 @@
     "@types/chai-as-promised": "^7.1.8",
     "@types/sinon": "^17.0.3",
     "@types/sinon-chai": "^3.2.12",
-    "@types/sparql-http-client": "^3.0.0",
+    "@types/sparql-http-client": "^3.0.4",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.0.0",
     "mocha-chai-rdf": "^0.1.1",
