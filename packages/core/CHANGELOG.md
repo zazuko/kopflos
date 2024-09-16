@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.8
+
+### Patch Changes
+
+- b72086f: Allow initializing clients from one instance of `StreamClient` or `ParsingClient`
+
 ## 0.3.0-beta.7
 
 ### Patch Changes
