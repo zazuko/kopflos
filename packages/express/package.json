@@ -35,9 +35,9 @@
     "@types/express": "^4.17.21",
     "@types/rdfjs__express-handler": "^2.0.6",
     "@types/supertest": "^6.0.2",
-    "chai": "^4.5.0",
+    "chai": "^5",
     "co-body": "^6.2.0",
-    "mocha-chai-rdf": "^0.1.1",
+    "mocha-chai-rdf": "^0.1.2",
     "sinon": "^18.0.0",
     "supertest": "^7.0.0"
   },
