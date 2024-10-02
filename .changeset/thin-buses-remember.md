@@ -1,0 +1,5 @@
+---
+"kopflos": minor
+---
+
+First version

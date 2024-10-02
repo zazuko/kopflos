@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "kopflos serve"
+  },
+  "dependencies": {
+    "kopflos": "*"
+  }
+}

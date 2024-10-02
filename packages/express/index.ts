@@ -16,14 +16,14 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export default (options: KopflosConfig): RequestHandler => {
+export default (options: KopflosConfig): { middleware: RequestHandler; instance: Kopflos } => {
   const kopflos = new Kopflos(options)
 
   const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
     await Kopflos.fromGraphs(kopflos, ...graphs)
   })
 
-  return express.Router()
+  const middleware = express.Router()
     .use((req, res, next) => {
       if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
@@ -66,4 +66,9 @@ export default (options: KopflosConfig): RequestHandler => {
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
         .otherwise((stream) => res.quadStream(stream))
     }))
+
+  return {
+    middleware,
+    instance: kopflos,
+  }
 }
