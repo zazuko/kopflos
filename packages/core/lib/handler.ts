@@ -2,7 +2,7 @@ import type { IncomingHttpHeaders } from 'node:http'
 import type { AnyPointer, GraphPointer } from 'clownface'
 import type { DatasetCore, NamedNode } from '@rdfjs/types'
 import type { KopflosEnvironment } from './env/index.js'
-import type { Kopflos, KopflosResponse, Body, Query } from './Kopflos.js'
+import type { Kopflos, KopflosResponse, Body, Query, ResultEnvelope } from './Kopflos.js'
 import type { ResourceShapeMatch } from './resourceShape.js'
 import type { HttpMethod } from './httpMethods.js'
 import { logCode } from './log.js'
@@ -21,20 +21,20 @@ export interface HandlerArgs<D extends DatasetCore = Dataset> {
 }
 
 export interface SubjectHandler {
-  (arg: HandlerArgs): KopflosResponse | Promise<KopflosResponse>
+  (arg: HandlerArgs, response?: ResultEnvelope): KopflosResponse | Promise<KopflosResponse>
 }
 
 export interface ObjectHandler {
-  (arg: Required<HandlerArgs>): KopflosResponse | Promise<KopflosResponse>
+  (arg: Required<HandlerArgs>, response?: ResultEnvelope): KopflosResponse | Promise<KopflosResponse>
 }
 
 export type Handler = SubjectHandler | ObjectHandler
 
 export interface HandlerLookup {
-  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Promise<Handler | undefined> | Handler | undefined
+  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Array<Promise<Handler> | Handler>
 }
 
-export function loadHandler({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, { apis, env }: Kopflos) {
+export const loadHandler: HandlerLookup = ({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, { apis, env }: Kopflos) => {
   const api = apis.node(rest.api)
 
   let shape: AnyPointer = api.node(resourceShape)
@@ -50,8 +50,21 @@ export function loadHandler({ resourceShape, ...rest }: ResourceShapeMatch, meth
     .filter(matchingMethod(env, method))
 
   const impl = handler.out(env.ns.code.implementedBy)
+  if (impl.isList()) {
+    const pointers = [...impl.list()]
+    return pointers.map(chainedHandler => {
+      logCode(chainedHandler, 'handler')
+      return env.load<Handler>(chainedHandler)
+    }).filter(Boolean) as Array<Promise<Handler>>
+  }
+
   logCode(impl, 'handler')
-  return env.load<Handler>(impl)
+  const loaded = env.load<Handler>(impl)
+  if (loaded) {
+    return [loaded]
+  }
+
+  return []
 }
 
 function matchingMethod(env: KopflosEnvironment, requestMethod: HttpMethod): Parameters<AnyPointer['filter']>[0] {
