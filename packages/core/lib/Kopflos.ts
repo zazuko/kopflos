@@ -15,7 +15,7 @@ import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
-import { loadHandler } from './handler.js'
+import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
 
@@ -235,7 +235,7 @@ export default class Impl implements Kopflos {
   }
 
   async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler[] | KopflosResponse> {
-    const handlerLookup = this.options.handlerLookup || loadHandler
+    const handlerLookup = this.options.handlerLookup || loadHandlers
 
     const handlers = await Promise.all(handlerLookup(resourceShapeMatch, method, this))
 
