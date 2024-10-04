@@ -48,6 +48,7 @@ export interface ResultEnvelope {
 export type KopflosResponse = ResultBody | ResultEnvelope
 
 export interface KopflosPlugin {
+  build?: (env: KopflosEnvironment) => Promise<void> | void
   onStart?(env: KopflosEnvironment): Promise<void> | void
 }
 
@@ -67,6 +68,7 @@ interface Clients {
 type Endpoint = string | EndpointOptions | Clients | Client
 
 export interface KopflosConfig {
+  mode?: 'development' | 'production'
   baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string

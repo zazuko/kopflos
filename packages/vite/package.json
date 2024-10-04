@@ -1,0 +1,16 @@
+{
+  "name": "@kopflos-cms/vite",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "anylogger": "^1.0.11",
+    "express": "^4.21.0",
+    "glob": "^11.0.0",
+    "onetime": "^7.0.0",
+    "vite": "^5.4.8"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0"
+  }
+}

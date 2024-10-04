@@ -1,35 +1,25 @@
 import 'ulog'
 import express from 'express'
 import { program } from 'commander'
-import type { CosmiconfigResult } from 'cosmiconfig'
-import { cosmiconfig } from 'cosmiconfig'
 import kopflos from '@kopflos-cms/express'
-import { log } from '@kopflos-cms/core'
-
-const explorer = cosmiconfig('kopflos')
+import Kopflos, { log } from '@kopflos-cms/core'
+import { loadConfig } from './lib/config.js'
 
 program.name('kopflos')
 
 program.command('serve')
   .description('Start the server')
-  .option('--base-iri <baseIri>', 'Base IRI for the server and its resources')
+  .option('-m, --mode <mode>', 'Mode to run in (default: "production")')
   .option('-c, --config <config>', 'Path to config file')
   .option('-p, --port <port>', 'Port to listen on (default: 1429)', parseInt)
   .option('-h, --host <host>', 'Host to bind to (default: "0.0.0.0")')
   .option('--trust-proxy [proxy]', 'Trust the X-Forwarded-Host header')
-  .action(async ({ config, port = 1429, host = '0.0.0.0', trustProxy, ...options }) => {
-    let ccResult: CosmiconfigResult
-    if (config) {
-      ccResult = await explorer.load(config)
-    } else {
-      ccResult = await explorer.search(config)
-    }
-
+  .action(async ({ mode = 'production', config, port = 1429, host = '0.0.0.0', trustProxy }) => {
     const finalOptions = {
       port,
       host,
-      ...ccResult?.config || {},
-      ...options,
+      mode,
+      ...await loadConfig(config),
     }
 
     const app = express()
@@ -46,6 +36,22 @@ program.command('serve')
     app.listen(port, host, () => {
       log.info(`Server running on ${port}. API URL: ${finalOptions.baseIri}`)
     })
+  })
+
+program.command('build')
+  .option('-c, --config <config>', 'Path to config file')
+  .action(async ({ config }) => {
+    const instance = new Kopflos(await loadConfig(config))
+
+    await instance.loadPlugins()
+
+    log.info('Running build actions...')
+    const buildActions = instance.plugins.map(plugin => plugin.build?.(instance.env))
+    if (buildActions.length === 0) {
+      return log.warn('No plugins with build actions found')
+    } else {
+      await Promise.all(buildActions)
+    }
   })
 
 program.parse(process.argv)

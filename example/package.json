@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "kopflos serve --trust-proxy"
+    "build": "kopflos build",
+    "start": "kopflos serve --mode development --trust-proxy"
   },
   "dependencies": {
+    "@kopflos-cms/vite": "*",
     "express": "^4.21.0",
     "kopflos": "*",
     "cors": "^2.8.5",

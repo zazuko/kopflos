@@ -21,5 +21,9 @@ export default <KopflosConfig> {
         url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
       ],
     },
+    '@kopflos-cms/vite': {
+      root: 'ui',
+      entrypoints: ['ui/template.html'],
+    },
   },
 }
