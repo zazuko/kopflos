@@ -5,9 +5,6 @@ import type { CosmiconfigResult } from 'cosmiconfig'
 import { cosmiconfig } from 'cosmiconfig'
 import kopflos from '@kopflos-cms/express'
 import { log } from '@kopflos-cms/core'
-import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
-import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
-import { fromDirectories } from '@hydrofoil/talos-core'
 
 const explorer = cosmiconfig('kopflos')
 
@@ -19,10 +16,8 @@ program.command('serve')
   .option('-c, --config <config>', 'Path to config file')
   .option('-p, --port <port>', 'Port to listen on (default: 1429)', parseInt)
   .option('-h, --host <host>', 'Host to bind to (default: "0.0.0.0")')
-  .option('--deploy <paths...>', 'Resource paths to be deployed')
-  .option('--auto-deploy', 'Deploy resources from the resources directory (default: true)')
-  .option('--no-auto-deploy', 'Disable auto deployment')
-  .action(async ({ config, port, host, ...options }) => {
+  .option('--trust-proxy [proxy]', 'Trust the X-Forwarded-Host header')
+  .action(async ({ config, port = 1429, host = '0.0.0.0', trustProxy, ...options }) => {
     let ccResult: CosmiconfigResult
     if (config) {
       ccResult = await explorer.load(config)
@@ -31,33 +26,22 @@ program.command('serve')
     }
 
     const finalOptions = {
-      port: 1429,
-      host: '0.0.0.0',
-      autoDeploy: true,
+      port,
+      host,
       ...ccResult?.config || {},
       ...options,
     }
 
     const app = express()
 
-    const { instance, middleware } = kopflos(finalOptions)
+    if (trustProxy) {
+      app.set('trust proxy', trustProxy)
+    }
+
+    const { instance, middleware } = await kopflos(finalOptions)
     app.use(middleware)
 
-    if (finalOptions.autoDeploy) {
-      if (finalOptions.deploy?.length) {
-        log.info(`Auto deploy enabled. Deploying from: ${finalOptions.deploy}`)
-
-        const publicBaseIri = finalOptions.baseIri
-        await bootstrap({
-          dataset: await fromDirectories(finalOptions.deploy, publicBaseIri),
-          store: new ResourcePerGraphStore(instance.env.sparql.default.stream, instance.env),
-        })
-      } else {
-        log.info('No resource paths specified. Skipping deployment')
-      }
-    } else {
-      log.info('Auto deploy disabled. Skipping deployment')
-    }
+    await instance.start()
 
     app.listen(port, host, () => {
       log.info(`Server running on ${port}. API URL: ${finalOptions.baseIri}`)

@@ -47,9 +47,15 @@ export interface ResultEnvelope {
 }
 export type KopflosResponse = ResultBody | ResultEnvelope
 
+export interface KopflosPlugin {
+  onStart?(env: KopflosEnvironment): Promise<void> | void
+}
+
 export interface Kopflos<D extends DatasetCore = Dataset> {
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
+  get plugins(): Array<KopflosPlugin>
+  start(): Promise<void>
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
 }
 
@@ -61,9 +67,11 @@ interface Clients {
 type Endpoint = string | EndpointOptions | Clients | Client
 
 export interface KopflosConfig {
+  baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
+  plugins?: Array<string | [string, unknown]>
 }
 
 export interface Options {
@@ -76,8 +84,10 @@ export interface Options {
 export default class Impl implements Kopflos {
   readonly dataset: Dataset
   readonly env: KopflosEnvironment
+  _plugins: Array<KopflosPlugin> | undefined
+  readonly loadPlugins: () => Promise<void>
 
-  constructor(private readonly config: KopflosConfig, private readonly options: Options = {}) {
+  constructor({ plugins = [], ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv(config)
 
     this.dataset = this.env.dataset([
@@ -97,6 +107,24 @@ export default class Impl implements Kopflos {
       resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
       handlerLookup: options.handlerLookup?.name ?? 'default',
     })
+
+    this.loadPlugins = async () => {
+      this._plugins = await Promise.all(plugins.map(async plugin => {
+        let name: string
+        let options: unknown
+        if (typeof plugin === 'string') {
+          name = plugin
+          options = {}
+        } else {
+          [name, options] = plugin
+        }
+
+        log.info('Loading plugin', name)
+
+        const pluginFactory = await import(name)
+        return pluginFactory.default(options)
+      }))
+    }
   }
 
   get graph() {
@@ -105,6 +133,14 @@ export default class Impl implements Kopflos {
 
   get apis(): MultiPointer<Term, Dataset> {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
+  }
+
+  get plugins() {
+    if (!this._plugins) {
+      throw new Error('Plugins not loaded. Did you forget to call Kopflos.loadPlugins()?')
+    }
+
+    return this._plugins
   }
 
   async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse> {
@@ -248,6 +284,10 @@ export default class Impl implements Kopflos {
 
   private isEnvelope(arg: KopflosResponse): arg is ResultEnvelope {
     return 'body' in arg || 'status' in arg
+  }
+
+  async start() {
+    await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this.env)))
   }
 
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {

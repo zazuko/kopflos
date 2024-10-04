@@ -1,0 +1,11 @@
+{
+  "name": "@kopflos-cms/plugin-deploy-resources",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@hydrofoil/resource-store": "^0.2.2",
+    "@hydrofoil/talos-core": "^0.2",
+    "anylogger": "^1.0.11"
+  }
+}
