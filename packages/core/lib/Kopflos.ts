@@ -108,7 +108,7 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse> {
+  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
     const resourceShapeMatch = await this.findResourceShape(req.iri)
     if (isResponse(resourceShapeMatch)) {
       return resourceShapeMatch
@@ -139,14 +139,23 @@ export default class Impl implements Kopflos {
       args.property = resourceShapeMatch.property
       args.object = resourceGraph.node(resourceShapeMatch.object)
     }
-    const [handler, ...rest] = handlerChain
-    let response = this.asEnvelope(await handler(args, undefined))
-    for (const handler of rest) {
-      response = this.asEnvelope(await handler(args, response))
+
+    let handler = handlerChain.shift()
+    let response: ResultEnvelope | undefined
+    while (handler) {
+      const rawResult = await handler(args, response)
+      if (!rawResult) {
+        return rawResult
+      }
+
+      response = this.asEnvelope(rawResult)
       if (response.end) {
         break
       }
+
+      handler = handlerChain.shift()
     }
+
     return response
   }
 
@@ -154,7 +163,7 @@ export default class Impl implements Kopflos {
     log.info(`${req.method} ${req.iri.value}`)
     log.debug('Request headers', req.headers)
 
-    let result: KopflosResponse
+    let result: KopflosResponse | undefined | null
     try {
       result = await this.getResponse(req)
     } catch (cause: Error | unknown) {
@@ -171,7 +180,7 @@ export default class Impl implements Kopflos {
     }
 
     if (!result) {
-      log.error('Undefined result returned from handler')
+      log.error('Falsy result returned from handler')
       return {
         status: 500,
         body: new Error('Handler did not return a result'),

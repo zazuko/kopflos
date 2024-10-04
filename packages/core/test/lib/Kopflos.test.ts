@@ -181,6 +181,42 @@ describe('lib/Kopflos', () => {
         // then
         expect(response.body).to.eq('C')
       })
+
+      it('guards against falsy handler result', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => () => {
+          return {
+            status: 200,
+            body: letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [
+            chainedHandler('A'),
+            () => undefined as unknown as KopflosResponse,
+            chainedHandler('C'),
+          ],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(500)
+      })
     })
 
     it('guards against falsy handler result', async function () {
