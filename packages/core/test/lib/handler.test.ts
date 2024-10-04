@@ -43,6 +43,24 @@ describe('lib/handler', () => {
         await expect(handler).to.eventually.eq(handlers.getPerson)
       })
 
+      it('loads handler chain', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapeTypeMatch = {
+          api: ex.api,
+          resourceShape: ex.WebPageShape,
+          subject: ex.JohnDoe,
+        }
+
+        // when
+        const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
+      })
+
       it('finds GET handler when method is HEAD', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -135,6 +153,26 @@ describe('lib/handler', () => {
 
         // then
         await expect(handler).to.eventually.eq(handlers.postFriends)
+      })
+
+      it('loads handler chain', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapeObjectMatch = {
+          api: ex.api,
+          resourceShape: ex.WebPageShape,
+          subject: ex.JohnDoe,
+          property: rdf.ns.rdfs.seeAlso,
+          object: ex('JohnDoe/friends'),
+        }
+
+        // when
+        const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
       })
 
       it('finds GET handler when method is HEAD', async function () {
