@@ -10,16 +10,16 @@ export default <KopflosConfig> {
       updateUrl: 'http://localhost:7878/update',
     },
   },
-  plugins: [
-    ['@kopflos-cms/plugin-deploy-resources', {
+  plugins: {
+    '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
-    }],
-    ['@kopflos-cms/plugin-express', {
+    },
+    '@kopflos-cms/plugin-express': {
       before: [
         'cors',
         ['compression', { level: 0 }],
         url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
       ],
-    }],
-  ],
+    },
+  },
 }

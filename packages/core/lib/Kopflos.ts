@@ -71,7 +71,7 @@ export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
-  plugins?: Array<string | [string, unknown]>
+  plugins?: Record<string, unknown>
 }
 
 export interface Options {
@@ -87,7 +87,7 @@ export default class Impl implements Kopflos {
   _plugins: Array<KopflosPlugin> | undefined
   readonly loadPlugins: () => Promise<void>
 
-  constructor({ plugins = [], ...config }: KopflosConfig, private readonly options: Options = {}) {
+  constructor({ plugins = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv(config)
 
     this.dataset = this.env.dataset([
@@ -109,19 +109,10 @@ export default class Impl implements Kopflos {
     })
 
     this.loadPlugins = async () => {
-      this._plugins = await Promise.all(plugins.map(async plugin => {
-        let name: string
-        let options: unknown
-        if (typeof plugin === 'string') {
-          name = plugin
-          options = {}
-        } else {
-          [name, options] = plugin
-        }
+      this._plugins = await Promise.all(Object.entries(plugins).map(async ([plugin, options]) => {
+        log.info('Loading plugin', plugin)
 
-        log.info('Loading plugin', name)
-
-        const pluginFactory = await import(name)
+        const pluginFactory = await import(plugin)
         return pluginFactory.default(options)
       }))
     }
