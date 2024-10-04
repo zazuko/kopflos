@@ -15,6 +15,7 @@ describe('lib/Kopflos', () => {
   use(snapshots)
 
   const config: KopflosConfig = {
+    baseIri: 'http://example.com/',
     sparql: {
       default: 'http://localhost:8080/sparql',
     },

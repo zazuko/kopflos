@@ -14,6 +14,7 @@ describe('loadApi', () => {
   beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true }))
   beforeEach(function () {
     config = {
+      baseIri: 'http://example.com/',
       sparql: {
         default: inMemoryClients(this.rdf),
       },

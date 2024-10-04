@@ -17,6 +17,7 @@ describe('lib/handler', () => {
     beforeEach(createStore(import.meta.url, { format: 'trig', sliceTestPath: [1, -2] }))
     beforeEach(function () {
       config = {
+        baseIri: 'http://example.com/',
         codeBase: __dirname,
         sparql: {
           default: inMemoryClients(this.rdf),
