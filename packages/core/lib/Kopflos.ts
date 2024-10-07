@@ -140,9 +140,9 @@ export default class Impl implements Kopflos {
       args.object = resourceGraph.node(resourceShapeMatch.object)
     }
 
-    let handler = handlerChain.shift()
     let response: ResultEnvelope | undefined
-    while (handler) {
+    for (let i = 0; i < handlerChain.length; i++) {
+      const handler = handlerChain[i]
       const rawResult = await handler(args, response)
       if (!rawResult) {
         return rawResult
@@ -152,8 +152,6 @@ export default class Impl implements Kopflos {
       if (response.end) {
         break
       }
-
-      handler = handlerChain.shift()
     }
 
     return response
