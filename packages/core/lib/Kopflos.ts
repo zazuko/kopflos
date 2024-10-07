@@ -15,7 +15,7 @@ import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
-import { loadHandler } from './handler.js'
+import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
 
@@ -44,6 +44,7 @@ export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
+  end?: boolean
 }
 export type KopflosResponse = ResultBody | ResultEnvelope
 
@@ -136,7 +137,7 @@ export default class Impl implements Kopflos {
     return this._plugins
   }
 
-  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse> {
+  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
     const resourceShapeMatch = await this.findResourceShape(req.iri)
     if (isResponse(resourceShapeMatch)) {
       return resourceShapeMatch
@@ -147,9 +148,9 @@ export default class Impl implements Kopflos {
       return loader
     }
     const coreRepresentation = loader(resourceShapeMatch.subject, this)
-    const handler = await this.loadHandler(req.method, resourceShapeMatch, coreRepresentation)
-    if (isResponse(handler)) {
-      return handler
+    const handlerChain = await this.loadHandlerChain(req.method, resourceShapeMatch, coreRepresentation)
+    if (isResponse(handlerChain)) {
+      return handlerChain
     }
     const resourceGraph = this.env.clownface({
       dataset: await this.env.dataset().import(coreRepresentation),
@@ -167,14 +168,29 @@ export default class Impl implements Kopflos {
       args.property = resourceShapeMatch.property
       args.object = resourceGraph.node(resourceShapeMatch.object)
     }
-    return handler(args)
+
+    let response: ResultEnvelope | undefined
+    for (let i = 0; i < handlerChain.length; i++) {
+      const handler = handlerChain[i]
+      const rawResult = await handler(args, response)
+      if (!rawResult) {
+        return rawResult
+      }
+
+      response = this.asEnvelope(rawResult)
+      if (response.end) {
+        break
+      }
+    }
+
+    return response
   }
 
   async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {
     log.info(`${req.method} ${req.iri.value}`)
     log.debug('Request headers', req.headers)
 
-    let result: KopflosResponse
+    let result: KopflosResponse | undefined | null
     try {
       result = await this.getResponse(req)
     } catch (cause: Error | unknown) {
@@ -191,7 +207,7 @@ export default class Impl implements Kopflos {
     }
 
     if (!result) {
-      log.error('Undefined result returned from handler')
+      log.error('Falsy result returned from handler')
       return {
         status: 500,
         body: new Error('Handler did not return a result'),
@@ -254,13 +270,13 @@ export default class Impl implements Kopflos {
     return fromOwnGraph
   }
 
-  async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
-    const handlerLookup = this.options.handlerLookup || loadHandler
+  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler[] | KopflosResponse> {
+    const handlerLookup = this.options.handlerLookup || loadHandlers
 
-    const handler = await handlerLookup(resourceShapeMatch, method, this)
+    const handlers = await Promise.all(handlerLookup(resourceShapeMatch, method, this))
 
-    if (handler) {
-      return handler
+    if (handlers.length) {
+      return handlers
     }
 
     if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
@@ -277,6 +293,16 @@ export default class Impl implements Kopflos {
 
   private isEnvelope(arg: KopflosResponse): arg is ResultEnvelope {
     return 'body' in arg || 'status' in arg
+  }
+
+  private asEnvelope(arg: KopflosResponse): ResultEnvelope {
+    if (this.isEnvelope(arg)) {
+      return arg
+    }
+    return {
+      status: 200,
+      body: arg,
+    }
   }
 
   async start() {
