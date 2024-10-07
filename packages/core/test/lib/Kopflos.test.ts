@@ -250,12 +250,10 @@ describe('lib/Kopflos', () => {
       const body = rdf.dataset()
       const kopflos = new Kopflos(config, {
         dataset: this.rdf.dataset,
-        resourceShapeLookup: async () => [{
-          api: ex.api,
-          resourceShape: ex.FooShape,
-          subject: ex.foo,
+        resourceShapeLookup: async () => body,
+        handlerLookup: () => [() => {
+          throw new Error('Should not be called')
         }],
-        handlerLookup: () => [() => body],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
