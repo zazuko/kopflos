@@ -11,6 +11,7 @@
     "@kopflos-cms/vite": "*",
     "@kopflos-cms/serve-file": "*",
     "@shoelace-style/shoelace": "^2.17.1",
+    "@zazuko/env": "^2",
     "express": "^4.21.0",
     "kopflos": "*",
     "cors": "^2.8.5",
