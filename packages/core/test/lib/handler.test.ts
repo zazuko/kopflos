@@ -4,7 +4,7 @@ import rdf from '@zazuko/env-node'
 import Kopflos, { defaultHandlerLookup as loadHandler } from '../../index.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
-import type { ResourceShapeObjectMatch, ResourceShapeTypeMatch } from '../../lib/resourceShape.js'
+import type { ResourceShapeObjectMatch, ResourceShapeSubjectMatch } from '../../lib/resourceShape.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import * as handlers from '../support/handlers.js'
 
@@ -31,7 +31,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.PersonShape,
           subject: ex.JohnDoe,
@@ -49,7 +49,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.WebPageShape,
           subject: ex.JohnDoe,
@@ -67,7 +67,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.PersonShape,
           subject: ex.JohnDoe,
@@ -85,7 +85,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.ArticleShape,
           subject: ex.foo,
@@ -103,7 +103,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.PersonShape,
           subject: ex.JohnDoe,
@@ -121,7 +121,7 @@ describe('lib/handler', () => {
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
         })
-        const match: ResourceShapeTypeMatch = {
+        const match: ResourceShapeSubjectMatch = {
           api: ex.api,
           resourceShape: ex.ArticleShape,
           subject: ex.JohnDoe,

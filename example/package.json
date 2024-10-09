@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "build": "kopflos build",
-    "start": "kopflos serve --mode development --trust-proxy"
+    "start": "kopflos serve --mode development --trust-proxy",
+    "start:prod": "kopflos serve --trust-proxy --variable uiRoot=dist"
   },
   "dependencies": {
     "@kopflos-cms/vite": "*",
+    "@kopflos-cms/serve-file": "*",
     "express": "^4.21.0",
     "kopflos": "*",
     "cors": "^2.8.5",

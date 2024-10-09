@@ -77,7 +77,8 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
         .with(P.instanceOf(Error), error => next(error))
         .with({ size: P.number }, (dataset) => res.dataset(dataset))
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
-        .otherwise((stream) => res.quadStream(stream))
+        .with({ read: P.any }, stream => res.quadStream(stream))
+        .otherwise((stream) => res.send(stream))
     }))
 
   await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(middleware, kopflos)))

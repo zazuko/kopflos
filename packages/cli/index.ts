@@ -4,6 +4,7 @@ import { program } from 'commander'
 import kopflos from '@kopflos-cms/express'
 import Kopflos, { log } from '@kopflos-cms/core'
 import { loadConfig } from './lib/config.js'
+import { variable } from './lib/options.js'
 
 program.name('kopflos')
 
@@ -13,13 +14,20 @@ program.command('serve')
   .option('-c, --config <config>', 'Path to config file')
   .option('-p, --port <port>', 'Port to listen on (default: 1429)', parseInt)
   .option('-h, --host <host>', 'Host to bind to (default: "0.0.0.0")')
+  .addOption(variable)
   .option('--trust-proxy [proxy]', 'Trust the X-Forwarded-Host header')
-  .action(async ({ mode = 'production', config, port = 1429, host = '0.0.0.0', trustProxy }) => {
+  .action(async ({ mode = 'production', config, port = 1429, host = '0.0.0.0', trustProxy, variable }) => {
+    const loadedConfig = await loadConfig(config)
+
     const finalOptions = {
       port,
       host,
       mode,
-      ...await loadConfig(config),
+      ...loadedConfig,
+      variables: {
+        ...loadedConfig.variables,
+        ...variable,
+      },
     }
 
     const app = express()
