@@ -41,7 +41,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'GET', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.getPerson)
+        await expect(handler).to.eventually.eq(handlers.getPerson())
       })
 
       it('loads handler chain', async function () {
@@ -59,7 +59,7 @@ describe('lib/handler', () => {
         const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
 
         // then
-        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml(), handlers.bindData()])
       })
 
       it('finds GET handler when method is HEAD', async function () {
@@ -77,7 +77,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.getPerson)
+        await expect(handler).to.eventually.eq(handlers.getPerson())
       })
 
       it('finds handler for HEAD even if GET also exists', async function () {
@@ -95,7 +95,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.headArticle)
+        await expect(handler).to.eventually.eq(handlers.headArticle())
       })
 
       it('finds matching handler when case does not match', async function () {
@@ -113,7 +113,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'PUT', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.putPerson)
+        await expect(handler).to.eventually.eq(handlers.putPerson())
       })
 
       it('throws when handler fails to load', async function () {
@@ -153,7 +153,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'POST', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.postFriends)
+        await expect(handler).to.eventually.eq(handlers.postFriends())
       })
 
       it('loads handler chain', async function () {
@@ -173,7 +173,7 @@ describe('lib/handler', () => {
         const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
 
         // then
-        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml(), handlers.bindData()])
       })
 
       it('finds GET handler when method is HEAD', async function () {
@@ -193,7 +193,7 @@ describe('lib/handler', () => {
         const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        await expect(handler).to.eventually.eq(handlers.getFriends)
+        await expect(handler).to.eventually.eq(handlers.getFriends())
       })
     })
   })

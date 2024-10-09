@@ -1,26 +1,36 @@
-export function getFriends() {
-}
+import onetime from 'onetime'
 
-export function postFriends() {
+export const getFriends = onetime(() => {
+  return function getFriends() {
+  }
+})
 
-}
+export const postFriends = onetime(() => {
+  return function postFriends() {
+  }
+})
 
-export function getPerson() {
+export const getPerson = onetime(() => {
+  return function getPerson() {
+  }
+})
 
-}
+export const putPerson = onetime(() => {
+  return function putPerson() {
+  }
+})
 
-export function putPerson() {
+export const headArticle = onetime(() => {
+  return function headArticle() {
+  }
+})
 
-}
+export const getHtml = onetime(() => {
+  return function getHtml() {
+  }
+})
 
-export function headArticle() {
-
-}
-
-export function getHtml() {
-
-}
-
-export function bindData() {
-
-}
+export const bindData = onetime(() => {
+  return function bindData() {
+  }
+})

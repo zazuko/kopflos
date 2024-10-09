@@ -54,6 +54,7 @@
     "chai": "^5",
     "chai-as-promised": "^8.0.0",
     "mocha-chai-rdf": "^0.1.2",
+    "onetime": "^7.0.0",
     "oxigraph": "^0.4.0-alpha.7",
     "sinon": "^18.0.0",
     "sinon-chai": "^4",

@@ -1,6 +1,6 @@
 import type { Handler } from '@kopflos-cms/core'
 
-const handler: Handler = async (req) => {
+const handler = (): Handler => async (req) => {
   return {
     body: req.env.clownface()
       .node(req.subject.term)

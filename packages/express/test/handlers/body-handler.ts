@@ -3,7 +3,7 @@ import type { Handler } from '@kopflos-cms/core'
 import type { DatasetCore, Stream } from '@rdfjs/types'
 import coBody from 'co-body'
 
-const handler: Handler = async function (req) {
+const handler = (): Handler => async function (req) {
   let body: string | DatasetCore | Stream = 'nobody'
   const headers: OutgoingHttpHeaders = {}
   if (req.body) {
