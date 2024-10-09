@@ -5,6 +5,7 @@
   "scripts": {
     "build": "kopflos build",
     "start": "kopflos serve --mode development --trust-proxy",
+    "prestart:prod": "npm run build",
     "start:prod": "kopflos serve --trust-proxy --variable uiRoot=dist"
   },
   "dependencies": {

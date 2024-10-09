@@ -36,7 +36,7 @@ PREFIX kl: <https://kopflos.described.at/>
           [
             a code:EcmaScriptModule ;
             code:link <node:@kopflos-cms/serve-file#default> ;
-            code:arguments ( "${uiRoot}/${type}.html"^^code:EcmaScriptTemplateLiteral ) ;
+            code:arguments ( "${uiRoot}/${type}/index.html"^^code:EcmaScriptTemplateLiteral ) ;
           ]
           [
             a code:EcmaScriptModule ;
