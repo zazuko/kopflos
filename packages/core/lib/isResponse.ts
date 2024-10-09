@@ -6,5 +6,5 @@ export function isResponse(arg: unknown): arg is KopflosResponse {
     return false
   }
 
-  return 'body' in arg || 'status' in arg || arg instanceof Error || isStream(arg)
+  return 'body' in arg || 'status' in arg || arg instanceof Error || isStream(arg) || 'size' in arg
 }

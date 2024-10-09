@@ -66,7 +66,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => testHandler,
+        handlerLookup: () => [testHandler],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -83,6 +83,143 @@ describe('lib/Kopflos', () => {
       expect(response).toMatchSnapshot()
     })
 
+    context('handler chains', () => {
+      it('can access previous handler', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => (arg, previous) => {
+          return {
+            status: 200,
+            body: (previous?.body || '') + letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.eq('ABC')
+      })
+
+      it('can short-circuit a chain', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => (arg, previous) => {
+          return {
+            status: 200,
+            body: (previous?.body || '') + letter,
+            end: letter === arg.query.last,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {
+            last: 'B',
+          },
+        })
+
+        // then
+        expect(response.body).to.eq('AB')
+      })
+
+      it('can replace previous response', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => () => {
+          return {
+            status: 200,
+            body: letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.eq('C')
+      })
+
+      it('guards against falsy handler result', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => () => {
+          return {
+            status: 200,
+            body: letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [
+            chainedHandler('A'),
+            () => undefined as unknown as KopflosResponse,
+            chainedHandler('C'),
+          ],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(500)
+      })
+    })
+
     it('guards against falsy handler result', async function () {
       // given
       const kopflos = new Kopflos(config, {
@@ -92,7 +229,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => () => undefined as unknown as KopflosResponse,
+        handlerLookup: () => [() => undefined as unknown as KopflosResponse],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -114,12 +251,10 @@ describe('lib/Kopflos', () => {
       const body = rdf.dataset()
       const kopflos = new Kopflos(config, {
         dataset: this.rdf.dataset,
-        resourceShapeLookup: async () => [{
-          api: ex.api,
-          resourceShape: ex.FooShape,
-          subject: ex.foo,
+        resourceShapeLookup: async () => body,
+        handlerLookup: () => [() => {
+          throw new Error('Should not be called')
         }],
-        handlerLookup: async () => () => body,
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -149,12 +284,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ headers }) => {
+          handlerLookup: () => [({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -182,12 +317,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ headers }) => {
+          handlerLookup: () => [({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers: Object.keys(headers).length }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -212,14 +347,14 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => testHandler,
+        handlerLookup: () => [testHandler],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       }
 
-      const throws = async () => {
+      const throws = () => {
         throw new Error('Error')
       }
-      const throwsNonError = async () => {
+      const throwsNonError = () => {
         // eslint-disable-next-line no-throw-literal
         throw 'Error'
       }
@@ -227,7 +362,7 @@ describe('lib/Kopflos', () => {
         ['resourceShapeLookup ' + fun.name, { resourceShapeLookup: fun }],
         ['resourceLoaderLookup ' + fun.name, { resourceLoaderLookup: fun }],
         ['handlerLookup ' + fun.name, { handlerLookup: fun }],
-        ['handler ' + fun.name, { handlerLookup: () => fun }],
+        ['handler ' + fun.name, { handlerLookup: () => [fun] }],
       ])
 
       for (const [name, failingFunction] of failingFunctions) {
@@ -264,12 +399,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ body }) => {
+          handlerLookup: () => [({ body }) => {
             return {
               status: 200,
               body: JSON.stringify({ body: !!body }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -299,7 +434,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: async () => undefined,
+              handlerLookup: () => [],
             })
 
             // when
@@ -330,7 +465,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: async () => undefined,
+              handlerLookup: () => [],
             })
 
             // when
@@ -361,7 +496,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: async () => testHandler,
+          handlerLookup: () => [testHandler],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -390,7 +525,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: async () => testHandler,
+          handlerLookup: () => [testHandler],
           resourceLoaderLookup: async () => resourceLoader,
         })
 
@@ -421,7 +556,7 @@ describe('lib/Kopflos', () => {
                   property: ex.bar,
                   object: ex.baz,
                 }],
-                handlerLookup: async () => undefined,
+                handlerLookup: () => [],
                 resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
               })
 
