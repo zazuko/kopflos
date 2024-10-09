@@ -22,7 +22,7 @@ export const transform = (): SubjectHandler => async ({ subject, env }, response
     return response
   }
 
-  if (process.env.DEV_UI !== 'true') {
+  if (env.kopflos.config.mode === 'production') {
     return response
   }
 
