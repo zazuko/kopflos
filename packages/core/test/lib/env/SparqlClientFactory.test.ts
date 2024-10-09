@@ -18,6 +18,7 @@ describe('lib/env/SparqlClientFactory', () => {
         get kopflos() {
           return {
             config: {
+              baseIri: 'http://example.com/',
               sparql: {
                 default: 'http://example.com/sparql',
               },
@@ -54,6 +55,7 @@ describe('lib/env/SparqlClientFactory', () => {
         get kopflos() {
           return {
             config: {
+              baseIri: 'http://example.com/',
               sparql: {
                 default: {
                   endpointUrl: 'http://example.com/sparql',
@@ -102,6 +104,7 @@ describe('lib/env/SparqlClientFactory', () => {
         get kopflos() {
           return {
             config: {
+              baseIri: 'http://example.com/',
               sparql: {
                 default: {
                   stream,
@@ -146,6 +149,7 @@ describe('lib/env/SparqlClientFactory', () => {
             get kopflos() {
               return {
                 config: {
+                  baseIri: 'http://example.com/',
                   sparql: {
                     default: client,
                   },

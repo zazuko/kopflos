@@ -13,6 +13,7 @@ describe('lib/resourceShape', () => {
   beforeEach(createStore(import.meta.url, { format: 'trig' }))
   beforeEach(async function () {
     options = {
+      baseIri: 'http://example.com/',
       sparql: {
         default: inMemoryClients(this.rdf),
       },

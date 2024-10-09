@@ -1,10 +1,11 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX code: <https://code.described.at/>
 PREFIX schema: <http://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kopflos: <https://kopflos.described.at/>
 PREFIX ex: <http://example.org/>
 
-GRAPH <loadHandler> {
+GRAPH <loadHandlers> {
   ex:api
     a kopflos:Api .
 
@@ -83,4 +84,43 @@ GRAPH <loadHandler> {
           ] ;
       ] ;
   .
+
+  ex:WebPageShape
+    a kopflos:ResourceShape ;
+    sh:targetClass schema:WebPage ;
+    kopflos:api ex:api ;
+    kopflos:handler
+      [
+        kopflos:method "GET" ;
+        code:implementedBy
+          (
+            [
+              a code:EcmaScriptModule ;
+              code:link <file:../support/handlers.js#getHtml> ;
+            ]
+            [
+              a code:EcmaScriptModule ;
+              code:link <file:../support/handlers.js#bindData> ;
+            ]
+          ) ;
+      ] ;
+    sh:property
+      [
+        sh:path rdfs:seeAlso ;
+        kopflos:handler
+          [
+            kopflos:method "GET" ;
+            code:implementedBy
+              (
+                [
+                  a code:EcmaScriptModule ;
+                  code:link <file:../support/handlers.js#getHtml> ;
+                ]
+                [
+                  a code:EcmaScriptModule ;
+                  code:link <file:../support/handlers.js#bindData> ;
+                ]
+              ) ;
+          ] ;
+      ] ;
 }

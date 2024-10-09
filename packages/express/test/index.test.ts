@@ -19,16 +19,19 @@ describe('@kopflos-cms/express', () => {
   beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true, sliceTestPath: [2, -1] }))
 
   describe('configured api graphs', () => {
-    beforeEach(function () {
+    beforeEach(async function () {
+      const { middleware } = await kopflos({
+        baseIri: 'http://example.org/',
+        codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+        apiGraphs: [ex.api],
+      })
+
       app = express()
         .set('trust proxy', true)
-        .use(kopflos({
-          codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
-          sparql: {
-            default: inMemoryClients(this.rdf),
-          },
-          apiGraphs: [ex.api],
-        }).middleware)
+        .use(middleware)
     })
 
     it('should call next when no resource shape is found', async () => {
@@ -173,15 +176,18 @@ describe('@kopflos-cms/express', () => {
   })
 
   describe('automatic API graph', () => {
-    beforeEach(function () {
+    beforeEach(async function () {
+      const { middleware } = await kopflos({
+        baseIri: 'http://example.org/',
+        codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      })
+
       app = express()
         .set('trust proxy', true)
-        .use(kopflos({
-          codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
-          sparql: {
-            default: inMemoryClients(this.rdf),
-          },
-        }).middleware)
+        .use(middleware)
     })
 
     it('throws an error when no API graphs are configured', async () => {
