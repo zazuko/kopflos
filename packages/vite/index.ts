@@ -10,6 +10,7 @@ export { defineConfig } from 'vite'
 export interface Options {
   configPath?: string
   root?: string
+  outDir?: string
   entrypoints?: string[]
 }
 

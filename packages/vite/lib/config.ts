@@ -1,16 +1,18 @@
+import { resolve } from 'node:path'
 import { glob } from 'glob'
 import type { InlineConfig } from 'vite'
 import { mergeConfig } from 'vite'
 import defaultConfig from '../vite.config.js'
 import type { Options } from '../index.js'
 
-export async function prepareConfig({ root, configPath, entrypoints }: Omit<Options, 'mode'>) {
+export async function prepareConfig({ root, configPath, entrypoints, outDir = 'dist' }: Omit<Options, 'mode'>) {
   const input = entrypoints?.flatMap(entry => glob.sync(entry))
 
   const inputConfig: InlineConfig = {
     root,
     build: {
-      outDir: 'dist',
+      outDir: resolve(process.cwd(), outDir),
+      emptyOutDir: true,
       rollupOptions: {
         input,
       },
