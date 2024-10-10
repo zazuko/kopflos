@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import express from 'express'
 import { build } from 'vite'
@@ -14,7 +15,7 @@ export interface Options {
   entrypoints?: string[]
 }
 
-export default function (options: Options): KopflosPlugin {
+export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugin {
   return {
     async beforeMiddleware(host: express.Router, { env }) {
       if (env.kopflos.config.mode === 'development') {
@@ -22,12 +23,15 @@ export default function (options: Options): KopflosPlugin {
         const viteServer = await createViteServer(options)
         host.use(viteServer.middlewares)
       } else {
-        host.use('/assets', express.static('dist/assets'))
+        log.info('Serving UI from build directory')
+        const buildDir = resolve(process.cwd(), outDir)
+        log.debug('Build directory:', buildDir)
+        host.use('/assets', express.static(resolve(buildDir, 'assets')))
       }
     },
     async build() {
       log.info('Building UI...')
-      await build(await prepareConfig(options))
+      await build(await prepareConfig({ outDir, ...options }))
     },
   }
 }

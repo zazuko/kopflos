@@ -1,9 +1,9 @@
 {
-  "name": "@kopflos-cms/plugin-express",
+  "name": "@kopflos-cms/logger",
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@kopflos-cms/logger": "^0.0.0"
+    "anylogger": "^1.0.11"
   }
 }

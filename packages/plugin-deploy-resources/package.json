@@ -6,6 +6,7 @@
   "dependencies": {
     "@hydrofoil/resource-store": "^0.2.2",
     "@hydrofoil/talos-core": "^0.2",
+    "@kopflos-cms/logger": "^0.0.0",
     "anylogger": "^1.0.11"
   }
 }
