@@ -1,0 +1,12 @@
+{
+  "name": "@kopflos-labs/handlebars",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@zazuko/env": "^2.3.0",
+    "@zazuko/prefixes": "^2.2.0",
+    "clownface-shacl-path": "^2.2.0",
+    "handlebars": "^4.7.8"
+  }
+}

@@ -2,15 +2,14 @@ import type { KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
 import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
-import type { AnyLogger, BaseLevels } from 'anylogger'
-import anylogger from 'anylogger'
+import { createLogger } from '@kopflos-cms/logger'
 
 interface Options {
   enabled?: boolean
   paths?: string[]
 }
 
-const log = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos:deploy-resources')
+const log = createLogger('deploy-resources')
 
 export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}): KopflosPlugin {
   return {

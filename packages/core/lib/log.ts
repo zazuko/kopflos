@@ -1,13 +1,11 @@
-import type { AnyLogger, BaseLevels } from 'anylogger'
-import anylogger from 'anylogger'
 import type { AnyPointer } from 'clownface'
 import { isGraphPointer, isLiteral, isNamedNode } from 'is-graph-pointer'
 import * as ns from '@zazuko/vocabulary-extras-builders'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
+import log, { createLogger } from '@kopflos-cms/logger'
 
-const log = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos')
-const queryLog = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos:sparql')
+const queryLog = createLogger('sparql')
 export default log
 
 export function logCode(code: AnyPointer, kind: string) {

@@ -16,10 +16,14 @@ declare module 'express-serve-static-core' {
   }
 }
 
+interface MiddlewareHook {
+  (host: Router, instance: Kopflos): Promise<void> | void
+}
+
 declare module '@kopflos-cms/core' {
   interface KopflosPlugin {
-    beforeMiddleware?(host: Router, instance: Kopflos): Promise<void> | void
-    afterMiddleware?(host: Router, instance: Kopflos): Promise<void> | void
+    beforeMiddleware?: MiddlewareHook
+    afterMiddleware?: MiddlewareHook
   }
 }
 
@@ -32,11 +36,11 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
 
   await kopflos.loadPlugins()
 
-  const middleware = Router()
+  const router = Router()
 
-  await Promise.all(kopflos.plugins.map(plugin => plugin.beforeMiddleware?.(middleware, kopflos)))
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.beforeMiddleware))
 
-  middleware
+  router
     .use((req, res, next) => {
       if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
@@ -81,10 +85,16 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
         .otherwise((stream) => res.send(stream))
     }))
 
-  await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(middleware, kopflos)))
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.afterMiddleware))
 
   return {
-    middleware,
+    middleware: router,
     instance: kopflos,
+  }
+}
+
+async function registerMiddlewares(router: Router, kopflos: Kopflos, hooks: Array<MiddlewareHook | undefined>) {
+  for (const hook of hooks) {
+    await hook?.(router, kopflos)
   }
 }
