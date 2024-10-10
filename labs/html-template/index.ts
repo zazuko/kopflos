@@ -1,12 +1,11 @@
 import type { Handler, KopflosEnvironment } from '@kopflos-cms/core'
-import { log } from '@kopflos-cms/core'
+import log from '@kopflos-cms/logger'
 import { parseDocument } from 'htmlparser2'
 import type { CheerioAPI, Cheerio } from 'cheerio'
 import { load } from 'cheerio'
 import type { AnyNode } from 'domhandler'
 import type { AnyPointer, MultiPointer } from 'clownface'
 import { expand } from '@zazuko/prefixes'
-import $rdf from '@zazuko/env-node'
 
 interface TemplateFunc {
   (template: string, graph: MultiPointer): string
@@ -43,7 +42,7 @@ function replaceTemplates($: CheerioAPI, env: KopflosEnvironment, evaluateTempla
         const classIri = ns(attr['target-class'])
         pointer = graph.any().has(env.ns.rdf.type, classIri)
       } else if (attr.property) {
-        const property = $rdf.namedNode(expand(attr.property))
+        const property = env.namedNode(expand(attr.property))
         pointer = graph.out(property)
       } else {
         log.warn('Unrecognized template', attr)
