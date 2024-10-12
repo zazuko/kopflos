@@ -6,9 +6,13 @@
   <template target-class="/api/schema/Plaque">
     <title> {{ valueof 'schema:name' }} ::: Read the Plaque</title>
   </template>
-  <link rel="stylesheet" href="///cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.17.1/cdn/themes/light.css" />
+  <link rel="stylesheet" href="///cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.17.1/cdn/themes/light.css"/>
 
   <style>
+    body[dsd-pending] {
+      display: none;
+    }
+
     main {
       display: flex;
       justify-content: space-evenly;
@@ -34,11 +38,18 @@
     }
   </style>
 </head>
-<body>
+<body dsd-pending>
+<script>
+  if (HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot')) {
+    // This browser has native declarative shadow DOM support, so we can
+    // allow painting immediately.
+    document.body.removeAttribute('dsd-pending')
+  }
+</script>
 <template target-class="/api/schema/Plaque">
   <header>
     <template property="schema:name">
-      <h1>{{ value }}</h1>
+      <my-header header="{{ value }}"></my-header>
     </template>
   </header>
   <main>
@@ -70,19 +81,20 @@
           </ol-layer-vector>
         </ol-map>
 
-      <div slot="footer">
-        <sl-button variant="primary" pill target="_blank"
-                   href="http://maps.google.com/maps?&z=21&t=m&q=loc:{{ valueof 'schema:latitude' }}+{{ valueof 'schema:longitude' }}">
-          See on Google Maps
-        </sl-button>
-      </div>
+        <div slot="footer">
+          <sl-button variant="primary" pill target="_blank"
+                     href="http://maps.google.com/maps?&z=21&t=m&q=loc:{{ valueof 'schema:latitude' }}+{{ valueof 'schema:longitude' }}">
+            See on Google Maps
+          </sl-button>
+        </div>
       </template>
     </sl-card>
   </main>
 </template>
-  <footer>
-    <p>&copy; 2024 Zazuko</p>
-  </footer>
-  <script type="module" src="../scripts.ts"></script>
+<footer>
+  <p>&copy; 2024 Zazuko</p>
+</footer>
+<script type="module" src="../scripts.ts"></script>
+<script type="module" src="../shadowRoot.ts"></script>
 </body>
 </html>

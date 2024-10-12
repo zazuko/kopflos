@@ -1,0 +1,10 @@
+{
+  "name": "@kopflos-labs/lit",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@lit-labs/ssr": "^3.2.2",
+    "lit": "^3.2.1"
+  }
+}
