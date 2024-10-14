@@ -1,0 +1,13 @@
+{
+  "name": "@kopflos-labs/lit",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@lit-labs/ssr": "^3.2.2",
+    "@lit-labs/ssr-client": "^1.1.7",
+    "cheerio": "^1.0.0",
+    "htmlparser2": "^9.1.0",
+    "lit": "^3.2.1"
+  }
+}
