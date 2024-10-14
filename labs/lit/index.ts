@@ -1,5 +1,4 @@
 import type { Handler } from '@kopflos-cms/core'
-import { log } from '@kopflos-cms/core'
 import { render } from '@lit-labs/ssr'
 import { html } from 'lit'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
@@ -12,8 +11,6 @@ export function ssr(...modules: string[]): Handler {
     if (!response) {
       throw new Error('No previous handler in chain')
     }
-
-    log(modules)
 
     const dom = parseDocument(response!.body as string)
     const $ = load(dom)

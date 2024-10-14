@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement, property } from 'lit-element/decorators.js'
 
 @customElement('my-header')
 export class MyHeader extends LitElement {
