@@ -1,3 +1,3 @@
-import anylogger, { type AnyLogger, type BaseLevels } from 'anylogger'
+import { createLogger } from '@kopflos-cms/logger'
 
-export const log = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos:vite')
+export const log = createLogger('vite')

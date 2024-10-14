@@ -20,7 +20,7 @@ export default <KopflosConfig> {
     '@kopflos-cms/plugin-express': {
       before: [
         'cors',
-        ['compression', { level: 0 }],
+        ['compression', { level: 9 }],
         url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
       ],
     },

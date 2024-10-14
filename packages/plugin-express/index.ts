@@ -1,8 +1,8 @@
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import type { Router } from 'express'
-import anylogger, { type AnyLogger, type BaseLevels } from 'anylogger'
+import { createLogger } from '@kopflos-cms/logger'
 
-const log = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos:express')
+const log = createLogger('express')
 
 type Middleware = string | [string, unknown]
 
