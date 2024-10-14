@@ -26,7 +26,7 @@ export default <KopflosConfig> {
     },
     '@kopflos-cms/vite': {
       root: 'ui',
-      entrypoints: ['ui/*/*.html'],
+      entrypoints: ['ui/*.html'],
     },
   },
 }
