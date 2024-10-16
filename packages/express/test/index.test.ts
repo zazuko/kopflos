@@ -28,7 +28,7 @@ describe('@kopflos-cms/express', () => {
             default: inMemoryClients(this.rdf),
           },
           apiGraphs: [ex.api],
-        }))
+        }).middleware)
     })
 
     it('should call next when no resource shape is found', async () => {
@@ -181,7 +181,7 @@ describe('@kopflos-cms/express', () => {
           sparql: {
             default: inMemoryClients(this.rdf),
           },
-        }))
+        }).middleware)
     })
 
     it('throws an error when no API graphs are configured', async () => {
