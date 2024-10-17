@@ -43,6 +43,36 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
+    context('no paths', () => {
+      beforeEach(async () => {
+        const plugin = configure({
+          paths: [],
+        })
+
+        // when
+        await plugin.onStart(env)
+      })
+
+      it('does nothing', function () {
+        expect(this.rdf.dataset.match(null, null, null, ex())).to.have.property('size', 0)
+      })
+    })
+
+    context('path does not exist', () => {
+      beforeEach(async () => {
+        const plugin = configure({
+          paths: ['foobar'],
+        })
+
+        // when
+        await plugin.onStart(env)
+      })
+
+      it('does nothing', function () {
+        expect(this.rdf.dataset.match(null, null, null, ex())).to.have.property('size', 0)
+      })
+    })
+
     context('enabled', () => {
       beforeEach(async () => {
         const plugin = configure({
