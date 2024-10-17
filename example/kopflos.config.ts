@@ -14,7 +14,7 @@ export default <KopflosConfig> {
     '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
     },
-    '@kopflos-cms/plugin-express': {
+    '@kopflos-cms/express/middleware': {
       before: [
         'cors',
         ['compression', { level: 0 }],
