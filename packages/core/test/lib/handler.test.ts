@@ -13,10 +13,11 @@ const __dirname = new URL('.', import.meta.url).pathname
 describe('lib/handler', () => {
   let config: KopflosConfig
 
-  describe('loadHandler', () => {
+  describe('loadHandlers', () => {
     beforeEach(createStore(import.meta.url, { format: 'trig', sliceTestPath: [1, -2] }))
     beforeEach(function () {
       config = {
+        baseIri: 'http://example.com/',
         codeBase: __dirname,
         sparql: {
           default: inMemoryClients(this.rdf),
@@ -37,10 +38,28 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'GET', kopflos)
+        const [handler] = loadHandler(match, 'GET', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.getPerson)
+        await expect(handler).to.eventually.eq(handlers.getPerson)
+      })
+
+      it('loads handler chain', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapeTypeMatch = {
+          api: ex.api,
+          resourceShape: ex.WebPageShape,
+          subject: ex.JohnDoe,
+        }
+
+        // when
+        const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
       })
 
       it('finds GET handler when method is HEAD', async function () {
@@ -55,10 +74,10 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'HEAD', kopflos)
+        const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.getPerson)
+        await expect(handler).to.eventually.eq(handlers.getPerson)
       })
 
       it('finds handler for HEAD even if GET also exists', async function () {
@@ -73,10 +92,10 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'HEAD', kopflos)
+        const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.headArticle)
+        await expect(handler).to.eventually.eq(handlers.headArticle)
       })
 
       it('finds matching handler when case does not match', async function () {
@@ -91,10 +110,10 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'PUT', kopflos)
+        const [handler] = loadHandler(match, 'PUT', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.putPerson)
+        await expect(handler).to.eventually.eq(handlers.putPerson)
       })
 
       it('throws when handler fails to load', async function () {
@@ -108,8 +127,11 @@ describe('lib/handler', () => {
           subject: ex.JohnDoe,
         }
 
+        // when
+        const [handler] = loadHandler(match, 'X-FOOBAR', kopflos)
+
         // then
-        await expect(loadHandler(match, 'X-FOOBAR', kopflos)).to.be.rejected
+        await expect(handler).to.be.rejected
       })
     })
 
@@ -128,10 +150,30 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'POST', kopflos)
+        const [handler] = loadHandler(match, 'POST', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.postFriends)
+        await expect(handler).to.eventually.eq(handlers.postFriends)
+      })
+
+      it('loads handler chain', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapeObjectMatch = {
+          api: ex.api,
+          resourceShape: ex.WebPageShape,
+          subject: ex.JohnDoe,
+          property: rdf.ns.rdfs.seeAlso,
+          object: ex('JohnDoe/friends'),
+        }
+
+        // when
+        const loadedHandlers = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(loadedHandlers).to.deep.eq([handlers.getHtml, handlers.bindData])
       })
 
       it('finds GET handler when method is HEAD', async function () {
@@ -148,10 +190,10 @@ describe('lib/handler', () => {
         }
 
         // when
-        const handler = await loadHandler(match, 'HEAD', kopflos)
+        const [handler] = loadHandler(match, 'HEAD', kopflos)
 
         // then
-        expect(handler).to.eq(handlers.getFriends)
+        await expect(handler).to.eventually.eq(handlers.getFriends)
       })
     })
   })

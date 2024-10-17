@@ -16,3 +16,11 @@ export function putPerson() {
 export function headArticle() {
 
 }
+
+export function getHtml() {
+
+}
+
+export function bindData() {
+
+}
