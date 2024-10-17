@@ -25,7 +25,7 @@ describe('@kopflos-cms/express/middleware', () => {
       plugins: {
         '@kopflos-cms/express/middleware': {
           before: [
-            'cors',
+            ['cors', { origin: 'example.org' }],
             url.fileURLToPath(new URL('.', import.meta.url) + 'middleware/before.js'),
           ],
           after: [
@@ -46,7 +46,7 @@ describe('@kopflos-cms/express/middleware', () => {
       .set('host', 'example.org')
       .expect(200)
       .expect('handler')
-      .expect('Access-Control-Allow-Origin', '*')
+      .expect('Access-Control-Allow-Origin', 'example.org')
   })
 
   it('runs after middleware when kopflos middleware returns 404', async () => {

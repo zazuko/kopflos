@@ -67,12 +67,16 @@ interface Clients {
 
 type Endpoint = string | EndpointOptions | Clients | Client
 
+export interface PluginConfig {
+  [plugin: string]: unknown
+}
+
 export interface KopflosConfig {
   baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
-  plugins?: Record<string, unknown>
+  plugins?: PluginConfig
 }
 
 export interface Options {
