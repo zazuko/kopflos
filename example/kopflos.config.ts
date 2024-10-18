@@ -18,7 +18,7 @@ export default <KopflosConfig> {
       before: [
         'cors',
         ['compression', { level: 0 }],
-        url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
+        url.fileURLToPath(new URL('lib/static.js', import.meta.url)),
       ],
     },
   },
