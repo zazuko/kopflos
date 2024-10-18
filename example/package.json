@@ -3,9 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "kopflos serve --trust-proxy"
+    "build": "kopflos build",
+    "start": "kopflos serve --mode development --trust-proxy",
+    "prestart:prod": "npm run build",
+    "start:prod": "kopflos serve --trust-proxy --variable uiRoot=dist"
   },
   "dependencies": {
+    "@kopflos-cms/vite": "*",
+    "@kopflos-cms/serve-file": "*",
+    "@shoelace-style/shoelace": "^2.17.1",
+    "@zazuko/env": "^2",
     "express": "^4.21.0",
     "kopflos": "*",
     "cors": "^2.8.5",

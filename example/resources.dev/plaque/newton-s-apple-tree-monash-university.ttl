@@ -2,6 +2,7 @@ PREFIX schema: <http://schema.org/>
 
 <>
   a </api/schema/Plaque> ;
+  schema:identifier "newton-s-apple-tree-monash-university" ;
   schema:name "Newton's Apple Tree Monash University" ;
   schema:image
     [

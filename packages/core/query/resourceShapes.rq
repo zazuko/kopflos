@@ -3,7 +3,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kl: <https://kopflos.described.at/>
 
-SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object {
+SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object ?pattern {
   {
     VALUES ?subject { sh:this }
     ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape .
@@ -18,5 +18,18 @@ SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object {
       a kl:ResourceShape ;
       sh:property/sh:path ?property ;
       kl:api ?api .
+  } UNION {
+    # TODO: move patterned targets to a plugin
+    VALUES ?subject { sh:this }
+    ?resourceShape
+      a kl:ResourceShape ;
+      kl:api ?api ;
+      sh:target
+        [
+          a kl:PatternedTarget ;
+          kl:regex ?pattern ;
+        ] .
+
+    FILTER (regex(str(?subject), ?pattern, "i"))
   }
 }
