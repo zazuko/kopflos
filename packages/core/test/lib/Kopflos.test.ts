@@ -4,12 +4,16 @@ import snapshots from 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
+import { code } from '@zazuko/vocabulary-extras-builders'
 import type { KopflosConfig, Body, Options, KopflosResponse } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import { ex } from '../../../testing-helpers/ns.js'
+import { ex, kopflos } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
 import type { Handler } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
+import * as resourceLoaders from '../../resourceLoaders.js'
+import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
+import { loadPlugins } from '../../plugins.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
@@ -575,6 +579,65 @@ describe('lib/Kopflos', () => {
           })
         }
       })
+    })
+  })
+
+  describe('start', () => {
+    const shorthands = rdf.termMap([
+      [kopflos.DescribeLoader, resourceLoaders.describe],
+      [kopflos.OwnGraphLoader, resourceLoaders.fromOwnGraph],
+    ])
+    for (const [shorthand, implementation] of shorthands) {
+      let instance: Kopflos
+      beforeEach(async function () {
+        instance = new Kopflos({
+          ...config,
+          sparql: {
+            default: inMemoryClients(this.rdf),
+          },
+        }, {
+          plugins: await loadPlugins({}),
+        })
+        await instance.start()
+      })
+
+      context(`inserts ${shorthand.value} shorthand`, () => {
+        it('which has correct type', async function () {
+          // then
+          const type = instance.graph.node(shorthand).out(rdf.ns.rdf.type)
+          expect(type).to.eq(code.EcmaScriptModule)
+        })
+
+        it('which can be loaded', async function () {
+          // when
+          await Kopflos.fromGraphs(instance, ex.PublicApi, ex.PrivateApi)
+
+          // then
+          const loadedFunc = await instance.env.load(instance.graph.node(shorthand))
+          expect(loadedFunc).to.eq(implementation)
+        })
+      })
+    }
+
+    it('calls onStart on plugins once', async function () {
+      // given
+      const plugin = {
+        onStart: sinon.spy(),
+      }
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.start()
+
+      // then
+      expect(plugin.onStart).to.have.been.calledOnce
     })
   })
 })
