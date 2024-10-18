@@ -1,10 +1,9 @@
 import url from 'node:url'
-import type { KopflosEnvironment } from '@kopflos-cms/core'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
 import { createEmpty } from 'mocha-chai-rdf/store.js'
 import rdf from '@zazuko/env-node'
 import { expect, use } from 'chai'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
+import Kopflos from '@kopflos-cms/core'
 import configure from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 
@@ -14,12 +13,12 @@ const ex = rdf.namespace(baseIri + '/')
 describe('@kopflos-cms/plugin-deploy-resources', () => {
   use(snapshots)
 
-  let env: KopflosEnvironment
+  let env: Kopflos
 
   beforeEach(createEmpty)
 
   beforeEach(function () {
-    env = createEnv({
+    env = new Kopflos({
       baseIri,
       sparql: {
         default: inMemoryClients(this.rdf),

@@ -7,13 +7,14 @@ import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
+import onetime from 'onetime'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
 import defaultResourceShapeLookup from './resourceShape.js'
 import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
-import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
+import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
@@ -48,16 +49,18 @@ export interface ResultEnvelope {
 }
 export type KopflosResponse = ResultBody | ResultEnvelope
 
-export interface KopflosPlugin {
-  onStart?(env: KopflosEnvironment): Promise<void> | void
-}
-
 export interface Kopflos<D extends DatasetCore = Dataset> {
+  get dataset(): D
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
+  // eslint-disable-next-line no-use-before-define
   get plugins(): Array<KopflosPlugin>
-  start(): Promise<void>
+  get start(): () => Promise<void>
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
+}
+
+export interface KopflosPlugin {
+  onStart?(instance: Kopflos): Promise<void> | void
 }
 
 interface Clients {
@@ -84,16 +87,18 @@ export interface Options {
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
+  plugins?: Array<KopflosPlugin>
 }
 
 export default class Impl implements Kopflos {
   readonly dataset: Dataset
   readonly env: KopflosEnvironment
-  _plugins: Array<KopflosPlugin> | undefined
-  readonly loadPlugins: () => Promise<void>
+  readonly plugins: Array<KopflosPlugin>
+  readonly start: () => Promise<void>
 
-  constructor({ plugins = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
+  constructor(config: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv(config)
+    this.plugins = options.plugins || []
 
     this.dataset = this.env.dataset([
       ...options.dataset || [],
@@ -113,14 +118,9 @@ export default class Impl implements Kopflos {
       handlerLookup: options.handlerLookup?.name ?? 'default',
     })
 
-    this.loadPlugins = async () => {
-      this._plugins = await Promise.all(Object.entries(plugins).map(async ([plugin, options]) => {
-        log.info('Loading plugin', plugin)
-
-        const pluginFactory = await import(plugin)
-        return pluginFactory.default(options)
-      }))
-    }
+    this.start = onetime(async function (this: Impl) {
+      await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this)))
+    }).bind(this)
   }
 
   get graph() {
@@ -129,14 +129,6 @@ export default class Impl implements Kopflos {
 
   get apis(): MultiPointer<Term, Dataset> {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
-  }
-
-  get plugins() {
-    if (!this._plugins) {
-      throw new Error('Plugins not loaded. Did you forget to call Kopflos.loadPlugins()?')
-    }
-
-    return this._plugins
   }
 
   async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
@@ -307,10 +299,6 @@ export default class Impl implements Kopflos {
     }
   }
 
-  async start() {
-    await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this.env)))
-  }
-
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
     const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
     log.info('Loading graphs', graphsIris.map(g => g.value))
@@ -327,8 +315,6 @@ export default class Impl implements Kopflos {
     for await (const quad of quads) {
       kopflos.dataset.add(quad)
     }
-
-    await insertShorthands(kopflos)
 
     log.info(`Graphs loaded. Dataset now contains ${kopflos.dataset.size} quads`)
   }
