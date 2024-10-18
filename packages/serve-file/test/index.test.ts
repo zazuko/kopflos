@@ -39,6 +39,22 @@ describe('@kopflos-cms/serve-file', () => {
     })
   })
 
+  it('falls back to application/octet-stream', async () => {
+    // given
+    const serveFile = factory('test/foo.bar')
+
+    // when
+    const response = await serveFile({} as any)
+
+    // then
+    expect(response).to.deep.contain({
+      body: 'baz\n',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+    })
+  })
+
   it('allows media type override', async () => {
     // given
     const serveFile = factory({
