@@ -1,3 +1,4 @@
+import type { OutgoingHttpHeaders } from 'node:http'
 import type { KopflosEnvironment, ResultEnvelope, SubjectHandler } from '@kopflos-cms/core'
 import type { GraphPointer } from 'clownface'
 import { createViteServer } from './lib/server.js'
@@ -14,12 +15,8 @@ async function prepareDevTemplate(env: KopflosEnvironment, subject: GraphPointer
 }
 
 export const transform = (): SubjectHandler => async ({ subject, env }, response) => {
-  if (!response) {
-    throw new Error('Vite handler must be chained after another which returns a HTML response')
-  }
-
   if (!isHtmlResponse(response)) {
-    return response
+    throw new Error('Vite handler must be chained after another which returns a HTML response')
   }
 
   if (env.kopflos.config.mode === 'production') {
@@ -33,6 +30,14 @@ export const transform = (): SubjectHandler => async ({ subject, env }, response
   }
 }
 
-function isHtmlResponse(response: ResultEnvelope): response is ResultEnvelope & { body: string } {
-  return response?.headers?.['Content-Type'] === 'text/html' && typeof response.body === 'string'
+function isHtmlResponse(response: ResultEnvelope | undefined): response is ResultEnvelope & { body: string } {
+  return typeof response?.body === 'string' || hasHeader(response?.headers, 'Content-Type', 'text/html')
+}
+
+function hasHeader(headers: OutgoingHttpHeaders | undefined, headerName: string, headerValue: string): boolean {
+  const normalizedHeaderName = headerName.toLowerCase()
+  return !!headers && Object.entries(headers)
+    .some(([key, value]) => {
+      return key.toLowerCase() === normalizedHeaderName && (value === headerValue || (Array.isArray(value) && value.includes(headerValue)))
+    })
 }
