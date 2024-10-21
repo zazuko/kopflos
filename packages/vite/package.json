@@ -3,6 +3,22 @@
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
+  "author": "Zazuko GmbH",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "packages/vite"
+  },
+  "bugs": {
+    "url": "https://github.com/zazuko/kopflos/issues"
+  },
+  "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "anylogger": "^1.0.11",
     "express": "^4.21.0",
@@ -11,6 +27,15 @@
     "vite": "^5.4.8"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0"
+    "@types/glob": "^8.1.0",
+    "chai": "^5.1.1"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
   }
 }
