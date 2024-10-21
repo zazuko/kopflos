@@ -36,11 +36,11 @@ export const bindData = onetime(() => {
   }
 })
 
-export function parametrised(...args: unknown[]): Handler {
+export function parametrised(foo: string, barbaz: Record<string, string>): Handler {
   return function () {
     return {
       status: 200,
-      body: JSON.stringify(args),
+      body: foo + barbaz.bar + barbaz.baz,
     }
   }
 }

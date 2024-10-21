@@ -89,10 +89,7 @@ describe('lib/handler', () => {
         // then
         expect(handler({} as HandlerArgs)).to.deep.eq({
           status: 200,
-          body: JSON.stringify(['foo', {
-            bar: 'bar',
-            baz: 'baz',
-          }]),
+          body: 'foobarbaz',
         })
       })
 
@@ -115,10 +112,7 @@ describe('lib/handler', () => {
         // then
         expect(handler({} as HandlerArgs)).to.deep.eq({
           status: 200,
-          body: JSON.stringify(['foo', {
-            bar: 'bar',
-            baz: 'baz',
-          }]),
+          body: 'foobarbaz',
         })
       })
 

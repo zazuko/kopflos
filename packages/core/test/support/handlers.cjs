@@ -1,8 +1,8 @@
-function parametrised (...args) {
+function parametrised (foo, barbaz) {
   return function () {
     return {
       status: 200,
-      body: JSON.stringify(args),
+      body: foo + barbaz.bar + barbaz.baz,
     }
   }
 }
