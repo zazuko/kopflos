@@ -5,6 +5,13 @@
   "bin": {
     "kopflos": "./bin/kopflos.sh"
   },
+  "files": [
+    "bin",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "*.js",
+    "*.d.ts"
+  ],
   "scripts": {
     "test": "mocha",
     "build": "tsc",

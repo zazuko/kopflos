@@ -10,6 +10,12 @@
     "build": "tsc",
     "prepack": "npm run build"
   },
+  "files": [
+    "lib/*.js",
+    "lib/*.d.ts",
+    "*.js",
+    "*.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/zazuko/kopflos.git",
