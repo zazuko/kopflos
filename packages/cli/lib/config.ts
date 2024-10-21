@@ -4,12 +4,17 @@ import type { KopflosConfig } from '@kopflos-cms/core'
 
 const explorer = cosmiconfig('kopflos')
 
-export async function loadConfig(path: string): Promise<KopflosConfig> {
+interface LoadConfig {
+  root?: string
+  path: string | undefined
+}
+
+export async function loadConfig({ path, root }: LoadConfig): Promise<KopflosConfig> {
   let ccResult: CosmiconfigResult
   if (path) {
     ccResult = await explorer.load(path)
   } else {
-    ccResult = await explorer.search(path)
+    ccResult = await explorer.search(root)
   }
 
   if (!ccResult) {

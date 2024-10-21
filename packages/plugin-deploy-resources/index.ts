@@ -11,7 +11,7 @@ interface Options {
 
 const log = createLogger('deploy-resources')
 
-export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}): KopflosPlugin {
+export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}): Required<Pick<KopflosPlugin, 'onStart'>> {
   return {
     async onStart(env: KopflosEnvironment) {
       if (!enabled) {

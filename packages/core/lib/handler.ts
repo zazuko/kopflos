@@ -60,7 +60,7 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
       vars.set(k, v)
     }
   }
-  const createHandler = createCreateHandler(env, vars)
+  const createHandler = createHandlerFactory(env, vars)
 
   const impl = handler.out(env.ns.code.implementedBy)
   if (impl.isList()) {
@@ -80,18 +80,21 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
   return []
 }
 
-function createCreateHandler(env: KopflosEnvironment, variables: Map<string, unknown>) {
+function createHandlerFactory(env: KopflosEnvironment, variables: Map<string, unknown>) {
   return (impl: AnyPointer): Promise<Handler> | undefined => {
     const factory = env.load<HandlerFactory>(impl)
     if (!factory) {
       return
     }
 
+    let promise: Promise<HandlerFactory>
     if (typeof factory === 'function') {
-      return Promise.resolve(factory?.())
+      promise = Promise.resolve(factory)
+    } else {
+      promise = factory
     }
 
-    return factory.then(async factory => {
+    return promise.then(async factory => {
       if (isGraphPointer(impl) && isGraphPointer(impl.out(env.ns.code.arguments))) {
         const args = await loadArguments(impl, {
           variables,

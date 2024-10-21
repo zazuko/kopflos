@@ -6,16 +6,18 @@ import mime from 'mime' // eslint-disable-line import/default
 interface Options {
   path: string
   stream?: boolean
+  contentType?: string
 }
 
 export default (arg: string | Options): Handler => () => {
   let path: string
   let stream: boolean
+  let contentType: string | undefined
   if (typeof arg === 'string') {
     path = arg
     stream = false
   } else {
-    ({ path, stream = true } = arg)
+    ({ path, stream = true, contentType } = arg)
   }
 
   const body = stream
@@ -25,7 +27,7 @@ export default (arg: string | Options): Handler => () => {
   return {
     status: 200,
     headers: {
-      'Content-Type': mime.getType(path) || 'application/octet-stream',
+      'Content-Type': contentType || mime.getType(path) || 'application/octet-stream',
     },
     body,
   }

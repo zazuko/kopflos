@@ -1,10 +1,15 @@
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { expect } from 'chai'
 import rdf from '@zazuko/env-node'
+import type { HandlerArgs } from '../../index.js'
 import Kopflos, { defaultHandlerLookup as loadHandler } from '../../index.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
-import type { ResourceShapeObjectMatch, ResourceShapeSubjectMatch } from '../../lib/resourceShape.js'
+import type {
+  ResourceShapeObjectMatch,
+  ResourceShapePatternMatch,
+  ResourceShapeSubjectMatch,
+} from '../../lib/resourceShape.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import * as handlers from '../support/handlers.js'
 
@@ -21,6 +26,9 @@ describe('lib/handler', () => {
         codeBase: __dirname,
         sparql: {
           default: inMemoryClients(this.rdf),
+        },
+        variables: {
+          bar: 'bar',
         },
       }
     })
@@ -60,6 +68,52 @@ describe('lib/handler', () => {
 
         // then
         expect(loadedHandlers).to.deep.eq([handlers.getHtml(), handlers.bindData()])
+      })
+
+      it('loads parametrised handler from ESM', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapePatternMatch = {
+          api: ex.api,
+          resourceShape: ex.ParametrisedShape,
+          subject: ex.JohnDoe,
+          subjectVariables: new Map<string, string>([['baz', 'baz']]),
+          pattern: '/foo/{bar}',
+        }
+
+        // when
+        const [handler] = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(handler({} as HandlerArgs)).to.deep.eq({
+          status: 200,
+          body: 'foobarbaz',
+        })
+      })
+
+      it('loads parametrised handler from CJS', async function () {
+        // given
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+        })
+        const match: ResourceShapePatternMatch = {
+          api: ex.api,
+          resourceShape: ex.ParametrisedShapeCjsHandler,
+          subject: ex.JohnDoe,
+          subjectVariables: new Map<string, string>([['baz', 'baz']]),
+          pattern: '/foo/{bar}',
+        }
+
+        // when
+        const [handler] = await Promise.all(loadHandler(match, 'GET', kopflos))
+
+        // then
+        expect(handler({} as HandlerArgs)).to.deep.eq({
+          status: 200,
+          body: 'foobarbaz',
+        })
       })
 
       it('finds GET handler when method is HEAD', async function () {

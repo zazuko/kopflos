@@ -1,4 +1,5 @@
 import onetime from 'onetime'
+import type { Handler } from '../../lib/handler.js'
 
 export const getFriends = onetime(() => {
   return function getFriends() {
@@ -34,3 +35,12 @@ export const bindData = onetime(() => {
   return function bindData() {
   }
 })
+
+export function parametrised(foo: string, barbaz: Record<string, string>): Handler {
+  return function () {
+    return {
+      status: 200,
+      body: foo + barbaz.bar + barbaz.baz,
+    }
+  }
+}

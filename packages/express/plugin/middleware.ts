@@ -11,6 +11,12 @@ interface Options {
   after?: Array<Middleware>
 }
 
+declare module '@kopflos-cms/core' {
+  interface PluginConfig {
+    '@kopflos-cms/express/middleware'?: Options
+  }
+}
+
 export default function ({ before = [], after = [] }: Options): KopflosPlugin {
   function use(middlewares: Array<Middleware>) {
     return async function (host: Router) {

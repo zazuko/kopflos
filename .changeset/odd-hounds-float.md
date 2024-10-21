@@ -19,12 +19,12 @@ accessible as `HandlerArgs#subjectVariables` and included when resolving `code:E
     [
       a kl:Handler ;
       kl:method "GET" ;
-    ] ;
-  code:implementedBy
-    [
-      a code:EcmaScriptModule ;
-      code:link <node:@kopflos-cms/serve-file#default> ;
-      code:arguments ( "pages/${type}.html"^^code:EcmaScriptTemplateLiteral ) ;
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <node:@kopflos-cms/serve-file#default> ;
+          code:arguments ( "pages/${type}.html"^^code:EcmaScriptTemplateLiteral ) ;
+        ] ;
     ] ;
 .
 ```

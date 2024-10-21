@@ -4,11 +4,11 @@ import { parseDocument } from 'htmlparser2'
 import type { CheerioAPI, Cheerio } from 'cheerio'
 import { load } from 'cheerio'
 import type { AnyNode } from 'domhandler'
-import type { AnyPointer, MultiPointer } from 'clownface'
+import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
 import { expand } from '@zazuko/prefixes'
 
 interface TemplateFunc {
-  (template: string, graph: MultiPointer): string
+  (template: string, graph: GraphPointer): string
 }
 
 export default function bindTemplate(evaluateTemplate: TemplateFunc, resourcePath: string): Handler {
@@ -36,21 +36,23 @@ function replaceTemplates($: CheerioAPI, env: KopflosEnvironment, evaluateTempla
     templates.each((_, template) => {
       const $template = $(template)
 
-      let pointer: MultiPointer
+      let pointers: MultiPointer
       const attr = $template.attr() || {}
       if (attr['target-class']) {
         const classIri = ns(attr['target-class'])
-        pointer = graph.any().has(env.ns.rdf.type, classIri)
+        pointers = graph.any().has(env.ns.rdf.type, classIri)
       } else if (attr.property) {
         const property = env.namedNode(expand(attr.property))
-        pointer = graph.out(property)
+        pointers = graph.out(property)
       } else {
         log.warn('Unrecognized template', attr)
         return
       }
 
-      doReplace($template.find('* > template'), pointer, level + 1)
-      $template.replaceWith(evaluateTemplate($template.html()!, pointer))
+      pointers.forEach(pointer => {
+        doReplace($template.find('* > template'), pointer, level + 1)
+      })
+      $template.replaceWith(pointers.map(pointer => evaluateTemplate($template.html()!, pointer)).join(''))
     })
   }
 }

@@ -11,6 +11,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./env.js": "./lib/env/index.js",
     "./resourceLoaders.js": "./resourceLoaders.js"
   },
   "files": [
