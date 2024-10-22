@@ -1,6 +1,6 @@
 /// <reference types="chai-html" />
 import { createStore } from 'mocha-chai-rdf/store.js'
-import { createEnv } from '@kopflos-cms/core/env.js'
+import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
 import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import type { AnyPointer, GraphPointer } from 'clownface'

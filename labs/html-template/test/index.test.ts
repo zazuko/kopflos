@@ -1,7 +1,7 @@
 import sinon from 'sinon'
 import { expect } from 'chai'
 import type { HandlerArgs } from '@kopflos-cms/core'
-import { createEnv } from '@kopflos-cms/core/env.js'
+import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
 import rdf from '@zazuko/env-node'
 import bindTemplate from '../index.js'
 
