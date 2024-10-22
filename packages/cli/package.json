@@ -5,6 +5,29 @@
   "bin": {
     "kopflos": "./bin/kopflos.sh"
   },
+  "files": [
+    "bin",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "*.js",
+    "*.d.ts"
+  ],
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "author": "Zazuko GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/zazuko/kopflos/issues"
+  },
+  "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "@kopflos-cms/core": "^0.3.0-beta.8",
     "@kopflos-cms/express": "^0.0.1-beta.4",
@@ -14,5 +37,16 @@
     "cosmiconfig": "^9.0.0",
     "express": "^4.21.0",
     "ulog": "^2.0.0-beta.19"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
   }
 }

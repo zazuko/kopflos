@@ -67,3 +67,14 @@ GRAPH <default-resource-shape-lookup/when-node-targeting-resource-shapes-has-pro
       ] ;
   .
 }
+
+GRAPH <default-resource-shape-lookup/when-resource-is-matched-against-pattern> {
+  ex:FooShape
+    a kopflos:ResourceShape ;
+    sh:target [
+      a kopflos:PatternedTarget ;
+      kopflos:regex "/foo/(?<bar>[^/]+)$" ;
+    ] ;
+    kopflos:api ex:api ;
+  .
+}

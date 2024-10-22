@@ -10,6 +10,9 @@ export default <KopflosConfig> {
       updateUrl: 'http://localhost:7878/update',
     },
   },
+  variables: {
+    uiRoot: 'ui',
+  },
   plugins: {
     '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
@@ -18,8 +21,12 @@ export default <KopflosConfig> {
       before: [
         'cors',
         ['compression', { level: 0 }],
-        url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
+        url.fileURLToPath(new URL('lib/static.js', import.meta.url)),
       ],
+    },
+    '@kopflos-cms/vite': {
+      root: 'ui',
+      entrypoints: ['ui/*.html'],
     },
   },
 }
