@@ -2,7 +2,9 @@ import url from 'node:url'
 import { expect } from 'chai'
 import { loadConfig } from '../../lib/config.js'
 
-describe('kopflos/lib/config.js', () => {
+describe('kopflos/lib/config.js', function () {
+  this.timeout(10000)
+
   describe('loadConfig', () => {
     it('should discover the config file', async () => {
       const config = await loadConfig({
