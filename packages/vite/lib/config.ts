@@ -5,11 +5,11 @@ import { mergeConfig } from 'vite'
 import defaultConfig from '../vite.config.js'
 import type { Options } from '../index.js'
 
-export async function prepareConfig({ root, configPath, entrypoints, outDir }: Omit<Options, 'mode'>) {
+export async function prepareConfig({ root, configPath, entrypoints, outDir = 'dist' }: Omit<Options, 'mode'>) {
   const inputConfig: InlineConfig = {
     root,
     build: {
-      outDir: outDir ? resolve(process.cwd(), outDir) : undefined,
+      outDir: resolve(process.cwd(), outDir),
       emptyOutDir: true,
     },
   }
