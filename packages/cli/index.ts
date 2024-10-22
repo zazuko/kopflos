@@ -8,6 +8,15 @@ import { variable } from './lib/options.js'
 
 program.name('kopflos')
 
+interface ServeArgs {
+  mode?: 'development' | 'production' | unknown
+  config?: string
+  port?: number
+  host?: string
+  trustProxy?: boolean
+  variable: Record<string, string>
+}
+
 program.command('serve')
   .description('Start the server')
   .option('-m, --mode <mode>', 'Mode to run in (default: "production")')
@@ -16,8 +25,18 @@ program.command('serve')
   .option('-h, --host <host>', 'Host to bind to (default: "0.0.0.0")')
   .addOption(variable)
   .option('--trust-proxy [proxy]', 'Trust the X-Forwarded-Host header')
-  .action(async ({ mode = 'production', config, port = 1429, host = '0.0.0.0', trustProxy, variable }) => {
-    const loadedConfig = await loadConfig(config)
+  .action(async ({ mode: _mode = 'production', config, port = 1429, host = '0.0.0.0', trustProxy, variable }: ServeArgs) => {
+    let mode: 'development' | 'production'
+    if (_mode !== 'development' && _mode !== 'production') {
+      log.warn('Invalid mode, defaulting to "production"')
+      mode = 'production'
+    } else {
+      mode = _mode
+    }
+
+    const loadedConfig = await loadConfig({
+      path: config,
+    })
 
     const finalOptions = {
       port,
@@ -46,10 +65,16 @@ program.command('serve')
     })
   })
 
+interface BuildArgs {
+  config?: string
+}
+
 program.command('build')
   .option('-c, --config <config>', 'Path to config file')
-  .action(async ({ config }) => {
-    const instance = new Kopflos(await loadConfig(config))
+  .action(async ({ config }: BuildArgs) => {
+    const instance = new Kopflos(await loadConfig({
+      path: config,
+    }))
 
     await instance.loadPlugins()
 

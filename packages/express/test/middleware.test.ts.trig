@@ -1,0 +1,26 @@
+PREFIX code: <https://code.described.at/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+ex:api {
+  ex:ZazukoApi
+    a kl:Api ;
+  .
+
+  ex:ResourceShape
+    a kl:ResourceShape ;
+    kl:api ex:ZazukoApi ;
+    sh:targetNode ex: ;
+    kl:handler
+      [
+        kl:method "GET" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:handlers/middleware.js#default>
+          ] ;
+      ] ;
+  .
+}

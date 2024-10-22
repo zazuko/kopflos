@@ -17,11 +17,11 @@ export default <KopflosConfig> {
     '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
     },
-    '@kopflos-cms/plugin-express': {
+    '@kopflos-cms/express/middleware': {
       before: [
         'cors',
         ['compression', { level: 9 }],
-        url.fileURLToPath(new URL('.', import.meta.url) + 'lib/static.js'),
+        url.fileURLToPath(new URL('lib/static.js', import.meta.url)),
       ],
     },
     '@kopflos-cms/vite': {
