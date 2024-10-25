@@ -1,0 +1,41 @@
+{
+  "name": "sparql-path-parser",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "generate": "antlr4 -Dlanguage=TypeScript -visitor src/grammar/PropertyPath.g4",
+    "test": "mocha",
+    "build": "npm run build:js -- --minify && npm run build:dts",
+    "build:js": "esbuild --bundle src/index.ts --outfile=index.js --sourcemap --format=esm --external:@zazuko/prefixes --external:clownface-shacl-path",
+    "build:dts": "tsc"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "dependencies": {
+    "@tpluscode/rdf-ns-builders": "^4",
+    "@types/sparqljs": "^3.1.11",
+    "@zazuko/prefixes": "^2.2.0",
+    "clownface-shacl-path": "^2.4.0"
+  },
+  "devDependencies": {
+    "@rdfjs/data-model": "^2.0.2",
+    "@rdfjs/namespace": "^2.0.1",
+    "antlr4": "^4.13.2",
+    "chai": "^5.1.1",
+    "esbuild": "^0.12.28",
+    "is-relative-url": "^4.0.0",
+    "mocha-chai-jest-snapshot": "^1.1.6"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
+  }
+}

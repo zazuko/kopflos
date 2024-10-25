@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": ".",
+    "module": "ESNext",
+    "target": "ES2020",
+    "moduleResolution": "Node",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "skipLibCheck": true
+  },
+  "files": [
+    "src/index.ts"
+  ]
+}

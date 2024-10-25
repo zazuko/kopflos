@@ -12,7 +12,9 @@
   "exports": {
     ".": "./index.js",
     "./env.js": "./lib/env/index.js",
-    "./resourceLoaders.js": "./resourceLoaders.js"
+    "./resourceLoaders.js": "./resourceLoaders.js",
+    "./plugins.js": "./plugins.js",
+    "./plugin/shorthandTerms.js": "./plugin/shorthandTerms.js"
   },
   "files": [
     "*.js",
@@ -44,6 +46,7 @@
     "anylogger": "^1.0.11",
     "is-graph-pointer": "^2.1.0",
     "is-stream": "^4.0.1",
+    "onetime": "^7.0.0",
     "rdf-loader-code": "^2.2.0",
     "rdf-loaders-registry": "^1.0.3",
     "sparql-http-client": "^3.0.0"

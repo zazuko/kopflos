@@ -8,6 +8,12 @@
     "build": "tsc",
     "prepack": "npm run build"
   },
+  "files": [
+    "lib/*.js",
+    "lib/*.d.ts",
+    "*.js",
+    "*.d.ts"
+  ],
   "dependencies": {
     "mime": "^4.0.4"
   },

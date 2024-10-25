@@ -1,58 +1,47 @@
-import type { Handler, KopflosEnvironment } from '@kopflos-cms/core'
-import log from '@kopflos-cms/logger'
+import type { Handler, HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
 import { parseDocument } from 'htmlparser2'
-import type { CheerioAPI, Cheerio } from 'cheerio'
 import { load } from 'cheerio'
-import type { AnyNode } from 'domhandler'
-import type { AnyPointer, GraphPointer, MultiPointer } from 'clownface'
-import { expand } from '@zazuko/prefixes'
+import type { GraphPointer } from 'clownface'
+import type { DatasetCore, Stream } from '@rdfjs/types'
+import { replaceTemplates } from './lib/replaceTemplates.js'
 
-interface TemplateFunc {
-  (template: string, graph: GraphPointer): string
+export interface TemplateContext {
+  pointer: GraphPointer
 }
 
-export default function bindTemplate(evaluateTemplate: TemplateFunc, resourcePath: string): Handler {
-  return async ({ env }, response) => {
-    const dataset = await env.sparql.default.parsed.query.construct(`
-BASE <${env.kopflos.config.baseIri}>
-DESCRIBE <${resourcePath}>`)
-    const graph = env.clownface({ dataset })
+export interface TemplateFunc {
+  (template: string, context: TemplateContext, env: KopflosEnvironment): string
+}
 
-    const dom = parseDocument(response!.body as string)
+export interface TemplateDataFunc {
+  (context: HandlerArgs): Promise<DatasetCore> | DatasetCore | Stream
+}
+
+export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTemplate: TemplateFunc, fetchData?: (...args: A) => TemplateDataFunc, ...args: A): Handler {
+  return async (context, response) => {
+    if (typeof response?.body !== 'string') {
+      return new Error('Template handler must be chained after another which returns a HTML response')
+    }
+
+    let dataset: DatasetCore | undefined
+
+    if (fetchData) {
+      const templateData = fetchData(...args)(context)
+      if ('then' in templateData || 'size' in templateData) {
+        dataset = await templateData
+      } else {
+        dataset = await context.env.dataset().import(templateData)
+      }
+    }
+    const graph = context.env.clownface({ dataset })
+
+    const dom = parseDocument(response.body)
     const $ = load(dom)
-    replaceTemplates($, env, evaluateTemplate)($('html > * > template'), graph)
+    replaceTemplates($, context.env, evaluateTemplate)(graph)
 
     return {
       ...response!,
       body: $.html(),
     }
-  }
-}
-
-function replaceTemplates($: CheerioAPI, env: KopflosEnvironment, evaluateTemplate: TemplateFunc) {
-  const ns = env.namespace(env.kopflos.config.baseIri)
-
-  return function doReplace(templates: Cheerio<AnyNode>, graph: AnyPointer, level = 0) {
-    templates.each((_, template) => {
-      const $template = $(template)
-
-      let pointers: MultiPointer
-      const attr = $template.attr() || {}
-      if (attr['target-class']) {
-        const classIri = ns(attr['target-class'])
-        pointers = graph.any().has(env.ns.rdf.type, classIri)
-      } else if (attr.property) {
-        const property = env.namedNode(expand(attr.property))
-        pointers = graph.out(property)
-      } else {
-        log.warn('Unrecognized template', attr)
-        return
-      }
-
-      pointers.forEach(pointer => {
-        doReplace($template.find('* > template'), pointer, level + 1)
-      })
-      $template.replaceWith(pointers.map(pointer => evaluateTemplate($template.html()!, pointer)).join(''))
-    })
   }
 }

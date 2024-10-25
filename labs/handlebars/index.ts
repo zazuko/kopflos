@@ -1,10 +1,17 @@
-import type { MultiPointer } from 'clownface'
 import hbs from 'handlebars'
-import './lib/helpers.js'
+import type { TemplateFunc } from '@kopflos-labs/html-template'
+import { valueof } from './lib/helpers.js'
 
-export default function (template: string, pointer: MultiPointer): string {
+const processTemplate: TemplateFunc = function (template, context, env): string {
   const compiled = hbs.compile(template)
-  return compiled(pointer, {
-    allowProtoPropertiesByDefault: true,
+  return compiled(context, {
+    helpers: {
+      valueof: valueof(env.kopflos.config.baseIri),
+    },
+    allowedProtoProperties: {
+      value: true,
+    },
   })
 }
+
+export default processTemplate

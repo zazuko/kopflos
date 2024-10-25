@@ -8,6 +8,7 @@ import factory from '@zazuko/env-node'
 import onetime from 'onetime'
 import { match, P } from 'ts-pattern'
 import asyncMiddleware from 'middleware-async'
+import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { BodyWrapper } from './BodyWrapper.js'
 
 declare module 'express-serve-static-core' {
@@ -28,13 +29,13 @@ declare module '@kopflos-cms/core' {
 }
 
 export default async (options: KopflosConfig): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
-  const kopflos = new Kopflos(options)
+  const kopflos = new Kopflos(options, {
+    plugins: await loadPlugins(options.plugins),
+  })
 
   const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
     await Kopflos.fromGraphs(kopflos, ...graphs)
   })
-
-  await kopflos.loadPlugins()
 
   const router = Router()
 
