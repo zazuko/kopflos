@@ -3,6 +3,7 @@ import express from 'express'
 import { program } from 'commander'
 import kopflos from '@kopflos-cms/express'
 import Kopflos, { log } from '@kopflos-cms/core'
+import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { loadConfig } from './lib/config.js'
 import { variable } from './lib/options.js'
 
@@ -71,15 +72,16 @@ interface BuildArgs {
 
 program.command('build')
   .option('-c, --config <config>', 'Path to config file')
-  .action(async ({ config }: BuildArgs) => {
-    const instance = new Kopflos(await loadConfig({
-      path: config,
-    }))
-
-    await instance.loadPlugins()
+  .action(async ({ config: configPath }: BuildArgs) => {
+    const config = await loadConfig({
+      path: configPath,
+    })
+    const instance = new Kopflos(config, {
+      plugins: await loadPlugins(config.plugins),
+    })
 
     log.info('Running build actions...')
-    const buildActions = instance.plugins.map(plugin => plugin.build?.(instance.env))
+    const buildActions = instance.plugins.map(plugin => plugin.build?.(instance))
     if (buildActions.length === 0) {
       return log.warn('No plugins with build actions found')
     } else {
