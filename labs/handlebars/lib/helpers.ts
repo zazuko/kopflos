@@ -8,12 +8,13 @@ export const valueof = () => {
 
   return function (this: TemplateContext, property: string = '') {
     let propertyPath = cache.get(property)
-    if (!propertyPath) {
-      propertyPath = parse(property)
-      cache.set(property, propertyPath)
-    }
-    if (!propertyPath) {
-      return ''
+    try {
+      if (!propertyPath) {
+        propertyPath = parse(property)
+        cache.set(property, propertyPath)
+      }
+    } catch (error: unknown) {
+      return (error as Error).message
     }
 
     return findNodes(this.pointer, propertyPath).value

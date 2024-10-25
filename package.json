@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare": "npm run --ws --if-present prepare",
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "npm run --ws --if-present test",
     "release": "changeset publish"

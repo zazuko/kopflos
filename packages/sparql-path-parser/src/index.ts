@@ -20,6 +20,14 @@ export const parse = function (path: string): ShaclPropertyPath {
   const tokens = new antlr4.CommonTokenStream(lexer)
   const parser = new PropertyPathParser(tokens)
 
+  // remove default console error listener
+  parser.removeErrorListeners()
+  parser.addErrorListener({
+    syntaxError: (recognizer, offendingSymbol, line, column, msg, e) => {
+      throw new Error(msg)
+    },
+  })
+
   return parser.path().accept(visitor)
 } as SparqlPathParser
 
