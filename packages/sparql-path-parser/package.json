@@ -7,8 +7,8 @@
     "prepare": "npm run build",
     "generate": "antlr4 -Dlanguage=TypeScript -visitor src/grammar/PropertyPath.g4",
     "test": "mocha",
-    "build": "npm run build:js -- --minify --sourcemap && npm run build:dts",
-    "build:js": "esbuild --bundle src/index.ts --outfile=index.js --format=esm --external:@zazuko/prefixes --external:clownface-shacl-path",
+    "build": "npm run build:js -- --minify && npm run build:dts",
+    "build:js": "esbuild --bundle src/index.ts --outfile=index.js --sourcemap --format=esm --external:@zazuko/prefixes --external:clownface-shacl-path",
     "build:dts": "tsc"
   },
   "files": [

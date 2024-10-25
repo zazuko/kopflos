@@ -83,7 +83,7 @@ http://example.org/Foo
     return $
   }
 
-  function printValue(template: string, ptr: GraphPointer) {
-    return template.replaceAll('_VALUE_', ptr.value)
+  function printValue(template: string, { pointer }: {pointer: GraphPointer}) {
+    return template.replaceAll('_VALUE_', pointer.value)
   }
 })
