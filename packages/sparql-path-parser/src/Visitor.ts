@@ -5,7 +5,7 @@ import namespace, {NamespaceBuilder} from '@rdfjs/namespace'
 import { expand } from '@zazuko/prefixes'
 import type * as ParserContext from './grammar/PropertyPathParser.js'
 import PropertyPathVisitor from './grammar/PropertyPathVisitor.js'
-import {isRel} from 'is-relative-uri';
+import isRel from 'is-relative-url';
 
 export default class extends PropertyPathVisitor<Path.ShaclPropertyPath> {
   private ns: NamespaceBuilder = namespace('')

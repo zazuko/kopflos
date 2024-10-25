@@ -6,8 +6,7 @@ import { parse } from '../src/index.js'
 describe('sparql-path-parser', () => {
   use(jestSnapshotPlugin())
 
-  describe('parse', () => {
-    [
+  const paths = [
       'schema:foo / schema:bar', // test whitespace is ignored
       '!(rdf:type|^rdf:type)',
       '!a',
@@ -22,14 +21,20 @@ describe('sparql-path-parser', () => {
       '<foo>', // relative unchanged
       '<http://schema.org/image>',
     ]
-      .forEach((path) => {
+
+  describe('parse', () => {
+    paths.forEach((path) => {
         it(`'${path}'`, () => {
           expect(toSparql(parse(path)).toString({ prologue: false })).toMatchSnapshot()
         })
       })
+  })
 
-    it('<foo> with baseIRI', () => {
-      expect(toSparql(parse('<foo>', { baseIRI: 'http://example.com/' })).toString({ prologue: false })).toMatchSnapshot()
+  describe('parse with baseIRI', () => {
+    paths.forEach((path) => {
+      it(`'${path}'`, () => {
+        expect(toSparql(parse(path, { baseIRI: 'http://example.com/' })).toString({prologue: false})).toMatchSnapshot()
+      })
     })
   })
 })
