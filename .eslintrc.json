@@ -7,6 +7,6 @@
     "mocha": true
   },
   "ignorePatterns": [
-    "packages/sparql-path-parser/src/grammar/"
+    "packages/sparql-path-parser/"
   ]
 }
