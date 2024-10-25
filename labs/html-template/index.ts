@@ -1,4 +1,4 @@
-import type { Handler, HandlerArgs } from '@kopflos-cms/core'
+import type { Handler, HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
 import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import type { GraphPointer } from 'clownface'
@@ -10,7 +10,7 @@ export interface TemplateContext {
 }
 
 export interface TemplateFunc {
-  (template: string, context: TemplateContext): string
+  (template: string, context: TemplateContext, env: KopflosEnvironment): string
 }
 
 export interface TemplateDataFunc {

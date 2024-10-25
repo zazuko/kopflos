@@ -7,14 +7,16 @@ import PropertyPathParser from './grammar/PropertyPathParser.js'
 import PropertyPathLexer from './grammar/PropertyPathLexer.js'
 import Visitor from './Visitor.js'
 
-const visitor = new Visitor()
-
-interface SparqlPathParser {
-  (path: string): ShaclPropertyPath
-  toAlgebra: (path: string) => PropertyPath | NamedNode
+interface Options {
+  baseIRI?: string
 }
 
-export const parse = function (path: string): ShaclPropertyPath {
+interface SparqlPathParser {
+  (path: string, opts?: Options): ShaclPropertyPath
+  toAlgebra: (path: string, opts?: Options) => PropertyPath | NamedNode
+}
+
+export const parse = function (path: string, { baseIRI }: Options = {}): ShaclPropertyPath {
   const chars = new antlr4.CharStream(path)
   const lexer = new PropertyPathLexer(chars)
   const tokens = new antlr4.CommonTokenStream(lexer)
@@ -28,7 +30,7 @@ export const parse = function (path: string): ShaclPropertyPath {
     },
   })
 
-  return parser.path().accept(visitor)
+  return parser.path().accept(new Visitor(baseIRI))
 } as SparqlPathParser
 
 parse.toAlgebra = (pathStr) => toAlgebra(parse(pathStr))

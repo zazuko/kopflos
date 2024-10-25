@@ -31,7 +31,7 @@ export function replaceTemplates($: CheerioAPI, env: KopflosEnvironment, evaluat
       pointers.forEach(pointer => {
         doReplace(pointer, $template.find('* > template'), level + 1)
       })
-      $template.replaceWith(pointers.map(pointer => evaluateTemplate($template.html()!, { pointer })).join(''))
+      $template.replaceWith(pointers.map(pointer => evaluateTemplate($template.html()!, { pointer }, env)).join(''))
     })
   }
 }

@@ -19,6 +19,7 @@ describe('sparql-path-parser', () => {
       'schema:knows?',
       'rdf:rest*/rdf:first',
       'a/schema:name',
+      '<foo>', // relative unchanged
       '<http://schema.org/image>',
     ]
       .forEach((path) => {
@@ -26,5 +27,9 @@ describe('sparql-path-parser', () => {
           expect(toSparql(parse(path)).toString({ prologue: false })).toMatchSnapshot()
         })
       })
+
+    it('<foo> with baseIRI', () => {
+      expect(toSparql(parse('<foo>', { baseIRI: 'http://example.com/' })).toString({ prologue: false })).toMatchSnapshot()
+    })
   })
 })

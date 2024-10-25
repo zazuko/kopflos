@@ -1,11 +1,23 @@
 import * as Path from 'clownface-shacl-path'
 import { rdf } from '@tpluscode/rdf-ns-builders'
-import $rdf from '@rdfjs/data-model' // eslint-disable-line import/no-extraneous-dependencies
+import $rdf from '@rdfjs/data-model'
+import namespace, {NamespaceBuilder} from '@rdfjs/namespace'
 import { expand } from '@zazuko/prefixes'
 import type * as ParserContext from './grammar/PropertyPathParser.js'
 import PropertyPathVisitor from './grammar/PropertyPathVisitor.js'
+import {isRel} from 'is-relative-uri';
 
 export default class extends PropertyPathVisitor<Path.ShaclPropertyPath> {
+  private ns: NamespaceBuilder = namespace('')
+
+  constructor(baseIRI?: string) {
+    super();
+
+    if (baseIRI) {
+      this.ns = namespace(baseIRI)
+    }
+  }
+
   visitPath = (ctx: ParserContext.PathContext): Path.ShaclPropertyPath => {
     return ctx.pathAlternative().accept(this)
   }
@@ -97,7 +109,12 @@ export default class extends PropertyPathVisitor<Path.ShaclPropertyPath> {
   visitIri = (ctx: ParserContext.IriContext): Path.ShaclPropertyPath => {
     const iriref = ctx.IRIREF()?.getText()
     if (iriref) {
-      return new Path.PredicatePath($rdf.namedNode(iriref.slice(1, -1)))
+      const iri = iriref.slice(1, -1)
+      if (isRel(iri)) {
+        return new Path.PredicatePath(this.ns(iri))
+      }
+
+      return new Path.PredicatePath($rdf.namedNode(iri))
     }
 
     return new Path.PredicatePath($rdf.namedNode(expand(ctx.prefixedName().getText())))
