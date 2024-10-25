@@ -45,12 +45,11 @@ http://example.org/Foo
 
   context('<template property>', () => {
     it('descends into the graph', function () {
-      it('finds target by absolute url', function () {
-        // given
-        const graph = this.rdf.graph
+      // given
+      const graph = this.rdf.graph
 
-        // when
-        const result = runTest(`<html>
+      // when
+      const result = runTest(`<html>
 <body>
 <template target-class="http://example.org/Class">
     <template property="schema:image">
@@ -64,15 +63,14 @@ http://example.org/Foo
 </body>
 </html>`, graph)
 
-        // then
-        expect(result.html()).html.to.eq(`<html>
+      // then
+      expect(result.html()).html.to.eq(`<html>
 <body>
 <div>
   <img src="http://example.org/foo.jpg" />
 </div>
 </body>
 </html>`)
-      })
     })
   })
 
