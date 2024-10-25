@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import express from 'express'
+import { Router } from 'express'
 import type { KopflosConfig, Query } from '@kopflos-cms/core'
 import Kopflos from '@kopflos-cms/core'
 import absolutUrl from 'absolute-url'
@@ -8,6 +8,7 @@ import factory from '@zazuko/env-node'
 import onetime from 'onetime'
 import { match, P } from 'ts-pattern'
 import asyncMiddleware from 'middleware-async'
+import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { BodyWrapper } from './BodyWrapper.js'
 
 declare module 'express-serve-static-core' {
@@ -16,14 +17,27 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export default (options: KopflosConfig): { middleware: RequestHandler; instance: Kopflos } => {
-  const kopflos = new Kopflos(options)
+declare module '@kopflos-cms/core' {
+  interface KopflosPlugin {
+    beforeMiddleware?(host: Router): Promise<void> | void
+    afterMiddleware?(host: Router): Promise<void> | void
+  }
+}
+
+export default async (options: KopflosConfig): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
+  const kopflos = new Kopflos(options, {
+    plugins: await loadPlugins(options.plugins),
+  })
 
   const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
     await Kopflos.fromGraphs(kopflos, ...graphs)
   })
 
-  const middleware = express.Router()
+  const middleware = Router()
+
+  await Promise.all(kopflos.plugins.map(plugin => plugin.beforeMiddleware?.(middleware)))
+
+  middleware
     .use((req, res, next) => {
       if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
@@ -66,6 +80,8 @@ export default (options: KopflosConfig): { middleware: RequestHandler; instance:
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
         .otherwise((stream) => res.quadStream(stream))
     }))
+
+  await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(middleware)))
 
   return {
     middleware,

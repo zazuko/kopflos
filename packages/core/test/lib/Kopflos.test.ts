@@ -4,17 +4,22 @@ import snapshots from 'mocha-chai-rdf/snapshots.js'
 import rdf from '@zazuko/env-node'
 import type { Stream } from '@rdfjs/types'
 import sinon from 'sinon'
+import { code } from '@zazuko/vocabulary-extras-builders'
 import type { KopflosConfig, Body, Options, KopflosResponse } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import { ex } from '../../../testing-helpers/ns.js'
+import { ex, kopflos } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
 import type { Handler } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
+import * as resourceLoaders from '../../resourceLoaders.js'
+import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
+import { loadPlugins } from '../../plugins.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
 
   const config: KopflosConfig = {
+    baseIri: 'http://example.com/',
     sparql: {
       default: 'http://localhost:8080/sparql',
     },
@@ -65,7 +70,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => testHandler,
+        handlerLookup: () => [testHandler],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -82,6 +87,143 @@ describe('lib/Kopflos', () => {
       expect(response).toMatchSnapshot()
     })
 
+    context('handler chains', () => {
+      it('can access previous handler', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => (arg, previous) => {
+          return {
+            status: 200,
+            body: (previous?.body || '') + letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.eq('ABC')
+      })
+
+      it('can short-circuit a chain', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => (arg, previous) => {
+          return {
+            status: 200,
+            body: (previous?.body || '') + letter,
+            end: letter === arg.query.last,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {
+            last: 'B',
+          },
+        })
+
+        // then
+        expect(response.body).to.eq('AB')
+      })
+
+      it('can replace previous response', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => () => {
+          return {
+            status: 200,
+            body: letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.body).to.eq('C')
+      })
+
+      it('guards against falsy handler result', async function () {
+        // given
+        const chainedHandler = (letter: string): Handler => () => {
+          return {
+            status: 200,
+            body: letter,
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [
+            chainedHandler('A'),
+            () => undefined as unknown as KopflosResponse,
+            chainedHandler('C'),
+          ],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(500)
+      })
+    })
+
     it('guards against falsy handler result', async function () {
       // given
       const kopflos = new Kopflos(config, {
@@ -91,7 +233,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => () => undefined as unknown as KopflosResponse,
+        handlerLookup: () => [() => undefined as unknown as KopflosResponse],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -113,12 +255,10 @@ describe('lib/Kopflos', () => {
       const body = rdf.dataset()
       const kopflos = new Kopflos(config, {
         dataset: this.rdf.dataset,
-        resourceShapeLookup: async () => [{
-          api: ex.api,
-          resourceShape: ex.FooShape,
-          subject: ex.foo,
+        resourceShapeLookup: async () => body,
+        handlerLookup: () => [() => {
+          throw new Error('Should not be called')
         }],
-        handlerLookup: async () => () => body,
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -148,12 +288,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ headers }) => {
+          handlerLookup: () => [({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -181,12 +321,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ headers }) => {
+          handlerLookup: () => [({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers: Object.keys(headers).length }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -211,14 +351,14 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: async () => testHandler,
+        handlerLookup: () => [testHandler],
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       }
 
-      const throws = async () => {
+      const throws = () => {
         throw new Error('Error')
       }
-      const throwsNonError = async () => {
+      const throwsNonError = () => {
         // eslint-disable-next-line no-throw-literal
         throw 'Error'
       }
@@ -226,7 +366,7 @@ describe('lib/Kopflos', () => {
         ['resourceShapeLookup ' + fun.name, { resourceShapeLookup: fun }],
         ['resourceLoaderLookup ' + fun.name, { resourceLoaderLookup: fun }],
         ['handlerLookup ' + fun.name, { handlerLookup: fun }],
-        ['handler ' + fun.name, { handlerLookup: () => fun }],
+        ['handler ' + fun.name, { handlerLookup: () => [fun] }],
       ])
 
       for (const [name, failingFunction] of failingFunctions) {
@@ -263,12 +403,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: async () => ({ body }) => {
+          handlerLookup: () => [({ body }) => {
             return {
               status: 200,
               body: JSON.stringify({ body: !!body }),
             }
-          },
+          }],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -298,7 +438,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: async () => undefined,
+              handlerLookup: () => [],
             })
 
             // when
@@ -329,7 +469,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: async () => undefined,
+              handlerLookup: () => [],
             })
 
             // when
@@ -360,7 +500,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: async () => testHandler,
+          handlerLookup: () => [testHandler],
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -389,7 +529,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: async () => testHandler,
+          handlerLookup: () => [testHandler],
           resourceLoaderLookup: async () => resourceLoader,
         })
 
@@ -420,7 +560,7 @@ describe('lib/Kopflos', () => {
                   property: ex.bar,
                   object: ex.baz,
                 }],
-                handlerLookup: async () => undefined,
+                handlerLookup: () => [],
                 resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
               })
 
@@ -439,6 +579,65 @@ describe('lib/Kopflos', () => {
           })
         }
       })
+    })
+  })
+
+  describe('start', () => {
+    const shorthands = rdf.termMap([
+      [kopflos.DescribeLoader, resourceLoaders.describe],
+      [kopflos.OwnGraphLoader, resourceLoaders.fromOwnGraph],
+    ])
+    for (const [shorthand, implementation] of shorthands) {
+      let instance: Kopflos
+      beforeEach(async function () {
+        instance = new Kopflos({
+          ...config,
+          sparql: {
+            default: inMemoryClients(this.rdf),
+          },
+        }, {
+          plugins: await loadPlugins({}),
+        })
+        await instance.start()
+      })
+
+      context(`inserts ${shorthand.value} shorthand`, () => {
+        it('which has correct type', async function () {
+          // then
+          const type = instance.graph.node(shorthand).out(rdf.ns.rdf.type)
+          expect(type).to.eq(code.EcmaScriptModule)
+        })
+
+        it('which can be loaded', async function () {
+          // when
+          await Kopflos.fromGraphs(instance, ex.PublicApi, ex.PrivateApi)
+
+          // then
+          const loadedFunc = await instance.env.load(instance.graph.node(shorthand))
+          expect(loadedFunc).to.eq(implementation)
+        })
+      })
+    }
+
+    it('calls onStart on plugins once', async function () {
+      // given
+      const plugin = {
+        onStart: sinon.spy(),
+      }
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.start()
+
+      // then
+      expect(plugin.onStart).to.have.been.calledOnce
     })
   })
 })

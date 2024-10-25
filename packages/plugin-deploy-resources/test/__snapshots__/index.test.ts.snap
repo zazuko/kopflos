@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/plugin-deploy-resources onStart enabled applies base 1`] = `
+"<http://example.org/bar> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Bar> <http://example.org/bar> .
+"
+`;
+
+exports[`@kopflos-cms/plugin-deploy-resources onStart enabled deploys trig 1`] = `
+"<http://example.org/foo> <http://example.org/bar> \\"bar\\" <http://example.org/foo> .
+<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Foo> <http://example.org/foo> .
+"
+`;

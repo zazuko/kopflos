@@ -7,15 +7,16 @@ import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
+import onetime from 'onetime'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
 import defaultResourceShapeLookup from './resourceShape.js'
 import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
-import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
+import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
-import { loadHandler } from './handler.js'
+import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
 
@@ -44,13 +45,22 @@ export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
+  end?: boolean
 }
 export type KopflosResponse = ResultBody | ResultEnvelope
 
 export interface Kopflos<D extends DatasetCore = Dataset> {
+  get dataset(): D
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
+  // eslint-disable-next-line no-use-before-define
+  get plugins(): Array<KopflosPlugin>
+  get start(): () => Promise<void>
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
+}
+
+export interface KopflosPlugin {
+  onStart?(instance: Kopflos): Promise<void> | void
 }
 
 interface Clients {
@@ -60,10 +70,16 @@ interface Clients {
 
 type Endpoint = string | EndpointOptions | Clients | Client
 
+export interface PluginConfig {
+  [plugin: string]: unknown
+}
+
 export interface KopflosConfig {
+  baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
+  plugins?: PluginConfig
 }
 
 export interface Options {
@@ -71,14 +87,18 @@ export interface Options {
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
+  plugins?: Array<KopflosPlugin>
 }
 
 export default class Impl implements Kopflos {
   readonly dataset: Dataset
   readonly env: KopflosEnvironment
+  readonly plugins: Array<KopflosPlugin>
+  readonly start: () => Promise<void>
 
-  constructor(private readonly config: KopflosConfig, private readonly options: Options = {}) {
+  constructor(config: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv(config)
+    this.plugins = options.plugins || []
 
     this.dataset = this.env.dataset([
       ...options.dataset || [],
@@ -97,6 +117,10 @@ export default class Impl implements Kopflos {
       resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
       handlerLookup: options.handlerLookup?.name ?? 'default',
     })
+
+    this.start = onetime(async function (this: Impl) {
+      await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this)))
+    }).bind(this)
   }
 
   get graph() {
@@ -107,7 +131,7 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse> {
+  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
     const resourceShapeMatch = await this.findResourceShape(req.iri)
     if (isResponse(resourceShapeMatch)) {
       return resourceShapeMatch
@@ -118,9 +142,9 @@ export default class Impl implements Kopflos {
       return loader
     }
     const coreRepresentation = loader(resourceShapeMatch.subject, this)
-    const handler = await this.loadHandler(req.method, resourceShapeMatch, coreRepresentation)
-    if (isResponse(handler)) {
-      return handler
+    const handlerChain = await this.loadHandlerChain(req.method, resourceShapeMatch, coreRepresentation)
+    if (isResponse(handlerChain)) {
+      return handlerChain
     }
     const resourceGraph = this.env.clownface({
       dataset: await this.env.dataset().import(coreRepresentation),
@@ -138,14 +162,29 @@ export default class Impl implements Kopflos {
       args.property = resourceShapeMatch.property
       args.object = resourceGraph.node(resourceShapeMatch.object)
     }
-    return handler(args)
+
+    let response: ResultEnvelope | undefined
+    for (let i = 0; i < handlerChain.length; i++) {
+      const handler = handlerChain[i]
+      const rawResult = await handler(args, response)
+      if (!rawResult) {
+        return rawResult
+      }
+
+      response = this.asEnvelope(rawResult)
+      if (response.end) {
+        break
+      }
+    }
+
+    return response
   }
 
   async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {
     log.info(`${req.method} ${req.iri.value}`)
     log.debug('Request headers', req.headers)
 
-    let result: KopflosResponse
+    let result: KopflosResponse | undefined | null
     try {
       result = await this.getResponse(req)
     } catch (cause: Error | unknown) {
@@ -162,7 +201,7 @@ export default class Impl implements Kopflos {
     }
 
     if (!result) {
-      log.error('Undefined result returned from handler')
+      log.error('Falsy result returned from handler')
       return {
         status: 500,
         body: new Error('Handler did not return a result'),
@@ -225,13 +264,13 @@ export default class Impl implements Kopflos {
     return fromOwnGraph
   }
 
-  async loadHandler(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler | KopflosResponse> {
-    const handlerLookup = this.options.handlerLookup || loadHandler
+  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler[] | KopflosResponse> {
+    const handlerLookup = this.options.handlerLookup || loadHandlers
 
-    const handler = await handlerLookup(resourceShapeMatch, method, this)
+    const handlers = await Promise.all(handlerLookup(resourceShapeMatch, method, this))
 
-    if (handler) {
-      return handler
+    if (handlers.length) {
+      return handlers
     }
 
     if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
@@ -250,6 +289,16 @@ export default class Impl implements Kopflos {
     return 'body' in arg || 'status' in arg
   }
 
+  private asEnvelope(arg: KopflosResponse): ResultEnvelope {
+    if (this.isEnvelope(arg)) {
+      return arg
+    }
+    return {
+      status: 200,
+      body: arg,
+    }
+  }
+
   static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
     const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
     log.info('Loading graphs', graphsIris.map(g => g.value))
@@ -266,8 +315,6 @@ export default class Impl implements Kopflos {
     for await (const quad of quads) {
       kopflos.dataset.add(quad)
     }
-
-    await insertShorthands(kopflos)
 
     log.info(`Graphs loaded. Dataset now contains ${kopflos.dataset.size} quads`)
   }

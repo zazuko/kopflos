@@ -3,9 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "kopflos serve"
+    "start": "kopflos serve --trust-proxy"
   },
   "dependencies": {
-    "kopflos": "*"
+    "express": "^4.21.0",
+    "kopflos": "*",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21"
   }
 }
