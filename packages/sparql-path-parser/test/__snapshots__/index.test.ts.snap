@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sparql-path-parser parse '!(rdf:type|^rdf:type)' 1`] = `"!(rdf:type|^rdf:type)"`;
+
+exports[`sparql-path-parser parse 'schema:foo / schema:bar' 1`] = `"schema:foo/schema:bar"`;

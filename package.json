@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint . --quiet --ignore-path .gitignore",
+    "lint": "eslint . --quiet --ignore-path .gitignore --ignore-path .eslintignore",
     "test": "npm run --ws --if-present test",
     "release": "changeset publish"
   },

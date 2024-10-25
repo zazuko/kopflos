@@ -1,12 +1,16 @@
-import type { GraphPointer } from 'clownface'
 import hbs from 'handlebars'
 import type { TemplateFunc } from '@kopflos-labs/html-template'
-import './lib/helpers.js'
+import { valueof } from './lib/helpers.js'
 
-const processTemplate: TemplateFunc = (template: string, pointer: GraphPointer): string => {
+const processTemplate: TemplateFunc = (template, context): string => {
   const compiled = hbs.compile(template)
-  return compiled(pointer, {
-    allowProtoPropertiesByDefault: true,
+  return compiled(context, {
+    helpers: {
+      valueof: valueof(),
+    },
+    allowedProtoProperties: {
+      value: true,
+    },
   })
 }
 

@@ -41,7 +41,7 @@ describe('@kopflos-labs/html-template', () => {
 
     // then
     expect(fetchData).to.have.been.calledWith('arg1', 'arg2')
-    const templateData: AnyPointer = templateFunc.firstCall.args[1]
+    const templateData: AnyPointer = templateFunc.firstCall.args[1].pointer
     expect(templateData.dataset).canonical.toMatchSnapshot()
   })
 
@@ -75,7 +75,7 @@ describe('@kopflos-labs/html-template', () => {
     await handler(context, previousResponse)
 
     // then
-    const templateData: AnyPointer = templateFunc.firstCall.args[1]
+    const templateData: AnyPointer = templateFunc.firstCall.args[1].pointer
     expect(templateData.dataset).canonical.toMatchSnapshot()
   })
 

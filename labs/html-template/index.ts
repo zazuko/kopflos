@@ -5,8 +5,12 @@ import type { GraphPointer } from 'clownface'
 import type { DatasetCore, Stream } from '@rdfjs/types'
 import { replaceTemplates } from './lib/replaceTemplates.js'
 
+export interface TemplateContext {
+  pointer: GraphPointer
+}
+
 export interface TemplateFunc {
-  (template: string, graph: GraphPointer): string
+  (template: string, context: TemplateContext): string
 }
 
 export interface TemplateDataFunc {

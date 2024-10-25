@@ -1,24 +1,21 @@
-import type { GraphPointer, MultiPointer } from 'clownface'
-import type { NamedNode } from '@rdfjs/types'
-import $rdf from '@zazuko/env'
-import { expand } from '@zazuko/prefixes'
+import type { ShaclPropertyPath } from 'clownface-shacl-path'
 import { findNodes } from 'clownface-shacl-path'
-import hbs from 'handlebars'
+import { parse } from 'sparql-path-parser'
+import type { TemplateContext } from '@kopflos-labs/html-template'
 
-hbs.registerHelper('valueof', function (this: MultiPointer, property: string = '') {
-  let propertyPath: GraphPointer | NamedNode | undefined
-  const [first, ...rest] = property.split('/').map(prop => $rdf.namedNode(expand(prop.trim())))
-  if (rest.length === 0) {
-    propertyPath = first
-  } else if (rest.length > 0) {
-    propertyPath = this.blankNode()
-    propertyPath.addOut($rdf.ns.rdf.first, first)
-    propertyPath.addList($rdf.ns.rdf.rest, rest)
+export const valueof = () => {
+  const cache = new Map<string, ShaclPropertyPath>()
+
+  return function (this: TemplateContext, property: string = '') {
+    let propertyPath = cache.get(property)
+    if (!propertyPath) {
+      propertyPath = parse(property)
+      cache.set(property, propertyPath)
+    }
+    if (!propertyPath) {
+      return ''
+    }
+
+    return findNodes(this.pointer, propertyPath).value
   }
-
-  if (!propertyPath) {
-    return ''
-  }
-
-  return findNodes(this, propertyPath).value
-})
+}
