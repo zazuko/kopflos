@@ -12,8 +12,8 @@ jobs:
         package:
           - name: "@kopflos-cms/core"
             path: packages/core
-          - name: "@kopflos-cms/plugin-deploy-resources"
-            path: packages/plugin-deploy-resources
+          - name: "@kopflos-cms/express"
+            path: packages/express
           - name: "@kopflos-cms/plugin-deploy-resources"
             path: packages/plugin-deploy-resources
     steps:
