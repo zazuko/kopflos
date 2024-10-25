@@ -1,4 +1,4 @@
-import type { KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
+import type { Kopflos, KopflosPlugin } from '@kopflos-cms/core'
 import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
 import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
@@ -14,7 +14,7 @@ const log = (anylogger as unknown as AnyLogger<BaseLevels>)('kopflos:deploy-reso
 
 export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}): Required<Pick<KopflosPlugin, 'onStart'>> {
   return {
-    async onStart(env: KopflosEnvironment) {
+    async onStart({ env }: Kopflos) {
       if (!enabled) {
         log.info('Auto deploy disabled. Skipping deployment')
         return
