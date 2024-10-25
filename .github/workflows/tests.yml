@@ -10,8 +10,6 @@ jobs:
       matrix:
         node: [ 18, 20, "lts/*" ]
         package:
-          - name: kopflos
-            path: packages/cli
           - name: "@kopflos-cms/core"
             path: packages/core
           - name: "@kopflos-cms/plugin-deploy-resources"
