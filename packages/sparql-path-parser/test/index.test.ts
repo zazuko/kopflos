@@ -10,6 +10,16 @@ describe('sparql-path-parser', () => {
     [
       'schema:foo / schema:bar', // test whitespace is ignored
       '!(rdf:type|^rdf:type)',
+      '!a',
+      '^rdf:type',
+      '(rdf:type)', // pathPrimary in parens
+      'schema:sameAs|owl:sameAs',
+      'schema:knows+',
+      'schema:knows*',
+      'schema:knows?',
+      'rdf:rest*/rdf:first',
+      'a/schema:name',
+      '<http://schema.org/image>',
     ]
       .forEach((path) => {
         it(`'${path}'`, () => {
