@@ -13,7 +13,6 @@ describe('@kopflos-cms/vite/lib/config.js', () => {
         },
         appType: 'custom',
         build: {
-          outDir: resolve(process.cwd(), 'dist'),
           emptyOutDir: true,
         },
       })

@@ -41,7 +41,7 @@
       "ts"
     ],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm",
+    "loader": "ts-node/esm/transpile-only",
     "require": "../../mocha-setup.js"
   }
 }

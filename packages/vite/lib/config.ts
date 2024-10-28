@@ -9,9 +9,11 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir }: O
   const inputConfig: InlineConfig = {
     root,
     build: {
-      outDir: outDir ? resolve(process.cwd(), outDir) : undefined,
       emptyOutDir: true,
     },
+  }
+  if (outDir) {
+    inputConfig.build!.outDir = resolve(process.cwd(), outDir)
   }
   if (entrypoints) {
     inputConfig.build!.rollupOptions = {
