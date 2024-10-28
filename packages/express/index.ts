@@ -50,7 +50,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
       loadApiGraphs(options.apiGraphs).then(next).catch(next)
     })
     .use((req, res, next) => {
-      const fullUrl = absolutUrl(req) as unknown as URL
+      const fullUrl = absolutUrl(req)
       fullUrl.search = ''
       req.iri = fullUrl.toString()
       next()
