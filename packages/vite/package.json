@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/vite",
-  "version": "0.0.0",
+  "version": "0.0.1-beta.0",
   "type": "module",
   "main": "index.js",
   "author": "Zazuko GmbH",
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
-    "@kopflos-cms/logger": "^0.0.0",
+    "@kopflos-cms/logger": "^0.1.0-beta.0",
     "express": "^5.0.1",
     "glob": "^11.0.0",
     "onetime": "^7.0.0",
