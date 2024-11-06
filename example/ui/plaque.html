@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <template target-class="/api/schema/Plaque">
+    <title> {{ valueof 'schema:name' }} ::: Read the Plaque</title>
+  </template>
+  <link rel="stylesheet" href="///cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.17.1/cdn/themes/light.css"/>
+
+  <style>
+    body[dsd-pending] {
+      display: none;
+    }
+
+    main {
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+    .card-map {
+      width: 500px;
+    }
+
+    .card-overview small {
+      color: var(--sl-color-neutral-500);
+    }
+
+    .card-overview [slot='footer'] {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    ol-map {
+      height: 500px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body dsd-pending>
+<script>
+  if (HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot')) {
+    // This browser has native declarative shadow DOM support, so we can
+    // allow painting immediately.
+    document.body.removeAttribute('dsd-pending')
+  }
+</script>
+<template target-class="/api/schema/Plaque">
+  <header>
+    <template property="schema:name">
+      <my-header header="{{ pointer.value }}"></my-header>
+    </template>
+  </header>
+  <main>
+    <sl-card class="card-overview">
+      <img
+        slot="image"
+        src="{{ valueof 'schema:image/schema:url' }}"
+        alt="Image of a plaque {{ valueof 'schema:name' }}."
+      />
+
+      <pre>{{ valueof 'schema:text' }}</pre>
+
+      <div slot="footer">
+        <sl-button variant="primary" pill target="_blank"
+                   href="https://readtheplaque.com/plaque/{{ valueof 'schema:identifier' }}">See the
+          original
+        </sl-button>
+      </div>
+    </sl-card>
+
+    <sl-card class="card-overview card-map">
+      <template property="schema:geo">
+        <ol-map slot="image" zoom="13" lat="{{ valueof 'schema:latitude' }}" lon="{{ valueof 'schema:longitude' }}">
+          <ol-layer-openstreetmap></ol-layer-openstreetmap>
+          <ol-layer-vector z-index="1">
+            <ol-marker-icon src="https://openlayers-elements.netlify.app/icon.png"
+                            lon="{{ valueof 'schema:longitude' }}"
+                            lat="{{ valueof 'schema:latitude' }}"/>
+          </ol-layer-vector>
+        </ol-map>
+
+        <div slot="footer">
+          <sl-button variant="primary" pill target="_blank"
+                     href="http://maps.google.com/maps?&z=21&t=m&q=loc:{{ valueof 'schema:latitude' }}+{{ valueof 'schema:longitude' }}">
+            See on Google Maps
+          </sl-button>
+        </div>
+      </template>
+    </sl-card>
+  </main>
+</template>
+<footer>
+  <p>&copy; 2024 Zazuko</p>
+</footer>
+<script type="module" src="/scripts.ts"></script>
+<script type="module" src="/shadowRoot.ts"></script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import exp = require('node:constants');
 import rdf from '@zazuko/env-node'
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
@@ -13,6 +14,7 @@ describe('lib/resourceShape', () => {
   beforeEach(createStore(import.meta.url, { format: 'trig' }))
   beforeEach(async function () {
     options = {
+      baseIri: 'http://example.com',
       sparql: {
         default: inMemoryClients(this.rdf),
       },
@@ -131,6 +133,27 @@ describe('lib/resourceShape', () => {
           property: rdf.ns.schema.location,
         })
         expect(results).to.have.length(1)
+      })
+    })
+
+    context('when resource is matched against pattern', () => {
+      it('extracts variables', async () => {
+        // given
+        const kopflos = new Kopflos(options)
+
+        // when
+        const [result, ...more] = await defaultResourceShapeLookup(ex['foo/bar'], kopflos)
+
+        // then
+        expect(result).to.deep.contain({
+          api: ex.api,
+          resourceShape: ex.FooShape,
+          subject: ex['foo/bar'],
+        })
+        expect(result).to.have.property('subjectVariables').that.deep.equals(new Map([
+          ['bar', 'bar'],
+        ]))
+        expect(more).to.be.empty
       })
     })
   })

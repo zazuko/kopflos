@@ -1,0 +1,36 @@
+{
+  "name": "@kopflos-cms/plugin-deploy-resources",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
+  "dependencies": {
+    "@hydrofoil/resource-store": "^0.2.2",
+    "@hydrofoil/talos-core": "^0.2",
+    "@kopflos-cms/logger": "^0.0.0",
+    "anylogger": "^1.0.11"
+  },
+  "devDependencies": {
+    "@kopflos-cms/core": "*",
+    "@zazuko/env-node": "^2.1.3",
+    "chai": "^5.1.1",
+    "mocha-chai-rdf": "^0.1.4"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
+  }
+}

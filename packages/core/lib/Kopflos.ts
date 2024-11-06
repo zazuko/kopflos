@@ -1,5 +1,6 @@
 import type { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
 import type { parse } from 'node:querystring'
+import type { ReadableStream } from 'node:stream/web'
 import type { DatasetCore, NamedNode, Stream, Term } from '@rdfjs/types'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
@@ -7,13 +8,14 @@ import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
+import onetime from 'onetime'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
 import defaultResourceShapeLookup from './resourceShape.js'
 import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
-import { insertShorthands, fromOwnGraph, findResourceLoader } from './resourceLoader.js'
+import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
@@ -39,19 +41,30 @@ interface KopflosRequest<D extends DatasetCore = DatasetCore> {
   query: Query
 }
 
-type ResultBody = Stream | DatasetCore | GraphPointer | Error
+type ResultBody = Stream | DatasetCore | GraphPointer | Error | ReadableStream
+
 export interface ResultEnvelope {
   body?: ResultBody | string
   status?: number
   headers?: OutgoingHttpHeaders
   end?: boolean
 }
+
 export type KopflosResponse = ResultBody | ResultEnvelope
 
 export interface Kopflos<D extends DatasetCore = Dataset> {
+  get dataset(): D
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
+  // eslint-disable-next-line no-use-before-define
+  get plugins(): Array<KopflosPlugin>
+  get start(): () => Promise<void>
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
+}
+
+export interface KopflosPlugin {
+  build?: (instance: Kopflos) => Promise<void> | void
+  onStart?(instance: Kopflos): Promise<void> | void
 }
 
 interface Clients {
@@ -61,10 +74,18 @@ interface Clients {
 
 type Endpoint = string | EndpointOptions | Clients | Client
 
+export interface PluginConfig {
+  [plugin: string]: unknown
+}
+
 export interface KopflosConfig {
+  mode?: 'development' | 'production'
+  baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
+  plugins?: PluginConfig
+  variables?: Record<string, unknown>
 }
 
 export interface Options {
@@ -72,14 +93,18 @@ export interface Options {
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
+  plugins?: Array<KopflosPlugin>
 }
 
 export default class Impl implements Kopflos {
   readonly dataset: Dataset
   readonly env: KopflosEnvironment
+  readonly plugins: Array<KopflosPlugin>
+  readonly start: () => Promise<void>
 
-  constructor(private readonly config: KopflosConfig, private readonly options: Options = {}) {
-    this.env = createEnv(config)
+  constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
+    this.env = createEnv({ variables, ...config })
+    this.plugins = options.plugins || []
 
     this.dataset = this.env.dataset([
       ...options.dataset || [],
@@ -97,7 +122,12 @@ export default class Impl implements Kopflos {
       resourceShapeLookup: options.resourceShapeLookup?.name ?? 'default',
       resourceLoaderLookup: options.resourceLoaderLookup?.name ?? 'default',
       handlerLookup: options.handlerLookup?.name ?? 'default',
+      variables,
     })
+
+    this.start = onetime(async function (this: Impl) {
+      await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this)))
+    }).bind(this)
   }
 
   get graph() {
@@ -126,12 +156,16 @@ export default class Impl implements Kopflos {
     const resourceGraph = this.env.clownface({
       dataset: await this.env.dataset().import(coreRepresentation),
     })
+    const subjectVariables = 'subjectVariables' in resourceShapeMatch
+      ? Object.fromEntries(resourceShapeMatch.subjectVariables)
+      : {}
     const args: HandlerArgs = {
       ...req,
       headers: req.headers,
       resourceShape,
       env: this.env,
       subject: resourceGraph.node(resourceShapeMatch.subject),
+      subjectVariables,
       property: undefined,
       object: undefined,
     }
@@ -292,8 +326,6 @@ export default class Impl implements Kopflos {
     for await (const quad of quads) {
       kopflos.dataset.add(quad)
     }
-
-    await insertShorthands(kopflos)
 
     log.info(`Graphs loaded. Dataset now contains ${kopflos.dataset.size} quads`)
   }

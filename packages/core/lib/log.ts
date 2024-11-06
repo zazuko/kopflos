@@ -1,12 +1,11 @@
-import anylogger from 'anylogger'
 import type { AnyPointer } from 'clownface'
 import { isGraphPointer, isLiteral, isNamedNode } from 'is-graph-pointer'
 import * as ns from '@zazuko/vocabulary-extras-builders'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
+import log, { createLogger } from '@kopflos-cms/logger'
 
-const log = anylogger('kopflos')
-const queryLog = anylogger('kopflos:sparql')
+const queryLog = createLogger('sparql')
 export default log
 
 export function logCode(code: AnyPointer, kind: string) {
@@ -38,8 +37,8 @@ export function decorateClient<C extends ParsingClient | StreamClient>(client: C
 
 function queryLogger<Q extends(query: string) => ReturnType<Q>>(query: Q): Q {
   return ((q: string) => {
-    if (queryLog.enabledFor('debug')) {
-      queryLog.debug('Executing query', q)
+    if (queryLog.enabledFor('trace')) {
+      queryLog.trace('Executing query', q)
     }
     return query(q)
   }) as Q

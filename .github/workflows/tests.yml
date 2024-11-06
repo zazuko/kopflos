@@ -6,19 +6,38 @@ jobs:
   unit-tests:
     runs-on: [ ubuntu-latest ]
     strategy:
+      fail-fast: false
       matrix:
         node: [ 18, 20, "lts/*" ]
+        package:
+          - name: "@kopflos-cms/core"
+            path: packages/core
+          - name: "@kopflos-cms/express"
+            path: packages/express
+          - name: "@kopflos-cms/plugin-deploy-resources"
+            path: packages/plugin-deploy-resources
+          - name: "@kopflos-cms/serve-file"
+            path: packages/serve-file
+          - name: "@kopflos-cms/vite"
+            path: packages/vite
+          - name: "@kopflos-labs/html-template"
+            path: labs/html-template
+          - name: "@kopflos-labs/handlebars"
+            path: labs/handlebars
+          - name: sparql-path-parser
+            path: packages/sparql-path-parser
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
-      - run: npx c8 --all --reporter lcovonly npm run --ws --if-present test
+      - run: npx c8 --all --src ${{ matrix.package.path }} --reporter lcovonly --reporter text npm run -w ${{ matrix.package.path }} test
       - name: Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.package.name }}
 
   lint:
     runs-on: ubuntu-latest

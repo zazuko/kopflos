@@ -1,0 +1,35 @@
+PREFIX schema: <http://schema.org/>
+
+<>
+  a </api/schema/Plaque> ;
+  schema:identifier "newton-s-apple-tree-monash-university" ;
+  schema:name "Newton's Apple Tree Monash University" ;
+  schema:image
+    [
+      schema:url
+        <http://lh3.googleusercontent.com/9plKip3uL4bOocjMGJA1qX5lXfDpYpy5uNJgW5wf8NjMbzlgjggDtZwcJLoQbyzaIlEfZaF-aDtHRLMv36ZvcRkz5g7F5qiW0gQOA_-1_A>
+    ] ;
+  schema:contributor
+    [
+      schema:name "@wadekelly" ;
+      schema:url <https://twitter.com/wadekelly> ;
+    ] ;
+  schema:geo [
+    schema:latitude "-37.909878" ;
+    schema:longitude "145.132809" ;
+  ] ;
+  schema:text """
+NEWTON'S APPLE
+Newton's Apple tree,
+the Flower of Kent variety,
+was planted in 1975 and is
+a cutting from the original tree
+from which Sir Isaac Newton
+reportedly observed an
+apple fall, prompting him to
+formulate his theories of
+motion and gravity, one of the
+most remarkable insights in
+human history.
+""";
+.

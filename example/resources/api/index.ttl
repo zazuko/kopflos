@@ -1,0 +1,71 @@
+PREFIX arg: <https://code.described.at/argument#>
+PREFIX code: <https://code.described.at/>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kl: <https://kopflos.described.at/>
+
+<>
+  a kl:Api ;
+  kl:resourceLoader kl:OwnGraphLoader ;
+.
+
+<#plaque>
+  a kl:ResourceShape ;
+  kl:api <> ;
+  sh:targetClass </api/schema/Plaque> ;
+.
+
+<#plaque.html>
+  a kl:ResourceShape ;
+  kl:api <> ;
+  sh:target
+    [
+      a kl:PatternedTarget ;
+      kl:regex "(?<uri>/(?<type>[^/]+)/(?<identifier>.+))\\.html$" ;
+      # TODO: support URI Templates
+      # kl:uriTemplate "/{type}{/identifier+}.html$" ;
+    ] ;
+  kl:handler
+    [
+      a kl:Handler ;
+      kl:method "GET" ;
+      code:implementedBy
+        (
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-cms/serve-file#default> ;
+            code:arguments ( "${uiRoot}/${type}.html"^^code:EcmaScriptTemplateLiteral ) ;
+          ]
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-cms/vite/template.js#transform> ;
+          ]
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-labs/html-template#default> ;
+            code:arguments
+              (
+                [
+                  a code:EcmaScriptModule ;
+                  code:link <node:@kopflos-labs/handlebars#default>
+                ]
+                [
+                  a code:EcmaScriptModule ;
+                  code:link <file:lib/templateData.js#describe> ;
+                ]
+                "${uri}"^^code:EcmaScriptTemplateLiteral
+              ) ;
+          ]
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-labs/lit#ssr> ;
+            code:arguments
+              (
+                [ code:link <file:ui/component/my-header.js> ; a code:EcmaScriptModule ]
+              )
+          ]
+        )
+    ] ;
+.

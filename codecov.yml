@@ -1,2 +1,3 @@
 ignore:
-  - packages/mocha-chai-rdf
+  - example
+  - packages/sparql-path-parser/src/grammar

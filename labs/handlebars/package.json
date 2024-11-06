@@ -1,0 +1,50 @@
+{
+  "name": "@kopflos-labs/handlebars",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "@zazuko/env": "^2.3.0",
+    "@zazuko/prefixes": "^2.2.0",
+    "clownface-shacl-path": "^2.4.0",
+    "handlebars": "^4.7.8",
+    "sparql-path-parser": "^0.0.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha-chai-rdf": "^0.1.4"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts"
+  ],
+  "author": "Zazuko GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "labs/handlebars"
+  },
+  "bugs": {
+    "url": "https://github.com/zazuko/kopflos/issues"
+  },
+  "homepage": "https://github.com/zazuko/kopflos",
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm",
+    "require": "../../mocha-setup.js"
+  }
+}

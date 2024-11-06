@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import express from 'express'
+import { Router } from 'express'
 import type { KopflosConfig, Query } from '@kopflos-cms/core'
 import Kopflos from '@kopflos-cms/core'
 import absolutUrl from 'absolute-url'
@@ -7,7 +7,7 @@ import rdfHandler from '@rdfjs/express-handler'
 import factory from '@zazuko/env-node'
 import onetime from 'onetime'
 import { match, P } from 'ts-pattern'
-import asyncMiddleware from 'middleware-async'
+import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { BodyWrapper } from './BodyWrapper.js'
 
 declare module 'express-serve-static-core' {
@@ -16,14 +16,31 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export default (options: KopflosConfig): RequestHandler => {
-  const kopflos = new Kopflos(options)
+interface MiddlewareHook {
+  (host: Router, instance: Kopflos): Promise<void> | void
+}
+
+declare module '@kopflos-cms/core' {
+  interface KopflosPlugin {
+    beforeMiddleware?: MiddlewareHook
+    afterMiddleware?: MiddlewareHook
+  }
+}
+
+export default async (options: KopflosConfig): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
+  const kopflos = new Kopflos(options, {
+    plugins: await loadPlugins(options.plugins),
+  })
 
   const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
     await Kopflos.fromGraphs(kopflos, ...graphs)
   })
 
-  return express.Router()
+  const router = Router()
+
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.beforeMiddleware))
+
+  router
     .use((req, res, next) => {
       if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
@@ -32,7 +49,7 @@ export default (options: KopflosConfig): RequestHandler => {
       loadApiGraphs(options.apiGraphs).then(next).catch(next)
     })
     .use((req, res, next) => {
-      const fullUrl = absolutUrl(req) as unknown as URL
+      const fullUrl = absolutUrl(req)
       fullUrl.search = ''
       req.iri = fullUrl.toString()
       next()
@@ -41,7 +58,7 @@ export default (options: KopflosConfig): RequestHandler => {
       factory,
       baseIriFromRequest: (req) => req.iri,
     }))
-    .use(asyncMiddleware(async (req, res, next) => {
+    .use(async (req, res, next) => {
       const result = await kopflos.handleRequest({
         method: req.method,
         headers: req.headers,
@@ -64,6 +81,20 @@ export default (options: KopflosConfig): RequestHandler => {
         .with(P.instanceOf(Error), error => next(error))
         .with({ size: P.number }, (dataset) => res.dataset(dataset))
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
-        .otherwise((stream) => res.quadStream(stream))
-    }))
+        .with({ read: P.any }, stream => res.quadStream(stream))
+        .otherwise((stream) => res.send(stream))
+    })
+
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.afterMiddleware))
+
+  return {
+    middleware: router,
+    instance: kopflos,
+  }
+}
+
+async function registerMiddlewares(router: Router, kopflos: Kopflos, hooks: Array<MiddlewareHook | undefined>) {
+  for (const hook of hooks) {
+    await hook?.(router, kopflos)
+  }
 }
