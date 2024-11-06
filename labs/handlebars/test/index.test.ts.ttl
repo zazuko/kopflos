@@ -1,0 +1,12 @@
+PREFIX schema: <http://schema.org/>
+PREFIX ex: <http://example.org/>
+
+ex:article
+  schema:image
+    [
+      schema:thumbnail
+        [
+          schema:contentUrl <http://example.org/thumbnail.jpg>
+        ] ;
+    ] ;
+.

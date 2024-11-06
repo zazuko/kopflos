@@ -7,7 +7,6 @@ import rdfHandler from '@rdfjs/express-handler'
 import factory from '@zazuko/env-node'
 import onetime from 'onetime'
 import { match, P } from 'ts-pattern'
-import asyncMiddleware from 'middleware-async'
 import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { BodyWrapper } from './BodyWrapper.js'
 
@@ -17,10 +16,14 @@ declare module 'express-serve-static-core' {
   }
 }
 
+interface MiddlewareHook {
+  (host: Router, instance: Kopflos): Promise<void> | void
+}
+
 declare module '@kopflos-cms/core' {
   interface KopflosPlugin {
-    beforeMiddleware?(host: Router, instance: Kopflos): Promise<void> | void
-    afterMiddleware?(host: Router, instance: Kopflos): Promise<void> | void
+    beforeMiddleware?: MiddlewareHook
+    afterMiddleware?: MiddlewareHook
   }
 }
 
@@ -33,11 +36,11 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
     await Kopflos.fromGraphs(kopflos, ...graphs)
   })
 
-  const middleware = Router()
+  const router = Router()
 
-  await Promise.all(kopflos.plugins.map(plugin => plugin.beforeMiddleware?.(middleware, kopflos)))
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.beforeMiddleware))
 
-  middleware
+  router
     .use((req, res, next) => {
       if (!options.apiGraphs) {
         return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
@@ -46,7 +49,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
       loadApiGraphs(options.apiGraphs).then(next).catch(next)
     })
     .use((req, res, next) => {
-      const fullUrl = absolutUrl(req) as unknown as URL
+      const fullUrl = absolutUrl(req)
       fullUrl.search = ''
       req.iri = fullUrl.toString()
       next()
@@ -55,7 +58,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
       factory,
       baseIriFromRequest: (req) => req.iri,
     }))
-    .use(asyncMiddleware(async (req, res, next) => {
+    .use(async (req, res, next) => {
       const result = await kopflos.handleRequest({
         method: req.method,
         headers: req.headers,
@@ -80,12 +83,18 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
         .with({ read: P.any }, stream => res.quadStream(stream))
         .otherwise((stream) => res.send(stream))
-    }))
+    })
 
-  await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(middleware, kopflos)))
+  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.afterMiddleware))
 
   return {
-    middleware,
+    middleware: router,
     instance: kopflos,
+  }
+}
+
+async function registerMiddlewares(router: Router, kopflos: Kopflos, hooks: Array<MiddlewareHook | undefined>) {
+  for (const hook of hooks) {
+    await hook?.(router, kopflos)
   }
 }

@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sparql-path-parser parse '!(rdf:type|^rdf:type)' 1`] = `"!(rdf:type|^rdf:type)"`;
+
+exports[`sparql-path-parser parse '!a' 1`] = `"!(rdf:type)"`;
+
+exports[`sparql-path-parser parse '(rdf:type)' 1`] = `"rdf:type"`;
+
+exports[`sparql-path-parser parse '<foo>' 1`] = `"<foo>"`;
+
+exports[`sparql-path-parser parse '<http://schema.org/image>' 1`] = `"schema:image"`;
+
+exports[`sparql-path-parser parse '^rdf:type' 1`] = `"^rdf:type"`;
+
+exports[`sparql-path-parser parse 'a/schema:name' 1`] = `"rdf:type/schema:name"`;
+
+exports[`sparql-path-parser parse 'rdf:rest*/rdf:first' 1`] = `"rdf:rest*/rdf:first"`;
+
+exports[`sparql-path-parser parse 'schema:foo / schema:bar' 1`] = `"schema:foo/schema:bar"`;
+
+exports[`sparql-path-parser parse 'schema:knows*' 1`] = `"schema:knows*"`;
+
+exports[`sparql-path-parser parse 'schema:knows+' 1`] = `"schema:knows+"`;
+
+exports[`sparql-path-parser parse 'schema:knows?' 1`] = `"schema:knows?"`;
+
+exports[`sparql-path-parser parse 'schema:sameAs|owl:sameAs' 1`] = `"schema:sameAs|owl:sameAs"`;
+
+exports[`sparql-path-parser parse with baseIRI '!(rdf:type|^rdf:type)' 1`] = `"!(rdf:type|^rdf:type)"`;
+
+exports[`sparql-path-parser parse with baseIRI '!a' 1`] = `"!(rdf:type)"`;
+
+exports[`sparql-path-parser parse with baseIRI '(rdf:type)' 1`] = `"rdf:type"`;
+
+exports[`sparql-path-parser parse with baseIRI '<foo>' 1`] = `"<http://example.com/foo>"`;
+
+exports[`sparql-path-parser parse with baseIRI '<http://schema.org/image>' 1`] = `"schema:image"`;
+
+exports[`sparql-path-parser parse with baseIRI '^rdf:type' 1`] = `"^rdf:type"`;
+
+exports[`sparql-path-parser parse with baseIRI 'a/schema:name' 1`] = `"rdf:type/schema:name"`;
+
+exports[`sparql-path-parser parse with baseIRI 'rdf:rest*/rdf:first' 1`] = `"rdf:rest*/rdf:first"`;
+
+exports[`sparql-path-parser parse with baseIRI 'schema:foo / schema:bar' 1`] = `"schema:foo/schema:bar"`;
+
+exports[`sparql-path-parser parse with baseIRI 'schema:knows*' 1`] = `"schema:knows*"`;
+
+exports[`sparql-path-parser parse with baseIRI 'schema:knows+' 1`] = `"schema:knows+"`;
+
+exports[`sparql-path-parser parse with baseIRI 'schema:knows?' 1`] = `"schema:knows?"`;
+
+exports[`sparql-path-parser parse with baseIRI 'schema:sameAs|owl:sameAs' 1`] = `"schema:sameAs|owl:sameAs"`;

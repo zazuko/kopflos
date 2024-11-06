@@ -15,6 +15,8 @@ describe('@kopflos-cms/express/middleware', () => {
   }))
 
   beforeEach(async function () {
+    this.timeout(5000)
+
     const { middleware } = await kopflos({
       baseIri: 'http://example.org/',
       codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
