@@ -1,5 +1,20 @@
 # kopflos
 
+## 0.1.0-beta.1
+
+### Patch Changes
+
+- 67ba100: Added CHANGELOG.md to build
+- 67ba100: Running `kopflos build` is now possible with incomplete configuration
+- 67ba100: Removed debug logs
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+  - @kopflos-cms/plugin-deploy-resources@0.1.0-beta.1
+  - @kopflos-cms/express@0.1.0-beta.6
+  - @kopflos-cms/logger@0.1.0-beta.1
+
 ## 0.1.0-beta.0
 
 ### Minor Changes

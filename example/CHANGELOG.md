@@ -1,5 +1,21 @@
 # example
 
+## 0.0.1-beta.1
+
+### Patch Changes
+
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+- Updated dependencies [67ba100]
+  - @kopflos-cms/serve-file@0.1.0-beta.1
+  - @kopflos-labs/html-template@0.1.0-beta.1
+  - @kopflos-labs/handlebars@0.1.0-beta.1
+  - @kopflos-cms/vite@0.0.1-beta.1
+  - kopflos@0.1.0-beta.1
+  - @kopflos-labs/lit@0.1.0-beta.1
+
 ## 0.0.1-beta.0
 
 ### Patch Changes
