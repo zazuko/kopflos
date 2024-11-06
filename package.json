@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prepare": "npm run --ws --if-present prepare",
+    "prepare": "npm run --ws --if-present prepare; husky",
     "lint": "eslint . --quiet --ignore-path .gitignore",
     "test": "npm run --ws --if-present test",
     "release": "changeset publish"
@@ -12,7 +12,9 @@
   "author": "Zazuko GmbH",
   "license": "MIT",
   "dependencies": {
-    "@zazuko/env-node": "^2.1.4"
+    "@zazuko/env-node": "^2.1.4",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
@@ -47,6 +49,11 @@
     "reporters": [
       "lcovonly",
       "text-summary"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix --quiet"
     ]
   }
 }
