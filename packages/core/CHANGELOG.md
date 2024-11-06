@@ -1,5 +1,14 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.10
+
+### Patch Changes
+
+- 67ba100: Added CHANGELOG.md to build
+- 67ba100: Plugin dir wasn't packaged
+- Updated dependencies [67ba100]
+  - @kopflos-cms/logger@0.1.0-beta.1
+
 ## 0.3.0-beta.9
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @kopflos-cms/serve-file
 
+## 0.1.0-beta.1
+
+### Patch Changes
+
+- 67ba100: Added CHANGELOG.md to build
+
 ## 0.1.0-beta.0
 
 ### Minor Changes

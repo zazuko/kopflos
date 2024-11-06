@@ -1,7 +1,7 @@
 {
   "name": "@kopflos-cms/core",
   "description": "RDF-based web APIs",
-  "version": "0.3.0-beta.9",
+  "version": "0.3.0-beta.10",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
-    "@kopflos-cms/logger": "^0.1.0-beta.0",
+    "@kopflos-cms/logger": "^0.1.0-beta.1",
     "@rdfjs/types": "^1.1.0",
     "@tpluscode/sparql-builder": "^3.0.0",
     "@types/clownface": "^2.0.8",
