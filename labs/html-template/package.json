@@ -29,6 +29,7 @@
     "sinon": "^19.0.2"
   },
   "files": [
+    "CHANGELOG.md",
     "*.js",
     "*.d.ts",
     "lib/*.js",

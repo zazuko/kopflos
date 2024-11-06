@@ -63,7 +63,7 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
 }
 
 export interface KopflosPlugin {
-  build?: (instance: Kopflos) => Promise<void> | void
+  build?: () => Promise<void> | void
   onStart?(instance: Kopflos): Promise<void> | void
 }
 

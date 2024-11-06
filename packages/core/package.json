@@ -17,10 +17,13 @@
     "./plugin/shorthandTerms.js": "./plugin/shorthandTerms.js"
   },
   "files": [
+    "CHANGELOG.md",
     "*.js",
     "*.d.ts",
     "lib/**/*.js",
     "lib/**/*.d.ts",
+    "plugin/**/*.js",
+    "plugin/**/*.d.ts",
     "graphs",
     "query"
   ],

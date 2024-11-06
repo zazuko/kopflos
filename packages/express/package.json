@@ -14,10 +14,11 @@
     "./middleware": "./plugin/middleware.js"
   },
   "files": [
+    "CHANGELOG.md",
     "*.js",
     "*.d.ts",
-    "lib/**/*.js",
-    "lib/**/*.d.ts"
+    "plugin/**/*.js",
+    "plugin/**/*.d.ts"
   ],
   "dependencies": {
     "@kopflos-cms/core": "^0.3.0-beta.9",

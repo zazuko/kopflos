@@ -23,6 +23,7 @@
     "mocha-chai-rdf": "^0.1.4"
   },
   "files": [
+    "CHANGELOG.md",
     "*.js",
     "*.d.ts",
     "lib/*.js",

@@ -2,7 +2,7 @@ import 'ulog'
 import express from 'express'
 import { program } from 'commander'
 import kopflos from '@kopflos-cms/express'
-import Kopflos, { log } from '@kopflos-cms/core'
+import log from '@kopflos-cms/logger'
 import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { loadConfig } from './lib/config.js'
 import { variable } from './lib/options.js'
@@ -76,12 +76,10 @@ program.command('build')
     const config = await loadConfig({
       path: configPath,
     })
-    const instance = new Kopflos(config, {
-      plugins: await loadPlugins(config.plugins),
-    })
+    const plugins = await loadPlugins(config.plugins)
 
     log.info('Running build actions...')
-    const buildActions = instance.plugins.map(plugin => plugin.build?.(instance))
+    const buildActions = plugins.map(plugin => plugin.build?.())
     if (buildActions.length === 0) {
       return log.warn('No plugins with build actions found')
     } else {

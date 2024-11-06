@@ -6,6 +6,7 @@
     "kopflos": "./bin/kopflos.sh"
   },
   "files": [
+    "CHANGELOG.md",
     "bin",
     "lib/*.js",
     "lib/*.d.ts",
@@ -29,7 +30,7 @@
   },
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
-    "@kopflos-cms/core": "^0.3.0-beta.9",
+    "@kopflos-cms/logger": "^0.1.0-beta.0",
     "@kopflos-cms/express": "^0.1.0-beta.5",
     "@kopflos-cms/plugin-deploy-resources": "^0.1.0-beta.0",
     "commander": "^12.0.0",

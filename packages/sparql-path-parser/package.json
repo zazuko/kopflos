@@ -12,6 +12,7 @@
     "build:dts": "tsc"
   },
   "files": [
+    "CHANGELOG.md",
     "index.js",
     "index.d.ts"
   ],

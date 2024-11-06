@@ -15,6 +15,12 @@ export interface Options {
   entrypoints?: string[]
 }
 
+declare module '@kopflos-cms/core' {
+  interface PluginConfig {
+    '@kopflos-cms/vite'?: Options
+  }
+}
+
 export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugin {
   return {
     async beforeMiddleware(host: express.Router, { env }) {

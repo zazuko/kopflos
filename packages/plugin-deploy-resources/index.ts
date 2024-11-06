@@ -9,6 +9,12 @@ interface Options {
   paths?: string[]
 }
 
+declare module '@kopflos-cms/core' {
+  interface PluginConfig {
+    '@kopflos-cms/plugin-deploy-resources'?: Options
+  }
+}
+
 const log = createLogger('deploy-resources')
 
 export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}): Required<Pick<KopflosPlugin, 'onStart'>> {

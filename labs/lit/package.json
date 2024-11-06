@@ -3,6 +3,11 @@
   "version": "0.1.0-beta.0",
   "main": "index.js",
   "type": "module",
+  "files": [
+    "CHANGELOG.md",
+    "*.js",
+    "*.d.ts"
+  ],
   "dependencies": {
     "@lit-labs/ssr": "^3.2.2",
     "@lit-labs/ssr-client": "^1.1.7",
