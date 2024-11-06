@@ -47,13 +47,24 @@ PREFIX kl: <https://kopflos.described.at/>
             code:link <node:@kopflos-labs/html-template#default> ;
             code:arguments
               (
-                [ a code:EcmaScriptModule; code:link <node:@kopflos-labs/handlebars#default> ]
+                [
+                  a code:EcmaScriptModule ;
+                  code:link <node:@kopflos-labs/handlebars#default>
+                ]
                 [
                   a code:EcmaScriptModule ;
                   code:link <file:lib/templateData.js#describe> ;
                 ]
                 "${uri}"^^code:EcmaScriptTemplateLiteral
               ) ;
+          ]
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-labs/lit#ssr> ;
+            code:arguments
+              (
+                [ code:link <file:ui/component/my-header.js> ; a code:EcmaScriptModule ]
+              )
           ]
         )
     ] ;

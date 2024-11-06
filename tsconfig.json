@@ -3,6 +3,8 @@
     "module": "NodeNext",
     "target": "ESNext",
     "moduleResolution": "NodeNext",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
