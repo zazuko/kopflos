@@ -1,5 +1,4 @@
 ---
-"@kopflos-cms/plugin-express": minor
 "@kopflos-cms/express": minor
 ---
 
