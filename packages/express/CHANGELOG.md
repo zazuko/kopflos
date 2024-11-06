@@ -1,5 +1,31 @@
 # @kopflos-cms/express
 
+## 0.1.0-beta.5
+
+### Minor Changes
+
+- fd489b3: First version
+- 1fcb2c0: The main export now returns `Promise<{ middleware: RequestHandler; instance: Kopflos }>`
+- fd489b3: Added express-only middleware hooks
+
+### Patch Changes
+
+- 3e30f38: Support for direct stream, using Web Streams
+- fd489b3: Added plugin with `onStart` hook
+- 730ecc2: Ensure that middlewares from multiple plugins are registered in order
+- Updated dependencies [730ecc2]
+- Updated dependencies [3e30f38]
+- Updated dependencies [1fcb2c0]
+- Updated dependencies [3e30f38]
+- Updated dependencies [3e30f38]
+- Updated dependencies [a72254b]
+- Updated dependencies [fd489b3]
+- Updated dependencies [be93e5a]
+- Updated dependencies [3e30f38]
+- Updated dependencies [730ecc2]
+  - @kopflos-cms/core@0.3.0-beta.9
+  - @kopflos-cms/logger@0.1.0-beta.0
+
 ## 0.0.1-beta.4
 
 ### Patch Changes

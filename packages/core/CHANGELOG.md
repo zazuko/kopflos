@@ -1,5 +1,74 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.9
+
+### Minor Changes
+
+- 3e30f38: Handlers: Added support for `code:arguments`. Please refer to [rdf-loader-code](https://github.com/zazuko/rdf-loader-code?tab=readme-ov-file#loading-function-arguments) for more information.
+
+  ```turtle
+  [
+    a kl:Handler ;
+    code:implementedBy [
+      a code:EcmaScriptModule ;
+      code:link <...> ;
+      code:arguments ("foo" "bar") ;
+    ] ;
+  ] .
+  ```
+
+  Implementors must now return a factory function that returns the handler function.
+
+  ```diff
+  import type { Handler } from "@kopflos-cms/core";
+
+  - export default function handler() {
+  + export default function handler(foo, bar): Handler {
+    return async function handlerFunction() {
+      // ...
+    };
+  }
+  ```
+
+### Patch Changes
+
+- 730ecc2: Extracted logger to a new package `@kopflos-cms/core`
+- 3e30f38: Support for direct stream, using Web Streams
+- 1fcb2c0: Revert dependency on `anylogger` to stable v1 branch
+- 3e30f38: Added support for templated resource shapes. Use `kl:regex` a pattern to match the request URL path.
+  Additionally, named capturing groups can be used to extract values from the URL path. They will be
+  accessible as `HandlerArgs#subjectVariables` and included when resolving `code:EcmaScriptTemplateLiteral`.
+
+  ```turtle
+  <#WebPage>
+    a kl:ResourceShape ;
+    kl:api <> ;
+    sh:target
+      [
+        a kl:PatternedTarget ;
+        kl:regex "/(?<type>[^/]+).+\\.html$" ;
+      ] ;
+    kl:handler
+      [
+        a kl:Handler ;
+        kl:method "GET" ;
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <node:@kopflos-cms/serve-file#default> ;
+            code:arguments ( "pages/${type}.html"^^code:EcmaScriptTemplateLiteral ) ;
+          ] ;
+      ] ;
+  .
+  ```
+
+- a72254b: Object of `kl:handler` can now be an RDF List of handler implementations which will be called in sequence
+- fd489b3: Added plugin with `onStart` hook
+- be93e5a: Added `./env.js` to package exports
+- 3e30f38: Added support for `code:EcmaScriptTemplateLiteral`
+- Updated dependencies [730ecc2]
+  - @kopflos-cms/logger@0.1.0-beta.0
+
 ## 0.3.0-beta.8
 
 ### Patch Changes
