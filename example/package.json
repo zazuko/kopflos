@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
     "@shoelace-style/shoelace": "^2.17.1",
     "@webcomponents/template-shadowroot": "^0.2.1",
     "express": "^5.0.1",
-    "kopflos": "0.1.0-beta.1",
+    "kopflos": "0.1.0-beta.2",
     "lit-element": "^4.1.1",
     "cors": "^2.8.5",
     "compression": "^1.7.4"

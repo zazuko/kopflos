@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.0-beta.2
+
+### Patch Changes
+
+- 6fb4851: Do not require bash to be installed
+
 ## 0.1.0-beta.1
 
 ### Patch Changes
