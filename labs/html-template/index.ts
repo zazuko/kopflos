@@ -17,7 +17,7 @@ export interface TemplateDataFunc {
   (context: HandlerArgs): Promise<DatasetCore> | DatasetCore | Stream
 }
 
-export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTemplate: TemplateFunc, fetchData?: (...args: A) => TemplateDataFunc, ...args: A): Handler {
+export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTemplate: TemplateFunc, fetchData: (...args: A) => TemplateDataFunc = coreRepresentation, ...args: A): Handler {
   return async (context, response) => {
     if (typeof response?.body !== 'string') {
       return new Error('Template handler must be chained after another which returns a HTML response')
@@ -25,13 +25,11 @@ export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTe
 
     let dataset: DatasetCore | undefined
 
-    if (fetchData) {
-      const templateData = fetchData(...args)(context)
-      if ('then' in templateData || 'size' in templateData) {
-        dataset = await templateData
-      } else {
-        dataset = await context.env.dataset().import(templateData)
-      }
+    const templateData = fetchData(...args)(context)
+    if ('then' in templateData || 'size' in templateData) {
+      dataset = await templateData
+    } else {
+      dataset = await context.env.dataset().import(templateData)
     }
     const graph = context.env.clownface({ dataset })
 
@@ -44,4 +42,8 @@ export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTe
       body: $.html(),
     }
   }
+}
+
+function coreRepresentation(): TemplateDataFunc {
+  return ({ subject }) => subject.dataset
 }

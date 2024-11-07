@@ -54,7 +54,7 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
     .out(env.ns.kopflos.handler)
     .filter(matchingMethod(env, method))
 
-  const vars = new Map(Object.entries(env.kopflos.config.variables || {}))
+  const vars = new Map(Object.entries(env.kopflos.variables))
   if ('subjectVariables' in rest) {
     for (const [k, v] of rest.subjectVariables) {
       vars.set(k, v)
