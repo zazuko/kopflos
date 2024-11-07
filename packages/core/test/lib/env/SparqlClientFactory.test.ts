@@ -23,6 +23,7 @@ describe('lib/env/SparqlClientFactory', () => {
                 default: 'http://example.com/sparql',
               },
             },
+            variables: {},
           }
         }
       }
@@ -63,6 +64,7 @@ describe('lib/env/SparqlClientFactory', () => {
                 },
               },
             },
+            variables: {},
           }
         }
       }
@@ -112,6 +114,7 @@ describe('lib/env/SparqlClientFactory', () => {
                 },
               },
             },
+            variables: {},
           }
         }
       }
@@ -148,6 +151,7 @@ describe('lib/env/SparqlClientFactory', () => {
 
             get kopflos() {
               return {
+                variables: {},
                 config: {
                   baseIri: 'http://example.com/',
                   sparql: {
