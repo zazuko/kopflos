@@ -51,6 +51,7 @@ describe('@kopflos-labs/html-template', () => {
         .dataset
     })
     const context = {
+      subject: rdf.clownface().namedNode(''),
       env: createEnv({
         baseIri: 'http://example.com/',
         sparql: {
@@ -86,6 +87,7 @@ describe('@kopflos-labs/html-template', () => {
         .dataset.toStream()
     })
     const context = {
+      subject: rdf.clownface().namedNode(''),
       env: createEnv({
         baseIri: 'http://example.com/',
         sparql: {
