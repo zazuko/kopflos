@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,9 +10,9 @@
     "start:prod": "kopflos serve --trust-proxy"
   },
   "dependencies": {
-    "@kopflos-cms/vite": "0.0.1-beta.1",
+    "@kopflos-cms/vite": "0.0.1-beta.2",
     "@kopflos-cms/serve-file": "0.1.0-beta.1",
-    "@kopflos-labs/html-template": "0.1.0-beta.1",
+    "@kopflos-labs/html-template": "0.1.0-beta.2",
     "@kopflos-labs/handlebars": "0.1.0-beta.1",
     "@kopflos-labs/lit": "0.1.0-beta.1",
     "@openlayers-elements/core": "^0.3.0",

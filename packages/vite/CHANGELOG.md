@@ -1,5 +1,12 @@
 # @kopflos-cms/vite
 
+## 0.0.1-beta.2
+
+### Patch Changes
+
+- 87f4e96: The plugin populates a variable `VITE.basePath` which will be resolved to the correct path in development and production mode
+- 1b8a2bc: Serve the entire UI build statically. Before, `public` vite resources would not be accessible
+
 ## 0.0.1-beta.1
 
 ### Patch Changes

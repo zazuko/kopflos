@@ -1,5 +1,11 @@
 # @kopflos-labs/html-template
 
+## 0.1.0-beta.2
+
+### Patch Changes
+
+- 1b8a2bc: By default, pass Core Representation of the page resource to template func
+
 ## 0.1.0-beta.1
 
 ### Patch Changes
