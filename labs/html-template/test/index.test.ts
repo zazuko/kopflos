@@ -10,6 +10,37 @@ import bindTemplate from '../index.js'
 describe('@kopflos-labs/html-template', () => {
   use(snapshots)
 
+  it('uses core representation a default template data', async () => {
+    // given
+    const templateFunc = sinon.stub()
+    const context = {
+      subject: rdf.clownface()
+        .namedNode('')
+        .addOut(rdf.ns.rdf.type, rdf.namedNode('http://example.com/Foo')),
+      env: createEnv({
+        baseIri: 'http://example.com/',
+        sparql: {
+          default: 'http://example.com/query',
+        },
+      }),
+    } as HandlerArgs
+    const previousResponse = {
+      status: 200,
+      body: '<html><body><template target-class="Foo"></template></body></html>',
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    }
+
+    // when
+    const handler = bindTemplate(templateFunc)
+    await handler(context, previousResponse)
+
+    // then
+    const templateData: AnyPointer = templateFunc.firstCall.args[1].pointer
+    expect(templateData.dataset).canonical.toMatchSnapshot()
+  })
+
   it('fetches data with given arguments', async () => {
     // given
     const templateFunc = sinon.stub()
@@ -20,6 +51,7 @@ describe('@kopflos-labs/html-template', () => {
         .dataset
     })
     const context = {
+      subject: rdf.clownface().namedNode(''),
       env: createEnv({
         baseIri: 'http://example.com/',
         sparql: {
@@ -55,6 +87,7 @@ describe('@kopflos-labs/html-template', () => {
         .dataset.toStream()
     })
     const context = {
+      subject: rdf.clownface().namedNode(''),
       env: createEnv({
         baseIri: 'http://example.com/',
         sparql: {

@@ -7,7 +7,7 @@
     "build": "kopflos build",
     "start": "kopflos serve --mode development --trust-proxy",
     "prestart:prod": "npm run build",
-    "start:prod": "kopflos serve --trust-proxy --variable uiRoot=dist"
+    "start:prod": "kopflos serve --trust-proxy"
   },
   "dependencies": {
     "@kopflos-cms/vite": "0.0.1-beta.1",

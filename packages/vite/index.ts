@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import type { KopflosPlugin } from '@kopflos-cms/core'
+import type { Kopflos, KopflosPlugin } from '@kopflos-cms/core'
 import express from 'express'
 import { build } from 'vite'
 import { createViteServer } from './lib/server.js'
@@ -22,7 +22,17 @@ declare module '@kopflos-cms/core' {
 }
 
 export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugin {
+  const rootDir = resolve(process.cwd(), options.root || '')
+  const buildDir = resolve(process.cwd(), outDir)
+
   return {
+    onStart({ env }: Kopflos): Promise<void> | void {
+      const viteVars = {
+        basePath: env.kopflos.config.mode === 'development' ? rootDir : buildDir,
+      }
+      log.info('Variables', viteVars)
+      env.kopflos.variables.VITE = Object.freeze(viteVars)
+    },
     async beforeMiddleware(host: express.Router, { env }) {
       if (env.kopflos.config.mode === 'development') {
         log.info('Development UI mode. Creating Vite server...')
@@ -30,9 +40,8 @@ export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugi
         host.use(viteServer.middlewares)
       } else {
         log.info('Serving UI from build directory')
-        const buildDir = resolve(process.cwd(), outDir)
         log.debug('Build directory:', buildDir)
-        host.use('/assets', express.static(resolve(buildDir, 'assets')))
+        host.use(express.static(buildDir))
       }
     },
     async build() {

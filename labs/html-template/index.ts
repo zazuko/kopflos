@@ -23,7 +23,7 @@ export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTe
       return new Error('Template handler must be chained after another which returns a HTML response')
     }
 
-    let dataset: DatasetCore | undefined
+    let dataset: DatasetCore = context.subject.dataset
 
     if (fetchData) {
       const templateData = fetchData(...args)(context)
