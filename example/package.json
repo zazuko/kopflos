@@ -6,6 +6,7 @@
   "scripts": {
     "build": "kopflos build",
     "start": "kopflos serve --mode development --trust-proxy",
+    "deploy": "kopflos deploy",
     "prestart:prod": "npm run build",
     "start:prod": "kopflos serve --trust-proxy"
   },
