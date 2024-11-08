@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.0-beta.11
+
+### Patch Changes
+
+- 1b8a2bc: Added `env.kopflos.variables` to allow accessing and setting variables
+
 ## 0.3.0-beta.10
 
 ### Patch Changes

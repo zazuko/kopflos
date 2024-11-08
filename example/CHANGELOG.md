@@ -1,5 +1,15 @@
 # example
 
+## 0.0.1-beta.3
+
+### Patch Changes
+
+- Updated dependencies [87f4e96]
+- Updated dependencies [1b8a2bc]
+- Updated dependencies [1b8a2bc]
+  - @kopflos-cms/vite@0.0.1-beta.2
+  - @kopflos-labs/html-template@0.1.0-beta.2
+
 ## 0.0.1-beta.2
 
 ### Patch Changes
