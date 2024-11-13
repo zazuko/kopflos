@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/plugin-deploy-resources",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0",
   "type": "module",
   "main": "index.js",
   "license": "MIT",
@@ -17,11 +17,11 @@
   "dependencies": {
     "@hydrofoil/resource-store": "^0.2.2",
     "@hydrofoil/talos-core": "^0.3.0",
-    "@kopflos-cms/logger": "^0.1.0-beta.1",
+    "@kopflos-cms/logger": "^0.1.0",
     "anylogger": "^1.0.11"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.3.0-beta.10",
+    "@kopflos-cms/core": "^0.3.0",
     "@zazuko/env-node": "^2.1.3",
     "chai": "^5.1.1",
     "mocha-chai-rdf": "^0.1.4"

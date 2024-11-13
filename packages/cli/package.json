@@ -1,6 +1,6 @@
 {
   "name": "kopflos",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0",
   "type": "module",
   "bin": {
     "kopflos": "./bin/kopflos.sh"
@@ -30,9 +30,9 @@
   },
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
-    "@kopflos-cms/logger": "^0.1.0-beta.1",
-    "@kopflos-cms/express": "^0.1.0-beta.6",
-    "@kopflos-cms/plugin-deploy-resources": "^0.1.0-beta.1",
+    "@kopflos-cms/logger": "^0.1.0",
+    "@kopflos-cms/express": "^0.1.0",
+    "@kopflos-cms/plugin-deploy-resources": "^0.1.0",
     "commander": "^12.0.0",
     "cosmiconfig": "^9.0.0",
     "express": "^5.0.1",
