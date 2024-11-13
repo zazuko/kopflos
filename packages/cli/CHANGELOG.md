@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.1
+
+### Patch Changes
+
+- 8c44b44: Directory `lib/deploy` wasn't packed
+
 ## 0.1.0
 
 ### Minor Changes
