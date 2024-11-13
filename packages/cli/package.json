@@ -8,8 +8,8 @@
   "files": [
     "CHANGELOG.md",
     "bin",
-    "lib/*.js",
-    "lib/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
     "*.js",
     "*.d.ts"
   ],
