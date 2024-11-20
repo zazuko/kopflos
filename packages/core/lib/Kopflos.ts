@@ -86,6 +86,7 @@ export interface PluginConfig {
 }
 
 export interface KopflosConfig {
+  [key: string]: unknown
   mode?: 'development' | 'production'
   baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }

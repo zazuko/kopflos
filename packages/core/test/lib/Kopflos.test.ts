@@ -599,7 +599,7 @@ describe('lib/Kopflos', () => {
         }, {
           plugins: await loadPlugins({}),
         })
-        await instance.start()
+        await instance.loadApiGraphs()
       })
 
       context(`inserts ${shorthand.value} shorthand`, () => {
@@ -610,9 +610,6 @@ describe('lib/Kopflos', () => {
         })
 
         it('which can be loaded', async function () {
-          // when
-          await instance.loadApiGraphs()
-
           // then
           const loadedFunc = await instance.env.load(instance.graph.node(shorthand))
           expect(loadedFunc).to.eq(implementation)
