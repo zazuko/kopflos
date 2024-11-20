@@ -1,4 +1,4 @@
-import type http from 'http'
+import 'ulog'
 import log from '@kopflos-cms/logger'
 import express from 'express'
 import * as chokidar from 'chokidar'
@@ -22,7 +22,7 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default async function ({
+async function run({
   mode: _mode = 'production',
   watch = _mode === 'development',
   config,
@@ -40,7 +40,7 @@ export default async function ({
   }
 
   if (mode === 'development' && watch === false) {
-    log.warn('Watch mode disabled in development mode')
+    log.warn('Watch disabled in development mode')
   }
 
   const { config: loadedConfig, filepath: configPath } = await loadConfig({
@@ -57,45 +57,39 @@ export default async function ({
     },
   }
 
-  let server: http.Server
+  const app = express()
 
-  async function startServer() {
-    const app = express()
-
-    if (trustProxy) {
-      app.set('trust proxy', trustProxy)
-    }
-
-    const { instance, middleware } = await kopflos(finalOptions)
-    app.use(middleware)
-
-    await instance.start()
-
-    return new Promise<http.Server>((resolve) => {
-      const server = app.listen(port, host, () => {
-        log.info(`Server running on ${port}. API URL: ${finalOptions.baseIri}`)
-        resolve(server)
-      })
-
-      server.on('close', () => {
-        instance.stop()
-      })
-    })
+  if (trustProxy) {
+    app.set('trust proxy', trustProxy)
   }
 
-  server = await startServer()
+  const { instance, middleware } = await kopflos(finalOptions)
+  app.use(middleware)
+
+  await instance.start()
+
+  const server = app.listen(port, host, () => {
+    log.info(`Server running on ${port}. API URL: ${finalOptions.baseIri}`)
+  })
 
   if (finalOptions.watch) {
     log.info(`Watch mode. Watching for changes in: ${finalOptions.watch.join(', ')}`)
+    async function restartServer(path: string) {
+      log.info('Changes detected, restarting server')
+      log.debug(`Changed file: ${path}`)
 
-    chokidar.watch(finalOptions.watch)
-      .on('change', async (path) => {
-        log.info('Changes detected, restarting server')
-        log.debug(`Changed file: ${path}`)
+      await instance.stop()
+      server.close()
+      process.exit(1)
+    }
 
-        server.close(async () => {
-          server = await startServer()
-        })
-      })
+    chokidar.watch(finalOptions.watch, {
+      ignoreInitial: true,
+    })
+      .on('change', restartServer)
+      .on('add', restartServer)
+      .on('unlink', restartServer)
   }
 }
+
+process.on('message', run)
