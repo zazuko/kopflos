@@ -14,7 +14,6 @@ export default <KopflosConfig> {
   plugins: {
     '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
-      watch: false,
     },
     '@kopflos-cms/express/middleware': {
       before: [
