@@ -1,12 +1,11 @@
+import type { Stream } from '@rdfjs/types'
 import type { KopflosPlugin } from '../lib/Kopflos.js'
 
 export default function (): KopflosPlugin {
   return {
-    async onStart(kopflos): Promise<void> {
+    apiTriples(kopflos): Stream {
       const { env } = kopflos
-      const shorthands = env.fromFile(new URL('../graphs/shorthands.ttl', import.meta.url))
-
-      await kopflos.dataset.import(shorthands)
+      return env.fromFile(new URL('../graphs/shorthands.ttl', import.meta.url))
     },
   }
 }

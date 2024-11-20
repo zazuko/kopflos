@@ -592,6 +592,7 @@ describe('lib/Kopflos', () => {
       beforeEach(async function () {
         instance = new Kopflos({
           ...config,
+          apiGraphs: [ex.PublicApi, ex.PrivateApi],
           sparql: {
             default: inMemoryClients(this.rdf),
           },
@@ -610,7 +611,7 @@ describe('lib/Kopflos', () => {
 
         it('which can be loaded', async function () {
           // when
-          await Kopflos.fromGraphs(instance, ex.PublicApi, ex.PrivateApi)
+          await instance.loadApiGraphs()
 
           // then
           const loadedFunc = await instance.env.load(instance.graph.node(shorthand))

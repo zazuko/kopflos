@@ -15,6 +15,8 @@ program.command('serve')
   .option('-h, --host <host>', 'Host to bind to (default: "0.0.0.0")')
   .addOption(variable)
   .option('--trust-proxy [proxy]', 'Trust the X-Forwarded-Host header')
+  .option('--watch', 'Enable watching for changes')
+  .option('--no-watch', 'Disable watching for changes')
   .action(serve)
 
 program.command('build')

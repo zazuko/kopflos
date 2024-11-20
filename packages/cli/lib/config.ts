@@ -9,7 +9,7 @@ interface LoadConfig {
   path: string | undefined
 }
 
-export async function loadConfig({ path, root }: LoadConfig): Promise<KopflosConfig> {
+export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: KopflosConfig; filepath: string }> {
   let ccResult: CosmiconfigResult
   if (path) {
     ccResult = await explorer.load(path)
@@ -21,5 +21,5 @@ export async function loadConfig({ path, root }: LoadConfig): Promise<KopflosCon
     throw new Error('Configuration not found')
   }
 
-  return ccResult.config
+  return ccResult
 }

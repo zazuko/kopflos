@@ -10,9 +10,11 @@ export default <KopflosConfig> {
       updateUrl: 'http://localhost:7878/update',
     },
   },
+  watch: ['lib'],
   plugins: {
     '@kopflos-cms/plugin-deploy-resources': {
       paths: ['resources', 'resources.dev'],
+      watch: false,
     },
     '@kopflos-cms/express/middleware': {
       before: [

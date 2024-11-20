@@ -18,27 +18,33 @@ describe('loadApi', () => {
     }
   })
 
-  describe('fromGraphs', () => {
+  describe('loadGraphs', () => {
     it('fetches combined graph contents', async () => {
       // given
-      const kopfos = new Kopflos(config)
+      const kopflos = new Kopflos({
+        ...config,
+        apiGraphs: [ex.PublicApi, ex.PrivateApi],
+      })
 
       // when
-      await Kopflos.fromGraphs(kopfos, ex.PublicApi, ex.PrivateApi)
+      await kopflos.loadApiGraphs()
 
       // then
-      expect(kopfos.dataset).to.have.property('size', 11)
+      expect(kopflos.dataset).to.have.property('size', 11)
     })
 
     it('fetches combined graph contents (string names)', async () => {
       // given
-      const kopfos = new Kopflos(config)
+      const kopflos = new Kopflos({
+        ...config,
+        apiGraphs: ['http://example.org/PublicApi', 'http://example.org/PrivateApi'],
+      })
 
       // when
-      await Kopflos.fromGraphs(kopfos, 'http://example.org/PublicApi', 'http://example.org/PrivateApi')
+      await kopflos.loadApiGraphs()
 
       // then
-      expect(kopfos.dataset).to.have.property('size', 11)
+      expect(kopflos.dataset).to.have.property('size', 11)
     })
   })
 })

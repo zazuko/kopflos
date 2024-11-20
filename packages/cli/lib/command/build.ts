@@ -7,7 +7,7 @@ interface BuildArgs {
 }
 
 export default async function (args: BuildArgs) {
-  const config = await loadConfig({
+  const { config } = await loadConfig({
     path: args.config,
   })
   const plugins = await loadPlugins(config.plugins)
