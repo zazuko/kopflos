@@ -1,3 +1,0 @@
-PREFIX ex: <http://example.org/>
-
-<> a ex:Bar .

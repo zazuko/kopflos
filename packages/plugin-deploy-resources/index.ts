@@ -44,12 +44,17 @@ export default function kopflosPlugin({ paths = [], enabled = true, watch = true
       log.info(`Auto deploy enabled. Deploying from: ${paths}`)
 
       if (watch && instance.env.kopflos.config.watch) {
-        const watcher = chokidar.watch(paths).on('change', async (path) => {
+        async function redeploy(changedFile: string) {
           log.info('Resources changed, redeploying')
-          log.debug(`Changed path: ${path}`)
+          log.debug(`Changed path: ${changedFile}`)
           await deploy(paths, instance.env)
           await instance.loadApiGraphs()
-        })
+        }
+
+        const watcher = chokidar.watch(paths, { ignoreInitial: true })
+          .on('change', redeploy)
+          .on('add', redeploy)
+          .on('unlink', redeploy)
 
         instances.set(instance, watcher)
       }

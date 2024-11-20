@@ -638,6 +638,45 @@ describe('lib/Kopflos', () => {
       expect(plugin.onStart).to.have.been.calledOnce
     })
   })
+
+  describe('stop', () => {
+    it('calls onStop on plugins', async function () {
+      // given
+      const plugin = {
+        onStop: sinon.spy(),
+      }
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.stop()
+
+      // then
+      expect(plugin.onStop).to.have.been.called
+    })
+
+    it('ignores plugins without onStop', async function () {
+      // given
+      const plugin = {}
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.stop()
+    })
+  })
 })
 
 const testHandler: Handler = ({ subject, property, object }) => ({
