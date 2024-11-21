@@ -40,7 +40,9 @@
     "ulog": "^2.0.0-beta.19"
   },
   "devDependencies": {
-    "chai": "^5.1.1"
+    "chai": "^5.1.1",
+    "mocha-chai-rdf": "^0.1.5",
+    "tempy": "^3.1.0"
   },
   "mocha": {
     "extension": [
