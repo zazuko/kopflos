@@ -1,0 +1,4 @@
+{
+  "baseIri": "https://example.com/",
+  "watch": ["lib"]
+}

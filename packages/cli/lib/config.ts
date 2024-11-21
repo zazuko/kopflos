@@ -9,7 +9,13 @@ interface LoadConfig {
   path: string | undefined
 }
 
-export async function loadConfig({ path, root }: LoadConfig): Promise<KopflosConfig> {
+declare module '@kopflos-cms/core' {
+  interface KopflosConfig {
+    watch?: string[]
+  }
+}
+
+export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: KopflosConfig; filepath: string }> {
   let ccResult: CosmiconfigResult
   if (path) {
     ccResult = await explorer.load(path)
@@ -21,5 +27,30 @@ export async function loadConfig({ path, root }: LoadConfig): Promise<KopflosCon
     throw new Error('Configuration not found')
   }
 
-  return ccResult.config
+  return ccResult
+}
+
+interface PrepareConfigArgs {
+  mode: 'development' | 'production'
+  config?: string
+  watch: boolean
+  variable: Record<string, unknown>
+}
+
+export async function prepareConfig({ mode, config, watch, variable }: PrepareConfigArgs): Promise<KopflosConfig> {
+  const { config: loadedConfig, filepath: configPath } = await loadConfig({
+    path: config,
+  })
+
+  const watchedPaths = loadedConfig.watch || []
+
+  return {
+    mode,
+    ...loadedConfig,
+    watch: watch ? [...watchedPaths, configPath] : undefined,
+    variables: {
+      ...(loadedConfig.variables || {}),
+      ...variable,
+    },
+  }
 }

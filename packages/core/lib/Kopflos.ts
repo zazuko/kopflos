@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
 import type { parse } from 'node:querystring'
 import type { ReadableStream } from 'node:stream/web'
-import type { DatasetCore, NamedNode, Stream, Term } from '@rdfjs/types'
+import type { DatasetCore, NamedNode, Quad, Stream, Term } from '@rdfjs/types'
 import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
@@ -20,6 +20,10 @@ import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
+
+declare module '@rdfjs/types' {
+  interface Stream extends AsyncIterable<Quad> {}
+}
 
 type Dataset = ReturnType<KopflosEnvironment['dataset']>
 
@@ -60,11 +64,14 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   get plugins(): Array<KopflosPlugin>
   get start(): () => Promise<void>
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
+  loadApiGraphs(): Promise<void>
 }
 
 export interface KopflosPlugin {
   build?: () => Promise<void> | void
   onStart?(instance: Kopflos): Promise<void> | void
+  onStop?(instance: Kopflos): Promise<void> | void
+  apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
 }
 
 interface Clients {
@@ -79,6 +86,7 @@ export interface PluginConfig {
 }
 
 export interface KopflosConfig {
+  [key: string]: unknown
   mode?: 'development' | 'production'
   baseIri: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
@@ -310,8 +318,16 @@ export default class Impl implements Kopflos {
     }
   }
 
-  static async fromGraphs(kopflos: Impl, ...graphs: Array<NamedNode | string>): Promise<void> {
-    const graphsIris = graphs.map(graph => typeof graph === 'string' ? kopflos.env.namedNode(graph) : graph)
+  async loadApiGraphs(): Promise<void> {
+    const graphs = this.env.kopflos.config.apiGraphs
+
+    if (!graphs) {
+      throw new Error('No API graphs configured. In a future release it will be possible to select graphs dynamically.')
+    }
+
+    this.dataset.deleteMatches()
+
+    const graphsIris = graphs.map(graph => typeof graph === 'string' ? this.env.namedNode(graph) : graph)
     log.info('Loading graphs', graphsIris.map(g => g.value))
 
     const quads = CONSTRUCT`?s ?p ?o `
@@ -321,12 +337,29 @@ export default class Impl implements Kopflos {
         }
         
         FILTER (?g ${IN(...graphsIris)})
-      `.execute(kopflos.env.sparql.default.stream)
+      `.execute(this.env.sparql.default.stream)
 
     for await (const quad of quads) {
-      kopflos.dataset.add(quad)
+      this.dataset.add(quad)
     }
 
-    log.info(`Graphs loaded. Dataset now contains ${kopflos.dataset.size} quads`)
+    const apiTriples = this.plugins.map(async plugin => {
+      if (!plugin.apiTriples) {
+        return
+      }
+
+      const triples = await plugin.apiTriples(this)
+      for await (const quad of triples) {
+        this.dataset.add(quad)
+      }
+      log.debug('API triples loaded from plugin', plugin)
+    })
+
+    await Promise.all(apiTriples)
+    log.info(`Graphs loaded. Dataset now contains ${this.dataset.size} quads`)
+  }
+
+  async stop() {
+    await Promise.all(this.plugins.map(async plugin => { plugin.onStop?.(this) }))
   }
 }

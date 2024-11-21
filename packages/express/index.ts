@@ -32,9 +32,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
     plugins: await loadPlugins(options.plugins),
   })
 
-  const loadApiGraphs = onetime(async (graphs: Required<KopflosConfig>['apiGraphs']) => {
-    await Kopflos.fromGraphs(kopflos, ...graphs)
-  })
+  const loadApiGraphs = onetime(() => kopflos.loadApiGraphs())
 
   const router = Router()
 
@@ -42,11 +40,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
 
   router
     .use((req, res, next) => {
-      if (!options.apiGraphs) {
-        return next(new Error('No API graphs configured. In future release it will be possible to select graphs dynamically.'))
-      }
-
-      loadApiGraphs(options.apiGraphs).then(next).catch(next)
+      loadApiGraphs().then(next).catch(next)
     })
     .use((req, res, next) => {
       const fullUrl = absolutUrl(req)

@@ -3,10 +3,12 @@ import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
 import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
 import { createLogger } from '@kopflos-cms/logger'
+import * as chokidar from 'chokidar'
 
 interface Options {
   enabled?: boolean
   paths?: string[]
+  watch?: boolean
 }
 
 declare module '@kopflos-cms/core' {
@@ -24,9 +26,11 @@ export async function deploy(paths: string[], env: KopflosEnvironment) {
   })
 }
 
-export default function kopflosPlugin({ paths = [], enabled = true }: Options = {}) {
+export default function kopflosPlugin({ paths = [], enabled = true, watch = true }: Options = {}) {
+  const instances = new WeakMap<Kopflos, chokidar.FSWatcher>()
+
   return {
-    onStart({ env }: Kopflos) {
+    onStart(instance: Kopflos) {
       if (!enabled) {
         log.info('Auto deploy disabled. Skipping deployment')
         return
@@ -39,7 +43,27 @@ export default function kopflosPlugin({ paths = [], enabled = true }: Options = 
 
       log.info(`Auto deploy enabled. Deploying from: ${paths}`)
 
-      return deploy(paths, env)
+      if (watch && instance.env.kopflos.config.watch) {
+        async function redeploy(changedFile: string) {
+          log.info('Resources changed, redeploying')
+          log.debug(`Changed path: ${changedFile}`)
+          await deploy(paths, instance.env)
+          await instance.loadApiGraphs()
+        }
+
+        const watcher = chokidar.watch(paths, { ignoreInitial: true })
+          .on('change', redeploy)
+          .on('add', redeploy)
+          .on('unlink', redeploy)
+
+        instances.set(instance, watcher)
+      }
+
+      return deploy(paths, instance.env)
+    },
+    async onStop(instance: Kopflos) {
+      const watcher = instances.get(instance)
+      await watcher?.close()
     },
   }
 }

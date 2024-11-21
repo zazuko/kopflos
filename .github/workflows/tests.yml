@@ -2,6 +2,9 @@ name: tests
 
 on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   unit-tests:
     runs-on: [ ubuntu-latest ]
