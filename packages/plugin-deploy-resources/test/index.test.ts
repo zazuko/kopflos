@@ -1,11 +1,13 @@
 import url from 'node:url'
 import * as fs from 'node:fs/promises'
 import { promisify } from 'node:util'
+import * as path from 'node:path'
 import { createEmpty } from 'mocha-chai-rdf/store.js'
 import rdf from '@zazuko/env-node'
 import { expect, use } from 'chai'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
 import Kopflos from '@kopflos-cms/core'
+import { temporaryDirectory } from 'tempy'
 import configure from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 
@@ -100,8 +102,9 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
 
   context('watch', () => {
     let plugin: ReturnType<typeof configure>
+    let tempDir: string
 
-    beforeEach(function () {
+    beforeEach(async function () {
       env = new Kopflos({
         baseIri,
         sparql: {
@@ -109,91 +112,77 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
         },
         watch: [],
       })
+
+      tempDir = temporaryDirectory()
+      await fs.cp(url.fileURLToPath(new URL('resources', import.meta.url)), tempDir, { recursive: true })
+    })
+
+    afterEach(async () => {
+      await plugin?.onStop(env)
+      await fs.rm(tempDir, { recursive: true, force: true })
     })
 
     context('enabled', () => {
       beforeEach(async () => {
         plugin = configure({
-          paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
+          paths: [tempDir],
         })
+        await plugin.onStart(env)
       })
 
       it('redeploys when file changes', async function () {
-        const fileToModify = url.fileURLToPath(new URL('resources/bar.ttl', import.meta.url))
-        const originalContents = await fs.readFile(fileToModify)
+        const fileToModify = path.resolve(tempDir, 'bar.ttl')
 
-        try {
-          // given
-          await plugin.onStart(env)
+        // when
+        await fs.appendFile(fileToModify, '<> a ex:Baz .')
+        await promisify(setTimeout)(1000)
 
-          // when
-          await fs.appendFile(fileToModify, '<> a ex:Baz .')
-          await promisify(setTimeout)(1000)
-
-          // then
-          const barGraph = this.rdf.dataset.match(null, null, null, ex('bar'))
-          expect(rdf.dataset.toCanonical(barGraph)).toMatchSnapshot()
-        } finally {
-          await plugin.onStop(env)
-          await fs.writeFile(fileToModify, originalContents)
-        }
+        // then
+        const barGraph = this.rdf.dataset.match(null, null, null, ex('bar'))
+        expect(rdf.dataset.toCanonical(barGraph)).toMatchSnapshot()
       })
 
       it('redeploys when file is created', async function () {
         // given
-        const fileToCreate = url.fileURLToPath(new URL('resources/baz.ttl', import.meta.url))
+        const fileToCreate = path.resolve(tempDir, 'baz.ttl')
 
-        try {
-          await plugin.onStart(env)
+        // when
+        await fs.writeFile(fileToCreate, 'PREFIX ex: <http://example.org/>\n<> a ex:Baz .')
+        await promisify(setTimeout)(1000)
 
-          // when
-          await fs.writeFile(fileToCreate, 'PREFIX ex: <http://example.org/>\n<> a ex:Baz .')
-          await promisify(setTimeout)(1000)
-
-          // then
-          const bazGraph = this.rdf.dataset.match(null, null, null, ex('baz'))
-          expect(rdf.dataset.toCanonical(bazGraph)).toMatchSnapshot()
-        } finally {
-          await plugin.onStop(env)
-          await fs.unlink(fileToCreate)
-        }
+        // then
+        const bazGraph = this.rdf.dataset.match(null, null, null, ex('baz'))
+        expect(rdf.dataset.toCanonical(bazGraph)).toMatchSnapshot()
       })
     })
 
     context('disabled', () => {
       beforeEach(async () => {
         plugin = configure({
-          paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
+          paths: [tempDir],
           watch: false,
         })
+        await plugin.onStart(env)
       })
 
       it('does not react to any changes', async function () {
         // given
-        const fileToModify = url.fileURLToPath(new URL('resources/bar.ttl', import.meta.url))
-        const barContents = await fs.readFile(fileToModify)
-        const fileToCreate = url.fileURLToPath(new URL('resources/baz.ttl', import.meta.url))
-        const fileToDelete = url.fileURLToPath(new URL('resources/index.trig', import.meta.url))
-        const trigContents = await fs.readFile(fileToDelete)
+        const fileToModify = path.resolve(tempDir, 'bar.ttl')
+        const fileToCreate = path.resolve(tempDir, 'baz.ttl')
+        const fileToDelete = path.resolve(tempDir, 'index.trig')
 
-        try {
-          await plugin.onStart(env)
+        await plugin.onStart(env)
 
-          // when
-          await Promise.all([
-            fs.appendFile(fileToModify, '<> a ex:Baz .'),
-            fs.writeFile(fileToCreate, 'PREFIX ex: <http://example.org/>\n<> a ex:Baz .'),
-            fs.unlink(fileToDelete),
-          ])
-          await promisify(setTimeout)(1000)
+        // when
+        await Promise.all([
+          fs.appendFile(fileToModify, '<> a ex:Baz .'),
+          fs.writeFile(fileToCreate, 'PREFIX ex: <http://example.org/>\n<> a ex:Baz .'),
+          fs.unlink(fileToDelete),
+        ])
+        await promisify(setTimeout)(1000)
 
-          // then
-          expect(rdf.dataset.toCanonical(this.rdf.dataset)).toMatchSnapshot()
-        } finally {
-          await fs.unlink(fileToCreate)
-          await fs.writeFile(fileToModify, barContents)
-          await fs.writeFile(fileToDelete, trigContents)
-        }
+        // then
+        expect(rdf.dataset.toCanonical(this.rdf.dataset)).toMatchSnapshot()
       })
     })
   })
