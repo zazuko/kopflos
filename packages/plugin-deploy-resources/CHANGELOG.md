@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.1.1
+
+### Patch Changes
+
+- e4893c1: Watch mode
+
 ## 0.1.0
 
 ### Minor Changes
