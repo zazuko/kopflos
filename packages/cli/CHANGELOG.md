@@ -1,5 +1,15 @@
 # kopflos
 
+## 0.1.2
+
+### Patch Changes
+
+- e4893c1: Watch mode
+- Updated dependencies [e4893c1]
+- Updated dependencies [e4893c1]
+  - @kopflos-cms/express@0.1.1
+  - @kopflos-cms/plugin-deploy-resources@0.1.1
+
 ## 0.1.1
 
 ### Patch Changes

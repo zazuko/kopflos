@@ -1,5 +1,14 @@
 # @kopflos-cms/express
 
+## 0.1.1
+
+### Patch Changes
+
+- e4893c1: Changed static method `Kopflos.fromGraphs` to `Kopflos#loadApiGraphs`
+- Updated dependencies [e4893c1]
+- Updated dependencies [e4893c1]
+  - @kopflos-cms/core@0.3.1
+
 ## 0.1.0
 
 ### Minor Changes
