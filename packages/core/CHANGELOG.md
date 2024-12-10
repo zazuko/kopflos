@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.3.1
+
+### Patch Changes
+
+- e4893c1: Changed static method `Kopflos.fromGraphs` to `Kopflos#loadApiGraphs`
+- e4893c1: New plugin hooks: `onStop` and `apiTriples`
+
 ## 0.3.0
 
 ### Minor Changes
