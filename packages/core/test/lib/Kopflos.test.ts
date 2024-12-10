@@ -592,13 +592,14 @@ describe('lib/Kopflos', () => {
       beforeEach(async function () {
         instance = new Kopflos({
           ...config,
+          apiGraphs: [ex.PublicApi, ex.PrivateApi],
           sparql: {
             default: inMemoryClients(this.rdf),
           },
         }, {
           plugins: await loadPlugins({}),
         })
-        await instance.start()
+        await instance.loadApiGraphs()
       })
 
       context(`inserts ${shorthand.value} shorthand`, () => {
@@ -609,9 +610,6 @@ describe('lib/Kopflos', () => {
         })
 
         it('which can be loaded', async function () {
-          // when
-          await Kopflos.fromGraphs(instance, ex.PublicApi, ex.PrivateApi)
-
           // then
           const loadedFunc = await instance.env.load(instance.graph.node(shorthand))
           expect(loadedFunc).to.eq(implementation)
@@ -638,6 +636,45 @@ describe('lib/Kopflos', () => {
 
       // then
       expect(plugin.onStart).to.have.been.calledOnce
+    })
+  })
+
+  describe('stop', () => {
+    it('calls onStop on plugins', async function () {
+      // given
+      const plugin = {
+        onStop: sinon.spy(),
+      }
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.stop()
+
+      // then
+      expect(plugin.onStop).to.have.been.called
+    })
+
+    it('ignores plugins without onStop', async function () {
+      // given
+      const plugin = {}
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.stop()
     })
   })
 })

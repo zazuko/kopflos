@@ -8,7 +8,7 @@ interface DeployArgs {
 }
 
 export default async function (args: DeployArgs) {
-  const config = await loadConfig({
+  const { config } = await loadConfig({
     path: args.config,
   })
 
