@@ -1,0 +1,52 @@
+PREFIX ex: <http://example.org/>
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+
+GRAPH <unordered-collection> {
+  ex:
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+  .
+}
+
+GRAPH <ordered-collection> {
+  ex:
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    sh:orderBy [ sh:path schema:name ] ;
+  .
+}
+
+GRAPH <multiple-member-assertions> {
+  ex:
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ],
+      [
+        hydra:property rdf:type ;
+        hydra:object schema:PopulatedPlace ;
+      ],
+      [
+        hydra:property schema:containsPlace ;
+        hydra:subject <https://ld.admin.ch/district/1004> ;
+      ] ;
+  .
+}

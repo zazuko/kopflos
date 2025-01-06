@@ -321,7 +321,7 @@ export default class Impl implements Kopflos {
   async loadApiGraphs(): Promise<void> {
     const graphs = this.env.kopflos.config.apiGraphs
 
-    if (!graphs) {
+    if (!graphs?.length) {
       throw new Error('No API graphs configured. In a future release it will be possible to select graphs dynamically.')
     }
 
