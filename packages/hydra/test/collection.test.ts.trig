@@ -17,6 +17,7 @@ GRAPH <readonly-api> {
     sh:targetClass hydra:Collection ;
     kl:api <readonly-api> ;
     dash:readOnly true ;
+  .
 }
 
 GRAPH <municipalities/no-assertions> {
