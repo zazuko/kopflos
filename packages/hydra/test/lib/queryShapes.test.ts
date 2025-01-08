@@ -1,5 +1,4 @@
 import env from '@zazuko/env-node'
-import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import { expect, use } from 'chai'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
 import { createStore } from 'mocha-chai-rdf/store.js'
@@ -126,8 +125,9 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
 })
 
 function serialize(dataset: DatasetCore) {
-  return (dataset as Dataset).serialize({
+  return env.dataset.serialize(dataset, {
     format: 'text/turtle',
     prefixes: ['sh', 'hydra', 'schema', 'rdf', ['kl', kl().value]],
+    renameBlankNodes: true,
   })
 }

@@ -7,25 +7,25 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape multiple member 
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g7 hydra:subject <https://ld.admin.ch/district/1004> ;
+_:t0 hydra:subject <https://ld.admin.ch/district/1004> ;
 	hydra:property schema:containsPlace .
 
-_:g6 hydra:property rdf:type ;
+_:t1 hydra:property rdf:type ;
 	hydra:object schema:PopulatedPlace .
 
-_:g5 hydra:property rdf:type ;
+_:t2 hydra:property rdf:type ;
 	hydra:object <https://schema.ld.admin.ch/Municipality> .
 
 <http://example.org/> a hydra:Collection ;
-	hydra:memberAssertion _:g7, _:g6, _:g5 .
+	hydra:memberAssertion _:t0, _:t1, _:t2 .
 
-_:b284 a sh:NodeShape ;
+_:t3 a sh:NodeShape ;
 	sh:target [
 		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
 		sh:expression [
 			sh:distinct [
 				sh:filterShape [
-					hydra:memberAssertion _:g7, _:g6, _:g5 ;
+					hydra:memberAssertion _:t0, _:t1, _:t2 ;
 				] ;
 			] ;
 		] ;
@@ -66,26 +66,26 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape ordered collecti
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g4 sh:path schema:name .
+_:t0 sh:path schema:name .
 
-_:g3 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t1 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	sh:orderBy _:g4 ;
-	hydra:memberAssertion _:g3 .
+	sh:orderBy _:t0 ;
+	hydra:memberAssertion _:t1 .
 
-_:b261 a sh:NodeShape ;
+_:t2 a sh:NodeShape ;
 	sh:target [
 		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
 		sh:expression [
 			sh:distinct [
 				sh:limit 10 ;
 				sh:nodes [
-					sh:orderBy _:g4 ;
+					sh:orderBy _:t0 ;
 					sh:nodes [
 						sh:filterShape [
-							hydra:memberAssertion _:g3 ;
+							hydra:memberAssertion _:t1 ;
 						] ;
 					] ;
 				] ;
@@ -118,16 +118,16 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape ordered collecti
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g4 sh:path schema:name .
+_:t0 sh:path schema:name .
 
-_:g3 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t1 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	sh:orderBy _:g4 ;
-	hydra:memberAssertion _:g3 .
+	sh:orderBy _:t0 ;
+	hydra:memberAssertion _:t1 .
 
-_:b272 a sh:NodeShape ;
+_:t2 a sh:NodeShape ;
 	sh:target [
 		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
 		sh:expression [
@@ -135,10 +135,10 @@ _:b272 a sh:NodeShape ;
 				sh:limit 10 ;
 				sh:nodes [
 					sh:nodes [
-						sh:orderBy _:g4 ;
+						sh:orderBy _:t0 ;
 						sh:nodes [
 							sh:filterShape [
-								hydra:memberAssertion _:g3 ;
+								hydra:memberAssertion _:t1 ;
 							] ;
 						] ;
 					] ;
@@ -173,26 +173,26 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape ordered collecti
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g4 sh:path schema:name .
+_:t0 sh:path schema:name .
 
-_:g3 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t1 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	sh:orderBy _:g4 ;
-	hydra:memberAssertion _:g3 .
+	sh:orderBy _:t0 ;
+	hydra:memberAssertion _:t1 .
 
-_:b250 a sh:NodeShape ;
+_:t2 a sh:NodeShape ;
 	sh:target [
 		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
 		sh:expression [
 			sh:distinct [
 				sh:offset 5 ;
 				sh:nodes [
-					sh:orderBy _:g4 ;
+					sh:orderBy _:t0 ;
 					sh:nodes [
 						sh:filterShape [
-							hydra:memberAssertion _:g3 ;
+							hydra:memberAssertion _:t1 ;
 						] ;
 					] ;
 				] ;
@@ -225,7 +225,7 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape unordered collec
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g1 sh:property [
+_:t1 sh:property [
 		sh:path schema:name ;
 	] ;
 	sh:rule [
@@ -240,26 +240,26 @@ _:g1 sh:property [
 		sh:object <https://schema.ld.admin.ch/Municipality> ;
 	] .
 
-_:g0 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t4 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	kl:memberShape _:g1 ;
-	hydra:memberAssertion _:g0 .
+	kl:memberShape _:t1 ;
+	hydra:memberAssertion _:t4 .
 
-_:b242 a sh:NodeShape ;
+_:t5 a sh:NodeShape ;
 	sh:target [
 		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
 		sh:expression [
 			sh:distinct [
 				sh:filterShape [
-					hydra:memberAssertion _:g0 ;
+					hydra:memberAssertion _:t4 ;
 				] ;
 			] ;
 		] ;
 	] ;
 	sh:and (
-		_:g1
+		_:t1
 	) .
 
 "
@@ -272,28 +272,28 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js totalsQueryShape multiple member 
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g7 hydra:subject <https://ld.admin.ch/district/1004> ;
+_:t0 hydra:subject <https://ld.admin.ch/district/1004> ;
 	hydra:property schema:containsPlace .
 
-_:g6 hydra:property rdf:type ;
+_:t1 hydra:property rdf:type ;
 	hydra:object schema:PopulatedPlace .
 
-_:g5 hydra:property rdf:type ;
+_:t2 hydra:property rdf:type ;
 	hydra:object <https://schema.ld.admin.ch/Municipality> .
 
 <http://example.org/> a hydra:Collection ;
-	hydra:memberAssertion _:g7, _:g6, _:g5 .
+	hydra:memberAssertion _:t0, _:t1, _:t2 .
 
-_:b351 a sh:NodeShape ;
+_:t4 a sh:NodeShape ;
 	sh:rule [
 		rdf:type sh:TripleRule ;
-		sh:subject sh:this ;
+		sh:subject <http://example.org/> ;
 		sh:predicate hydra:totalItems ;
 		sh:object [
 			sh:count [
 				sh:distinct [
 					sh:filterShape [
-						hydra:memberAssertion _:g7, _:g6, _:g5 ;
+						hydra:memberAssertion _:t0, _:t1, _:t2 ;
 					] ;
 				] ;
 			] ;
@@ -310,25 +310,25 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js totalsQueryShape ordered collecti
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g3 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t1 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
 	sh:orderBy [
 		sh:path schema:name ;
 	] ;
-	hydra:memberAssertion _:g3 .
+	hydra:memberAssertion _:t1 .
 
-_:b345 a sh:NodeShape ;
+_:t3 a sh:NodeShape ;
 	sh:rule [
 		rdf:type sh:TripleRule ;
-		sh:subject sh:this ;
+		sh:subject <http://example.org/> ;
 		sh:predicate hydra:totalItems ;
 		sh:object [
 			sh:count [
 				sh:distinct [
 					sh:filterShape [
-						hydra:memberAssertion _:g3 ;
+						hydra:memberAssertion _:t1 ;
 					] ;
 				] ;
 			] ;
@@ -345,7 +345,7 @@ exports[`@kopflos-cms/hydra/lib/queryShapes.js totalsQueryShape unordered collec
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix kl: <https://kopflos.described.at/> .
 
-_:g0 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+_:t2 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
@@ -354,18 +354,18 @@ _:g0 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 			sh:path schema:name ;
 		] ;
 	] ;
-	hydra:memberAssertion _:g0 .
+	hydra:memberAssertion _:t2 .
 
-_:b296 a sh:NodeShape ;
+_:t4 a sh:NodeShape ;
 	sh:rule [
 		rdf:type sh:TripleRule ;
-		sh:subject sh:this ;
+		sh:subject <http://example.org/> ;
 		sh:predicate hydra:totalItems ;
 		sh:object [
 			sh:count [
 				sh:distinct [
 					sh:filterShape [
-						hydra:memberAssertion _:g0 ;
+						hydra:memberAssertion _:t2 ;
 					] ;
 				] ;
 			] ;
