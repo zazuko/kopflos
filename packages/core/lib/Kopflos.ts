@@ -357,6 +357,12 @@ export default class Impl implements Kopflos {
 
     await Promise.all(apiTriples)
     log.info(`Graphs loaded. Dataset now contains ${this.dataset.size} quads`)
+    if (log.enabledFor('trace')) {
+      log.trace('API Dataset', await this.dataset.serialize({
+        format: 'text/turtle',
+        prefixes: ['sh', 'rdf', 'xsd', ['kl', this.env.ns.kopflos().value]],
+      }))
+    }
   }
 
   async stop() {
