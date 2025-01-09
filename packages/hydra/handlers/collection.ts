@@ -7,7 +7,7 @@ import { kl } from '@kopflos-cms/core/ns.js'
 import error from 'http-errors'
 import { memberQueryShape, totalsQueryShape } from '../lib/queryShapes.js'
 import { HydraMemberAssertionConstraint } from '../lib/shaclConstraint/HydraMemberAssertionConstraint.js'
-import { isReadable } from '../lib/collection.js'
+import { isReadable, isWritable } from '../lib/collection.js'
 
 constraints.set(kl['hydra#MemberAssertionConstraintComponent'], HydraMemberAssertionConstraint)
 
@@ -27,5 +27,15 @@ export function get(): Handler {
       status: 200,
       body: merge([members, totals]),
     }
+  }
+}
+
+export function post(): Handler {
+  return ({ env, subject }) => {
+    if (!isWritable(env, subject)) {
+      return new error.MethodNotAllowed('Collection is not writable')
+    }
+
+    throw new Error('Not implemented')
   }
 }

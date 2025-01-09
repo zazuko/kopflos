@@ -30,6 +30,18 @@ GRAPH <municipalities/readable-false> {
   .
 }
 
+GRAPH <municipalities/writable-false> {
+  <municipalities/writable-false>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:writable false ;
+  .
+}
+
 GRAPH <municipalities/all> {
   <municipalities/all>
     a hydra:Collection ;

@@ -6,3 +6,7 @@ import type { GraphPointer } from 'clownface'
 export function isReadable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
   return !collection.has(env.ns.hydra.readable, toRdf(false)).term
 }
+
+export function isWritable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
+  return !collection.has([env.ns.hydra.writable, env.ns.hydra.writeable], toRdf(false)).term
+}

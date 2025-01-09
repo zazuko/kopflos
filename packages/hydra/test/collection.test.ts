@@ -137,5 +137,26 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
     })
+
+    context('post', () => {
+      context('when collection is not writable', () => {
+        it('should return 405', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: ex['municipalities/writable-false'],
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(405)
+        })
+      })
+    })
   })
 })
