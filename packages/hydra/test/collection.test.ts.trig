@@ -18,6 +18,18 @@ GRAPH <municipalities/no-assertions> {
   <municipalities/no-assertions> a hydra:Collection .
 }
 
+GRAPH <municipalities/readable-false> {
+  <municipalities/readable-false>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:readable false ;
+  .
+}
+
 GRAPH <municipalities/all> {
   <municipalities/all>
     a hydra:Collection ;

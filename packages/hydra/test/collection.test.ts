@@ -52,68 +52,89 @@ describe('@kopflos-cms/hydra', () => {
   }
 
   describe('hydra:Collection', () => {
-    context('when collection has no memberAssertion', () => {
-      it('should return 500', async function () {
-        // given
-        const kopflos = await startKopflos()
+    context('get', () => {
+      context('when collection has no memberAssertion', () => {
+        it('should return 500', async function () {
+          // given
+          const kopflos = await startKopflos()
 
-        // when
-        const res = await kopflos.handleRequest({
-          method: 'GET',
-          iri: ex['municipalities/no-assertions'],
-          headers: {},
-          query: {},
-          body: {} as Body,
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: ex['municipalities/no-assertions'],
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(500)
         })
-
-        // then
-        expect(res.status).to.equal(500)
       })
-    })
 
-    context('when collection has single memberAssertion', () => {
-      it('should return a stream of members', async function () {
-        // given
-        const kopflos = await startKopflos()
+      context('when collection is not readable', () => {
+        it('should return 405', async function () {
+          // given
+          const kopflos = await startKopflos()
 
-        // when
-        const collection = ex['municipalities/all']
-        const res = await kopflos.handleRequest({
-          method: 'GET',
-          iri: collection,
-          headers: {},
-          query: {},
-          body: {} as Body,
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: ex['municipalities/readable-false'],
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(405)
         })
-
-        // then
-        const dataset = await $rdf.dataset().import(res.body as Stream)
-        const pointer = $rdf.clownface({ dataset }).node(collection)
-        expect(pointer.out(ns.hydra.member).terms).to.have.length(3449)
-        expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(3449))
       })
-    })
 
-    context('when collection has multiple memberAssertion', () => {
-      it('should return a stream of members', async function () {
-        // given
-        const kopflos = await startKopflos()
+      context('when collection has single memberAssertion', () => {
+        it('should return a stream of members', async function () {
+          // given
+          const kopflos = await startKopflos()
 
-        // when
-        const collection = ex['municipalities/from-static-district']
-        const res = await kopflos.handleRequest({
-          method: 'GET',
-          iri: collection,
-          headers: {},
-          query: {},
-          body: {} as Body,
+          // when
+          const collection = ex['municipalities/all']
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          const dataset = await $rdf.dataset().import(res.body as Stream)
+          const pointer = $rdf.clownface({ dataset }).node(collection)
+          expect(pointer.out(ns.hydra.member).terms).to.have.length(3449)
+          expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(3449))
         })
+      })
 
-        // then
-        const dataset = await $rdf.dataset().import(res.body as Stream)
-        const pointer = $rdf.clownface({ dataset }).node(collection)
-        expect(pointer.out(ns.hydra.member).terms).to.have.length(14)
-        expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(14))
+      context('when collection has multiple memberAssertion', () => {
+        it('should return a stream of members', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const collection = ex['municipalities/from-static-district']
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          const dataset = await $rdf.dataset().import(res.body as Stream)
+          const pointer = $rdf.clownface({ dataset }).node(collection)
+          expect(pointer.out(ns.hydra.member).terms).to.have.length(14)
+          expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(14))
+        })
       })
     })
   })
