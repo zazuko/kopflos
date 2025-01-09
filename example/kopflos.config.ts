@@ -8,6 +8,7 @@ export default <KopflosConfig> {
     default: {
       endpointUrl: 'http://localhost:7878/query?union-default-graph',
       updateUrl: 'http://localhost:7878/update',
+      storeUrl: 'http://localhost:7878/store',
     },
   },
   watch: ['lib'],
@@ -25,6 +26,9 @@ export default <KopflosConfig> {
     '@kopflos-cms/vite': {
       root: 'ui',
       entrypoints: ['ui/*.html'],
+    },
+    '@kopflos-cms/hydra': {
+      apis: ['http://localhost:1429/api'],
     },
   },
 }

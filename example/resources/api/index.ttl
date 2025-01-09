@@ -15,6 +15,16 @@ PREFIX kl: <https://kopflos.described.at/>
   a kl:ResourceShape ;
   kl:api <> ;
   sh:targetClass </api/schema/Plaque> ;
+  kl:handler
+    [
+      a kl:Handler ;
+      kl:method "POST" ;
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:lib/plaque.js#post> ;
+        ]
+    ] ;
 .
 
 <#plaque.html>

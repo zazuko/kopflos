@@ -11,6 +11,7 @@
     "start:prod": "kopflos serve --trust-proxy"
   },
   "dependencies": {
+    "@kopflos-cms/hydra": "0.0.0",
     "@kopflos-cms/vite": "0.0.1",
     "@kopflos-cms/serve-file": "0.1.0",
     "@kopflos-labs/html-template": "0.1.0",

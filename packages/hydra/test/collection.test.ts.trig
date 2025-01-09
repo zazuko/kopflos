@@ -1,0 +1,77 @@
+PREFIX schema: <http://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX code: <https://code.described.at/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX kl-hydra: <https://kopflos.described.at/hydra#>
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+BASE <http://example.org/>
+
+GRAPH <readonly-api> {
+  <readonly-api>
+    a kl:Api ;
+  .
+}
+
+GRAPH <municipalities/no-assertions> {
+  <municipalities/no-assertions> a hydra:Collection .
+}
+
+GRAPH <municipalities/readable-false> {
+  <municipalities/readable-false>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:readable false ;
+  .
+}
+
+GRAPH <municipalities/writable-false> {
+  <municipalities/writable-false>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:writable false ;
+  .
+}
+
+GRAPH <municipalities/all> {
+  <municipalities/all>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+  .
+}
+
+GRAPH <municipalities/from-static-district> {
+  <municipalities/from-static-district>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ],
+      [
+        hydra:property schema:containsPlace ;
+        hydra:subject <https://ld.admin.ch/district/108> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+  .
+}

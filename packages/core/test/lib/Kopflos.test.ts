@@ -7,13 +7,14 @@ import sinon from 'sinon'
 import { code } from '@zazuko/vocabulary-extras-builders'
 import type { KopflosConfig, Body, Options, KopflosResponse } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
-import { ex, kopflos } from '../../../testing-helpers/ns.js'
+import { ex } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
 import type { Handler } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
 import * as resourceLoaders from '../../resourceLoaders.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { loadPlugins } from '../../plugins.js'
+import { kl } from '../../ns.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
@@ -584,8 +585,8 @@ describe('lib/Kopflos', () => {
 
   describe('start', () => {
     const shorthands = rdf.termMap([
-      [kopflos.DescribeLoader, resourceLoaders.describe],
-      [kopflos.OwnGraphLoader, resourceLoaders.fromOwnGraph],
+      [kl.DescribeLoader, resourceLoaders.describe],
+      [kl.OwnGraphLoader, resourceLoaders.fromOwnGraph],
     ])
     for (const [shorthand, implementation] of shorthands) {
       let instance: Kopflos

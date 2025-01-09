@@ -21,6 +21,8 @@ jobs:
             path: packages/plugin-deploy-resources
           - name: "@kopflos-cms/serve-file"
             path: packages/serve-file
+          - name: "@kopflos-cms/hydra"
+            path: packages/hydra
           - name: "@kopflos-cms/vite"
             path: packages/vite
           - name: "@kopflos-labs/html-template"
