@@ -77,7 +77,7 @@ export function memberQueryShape({ env, collection, limit, offset }: MemberQuery
         })
     })
 
-  let memberShape = collection.out(kl.memberShape)
+  let memberShape = collection.out(kl['hydra#memberShape'])
   if (!isGraphPointer(memberShape)) {
     memberShape = collection.blankNode()
   }

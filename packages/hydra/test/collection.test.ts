@@ -36,19 +36,26 @@ describe('@kopflos-cms/hydra', () => {
     }
   })
 
+  async function startKopflos({ apis = [ex('readonly-api')] } = {}) {
+    const kopflos = new Kopflos({
+      ...config,
+      apiGraphs: apis.map(api => api.value),
+    }, {
+      plugins: [hydra({
+        apis,
+      })],
+    })
+    await kopflos.start()
+    await kopflos.loadApiGraphs()
+
+    return kopflos
+  }
+
   describe('hydra:Collection', () => {
     context('when collection has no memberAssertion', () => {
       it('should return 500', async function () {
         // given
-        const kopflos = new Kopflos({
-          ...config,
-          apiGraphs: [
-            'http://example.org/readonly-api',
-          ],
-        }, {
-          plugins: [hydra()],
-        })
-        await kopflos.loadApiGraphs()
+        const kopflos = await startKopflos()
 
         // when
         const res = await kopflos.handleRequest({
@@ -67,15 +74,7 @@ describe('@kopflos-cms/hydra', () => {
     context('when collection has single memberAssertion', () => {
       it('should return a stream of members', async function () {
         // given
-        const kopflos = new Kopflos({
-          ...config,
-          apiGraphs: [
-            'http://example.org/readonly-api',
-          ],
-        }, {
-          plugins: [hydra()],
-        })
-        await kopflos.loadApiGraphs()
+        const kopflos = await startKopflos()
 
         // when
         const collection = ex['municipalities/all']
@@ -98,15 +97,7 @@ describe('@kopflos-cms/hydra', () => {
     context('when collection has multiple memberAssertion', () => {
       it('should return a stream of members', async function () {
         // given
-        const kopflos = new Kopflos({
-          ...config,
-          apiGraphs: [
-            'http://example.org/readonly-api',
-          ],
-        }, {
-          plugins: [hydra()],
-        })
-        await kopflos.loadApiGraphs()
+        const kopflos = await startKopflos()
 
         // when
         const collection = ex['municipalities/from-static-district']

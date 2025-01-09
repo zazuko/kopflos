@@ -4,19 +4,13 @@ PREFIX dash: <http://datashapes.org/dash#>
 PREFIX code: <https://code.described.at/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kl: <https://kopflos.described.at/>
+PREFIX kl-hydra: <https://kopflos.described.at/hydra#>
 PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
 BASE <http://example.org/>
 
 GRAPH <readonly-api> {
   <readonly-api>
     a kl:Api ;
-  .
-
-  <api#collectionShape>
-    a kl:ResourceShape ;
-    sh:targetClass hydra:Collection ;
-    kl:api <readonly-api> ;
-    dash:readOnly true ;
   .
 }
 
@@ -32,7 +26,7 @@ GRAPH <municipalities/all> {
         hydra:property rdf:type ;
         hydra:object <https://schema.ld.admin.ch/Municipality> ;
       ] ;
-    kl:memberShape
+    kl-hydra:memberShape
       [
         sh:property [ sh:path schema:name ] ;
       ] ;
@@ -51,7 +45,7 @@ GRAPH <municipalities/from-static-district> {
         hydra:property schema:containsPlace ;
         hydra:subject <https://ld.admin.ch/district/108> ;
       ] ;
-    kl:memberShape
+    kl-hydra:memberShape
       [
         sh:property [ sh:path schema:name ] ;
       ] ;

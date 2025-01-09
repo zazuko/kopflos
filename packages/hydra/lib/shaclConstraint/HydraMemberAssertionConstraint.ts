@@ -24,7 +24,7 @@ type MemberAssertion = {
 
 export class HydraMemberAssertionConstraint extends ConstraintComponent {
   constructor(private readonly memberAssertion: MemberAssertion) {
-    super(kl.HydraMemberAssertionConstraintComponent)
+    super(kl['hydra#MemberAssertionConstraintComponent'])
   }
 
   static * fromShape(shape: PropertyShape) {
