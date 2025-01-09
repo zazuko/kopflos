@@ -244,7 +244,7 @@ _:t4 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	kl:memberShape _:t1 ;
+	<https://kopflos.described.at/hydra#memberShape> _:t1 ;
 	hydra:memberAssertion _:t4 .
 
 _:t5 a sh:NodeShape ;
@@ -349,7 +349,7 @@ _:t2 hydra:object <https://schema.ld.admin.ch/Municipality> ;
 	hydra:property rdf:type .
 
 <http://example.org/> a hydra:Collection ;
-	kl:memberShape [
+	<https://kopflos.described.at/hydra#memberShape> [
 		sh:property [
 			sh:path schema:name ;
 		] ;
