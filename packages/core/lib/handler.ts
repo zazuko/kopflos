@@ -12,6 +12,7 @@ import { logCode } from './log.js'
 type Dataset = ReturnType<KopflosEnvironment['dataset']>
 
 export interface HandlerArgs<D extends DatasetCore = Dataset> {
+  instance: Kopflos
   resourceShape: GraphPointer<NamedNode, D>
   env: KopflosEnvironment
   subject: GraphPointer<NamedNode, D>

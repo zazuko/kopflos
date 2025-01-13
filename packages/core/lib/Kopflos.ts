@@ -56,6 +56,18 @@ export interface ResultEnvelope {
 
 export type KopflosResponse = ResultBody | ResultEnvelope
 
+export interface PluginConfig {
+  [plugin: string]: unknown
+}
+
+export interface KopflosPlugin {
+  readonly name: string
+  build?: () => Promise<void> | void
+  onStart?(): Promise<void> | void
+  onStop?(): Promise<void> | void
+  apiTriples?(): Promise<DatasetCore | Stream> | DatasetCore | Stream
+}
+
 export interface Kopflos<D extends DatasetCore = Dataset> {
   get dataset(): D
   get env(): KopflosEnvironment
@@ -63,15 +75,13 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   // eslint-disable-next-line no-use-before-define
   get plugins(): Array<KopflosPlugin>
   get start(): () => Promise<void>
+  getPlugin<P extends KopflosPlugin, N extends keyof PluginConfig = keyof PluginConfig>(name: N): P | undefined
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
   loadApiGraphs(): Promise<void>
 }
 
-export interface KopflosPlugin {
-  build?: () => Promise<void> | void
-  onStart?(instance: Kopflos): Promise<void> | void
-  onStop?(instance: Kopflos): Promise<void> | void
-  apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
+export interface KopflosPluginConstructor {
+  new(instance: Kopflos): KopflosPlugin
 }
 
 interface Clients {
@@ -80,10 +90,6 @@ interface Clients {
 }
 
 type Endpoint = string | EndpointOptions | Clients | Client
-
-export interface PluginConfig {
-  [plugin: string]: unknown
-}
 
 export interface KopflosConfig {
   [key: string]: unknown
@@ -101,7 +107,7 @@ export interface Options {
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
   handlerLookup?: HandlerLookup
-  plugins?: Array<KopflosPlugin>
+  plugins?: Array<KopflosPluginConstructor>
 }
 
 export default class Impl implements Kopflos {
@@ -112,7 +118,7 @@ export default class Impl implements Kopflos {
 
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv({ variables, ...config })
-    this.plugins = options.plugins || []
+    this.plugins = (options.plugins || []).map(Plugin => new Plugin(this))
 
     this.dataset = this.env.dataset([
       ...options.dataset || [],
@@ -134,7 +140,7 @@ export default class Impl implements Kopflos {
     })
 
     this.start = onetime(async function (this: Impl) {
-      await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this)))
+      await Promise.all(this.plugins.map(plugin => plugin.onStart?.()))
     }).bind(this)
   }
 
@@ -144,6 +150,10 @@ export default class Impl implements Kopflos {
 
   get apis(): MultiPointer<Term, Dataset> {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
+  }
+
+  getPlugin<P extends KopflosPlugin, N extends keyof PluginConfig>(name: N) {
+    return this.plugins.find(plugin => plugin.name === name) as unknown as P | undefined
   }
 
   async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
@@ -169,6 +179,7 @@ export default class Impl implements Kopflos {
       : {}
     const args: HandlerArgs = {
       ...req,
+      instance: this,
       headers: req.headers,
       resourceShape,
       env: this.env,
@@ -348,7 +359,7 @@ export default class Impl implements Kopflos {
         return
       }
 
-      const triples = await plugin.apiTriples(this)
+      const triples = await plugin.apiTriples()
       for await (const quad of triples) {
         this.dataset.add(quad)
       }
@@ -366,6 +377,6 @@ export default class Impl implements Kopflos {
   }
 
   async stop() {
-    await Promise.all(this.plugins.map(async plugin => { plugin.onStop?.(this) }))
+    await Promise.all(this.plugins.map(async plugin => { plugin.onStop?.() }))
   }
 }
