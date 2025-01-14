@@ -3,7 +3,7 @@ import { hydra, schema, xsd } from '@tpluscode/rdf-ns-builders'
 import $rdf from '@zazuko/env-node'
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
-import { fromQuery } from '../../lib/iriTemplate.js'
+import { fromQuery, applyTemplate } from '../../lib/iriTemplate.js'
 import { ex } from '../../../testing-helpers/ns.js'
 
 describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
@@ -102,6 +102,110 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
           $rdf.namedNode('http://example.org/dimension/colors'),
           $rdf.namedNode('http://example.org/dimension/countries'),
         ])
+      })
+    })
+  })
+
+  describe('applyTemplate', () => {
+    context('template is only query params', () => {
+      it('sets params to resource', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo/bar')
+
+        // when
+        const result = applyTemplate(resource, '?baz=qux')
+
+        // then
+        expect(result).to.eq('http://example.com/foo/bar?baz=qux')
+      })
+
+      it('replaces existing params', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo?baz=bar')
+
+        // when
+        const result = applyTemplate(resource, '?baz=qux')
+
+        // then
+        expect(result).to.eq('http://example.com/foo?baz=qux')
+      })
+
+      it('combines with existing params', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo?bar=bar')
+
+        // when
+        const result = applyTemplate(resource, '?baz=baz')
+
+        // then
+        expect(result).to.eq('http://example.com/foo?bar=bar&baz=baz')
+      })
+    })
+
+    context('template is partial query params', () => {
+      it('sets params to resource', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo/bar')
+
+        // when
+        const result = applyTemplate(resource, '&baz=qux')
+
+        // then
+        expect(result).to.eq('http://example.com/foo/bar?baz=qux')
+      })
+
+      it('replaces params', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo?bar=bar')
+
+        // when
+        const result = applyTemplate(resource, '&bar=qux')
+
+        // then
+        expect(result).to.eq('http://example.com/foo?bar=qux')
+      })
+
+      it('combines with other params', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo?bar=bar')
+
+        // when
+        const result = applyTemplate(resource, '&baz=qux')
+
+        // then
+        expect(result).to.eq('http://example.com/foo?bar=bar&baz=qux')
+      })
+    })
+
+    context('template is path', () => {
+      it('creates a URL from absolute path', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo/bar')
+
+        // when
+        const result = applyTemplate(resource, '/baz')
+
+        // then
+        expect(result).to.eq('http://example.com/baz')
+      })
+
+      it('creates a URL from relative path', () => {
+        // given
+        const resource = $rdf.clownface()
+          .namedNode('http://example.com/foo/bar')
+
+        // when
+        const result = applyTemplate(resource, './baz')
+
+        // then
+        expect(result).to.eq('http://example.com/foo/baz')
       })
     })
   })

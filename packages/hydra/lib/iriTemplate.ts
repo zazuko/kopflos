@@ -54,17 +54,17 @@ export function fromQuery(rdf: Environment<DataFactory | ClownfaceFactory>, quer
   return templateParams
 }
 
-export function combineTemplate(collection: GraphPointer, expanded: string) {
-  let collectionURL = new URL(collection.value)
+export function applyTemplate(resource: GraphPointer, expanded: string) {
+  let url = new URL(resource.value)
 
-  if (!expanded.startsWith('?') || expanded.startsWith('$')) {
+  if (expanded.startsWith('?') || expanded.startsWith('$')) {
     const searchParams = new URLSearchParams(expanded)
     for (const [param, value] of searchParams) {
-      collectionURL.searchParams.append(param, value)
+      url.searchParams.append(param, value)
     }
   } else {
-    collectionURL = new URL(expanded, collectionURL)
+    url = new URL(expanded, url)
   }
 
-  return collectionURL.toString()
+  return url.toString()
 }
