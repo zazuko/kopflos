@@ -26,7 +26,7 @@ function createTermFromVariable(rdf: Environment<DataFactory>, template: GraphPo
     return rdf.namedNode(value)
   }
 
-  const values = Array.isArray(value) ? value : [value]
+  const values = Array.isArray(value) ? value : value.split(',')
   return values.map(parseValue)
 }
 
