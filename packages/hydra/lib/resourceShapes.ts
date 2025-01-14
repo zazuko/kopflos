@@ -15,7 +15,7 @@ export function createDefaultShapes(env: KopflosEnvironment, { apis }: Options) 
   return data.dataset
 }
 
-const getHandlerPath = new URL('../handlers/collection.js#get', import.meta.url).toString()
+const getHandlerPath = (method: string) => new URL(`../handlers/collection.js#${method}`, import.meta.url).toString()
 
 export async function createHandlers({ env, dataset }: Kopflos) {
   const { rdf, kopflos: kl, sh, hydra, code } = env.ns
@@ -35,19 +35,24 @@ export async function createHandlers({ env, dataset }: Kopflos) {
     .has(sh.targetClass, hydra.Collection)
     .toArray()
 
-  for (const shape of [...defaultShapes, ...userShapes]) {
-    if (!hasHandler(env, shape, 'get')) {
-      apiTriples.node(shape).addOut(kl.handler, handler => {
+  function addMissingHandler(shape: GraphPointer, method: 'get' | 'post') {
+    if (!hasHandler(env, shape, method)) {
+      apiTriples.node(shape.term).addOut(kl.handler, handler => {
         handler
           .addOut(rdf.type, kl.Handler)
-          .addOut(kl.method, 'GET')
+          .addOut(kl.method, method.toUpperCase())
           .addOut(code.implementedBy, impl => {
             impl
               .addOut(rdf.type, code.EcmaScriptModule)
-              .addOut(code.link, env.namedNode(getHandlerPath))
+              .addOut(code.link, env.namedNode(getHandlerPath(method)))
           })
       })
     }
+  }
+
+  for (const shape of [...defaultShapes, ...userShapes]) {
+    addMissingHandler(shape, 'get')
+    addMissingHandler(shape, 'post')
   }
 
   return apiTriples.dataset
