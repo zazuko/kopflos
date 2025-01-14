@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import type { Kopflos, KopflosPlugin } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import express from 'express'
 import { build } from 'vite'
 import { createViteServer } from './lib/server.js'
@@ -21,20 +21,29 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugin {
+export default function ({ outDir = 'dist', ...options }: Options): KopflosPluginConstructor {
   const rootDir = resolve(process.cwd(), options.root || '')
   const buildDir = resolve(process.cwd(), outDir)
 
-  return {
-    onStart({ env }: Kopflos): Promise<void> | void {
+  return class implements KopflosPlugin {
+    readonly name = '@kopflos-cms/vite'
+
+    private env: KopflosEnvironment
+
+    constructor(instance: Kopflos) {
+      this.env = instance.env
+    }
+
+    onStart(): Promise<void> | void {
       const viteVars = {
-        basePath: env.kopflos.config.mode === 'development' ? rootDir : buildDir,
+        basePath: this.env.kopflos.config.mode === 'development' ? rootDir : buildDir,
       }
       log.info('Variables', viteVars)
-      env.kopflos.variables.VITE = Object.freeze(viteVars)
-    },
-    async beforeMiddleware(host: express.Router, { env }) {
-      if (env.kopflos.config.mode === 'development') {
+      this.env.kopflos.variables.VITE = Object.freeze(viteVars)
+    }
+
+    async beforeMiddleware(host: express.Router) {
+      if (this.env.kopflos.config.mode === 'development') {
         log.info('Development UI mode. Creating Vite server...')
         const viteServer = await createViteServer(options)
         host.use(viteServer.middlewares)
@@ -43,10 +52,11 @@ export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugi
         log.debug('Build directory:', buildDir)
         host.use(express.static(buildDir))
       }
-    },
-    async build() {
+    }
+
+    static async build() {
       log.info('Building UI...')
       await build(await prepareConfig({ outDir, ...options }))
-    },
+    }
   }
 }

@@ -1,4 +1,4 @@
-import type { KopflosPlugin } from '@kopflos-cms/core'
+import type { KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import type { Router } from 'express'
 import { createLogger } from '@kopflos-cms/logger'
 
@@ -17,9 +17,14 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default function ({ before = [], after = [] }: Options): KopflosPlugin {
-  function use(middlewares: Array<Middleware>) {
-    return async function (host: Router) {
+export default function ({ before = [], after = [] }: Options): KopflosPluginConstructor {
+  return class implements KopflosPlugin {
+    readonly name = '@kopflos-cms/express/middleware'
+
+    declare beforeMiddleware: (host: Router) => Promise<void>
+    declare afterMiddleware: (host: Router) => Promise<void>
+
+    private async use(middlewares: Array<Middleware>, host: Router) {
       const promises = middlewares.map(async middleware => {
         let module: string
         let options: unknown | undefined
@@ -41,10 +46,10 @@ export default function ({ before = [], after = [] }: Options): KopflosPlugin {
         current = promises.splice(0, 1)
       }
     }
-  }
 
-  return {
-    beforeMiddleware: use(before),
-    afterMiddleware: use(after),
+    constructor() {
+      this.beforeMiddleware = this.use.bind(null, before)
+      this.afterMiddleware = this.use.bind(null, after)
+    }
   }
 }

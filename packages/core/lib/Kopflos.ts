@@ -61,8 +61,7 @@ export interface PluginConfig {
 }
 
 export interface KopflosPlugin {
-  readonly name: string
-  build?: () => Promise<void> | void
+  readonly name?: string
   onStart?(): Promise<void> | void
   onStop?(): Promise<void> | void
   apiTriples?(): Promise<DatasetCore | Stream> | DatasetCore | Stream
@@ -82,6 +81,7 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
 
 export interface KopflosPluginConstructor {
   new(instance: Kopflos): KopflosPlugin
+  build?: () => Promise<void> | void
 }
 
 interface Clients {
