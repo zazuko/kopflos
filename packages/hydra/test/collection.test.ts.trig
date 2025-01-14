@@ -92,3 +92,20 @@ GRAPH <countries/from-lindas> {
       ] ;
   .
 }
+
+GRAPH <countries/wrong-endpoint> {
+  <countries/wrong-endpoint>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object schema:Country ;
+      ] ;
+    kl:endpoint "foobar" ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+        sh:property [ sh:path schema:identifier ] ;
+      ] ;
+  .
+}

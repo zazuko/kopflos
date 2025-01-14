@@ -158,6 +158,24 @@ describe('@kopflos-cms/hydra', () => {
           const pointer = $rdf.clownface({ dataset }).node(collection)
           expect(pointer.out(ns.hydra.member).terms).to.have.length.above(200)
         })
+
+        it('should fail when endpoint is not configured', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const collection = ex['countries/wrong-endpoint']
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(500)
+        })
       })
     })
 
