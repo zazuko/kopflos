@@ -13,15 +13,22 @@ constraints.set(kl['hydra#MemberAssertionConstraintComponent'], HydraMemberAsser
 
 export function get(): Handler {
   return ({ env, subject }) => {
+    const endpoint = subject.out(kl.endpoint).value || 'default'
+
     if (!isReadable(env, subject)) {
       return new error.MethodNotAllowed('Collection is not readable')
     }
 
     const memberQuery = constructQuery(memberQueryShape({ env, collection: subject }))
-    const members = env.sparql.default.stream.query.construct(memberQuery)
+    const sparqlClient = env.sparql[endpoint]
+    if (!sparqlClient) {
+      return new error.InternalServerError(`SPARQL endpoint '${endpoint}' not found`)
+    }
+
+    const members = sparqlClient.stream.query.construct(memberQuery)
 
     const totalQuery = constructQuery(totalsQueryShape({ env, collection: subject }))
-    const totals = env.sparql.default.stream.query.construct(totalQuery)
+    const totals = sparqlClient.stream.query.construct(totalQuery)
 
     return {
       status: 200,

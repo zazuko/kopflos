@@ -75,3 +75,20 @@ GRAPH <municipalities/from-static-district> {
       ] ;
   .
 }
+
+GRAPH <countries/from-lindas> {
+  <countries/from-lindas>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object schema:Country ;
+      ] ;
+    kl:endpoint "lindas" ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+        sh:property [ sh:path schema:identifier ] ;
+      ] ;
+  .
+}

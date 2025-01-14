@@ -10,6 +10,7 @@ export default <KopflosConfig> {
       updateUrl: 'http://localhost:7878/update',
       storeUrl: 'http://localhost:7878/store',
     },
+    lindas: 'https://lindas.admin.ch/query',
   },
   watch: ['lib'],
   plugins: {
