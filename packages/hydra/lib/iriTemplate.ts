@@ -57,10 +57,10 @@ export function fromQuery(rdf: Environment<DataFactory | ClownfaceFactory>, quer
 export function applyTemplate(resource: GraphPointer, expanded: string) {
   let url = new URL(resource.value)
 
-  if (expanded.startsWith('?') || expanded.startsWith('$')) {
+  if (expanded.startsWith('?') || expanded.startsWith('&')) {
     const searchParams = new URLSearchParams(expanded)
     for (const [param, value] of searchParams) {
-      url.searchParams.append(param, value)
+      url.searchParams.set(param, value)
     }
   } else {
     url = new URL(expanded, url)
