@@ -74,11 +74,10 @@ jobs:
           lando-version: 3.21.2
       - uses: tpluscode/action-lando-start@v0.2.2
         with:
-          healthcheck: http://db.read-the-plaque.lndo.site/
-          timeout: 30000
+          healthcheck: https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university
+          timeout: 60000
           ignore-errors: true
 
-      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university -Ifk
       - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -Ifk
 
       - run: lando logs
