@@ -79,6 +79,5 @@ jobs:
       - run: npm start &
         working-directory: example
       - name: Wait for server to start
-        run: npx wait-on http://localhost:1429
-      - run: curl http://localhost:1429/plaque/newton-s-apple-tree-monash-university
-      - run: curl http://localhost:1429/plaque/newton-s-apple-tree-monash-university.html
+        run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30s
+      - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university.html -t 1s
