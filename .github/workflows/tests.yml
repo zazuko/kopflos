@@ -76,8 +76,13 @@ jobs:
         working-directory: example
       - run: npm run build
         working-directory: example
-      - run: npm start &
+      - run: npm start > api.log &
         working-directory: example
       - name: Wait for server to start
         run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30s
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university.html -t 1s
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api log
+          path: example/api.log
