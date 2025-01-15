@@ -78,5 +78,5 @@ jobs:
           timeout: 30000
           ignore-errors: true
 
-      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university -If
-      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -If
+      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university -Ifk
+      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -Ifk
