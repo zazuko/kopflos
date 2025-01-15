@@ -74,9 +74,7 @@ jobs:
       - run: npm ci
       - run: docker compose up -d
         working-directory: example
-      - run: npm run build
-        working-directory: example
-      - run: npm start > api.log &
+      - run: npm run start:prod > api.log &
         env:
           log: trace
         working-directory: example
