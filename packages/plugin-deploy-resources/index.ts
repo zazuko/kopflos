@@ -1,4 +1,4 @@
-import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
 import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
@@ -26,11 +26,11 @@ export async function deploy(paths: string[], env: KopflosEnvironment) {
   })
 }
 
-export default function kopflosPlugin({ paths = [], enabled = true, watch = true }: Options = {}): KopflosPluginConstructor {
+export default function kopflosPlugin({ paths = [], enabled = true, watch = true }: Options = {}) {
   const instances = new WeakMap<Kopflos, chokidar.FSWatcher>()
 
   return class implements KopflosPlugin {
-    constructor(private instance: Kopflos) {
+    constructor(public instance: Kopflos) {
     }
 
     onStart() {
