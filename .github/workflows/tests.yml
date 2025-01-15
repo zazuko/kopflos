@@ -77,6 +77,8 @@ jobs:
       - run: npm run build
         working-directory: example
       - run: npm start > api.log &
+        env:
+          log: trace
         working-directory: example
       - name: Wait for server to start
         run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30s
