@@ -13,16 +13,15 @@ import type { IriTemplate } from '@rdfine/hydra'
 import { memberQueryShape, totalsQueryShape } from '../lib/queryShapes.js'
 import { HydraMemberAssertionConstraint } from '../lib/shaclConstraint/HydraMemberAssertionConstraint.js'
 import { isReadable, isWritable } from '../lib/collection.js'
-import { combineTemplate, fromQuery } from '../lib/iriTemplate.js'
+import { applyTemplate, fromQuery } from '../lib/iriTemplate.js'
 import { tryParse } from '../lib/number.js'
-import type { HydraPlugin } from '../index.js'
 import type { PrepareExpansionModel } from '../lib/partialCollection/index.js'
 
 constraints.set(kl['hydra#MemberAssertionConstraintComponent'], HydraMemberAssertionConstraint)
 
 export function get(): Handler {
   return async ({ instance, subject, ...req }) => {
-    const hydraPlugin = instance.getPlugin<HydraPlugin>('@kopflos-cms/hydra')
+    const hydraPlugin = instance.getPlugin('hydra')
     if (!hydraPlugin) {
       throw new Error('Hydra plugin not loaded')
     }
@@ -71,7 +70,7 @@ export function get(): Handler {
 
       function createPageLink(prepareExpansionModel: PrepareExpansionModel) {
         return view.namedNode(
-          combineTemplate(subject, templateObj.expand(prepareExpansionModel({
+          applyTemplate(subject, templateObj.expand(prepareExpansionModel({
             query: cloneQuery(), totalItems, collection: subject,
           }))),
         )

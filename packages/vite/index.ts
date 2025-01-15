@@ -26,8 +26,6 @@ export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugi
   const buildDir = resolve(process.cwd(), outDir)
 
   return class implements KopflosPlugin {
-    readonly name = '@kopflos-cms/vite'
-
     private env: KopflosEnvironment
 
     constructor(instance: Kopflos) {

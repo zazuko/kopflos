@@ -1,4 +1,4 @@
-import type { Kopflos, KopflosEnvironment } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
 import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
@@ -26,11 +26,14 @@ export async function deploy(paths: string[], env: KopflosEnvironment) {
   })
 }
 
-export default function kopflosPlugin({ paths = [], enabled = true, watch = true }: Options = {}) {
+export default function kopflosPlugin({ paths = [], enabled = true, watch = true }: Options = {}): KopflosPluginConstructor {
   const instances = new WeakMap<Kopflos, chokidar.FSWatcher>()
 
-  return {
-    onStart(instance: Kopflos) {
+  return class implements KopflosPlugin {
+    constructor(private instance: Kopflos) {
+    }
+
+    onStart() {
       if (!enabled) {
         log.info('Auto deploy disabled. Skipping deployment')
         return
@@ -43,6 +46,7 @@ export default function kopflosPlugin({ paths = [], enabled = true, watch = true
 
       log.info(`Auto deploy enabled. Deploying from: ${paths}`)
 
+      const instance = this.instance
       if (watch && instance.env.kopflos.config.watch) {
         async function redeploy(changedFile: string) {
           log.info('Resources changed, redeploying')
@@ -60,10 +64,11 @@ export default function kopflosPlugin({ paths = [], enabled = true, watch = true
       }
 
       return deploy(paths, instance.env)
-    },
-    async onStop(instance: Kopflos) {
-      const watcher = instances.get(instance)
+    }
+
+    async onStop() {
+      const watcher = instances.get(this.instance)
       await watcher?.close()
-    },
+    }
   }
 }

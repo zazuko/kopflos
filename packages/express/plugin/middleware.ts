@@ -19,8 +19,6 @@ declare module '@kopflos-cms/core' {
 
 export default function ({ before = [], after = [] }: Options): KopflosPluginConstructor {
   return class implements KopflosPlugin {
-    readonly name = '@kopflos-cms/express/middleware'
-
     declare beforeMiddleware: (host: Router) => Promise<void>
     declare afterMiddleware: (host: Router) => Promise<void>
 

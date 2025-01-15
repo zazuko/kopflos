@@ -39,14 +39,18 @@ export interface HydraPlugin extends KopflosPlugin {
   readonly partialCollectionStrategies: PartialCollectionStrategy[]
 }
 
+declare module '@kopflos-cms/core' {
+  interface Plugins {
+    hydra: HydraPlugin
+  }
+}
+
 export default (options : Options): KopflosPluginConstructor => {
   return class implements HydraPlugin {
+    readonly name = 'hydra'
+
     readonly env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
     readonly partialCollectionStrategies: PartialCollectionStrategy[]
-
-    get name() {
-      return '@kopflos-cms/hydra'
-    }
 
     constructor(private readonly instance: Kopflos) {
       this.env = new E([RdfineFactory, HydraFactory], { parent: instance.env })

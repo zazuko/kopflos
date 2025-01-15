@@ -67,6 +67,9 @@ export interface KopflosPlugin {
   apiTriples?(): Promise<DatasetCore | Stream> | DatasetCore | Stream
 }
 
+export interface Plugins extends Record<string, KopflosPlugin> {
+}
+
 export interface Kopflos<D extends DatasetCore = Dataset> {
   get dataset(): D
   get env(): KopflosEnvironment
@@ -74,7 +77,7 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   // eslint-disable-next-line no-use-before-define
   get plugins(): Array<KopflosPlugin>
   get start(): () => Promise<void>
-  getPlugin<P extends KopflosPlugin, N extends keyof PluginConfig = keyof PluginConfig>(name: N): P | undefined
+  getPlugin<N extends keyof PluginConfig>(name: N): Plugins[N] | undefined
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
   loadApiGraphs(): Promise<void>
 }
@@ -152,8 +155,8 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  getPlugin<P extends KopflosPlugin, N extends keyof PluginConfig>(name: N) {
-    return this.plugins.find(plugin => plugin.name === name) as unknown as P | undefined
+  getPlugin<N extends keyof Plugins>(name: N): Plugins[N] | undefined {
+    return this.plugins.find(plugin => plugin.name === name) as Plugins[N] | undefined
   }
 
   async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
