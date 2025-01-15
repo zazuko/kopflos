@@ -63,3 +63,22 @@ jobs:
           node-version: lts/*
       - run: npm ci
       - run: npm run -ws --if-present build
+
+  smoke-test-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - run: npm ci
+      - run: docker compose up -d
+        working-directory: example
+      - run: npm run build
+        working-directory: example
+      - run: npm start &
+        working-directory: example
+      - name: Wait for server to start
+        run: npx wait-on http://localhost:1429
+      - run: curl http://localhost:1429/plaque/newton-s-apple-tree-monash-university
+      - run: curl http://localhost:1429/plaque/newton-s-apple-tree-monash-university.html
