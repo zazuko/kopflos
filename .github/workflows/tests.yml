@@ -68,21 +68,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - uses: lando/setup-lando@v3
         with:
-          node-version: lts/*
-      - run: npm ci
-      - run: docker compose up -d
-        working-directory: example
-      - run: npm run start:prod > api.log &
-        env:
-          log: trace
-        working-directory: example
-      - name: Wait for server to start
-        run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30s
-      - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university.html -t 1s
-      - uses: actions/upload-artifact@v4
-        if: always()
+          lando-version: 3.21.2
+      - uses: tpluscode/action-lando-start@v0.2.2
         with:
-          name: api log
-          path: example/api.log
+          healthcheck: http://db.read-the-plaque.lndo.site/
+          timeout: 30000
+          ignore-errors: true
+
+      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university -If
+      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -If
