@@ -80,3 +80,6 @@ jobs:
 
       - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university -Ifk
       - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -Ifk
+
+      - run: lando logs
+        if: failure()
