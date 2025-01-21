@@ -70,6 +70,7 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
 export interface KopflosPlugin {
   build?: () => Promise<void> | void
   onStart?(instance: Kopflos): Promise<void> | void
+  onReady?(instance: Kopflos): Promise<void> | void
   onStop?(instance: Kopflos): Promise<void> | void
   apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
 }
@@ -109,6 +110,7 @@ export default class Impl implements Kopflos {
   readonly env: KopflosEnvironment
   readonly plugins: Array<KopflosPlugin>
   readonly start: () => Promise<void>
+  readonly ready: () => Promise<void>
 
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv({ variables, ...config })
@@ -135,6 +137,10 @@ export default class Impl implements Kopflos {
 
     this.start = onetime(async function (this: Impl) {
       await Promise.all(this.plugins.map(plugin => plugin.onStart?.(this)))
+    }).bind(this)
+
+    this.ready = onetime(async function (this: Impl) {
+      await Promise.all(this.plugins.map(plugin => plugin.onReady?.(this)))
     }).bind(this)
   }
 
