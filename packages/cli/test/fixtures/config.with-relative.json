@@ -1,0 +1,6 @@
+{
+  "baseIri": "https://example.com/",
+  "plugins": {
+    "./foo/bar.js": {}
+  }
+}
