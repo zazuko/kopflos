@@ -33,7 +33,7 @@ export interface ObjectHandler {
 
 export type Handler = SubjectHandler | ObjectHandler
 
-type HandlerFactory = (...args: unknown[]) => Handler | Promise<Handler>
+type HandlerFactory = (this: KopflosEnvironment, ...args: unknown[]) => Handler | Promise<Handler>
 
 export interface HandlerLookup {
   (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Array<Promise<Handler> | Handler>
@@ -100,10 +100,10 @@ function createHandlerFactory(env: KopflosEnvironment, variables: Map<string, un
           variables,
           ...env.load.options,
         })
-        return factory?.(...args)
+        return factory?.call(env, ...args)
       }
 
-      return factory?.()
+      return factory?.call(env)
     })
   }
 }
