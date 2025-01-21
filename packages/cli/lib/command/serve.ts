@@ -49,6 +49,7 @@ async function run({
 
   const server = app.listen(port, host, () => {
     log.info(`Server running on ${port}. API URL: ${config.baseIri}`)
+    instance.ready()
   })
 
   if (config.watch) {
