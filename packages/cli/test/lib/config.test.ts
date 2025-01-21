@@ -65,5 +65,23 @@ describe('kopflos/lib/config.js', function () {
       // then
       expect(config.watch).to.contain.all.members([configPath, 'lib'])
     })
+
+    it('rebase relative plugin paths to config path', async () => {
+      // given
+      const configPath = url.fileURLToPath(new URL('../fixtures/config.with-relative.json', import.meta.url))
+
+      // when
+      const config = await prepareConfig({
+        config: configPath,
+        mode: 'development',
+        watch: true,
+        variable: {},
+      })
+
+      // then
+      expect(config.plugins).to.contain.keys([
+        url.fileURLToPath(new URL('../fixtures/foo/bar.js', import.meta.url)),
+      ])
+    })
   })
 })
