@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.1.0
+
+### Minor Changes
+
+- 5b6b1ab: Update vite to v6
+
 ## 0.0.1
 
 ### Patch Changes
