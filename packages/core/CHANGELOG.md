@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.2
+
+### Patch Changes
+
+- dbc9de5: Added `handlers.js` module with `getCoreRepresentation` handler
+
 ## 0.3.1
 
 ### Patch Changes
