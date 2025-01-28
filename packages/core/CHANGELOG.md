@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.3.3
+
+### Patch Changes
+
+- 7aa216f: `KopflosEnvironment` is also added as `this` context of handler factory
+
 ## 0.3.2
 
 ### Patch Changes
