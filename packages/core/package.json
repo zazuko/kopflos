@@ -11,6 +11,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./handlers.js": "./handlers.js",
     "./env.js": "./lib/env/index.js",
     "./resourceLoaders.js": "./resourceLoaders.js",
     "./plugins.js": "./plugins.js",
