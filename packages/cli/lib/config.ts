@@ -1,3 +1,4 @@
+import { resolve, dirname } from 'node:path'
 import type { CosmiconfigResult } from 'cosmiconfig'
 import { cosmiconfig } from 'cosmiconfig'
 import type { KopflosConfig } from '@kopflos-cms/core'
@@ -43,6 +44,14 @@ export async function prepareConfig({ mode, config, watch, variable }: PrepareCo
   })
 
   const watchedPaths = loadedConfig.watch || []
+
+  loadedConfig.plugins = Object.fromEntries(Object.entries(loadedConfig.plugins || {}).map(([plugin, options]) => {
+    if (plugin.startsWith('.')) {
+      return [resolve(dirname(configPath), plugin), options]
+    }
+
+    return [plugin, options]
+  }))
 
   return {
     mode,
