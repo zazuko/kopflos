@@ -20,6 +20,8 @@ import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
+import type { DecoratorLookup } from './decorators.js'
+import { loadDecorators } from './decorators.js'
 
 declare module '@rdfjs/types' {
   interface Stream extends AsyncIterable<Quad> {}
@@ -100,6 +102,7 @@ export interface Options {
   dataset?: DatasetCore
   resourceShapeLookup?: ResourceShapeLookup
   resourceLoaderLookup?: ResourceLoaderLookup
+  decoratorLookup?: DecoratorLookup
   handlerLookup?: HandlerLookup
   plugins?: Array<KopflosPlugin>
 }
@@ -146,7 +149,7 @@ export default class Impl implements Kopflos {
     return this.graph.has(this.env.ns.rdf.type, this.env.ns.kopflos.Api)
   }
 
-  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse | undefined | null> {
+  async getResponse(req: KopflosRequest<Dataset>): Promise<KopflosResponse> {
     const resourceShapeMatch = await this.findResourceShape(req.iri)
     if (isResponse(resourceShapeMatch)) {
       return resourceShapeMatch
@@ -182,28 +185,36 @@ export default class Impl implements Kopflos {
       args.object = resourceGraph.node(resourceShapeMatch.object)
     }
 
-    let response: ResultEnvelope | undefined
-    for (let i = 0; i < handlerChain.length; i++) {
-      const handler = handlerChain[i]
-      const rawResult = await handler(args, response)
-      if (!rawResult) {
-        return rawResult
+    type HandlerClosure = () => Promise<KopflosResponse> | KopflosResponse
+    const runHandlers: HandlerClosure = async () => {
+      let response: ResultEnvelope | undefined
+      for (let i = 0; i < handlerChain.length; i++) {
+        const handler = handlerChain[i]
+        const rawResult = await handler(args, response)
+
+        response = this.asEnvelope(rawResult)
+        if (response.end) {
+          break
+        }
       }
 
-      response = this.asEnvelope(rawResult)
-      if (response.end) {
-        break
-      }
+      return this.asEnvelope(response)
     }
 
-    return response
+    const decoratorLookup = this.options.decoratorLookup || loadDecorators
+    const decorators = await decoratorLookup(this, args)
+
+    const decoratedHandlers = decorators.reduceRight<HandlerClosure>((next, decorator) =>
+      decorator.bind(null, args, async () => this.asEnvelope(await next())), runHandlers)
+
+    return decoratedHandlers()
   }
 
   async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {
     log.info(`${req.method} ${req.iri.value}`)
     log.debug('Request headers', req.headers)
 
-    let result: KopflosResponse | undefined | null
+    let result: KopflosResponse
     try {
       result = await this.getResponse(req)
     } catch (cause: Error | unknown) {
@@ -216,14 +227,6 @@ export default class Impl implements Kopflos {
       return {
         status: 500,
         body: error,
-      }
-    }
-
-    if (!result) {
-      log.error('Falsy result returned from handler')
-      return {
-        status: 500,
-        body: new Error('Handler did not return a result'),
       }
     }
 
@@ -308,7 +311,16 @@ export default class Impl implements Kopflos {
     return 'body' in arg || 'status' in arg
   }
 
-  private asEnvelope(arg: KopflosResponse): ResultEnvelope {
+  private asEnvelope(arg: KopflosResponse | undefined): ResultEnvelope {
+    if (!arg) {
+      log.error('Falsy result returned from handler')
+      return {
+        status: 500,
+        body: new Error('Handler did not return a result'),
+        end: true,
+      }
+    }
+
     if (this.isEnvelope(arg)) {
       return arg
     }

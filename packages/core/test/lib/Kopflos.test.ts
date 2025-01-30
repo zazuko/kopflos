@@ -15,6 +15,7 @@ import * as resourceLoaders from '../../resourceLoaders.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { loadPlugins } from '../../plugins.js'
 import { kl } from '../../ns.js'
+import type { RequestDecorator } from '../../lib/decorators.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
@@ -222,6 +223,77 @@ describe('lib/Kopflos', () => {
 
         // then
         expect(response.status).to.eq(500)
+      })
+    })
+
+    describe('decorators', () => {
+      it('decorator can end the request immediately', async function () {
+        // given
+        const handler = sinon.spy()
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          decoratorLookup: async () => [() => ({ status: 200, body: 'decorated' })],
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [handler],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(200)
+        expect(response.body).to.eq('decorated')
+        expect(handler).not.to.have.been.called
+      })
+
+      it('decorator can modify handler result', async function () {
+        // given
+        const handler = () => ({
+          status: 200,
+          body: 'response',
+        })
+        const decorator: RequestDecorator = async (args, next) => {
+          const response = await next()
+          return {
+            ...response,
+            body: response.body + ' decorated',
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          decoratorLookup: async () => [decorator],
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [handler],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(200)
+        expect(response.body).to.eq('response decorated')
       })
     })
 

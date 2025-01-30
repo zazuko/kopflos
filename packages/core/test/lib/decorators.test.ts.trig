@@ -1,0 +1,77 @@
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX code: <https://code.described.at/>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+GRAPH <loadDecorators/decorators-without-implementation> {
+  ex:api
+    a kl:Api ;
+    kl:decorator [
+    ] ;
+    kl:decorator [
+    ] ;
+    kl:decorator [
+    ]
+  .
+
+  ex:resourceShape
+    a kl:ResourceShape ;
+    kl:api ex:api ;
+  .
+}
+
+GRAPH <loadDecorators/decorators-with-implementations> {
+  ex:api
+    a kl:Api ;
+    kl:decorator
+      [
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../../support/decorators.js#foo> ;
+          ]
+      ] ;
+    kl:decorator
+      [
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../../support/decorators.js#bar> ;
+          ]
+      ]
+  .
+
+  ex:resourceShape
+    a kl:ResourceShape ;
+    kl:api ex:api ;
+  .
+}
+
+GRAPH <loadDecorators/decorators-with-limitations> {
+  ex:api
+    a kl:Api ;
+    kl:decorator
+      [
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../../support/decorators.js#personOnly> ;
+          ]
+      ] ;
+    kl:decorator
+      [
+        code:implementedBy
+          [
+            a code:EcmaScriptModule ;
+            code:link <file:../../support/decorators.js#organizationOnly> ;
+          ]
+      ]
+  .
+
+  ex:resourceShape
+    a kl:ResourceShape ;
+    kl:api ex:api ;
+    sh:targetClass schema:Person ;
+  .
+}
