@@ -1,7 +1,19 @@
 import { toRdf } from 'rdf-literal'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
+import { dashSparql } from '@tpluscode/rdf-ns-builders'
 import type { GraphPointer } from 'clownface'
+import type { NamedNode, Quad, BaseQuad } from '@rdfjs/types'
+import { FunctionExpression } from '@hydrofoil/shape-to-query/model/nodeExpression/FunctionExpression.js'
+import ModelFactory from '@hydrofoil/shape-to-query/model/ModelFactory.js'
+import type { KopflosEnvironment } from '@kopflos-cms/core'
+import { QueryEngine } from '@comunica/query-sparql'
+import { PatternBuilder } from '@hydrofoil/shape-to-query/nodeExpressions.js'
+import { createVariableSequence } from '@hydrofoil/shape-to-query/lib/variableSequence.js'
+import { translate } from 'sparqlalgebrajs'
+import type { SparqlQuery } from 'sparqljs'
+import { Store } from 'n3'
+import { getStreamAsArray } from 'get-stream'
 
 export function isReadable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
   return !collection.has(env.ns.hydra.readable, toRdf(false)).term
@@ -9,4 +21,91 @@ export function isReadable(env: Environment<NsBuildersFactory>, collection: Grap
 
 export function isWritable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
   return !collection.has([env.ns.hydra.writable, env.ns.hydra.writeable], toRdf(false)).term
+}
+
+interface CreateMemberArgs {
+  env: KopflosEnvironment
+  collection: GraphPointer<NamedNode>
+  member: GraphPointer
+}
+
+/**
+ * This very hacking implementation generates a URI for a new member of a collection
+ * by running SPARQL SELECT over the request payload to concatenate the elements of
+ * `kl-hydra:memberUriTemplate` in a `URI(CONCAT(...))` function.
+ */
+export async function createMemberIdentifier({ env, collection, member }: CreateMemberArgs): Promise<NamedNode> {
+  const memberIdTemplate = collection.out(env.ns.kl('hydra#memberUriTemplate'))
+  const uriExpr = collection.blankNode()
+    .addOut(dashSparql.concat, memberIdTemplate)
+  const expr = collection
+    .blankNode()
+    .addList(dashSparql.uri, uriExpr)
+
+  const functionExpression = FunctionExpression.fromPointer(expr, new ModelFactory())
+
+  // TODO: it should be possible to process functionExpression directly over the dataset
+  const uri = env.variable('uri')
+  const memberVar = env.variable('member')
+  const patterns = functionExpression._buildPatterns({
+    rootPatterns: [],
+    variable: createVariableSequence('x'),
+    subject: memberVar,
+    object: uri,
+  }, new PatternBuilder())
+
+  const query: SparqlQuery = {
+    type: 'query',
+    queryType: 'SELECT',
+    variables: [uri],
+    where: [
+      {
+        type: 'bgp',
+        triples: [{
+          subject: collection.term,
+          predicate: env.ns.hydra.member,
+          object: memberVar,
+        }],
+      },
+      ...patterns,
+    ],
+    limit: 1,
+    prefixes: {},
+  }
+
+  const engine = new QueryEngine()
+  const [bindings] = await getStreamAsArray(await engine.queryBindings(translate(query), {
+    sources: [new Store([...member.dataset])],
+    baseIRI: collection.value,
+  }))
+
+  return bindings.get(uri) as NamedNode
+}
+
+export function prepareMember(env: KopflosEnvironment, collection: GraphPointer, newMember: GraphPointer, memberId: NamedNode<string>) {
+  const quads: BaseQuad[] = [...newMember.dataset]
+    .map(({ subject, predicate, object }) =>
+      env.quad(
+        subject.equals(newMember.term) ? memberId : subject,
+        predicate,
+        object.equals(newMember.term) ? memberId : object))
+
+  collection.out(env.ns.hydra.memberAssertion)
+    .forEach(assertion => {
+      const subject = assertion.out(env.ns.hydra.subject).term || memberId
+      const predicate = assertion.out(env.ns.hydra.property).term || memberId
+      const object = assertion.out(env.ns.hydra.object).term || memberId
+
+      quads.push(env.quad<BaseQuad>(subject, predicate, object))
+    })
+
+  return env.clownface({ dataset: env.dataset(quads as Quad[]) })
+    .node(memberId)
+    .deleteIn(env.ns.hydra.member)
+}
+
+export async function saveMember(env: KopflosEnvironment, newMember: GraphPointer<NamedNode>) {
+  await env.sparql.default.stream.store.put(env.dataset.toStream(newMember.dataset), {
+    graph: newMember.term,
+  })
 }

@@ -5,9 +5,10 @@ import constraints from '@hydrofoil/shape-to-query/constraints.js'
 // eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import error from 'http-errors'
+import { ASK } from '@tpluscode/sparql-builder'
 import { memberQueryShape, totalsQueryShape } from '../lib/queryShapes.js'
 import { HydraMemberAssertionConstraint } from '../lib/shaclConstraint/HydraMemberAssertionConstraint.js'
-import { isReadable, isWritable } from '../lib/collection.js'
+import { createMemberIdentifier, prepareMember, saveMember, isReadable, isWritable } from '../lib/collection.js'
 
 constraints.set(kl['hydra#MemberAssertionConstraintComponent'], HydraMemberAssertionConstraint)
 
@@ -31,11 +32,36 @@ export function get(): Handler {
 }
 
 export function post(): Handler {
-  return ({ env, subject }) => {
+  return async ({ env, subject, body }) => {
     if (!isWritable(env, subject)) {
       return new error.MethodNotAllowed('Collection is not writable')
     }
 
-    throw new Error('Not implemented')
+    if (!body.isRDF) {
+      return new error.BadRequest('Expected RDF payload')
+    }
+
+    const payload = await body.pointer()
+    const [newMember] = payload.out(env.ns.hydra.member).toArray()
+
+    const createdMember = await createMemberIdentifier({
+      env,
+      collection: subject,
+      member: newMember,
+    })
+
+    const graphExistsQuery = ASK`GRAPH ${createdMember} { ?s ?p ?o }`.LIMIT(1).build()
+    if (await env.sparql.default.stream.query.ask(graphExistsQuery)) {
+      return new error.Conflict(`Resource <${createdMember.value}> already exists`)
+    }
+
+    await saveMember(env, prepareMember(env, subject, newMember, createdMember))
+
+    return {
+      status: 201,
+      headers: {
+        Location: `<${createdMember.value}>`,
+      },
+    }
   }
 }

@@ -4,11 +4,14 @@ import Kopflos from '@kopflos-cms/core'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import $rdf from '@zazuko/env-node'
 import { expect } from 'chai'
-import type { Stream } from '@rdfjs/types'
+import type { NamedNode, Stream } from '@rdfjs/types'
 import * as ns from '@tpluscode/rdf-ns-builders'
 import { toRdf } from 'rdf-literal'
+import shacl from '@kopflos-cms/shacl'
+import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 import hydra from '../index.js'
+import { asBody } from '../../testing-helpers/body.js'
 
 const baseIri = 'http://example.org'
 const ex = $rdf.namespace(baseIri + '/')
@@ -20,6 +23,7 @@ describe('@kopflos-cms/hydra', () => {
   }))
 
   let config: KopflosConfig
+  let clients: ReturnType<typeof inMemoryClients>
   beforeEach(function () {
     this.rdf.store.load(fs.readFileSync(new URL('./data/municipalities.ttl', import.meta.url)).toString(), {
       format: 'text/turtle',
@@ -28,10 +32,11 @@ describe('@kopflos-cms/hydra', () => {
       format: 'text/turtle',
     })
 
+    clients = inMemoryClients(this.rdf)
     config = {
       baseIri,
       sparql: {
-        default: inMemoryClients(this.rdf),
+        default: clients,
       },
     }
   })
@@ -43,7 +48,7 @@ describe('@kopflos-cms/hydra', () => {
     }, {
       plugins: [hydra({
         apis,
-      })],
+      }), shacl()],
     })
     await kopflos.start()
     await kopflos.loadApiGraphs()
@@ -138,7 +143,18 @@ describe('@kopflos-cms/hydra', () => {
       })
     })
 
-    context('post', () => {
+    context('post', function () {
+      let loadGraph: (graph: NamedNode) => Dataset
+
+      beforeEach(function () {
+        loadGraph = (graph: NamedNode) => {
+          const quads = this.rdf.store.match(null, null, null, graph)
+            .map(quad => $rdf.quad(quad.subject, quad.predicate, quad.object))
+
+          return $rdf.dataset(quads)
+        }
+      })
+
       context('when collection is not writable', () => {
         it('should return 405', async function () {
           // given
@@ -155,6 +171,115 @@ describe('@kopflos-cms/hydra', () => {
 
           // then
           expect(res.status).to.equal(405)
+        })
+      })
+
+      context('when collection has validation', () => {
+        it('creates a new resource', async function () {
+          // given
+          const kopflos = await startKopflos()
+          const collection = ex['municipalities/writable-with-validation']
+          const newMember = ex('valid-municipality')
+          const dataset = loadGraph(newMember)
+          $rdf.clownface({ dataset })
+            .node(collection)
+            .addOut(ns.hydra.member, newMember)
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: asBody(dataset, collection),
+          })
+
+          // then
+          expect(res.status).to.equal(201)
+          expect(res.headers?.Location).to.equal(`<${ex('municipality/valid-name').value}>`)
+          const newMemberDataset = await $rdf.dataset()
+            .import(clients.stream.store.get(ex('municipality/valid-name')))
+          expect(newMemberDataset).canonical.toMatchSnapshot()
+        })
+
+        it('returns 409 when destination graph already exists', async function () {
+          // given
+          const kopflos = await startKopflos()
+          const collection = ex['municipalities/writable-with-validation']
+          const newMember = ex('municipality/already-exists')
+          const dataset = loadGraph(newMember)
+          $rdf.clownface({ dataset })
+            .node(collection)
+            .addOut(ns.hydra.member, newMember)
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: asBody(dataset, collection),
+          })
+
+          // then
+          expect(res.status).to.equal(409)
+        })
+
+        it('should return 400 when body is invalid', async function () {
+          // given
+          const kopflos = await startKopflos()
+          const collection = ex['municipalities/writable-with-validation']
+          const newMember = ex('invalid-municipality')
+          const dataset = loadGraph(newMember)
+          $rdf.clownface({ dataset })
+            .node(collection)
+            .addOut(ns.hydra.member, newMember)
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: asBody(dataset, collection),
+          })
+
+          // then
+          expect(res.status).to.equal(400)
+        })
+
+        it('should return 400 when body is empty', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: ex['municipalities/writable-with-validation'],
+            headers: {},
+            query: {},
+            body: asBody($rdf.dataset(), ex()),
+          })
+
+          // then
+          expect(res.status).to.equal(400)
+        })
+
+        it('should return 400 when body is not rdf', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: ex['municipalities/writable-with-validation'],
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(400)
         })
       })
     })

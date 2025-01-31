@@ -1,3 +1,6 @@
+PREFIX ex: <http://example.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sparql: <http://datashapes.org/sparql#>
 PREFIX schema: <http://schema.org/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dash: <http://datashapes.org/dash#>
@@ -74,4 +77,53 @@ GRAPH <municipalities/from-static-district> {
         sh:property [ sh:path schema:name ] ;
       ] ;
   .
+}
+
+GRAPH <municipalities/writable-with-validation> {
+  <municipalities/writable-with-validation>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:writable true ;
+    kl-hydra:memberUriTemplate
+      (
+        "/municipality/"
+        [
+          sparql:encode_for_uri
+            (
+              [
+                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+              ]
+            )
+        ]
+      ) ;
+    kl-hydra:memberShape
+      [
+        sh:property
+          [
+            sh:path schema:name ;
+            sh:dataType xsd:string ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+          ] ;
+      ] ;
+  .
+}
+
+graph <municipality/already-exists> {
+  <municipality/already-exists>
+    schema:name "Already exists" .
+}
+
+graph <invalid-municipality> {
+  <invalid-municipality>
+    schema:name "One is good", "Two is bad" .
+}
+
+graph <valid-municipality> {
+  <valid-municipality>
+    schema:name "Valid name" .
 }
