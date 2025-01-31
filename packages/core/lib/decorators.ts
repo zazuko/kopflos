@@ -5,7 +5,7 @@ import type { HandlerArgs } from './handler.js'
 import log from './log.js'
 
 export interface RequestDecorator {
-  applicable?: (args: HandlerArgs) => boolean
+  applicable?: (args: HandlerArgs) => boolean | Promise<boolean>
   (args: HandlerArgs, next: () => Promise<ResultEnvelope>): Promise<KopflosResponse> | KopflosResponse
 }
 
@@ -24,7 +24,8 @@ export const loadDecorators = async ({ env, apis }: Pick<Kopflos<DatasetCore>, '
     if (!impl) {
       log.warn('Decorator has no implementation')
     }
-    if (!impl?.applicable || impl.applicable(args)) {
+
+    if (!impl?.applicable || await impl.applicable(args)) {
       return impl
     }
   }))
