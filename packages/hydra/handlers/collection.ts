@@ -44,6 +44,10 @@ export function post(): Handler {
     const payload = await body.pointer()
     const [newMember] = payload.out(env.ns.hydra.member).toArray()
 
+    if (!newMember) {
+      return new error.BadRequest('Expected a single hydra:member')
+    }
+
     const createdMember = await createMemberIdentifier({
       env,
       collection: subject,

@@ -248,6 +248,27 @@ describe('@kopflos-cms/hydra', () => {
           expect(res.status).to.equal(400)
         })
 
+        it('should return 400 when body does not include hydra:member triple', async function () {
+          // given
+          const kopflos = await startKopflos()
+          const body = $rdf.clownface()
+            .node(ex())
+            .addOut(ns.rdf.type, ex.Foo)
+            .addOut(ns.schema.name, 'Foo')
+
+          // when
+          const res = await kopflos.handleRequest({
+            method: 'POST',
+            iri: ex['municipalities/writable-with-validation'],
+            headers: {},
+            query: {},
+            body: asBody(body.dataset, ex()),
+          })
+
+          // then
+          expect(res.status).to.equal(400)
+        })
+
         it('should return 400 when body is empty', async function () {
           // given
           const kopflos = await startKopflos()
