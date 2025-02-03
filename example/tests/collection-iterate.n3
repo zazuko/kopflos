@@ -1,0 +1,57 @@
+PREFIX lg: <https://purl.org/lg/>
+base <http://localhost:1429/>
+PREFIX log: <http://www.w3.org/2000/10/swap/log#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX earl: <http://www.w3.org/ns/earl#>
+prefix : <https://always-read-the-plaque.tests/plaques/>
+prefix tuner: <https://api-tuner.described.at/>
+prefix hydra:<http://www.w3.org/ns/hydra/core#>
+prefix schema: <http://schema.org/>
+
+:fetchEntireCollection
+  a earl:TestCase ;
+  rdfs:label "Check chaining requests to fetch entire collection" ;
+  :fetch <countries?limit=50> ;
+.
+
+{
+  :fetchEntireCollection :fetch ?page .
+} => {
+  ?page a tuner:Request ;
+    tuner:method "GET" ;
+    tuner:url ?page ;
+  .
+} .
+
+{
+  ?req tuner:response ?res .
+
+  ?res tuner:http_code 200 .
+  ?res tuner:body ?body .
+  ?body log:includes {
+    <countries> hydra:member ?member .
+    ?member schema:name ?name .
+  } .
+
+  (
+    {
+      ?body log:includes {
+        <countries>!hydra:view hydra:next ?nextPage .
+      } .
+    }
+    {
+      ?body log:includes {
+        <countries>!hydra:view hydra:next ?nextPage .
+      } .
+      true log:becomes {
+        :fetchEntireCollection :fetch ?nextPage
+      }
+    }
+    {
+      true log:becomes { :fetchEntireCollection earl:outcome earl:passed }
+    }
+  ) log:ifThenElseIn [] .
+} => {
+  <countries> hydra:member ?member .
+  ?member schema:name ?name .
+} .
