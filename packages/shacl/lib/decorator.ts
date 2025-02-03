@@ -13,7 +13,7 @@ export const decorator: Decorator = async (args, next, validate: ValidationCallb
   if (!validationReport.conforms) {
     return {
       status: 400,
-      body: 'Invalid request',
+      body: validationReport.dataset,
     }
   }
 

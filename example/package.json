@@ -8,26 +8,28 @@
     "start": "kopflos serve --mode development --trust-proxy",
     "deploy": "kopflos deploy",
     "prestart:prod": "npm run build",
-    "start:prod": "kopflos serve --trust-proxy"
+    "start:prod": "kopflos serve --trust-proxy",
+    "test": "api-tuner tests/*.n3"
   },
   "dependencies": {
     "@kopflos-cms/hydra": "0.0.0",
-    "@kopflos-cms/vite": "0.1.1",
     "@kopflos-cms/serve-file": "0.1.0",
-    "@kopflos-labs/html-template": "0.1.0",
+    "@kopflos-cms/vite": "0.1.1",
     "@kopflos-labs/handlebars": "0.1.0",
+    "@kopflos-labs/html-template": "0.1.0",
     "@kopflos-labs/lit": "0.1.0",
     "@openlayers-elements/core": "^0.3.0",
     "@openlayers-elements/maps": "^0.3.0",
     "@shoelace-style/shoelace": "^2.17.1",
     "@webcomponents/template-shadowroot": "^0.2.1",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
     "express": "^5.0.1",
     "kopflos": "0.1.3",
-    "lit-element": "^4.1.1",
-    "cors": "^2.8.5",
-    "compression": "^1.7.4"
+    "lit-element": "^4.1.1"
   },
   "devDependencies": {
-    "@types/express": "^5"
+    "@types/express": "^5",
+    "api-tuner": "github:zazuko/api-tuner"
   }
 }

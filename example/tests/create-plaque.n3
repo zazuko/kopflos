@@ -1,0 +1,53 @@
+PREFIX lg: <https://purl.org/lg/>
+base <http://localhost:1429/>
+PREFIX log: <http://www.w3.org/2000/10/swap/log#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX earl: <http://www.w3.org/ns/earl#>
+prefix : <https://always-read-the-plaque.tests/plaques/>
+prefix tuner: <https://api-tuner.described.at/>
+prefix hydra:<http://www.w3.org/ns/hydra/core#>
+prefix schema: <http://schema.org/>
+
+:createPlaque
+  a earl:TestCase ;
+  rdfs:label "Check creating a plaque" ;
+.
+
+:postNewPlaque
+  a tuner:Request ;
+  tuner:method "POST" ;
+  tuner:url <plaques> ;
+  tuner:body {
+    <plaques> hydra:member [
+      schema:name "Example plaque" ;
+    ] .
+  } ;
+.
+
+
+{
+  :postNewPlaque tuner:response ?res .
+
+  ?res tuner:http_code 201 ;
+  tuner:header ( "Location" ?location ) .
+
+  ?createdPlaque log:uri ?location .
+} => {
+  :getCreatedPlaque
+    a tuner:Request ;
+    tuner:method "GET" ;
+    tuner:url ?createdPlaque ;
+  .
+} .
+
+{
+  :getCreatedPlaque tuner:url ?createdPlaque .
+  :getCreatedPlaque tuner:response ?res .
+
+  ?res tuner:http_code 200 .
+  ?res!tuner:body log:includes {
+    ?createdPlaque schema:name "Example plaque" .
+  } .
+} => {
+  :createPlaque earl:outcome earl:passed .
+} .

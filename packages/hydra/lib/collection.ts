@@ -7,13 +7,16 @@ import type { NamedNode, Quad, BaseQuad } from '@rdfjs/types'
 import { FunctionExpression } from '@hydrofoil/shape-to-query/model/nodeExpression/FunctionExpression.js'
 import ModelFactory from '@hydrofoil/shape-to-query/model/ModelFactory.js'
 import type { KopflosEnvironment } from '@kopflos-cms/core'
+import { log } from '@kopflos-cms/core'
 import { QueryEngine } from '@comunica/query-sparql'
 import { PatternBuilder } from '@hydrofoil/shape-to-query/nodeExpressions.js'
 import { createVariableSequence } from '@hydrofoil/shape-to-query/lib/variableSequence.js'
 import { translate } from 'sparqlalgebrajs'
 import type { SparqlQuery } from 'sparqljs'
+import { Generator } from 'sparqljs'
 import { Store } from 'n3'
 import { getStreamAsArray } from 'get-stream'
+import { isGraphPointer } from 'is-graph-pointer'
 
 export function isReadable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
   return !collection.has(env.ns.hydra.readable, toRdf(false)).term
@@ -29,13 +32,20 @@ interface CreateMemberArgs {
   member: GraphPointer
 }
 
+const generator = new Generator()
+
 /**
  * This very hacking implementation generates a URI for a new member of a collection
  * by running SPARQL SELECT over the request payload to concatenate the elements of
  * `kl-hydra:memberUriTemplate` in a `URI(CONCAT(...))` function.
  */
-export async function createMemberIdentifier({ env, collection, member }: CreateMemberArgs): Promise<NamedNode> {
+export async function createMemberIdentifier({ env, collection, member }: CreateMemberArgs): Promise<NamedNode | undefined> {
   const memberIdTemplate = collection.out(env.ns.kl('hydra#memberUriTemplate'))
+  if (!isGraphPointer(memberIdTemplate)) {
+    log.warn('Collection does not have a member URI template property')
+    return undefined
+  }
+
   const uriExpr = collection.blankNode()
     .addOut(dashSparql.concat, memberIdTemplate)
   const expr = collection
@@ -73,13 +83,17 @@ export async function createMemberIdentifier({ env, collection, member }: Create
     prefixes: {},
   }
 
+  if (log.enabledFor('debug')) {
+    log.debug('Executing member URI SPARQL query:', generator.stringify(query))
+  }
+
   const engine = new QueryEngine()
   const [bindings] = await getStreamAsArray(await engine.queryBindings(translate(query), {
     sources: [new Store([...member.dataset])],
     baseIRI: collection.value,
   }))
 
-  return bindings.get(uri) as NamedNode
+  return bindings.get(uri) as NamedNode | undefined
 }
 
 export function prepareMember(env: KopflosEnvironment, collection: GraphPointer, newMember: GraphPointer, memberId: NamedNode<string>) {

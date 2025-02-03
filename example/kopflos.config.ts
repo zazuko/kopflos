@@ -30,5 +30,6 @@ export default <KopflosConfig> {
     '@kopflos-cms/hydra': {
       apis: ['http://localhost:1429/api'],
     },
+    '@kopflos-cms/shacl': {},
   },
 }
