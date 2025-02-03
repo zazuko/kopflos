@@ -37,7 +37,6 @@ export class CodeLoadersFactory {
     }
     this.load = (<T>(code: AnyPointer): Promise<T> | T | undefined => {
       if (!isGraphPointer(code)) {
-        log.warn('Code loader called with non-pointer. Expected a NamedNode or BlankNode')
         return undefined
       }
 

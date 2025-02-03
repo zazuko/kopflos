@@ -1,0 +1,36 @@
+{
+  "name": "@kopflos-cms/shacl",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "*.js",
+    "*.d.ts"
+  ],
+  "dependencies": {
+    "is-graph-pointer": "^2.1.0",
+    "rdf-validate-shacl": "^0.5.6"
+  },
+  "devDependencies": {
+    "@kopflos-cms/core": "^0.3.3",
+    "@types/rdf-validate-shacl": "^0.4.9",
+    "chai": "^5.1.2",
+    "mocha-chai-rdf": "^0.1.6",
+    "sinon": "^18"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.test.ts",
+    "loader": "ts-node/esm/transpile-only",
+    "require": "../../mocha-setup.js"
+  }
+}

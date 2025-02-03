@@ -6,6 +6,7 @@ type ExtendingTerms = 'hydra#memberShape'
 | 'hydra#MemberAssertionConstraintComponent'
 | 'hydra'
 | 'hydra#DefaultCollectionShape'
+| 'hydra#memberUriTemplate'
 
 declare module '@kopflos-cms/core/ns.js' {
   interface KopflosTerms extends Record<ExtendingTerms, never> {

@@ -1,3 +1,4 @@
+prefix sparql: <http://datashapes.org/sparql#>
 PREFIX schema: <http://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -6,12 +7,37 @@ prefix kl-hydra: <https://kopflos.described.at/hydra#>
 
 <>
   a hydra:Collection ;
+  hydra:writeable true ;
   hydra:memberAssertion [
     hydra:property rdf:type ;
     hydra:object </api/schema/Plaque> ;
   ] ;
-  kl-hydra:memberShape [
+  kl-hydra:memberQueryShape
+    [
     sh:property [ sh:path schema:name ] ;
     sh:property [ sh:path schema:identifier ] ;
   ] ;
+  kl-hydra:memberUriTemplate
+    (
+      "/plaque/"
+      [
+        sparql:encode_for_uri
+          (
+            [
+              sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+            ]
+          )
+      ]
+    ) ;
+# TODO: load plaques from named graph
+  kl-hydra:memberCreateShape
+    [
+      sh:property
+        [
+          sh:path schema:name ;
+          sh:minCount 1 ;
+          sh:maxCount 1 ;
+          sh:minLength 3 ;
+        ] ;
+    ] ;
 .
