@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/handlers.js getCoreRepresentation forwards core representation 1`] = `
+"<http://example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Thing> .
+"
+`;

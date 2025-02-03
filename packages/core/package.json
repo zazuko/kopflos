@@ -1,7 +1,7 @@
 {
   "name": "@kopflos-cms/core",
   "description": "RDF-based web APIs",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
   "exports": {
     ".": "./index.js",
     "./ns.js": "./ns.js",
+    "./handlers.js": "./handlers.js",
     "./env.js": "./lib/env/index.js",
     "./resourceLoaders.js": "./resourceLoaders.js",
     "./plugins.js": "./plugins.js",

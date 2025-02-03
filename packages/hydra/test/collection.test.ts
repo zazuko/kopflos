@@ -32,6 +32,7 @@ describe('@kopflos-cms/hydra', () => {
       baseIri,
       sparql: {
         default: inMemoryClients(this.rdf),
+        lindas: 'https://lindas.admin.ch/query',
       },
     }
   })
@@ -307,6 +308,46 @@ describe('@kopflos-cms/hydra', () => {
           const pointer = $rdf.clownface({ dataset }).node(collection)
           expect(pointer.out(ns.hydra.member).terms).to.have.length(14)
           expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(14))
+        })
+      })
+
+      context('when collection is sourced from another endpoint', () => {
+        it('should return a stream of members', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const collection = ex['countries/from-lindas']
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          const dataset = await $rdf.dataset().import(res.body as Stream)
+          const pointer = $rdf.clownface({ dataset }).node(collection)
+          expect(pointer.out(ns.hydra.member).terms).to.have.length.above(200)
+        })
+
+        it('should fail when endpoint is not configured', async function () {
+          // given
+          const kopflos = await startKopflos()
+
+          // when
+          const collection = ex['countries/wrong-endpoint']
+          const res = await kopflos.handleRequest({
+            method: 'GET',
+            iri: collection,
+            headers: {},
+            query: {},
+            body: {} as Body,
+          })
+
+          // then
+          expect(res.status).to.equal(500)
         })
       })
     })

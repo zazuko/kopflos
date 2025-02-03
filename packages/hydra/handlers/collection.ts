@@ -28,6 +28,11 @@ export function get(): Handler {
 
     const { env } = hydraPlugin
     const { hydra, rdf } = env.ns
+    const endpoint = subject.out(kl.endpoint).value || 'default'
+    const sparqlClient = env.sparql[endpoint]
+    if (!sparqlClient) {
+      return new error.InternalServerError(`SPARQL endpoint '${endpoint}' not found`)
+    }
 
     if (!isReadable(env, subject)) {
       return new error.MethodNotAllowed('Collection is not readable')
@@ -49,10 +54,10 @@ export function get(): Handler {
     }
 
     const memberQuery = constructQuery(memberQueryShape({ env, collection: subject, limit, offset }))
-    const members = env.sparql.default.stream.query.construct(memberQuery)
+    const members = sparqlClient.stream.query.construct(memberQuery)
 
     const totalQuery = constructQuery(totalsQueryShape({ env, collection: subject }))
-    const totals = await env.dataset().import(env.sparql.default.stream.query.construct(totalQuery))
+    const totals = await env.dataset().import(sparqlClient.stream.query.construct(totalQuery))
 
     const view = env.clownface()
     if (strategy && query && isGraphPointer(template)) {

@@ -1,0 +1,21 @@
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+prefix kl-hydra: <https://kopflos.described.at/hydra#>
+
+<>
+  a hydra:Collection ;
+  hydra:memberAssertion
+    [
+      hydra:property rdf:type ;
+      hydra:object schema:Country ;
+    ] ;
+  kl:endpoint "lindas" ;
+  kl-hydra:memberShape
+    [
+      sh:property [ sh:path schema:name ; sh:languageIn ("en" "de") ] ;
+      sh:property [ sh:path schema:identifier ] ;
+    ] ;
+.

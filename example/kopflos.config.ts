@@ -13,6 +13,7 @@ export default <KopflosConfig> {
       updateUrl: dbUri + '/update',
       storeUrl: dbUri + '/store',
     },
+    lindas: 'https://lindas.admin.ch/query',
   },
   watch: ['lib'],
   plugins: {

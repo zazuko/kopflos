@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.3
+
+### Patch Changes
+
+- 11cc57c: Allow plugins to be defined using paths relative to config path
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @kopflos-cms/vite
 
+## 0.1.1
+
+### Patch Changes
+
+- aef55d4: build(deps): bump vite from 6.0.7 to 6.0.9
+
+## 0.1.0
+
+### Minor Changes
+
+- 5b6b1ab: Update vite to v6
+
 ## 0.0.1
 
 ### Patch Changes
