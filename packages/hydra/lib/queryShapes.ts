@@ -7,17 +7,22 @@ import { isGraphPointer } from 'is-graph-pointer'
 // eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import { log } from '@kopflos-cms/core'
+import type { DatasetCoreFactory } from '@rdfjs/types'
 
 interface MemberQueryShapeArgs {
-  env: Environment<ClownfaceFactory | NsBuildersFactory>
+  env: Environment<ClownfaceFactory | NsBuildersFactory | DatasetCoreFactory>
   collection: GraphPointer
   limit?: number
   offset?: number
 }
 
-export function memberQueryShape({ env, collection, limit, offset }: MemberQueryShapeArgs): GraphPointer {
+export function memberQueryShape({ env, collection: original, limit, offset }: MemberQueryShapeArgs): GraphPointer {
   const { hydra, sh, rdf } = env.ns
 
+  const collection = env.clownface({
+    dataset: env.dataset([...original.dataset]),
+    term: original.term,
+  })
   const shape = collection
     .blankNode()
     .addOut(rdf.type, sh.NodeShape)
@@ -105,13 +110,17 @@ export function memberQueryShape({ env, collection, limit, offset }: MemberQuery
 }
 
 interface TotalsQueryShapeArgs {
-  env: Environment<ClownfaceFactory | NsBuildersFactory>
+  env: Environment<ClownfaceFactory | NsBuildersFactory | DatasetCoreFactory>
   collection: GraphPointer
 }
 
-export function totalsQueryShape({ env, collection }: TotalsQueryShapeArgs) {
+export function totalsQueryShape({ env, collection: original }: TotalsQueryShapeArgs) {
   const { hydra, sh, rdf } = env.ns
 
+  const collection = env.clownface({
+    dataset: env.dataset([...original.dataset]),
+    term: original.term,
+  })
   const filterShape = collection.blankNode()
   filterShape.addOut(hydra.memberAssertion, collection.out(hydra.memberAssertion))
 

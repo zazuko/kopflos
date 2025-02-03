@@ -20,7 +20,7 @@
     "handlers/*.d.ts"
   ],
   "dependencies": {
-    "@hydrofoil/shape-to-query": "^0.13.6",
+    "@hydrofoil/shape-to-query": "^0.13.8",
     "@kopflos-cms/core": "^0.3.1",
     "@sindresorhus/merge-streams": "^4.0.0",
     "@tpluscode/rdf-ns-builders": "^4.3.0",
