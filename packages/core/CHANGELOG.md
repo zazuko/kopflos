@@ -1,5 +1,13 @@
 # @kopflos-cms/core
 
+## 0.3.4
+
+### Patch Changes
+
+- ad51eef: Log API dataset to TRACE
+- be60b63: Added a `/ns.js` module which exports the kopflos namespace builder
+- 67c5db0: Added `kl:endpoint` predicate
+
 ## 0.3.3
 
 ### Patch Changes
