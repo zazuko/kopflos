@@ -1,0 +1,45 @@
+PREFIX schema: <http://schema.org/>
+PREFIX ex: <http://example.org/>
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+
+GRAPH <explicit-variable-representation> {
+  ex:query-only\/id
+    hydra:template "{?id}" ;
+    hydra:variableRepresentation hydra:ExplicitRepresentation ;
+    hydra:mapping
+      [
+        hydra:variable "id" ;
+        hydra:property schema:identifier ;
+      ] ;
+  .
+
+  ex:query-only\/find
+    hydra:template "{?find}" ;
+    hydra:variableRepresentation hydra:ExplicitRepresentation ;
+    hydra:mapping
+      [
+        hydra:variable "find" ;
+        hydra:property hydra:freetextQuery ;
+      ] ;
+  .
+
+  ex:query-only\/width
+    hydra:template "{?width}" ;
+    hydra:variableRepresentation hydra:ExplicitRepresentation ;
+    hydra:mapping
+      [
+        hydra:variable "width" ;
+        hydra:property schema:width ;
+      ] ;
+  .
+
+  ex:query-only\/tag
+    hydra:template "{?tag}" ;
+    hydra:variableRepresentation hydra:ExplicitRepresentation ;
+    hydra:mapping
+      [
+        hydra:variable "tag" ;
+        hydra:property ex:tag ;
+      ] ;
+  .
+}

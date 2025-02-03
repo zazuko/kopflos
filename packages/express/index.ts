@@ -16,14 +16,10 @@ declare module 'express-serve-static-core' {
   }
 }
 
-interface MiddlewareHook {
-  (host: Router, instance: Kopflos): Promise<void> | void
-}
-
 declare module '@kopflos-cms/core' {
   interface KopflosPlugin {
-    beforeMiddleware?: MiddlewareHook
-    afterMiddleware?: MiddlewareHook
+    beforeMiddleware?: (host: Router) => Promise<void> | void
+    afterMiddleware?: (host: Router) => Promise<void> | void
   }
 }
 
@@ -36,7 +32,7 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
 
   const router = Router()
 
-  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.beforeMiddleware))
+  await Promise.all(kopflos.plugins.map(plugin => plugin.beforeMiddleware?.(router)))
 
   router
     .use((req, res, next) => {
@@ -79,16 +75,10 @@ export default async (options: KopflosConfig): Promise<{ middleware: RequestHand
         .otherwise((stream) => res.send(stream))
     })
 
-  await registerMiddlewares(router, kopflos, kopflos.plugins.map(plugin => plugin.afterMiddleware))
+  await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(router)))
 
   return {
     middleware: router,
     instance: kopflos,
-  }
-}
-
-async function registerMiddlewares(router: Router, kopflos: Kopflos, hooks: Array<MiddlewareHook | undefined>) {
-  for (const hook of hooks) {
-    await hook?.(router, kopflos)
   }
 }

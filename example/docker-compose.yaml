@@ -1,6 +1,6 @@
 services:
   oxigraph:
-    image: ghcr.io/oxigraph/oxigraph:0.4.4
+    image: ghcr.io/oxigraph/oxigraph:0.4.6
     user: root
     command: serve --location /data --bind 0.0.0.0:7878
     ports:

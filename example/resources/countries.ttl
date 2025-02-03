@@ -18,4 +18,26 @@ prefix kl-hydra: <https://kopflos.described.at/hydra#>
       sh:property [ sh:path schema:name ; sh:languageIn ("en" "de") ] ;
       sh:property [ sh:path schema:identifier ] ;
     ] ;
+  hydra:limit 10 ;
+  sh:orderBy
+    [
+      sh:nodes [ sh:path schema:name ; ] ;
+      sh:filterShape
+        [
+          sh:languageIn ( "en" ) ;
+        ] ;
+    ] ;
+  hydra:search
+    [
+      hydra:template "{?limit,offset}" ;
+      hydra:mapping
+        [
+          hydra:variable "limit" ;
+          hydra:property hydra:limit ;
+        ],
+        [
+          hydra:variable "offset" ;
+          hydra:property hydra:offset ;
+        ] ;
+    ] ;
 .

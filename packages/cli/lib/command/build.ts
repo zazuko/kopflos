@@ -13,7 +13,7 @@ export default async function (args: BuildArgs) {
   const plugins = await loadPlugins(config.plugins)
 
   log.info('Running build actions...')
-  const buildActions = plugins.map(plugin => plugin.build?.())
+  const buildActions = plugins.map(Plugin => Plugin.build?.())
   if (buildActions.length === 0) {
     return log.warn('No plugins with build actions found')
   } else {
