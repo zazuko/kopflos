@@ -33,6 +33,7 @@ jobs:
             path: packages/sparql-path-parser
     steps:
       - uses: actions/checkout@v4
+      - uses: fabasoad/setup-prolog-action@v1
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
@@ -48,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: fabasoad/setup-prolog-action@v1
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -58,6 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: fabasoad/setup-prolog-action@v1
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -68,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - uses: fabasoad/setup-prolog-action@v1
       - uses: lando/setup-lando@v3
         with:
           lando-version: 3.21.2
