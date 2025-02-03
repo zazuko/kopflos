@@ -38,14 +38,24 @@ export default <PartialCollectionStrategy> {
         .deleteOut(hydra.pageIndex)
         .addOut(hydra.pageIndex, lastPageIndex)
     },
-    next({ query }) {
+    next({ query, collection, totalItems }) {
+      const currentPageIndex = tryParse(query.out(hydra.limit), tryParse(collection.out(hydra.limit)))
       const pageIndex = tryParse(query.out(hydra.pageIndex), 1)
+      const lastPageIndex = Math.floor(totalItems / currentPageIndex) - 1
+      if (pageIndex >= lastPageIndex) {
+        return undefined
+      }
+
       return query
         .deleteOut(hydra.pageIndex)
         .addOut(hydra.pageIndex, pageIndex + 1)
     },
     previous({ query }) {
       const pageIndex = tryParse(query.out(hydra.pageIndex), 1)
+      if (pageIndex === 0) {
+        return undefined
+      }
+
       return query
         .deleteOut(hydra.pageIndex)
         .addOut(hydra.pageIndex, pageIndex - 1)

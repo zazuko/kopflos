@@ -74,21 +74,38 @@ export function get(): Handler {
       }
 
       function createPageLink(prepareExpansionModel: PrepareExpansionModel) {
+        const expansionModel = prepareExpansionModel({
+          query: cloneQuery(), totalItems, collection: subject,
+        })
+        if (!expansionModel) {
+          return undefined
+        }
+
         return view.namedNode(
-          applyTemplate(subject, templateObj.expand(prepareExpansionModel({
-            query: cloneQuery(), totalItems, collection: subject,
-          }))),
+          applyTemplate(subject, templateObj.expand(expansionModel)),
         )
       }
 
-      const { first, last, next, previous } = strategy.viewLinksTemplateParams
+      const viewParams = strategy.viewLinksTemplateParams
       view.node(subject).addOut(hydra.view, view => {
         view
           .addOut(rdf.type, hydra.PartialCollectionView)
-          .addOut(hydra.first, createPageLink(first))
-          .addOut(hydra.last, createPageLink(last))
-          .addOut(hydra.next, createPageLink(next))
-          .addOut(hydra.previous, createPageLink(previous))
+        const first = createPageLink(viewParams.first)
+        if (first) {
+          view.addOut(hydra.first, first)
+        }
+        const last = createPageLink(viewParams.last)
+        if (last) {
+          view.addOut(hydra.last, last)
+        }
+        const next = createPageLink(viewParams.next)
+        if (next) {
+          view.addOut(hydra.next, next)
+        }
+        const previous = createPageLink(viewParams.previous)
+        if (previous) {
+          view.addOut(hydra.previous, previous)
+        }
       })
     }
 

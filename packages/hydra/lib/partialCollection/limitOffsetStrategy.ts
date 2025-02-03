@@ -17,11 +17,15 @@ export default <PartialCollectionStrategy>{
 
     return hasLimitParam && hasOffsetParam
   },
-  getLimitOffset({ query }) {
+  getLimitOffset({ query, collection }) {
     let limit: number | undefined
     let offset: number | undefined
-    const limitParam = query.out(hydra.limit)
+    let limitParam = query.out(hydra.limit)
     const offsetParam = query.out(hydra.offset)
+
+    if (!isGraphPointer(limitParam)) {
+      limitParam = collection.out(hydra.limit)
+    }
 
     if (isGraphPointer(limitParam)) {
       limit = tryParse(limitParam, new error.BadRequest('Invalid hydra:limit'))
@@ -48,15 +52,23 @@ export default <PartialCollectionStrategy>{
         .deleteOut(hydra.offset)
         .addOut(hydra.offset, lastOffset)
     },
-    next({ query, collection }) {
+    next({ query, collection, totalItems }) {
       const offset = tryParse(query.out(hydra.offset), 0)
       const limit = tryParse(query.out(hydra.limit), tryParse(collection.out(hydra.limit)))
+      if (offset + limit >= totalItems) {
+        return undefined
+      }
+
       return query
         .deleteOut(hydra.offset)
         .addOut(hydra.offset, offset + limit)
     },
     previous({ query, collection }) {
       const offset = tryParse(query.out(hydra.offset), 0)
+      if (offset === 0) {
+        return undefined
+      }
+
       const limit = tryParse(query.out(hydra.limit), tryParse(collection.out(hydra.limit)))
       return query
         .deleteOut(hydra.offset)

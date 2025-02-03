@@ -17,7 +17,7 @@ interface ViewLinksTemplateParams {
 }
 
 export interface PrepareExpansionModel {
-  (arg: ViewLinksTemplateParams): GraphPointer
+  (arg: ViewLinksTemplateParams): GraphPointer | undefined
 }
 
 export interface PartialCollectionStrategy {

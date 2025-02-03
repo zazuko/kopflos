@@ -121,6 +121,58 @@ describe('@kopflos-cms/hydra', () => {
         context('with limit/offset', () => {
           const collection = ex['municipalities/limit-offset']
 
+          context('first page', () => {
+            beforeEach(async function () {
+              // given
+              const kopflos = await startKopflos()
+
+              // when
+              res = await kopflos.handleRequest({
+                method: 'GET',
+                iri: collection,
+                headers: {},
+                query: {
+                  limit: '10',
+                  offset: '0',
+                },
+                body: {} as Body,
+              })
+            })
+
+            it('does not have link to previous page', async function () {
+              // then
+              const dataset = await $rdf.dataset().import(res.body as Stream)
+              const pointer = $rdf.clownface({ dataset }).node(collection)
+              expect(pointer.out(ns.hydra.view).out(ns.hydra.previous).term).to.be.undefined
+            })
+          })
+
+          context('last page', () => {
+            beforeEach(async function () {
+              // given
+              const kopflos = await startKopflos()
+
+              // when
+              res = await kopflos.handleRequest({
+                method: 'GET',
+                iri: collection,
+                headers: {},
+                query: {
+                  limit: '10',
+                  offset: '3440',
+                },
+                body: {} as Body,
+              })
+            })
+
+            it('does not have link to next page', async function () {
+              // then
+              const dataset = await $rdf.dataset().import(res.body as Stream)
+              const pointer = $rdf.clownface({ dataset }).node(collection)
+              expect(pointer.out(ns.hydra.view).out(ns.hydra.next).term).to.be.undefined
+            })
+          })
+
           context('limit and offset given', () => {
             beforeEach(async function () {
               // given
@@ -227,7 +279,7 @@ describe('@kopflos-cms/hydra', () => {
               // then
               const dataset = await $rdf.dataset().import(res.body as Stream)
               const pointer = $rdf.clownface({ dataset }).node(collection)
-              expect(pointer.out(ns.hydra.member).terms).to.have.length(3439)
+              expect(pointer.out(ns.hydra.member).terms).to.have.length(10)
               expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(3449))
             })
           })
