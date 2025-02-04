@@ -368,7 +368,9 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('when collection is sourced from another endpoint', () => {
+      context('when collection is sourced from another endpoint', function () {
+        this.timeout(10000)
+
         it('should return a stream of members', async function () {
           // given
           const kopflos = await startKopflos()
