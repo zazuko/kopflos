@@ -27,7 +27,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
 
   describe('decorator', () => {
     describe('.applicable', () => {
-      it('returns false when args.body is not RDF', () => {
+      it('returns false when args.body is not RDF', async () => {
         // given
         const req = <HandlerArgs>{
           env,
@@ -37,13 +37,13 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = decorator.applicable!(req)
+        const result = await decorator.applicable!(req)
 
         // then
         expect(result).to.be.false
       })
 
-      it('returns false when handler has no dash:shape', function () {
+      it('returns false when handler has no dash:shape', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -55,13 +55,13 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = decorator.applicable!(req)
+        const result = await decorator.applicable!(req)
 
         // then
         expect(result).to.be.false
       })
 
-      it('returns true when handler has a single dash:shape', function () {
+      it('returns true when handler has a single dash:shape', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -73,13 +73,13 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = decorator.applicable!(req)
+        const result = await decorator.applicable!(req)
 
         // then
         expect(result).to.be.true
       })
 
-      it('returns true when handler has a multiple dash:shape', function () {
+      it('returns true when handler has a multiple dash:shape', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -91,7 +91,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = decorator.applicable!(req)
+        const result = await decorator.applicable!(req)
 
         // then
         expect(result).to.be.true
