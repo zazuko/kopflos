@@ -1,5 +1,11 @@
 # @kopflos-cms/express
 
+## 0.1.3
+
+### Patch Changes
+
+- d08f3ac: Plugin updated to class
+
 ## 0.1.2
 
 ### Patch Changes
