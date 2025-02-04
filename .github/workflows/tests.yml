@@ -73,6 +73,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: fabasoad/setup-prolog-action@v1
       - run: docker compose up -d
+        working-directory: example
       - run: npm run -w example start &
       - run: npx wait-on http://localhost:1429/ -t 30000
 
