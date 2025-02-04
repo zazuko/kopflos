@@ -9,7 +9,7 @@
     "deploy": "kopflos deploy",
     "prestart:prod": "npm run build",
     "start:prod": "kopflos serve --trust-proxy",
-    "test": "api-tuner tests/*.n3"
+    "test": "api-tuner tests/smoke/*.n3"
   },
   "dependencies": {
     "@kopflos-cms/hydra": "0.0.0",
