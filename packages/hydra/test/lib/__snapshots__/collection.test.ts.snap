@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/hydra/lib/collection.js prepareMember asserts all combinations of member assertions 1`] = `
+"<http://example.org/item> <http://example.org/op_p> <http://example.org/op_o> .
+<http://example.org/os_s> <http://example.org/item> <http://example.org/os_o> .
+<http://example.org/sp_s> <http://example.org/sp_p> <http://example.org/item> .
+"
+`;

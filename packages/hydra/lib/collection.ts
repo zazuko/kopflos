@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
 import { toRdf } from 'rdf-literal'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import { dashSparql } from '@tpluscode/rdf-ns-builders'
 import type { GraphPointer } from 'clownface'
-import type { NamedNode, Quad, BaseQuad } from '@rdfjs/types'
+import type { NamedNode, Quad, BaseQuad, DataFactory, DatasetCoreFactory, Quad_Object, Quad_Predicate, Quad_Subject } from '@rdfjs/types'
 import { FunctionExpression } from '@hydrofoil/shape-to-query/model/nodeExpression/FunctionExpression.js'
 import ModelFactory from '@hydrofoil/shape-to-query/model/ModelFactory.js'
 import type { KopflosEnvironment } from '@kopflos-cms/core'
@@ -17,6 +18,7 @@ import { Generator } from 'sparqljs'
 import { Store } from 'n3'
 import { getStreamAsArray } from 'get-stream'
 import { isGraphPointer } from 'is-graph-pointer'
+import type ClownfaceFactory from 'clownface/Factory.js'
 
 export function isReadable(env: Environment<NsBuildersFactory>, collection: GraphPointer) {
   return !collection.has(env.ns.hydra.readable, toRdf(false)).term
@@ -96,7 +98,7 @@ export async function createMemberIdentifier({ env, collection, member }: Create
   return bindings.get(uri) as NamedNode | undefined
 }
 
-export function prepareMember(env: KopflosEnvironment, collection: GraphPointer, newMember: GraphPointer, memberId: NamedNode<string>) {
+export function prepareMember(env: Environment<NsBuildersFactory | DataFactory | DatasetCoreFactory | ClownfaceFactory>, collection: GraphPointer, newMember: GraphPointer, memberId: NamedNode) {
   const quads: BaseQuad[] = [...newMember.dataset]
     .map(({ subject, predicate, object }) =>
       env.quad(
@@ -106,11 +108,26 @@ export function prepareMember(env: KopflosEnvironment, collection: GraphPointer,
 
   collection.out(env.ns.hydra.memberAssertion)
     .forEach(assertion => {
-      const subject = assertion.out(env.ns.hydra.subject).term || memberId
-      const predicate = assertion.out(env.ns.hydra.property).term || memberId
-      const object = assertion.out(env.ns.hydra.object).term || memberId
+      let memberUsed = false
+      let subject = assertion.out(env.ns.hydra.subject).term
+      if (!subject) {
+        memberUsed = true
+        subject = memberId
+      }
+      let predicate = assertion.out(env.ns.hydra.property).term
+      if (!predicate && !subject.equals(memberId)) {
+        memberUsed = true
+        predicate = memberId
+      }
+      let object = assertion.out(env.ns.hydra.object).term
+      if (!object && !subject.equals(memberId) && !memberId.equals(predicate)) {
+        memberUsed = true
+        object = memberId
+      }
 
-      quads.push(env.quad<BaseQuad>(subject, predicate, object))
+      if (memberUsed && subject && predicate && object) {
+        quads.push(env.quad(<Quad_Subject>subject, <Quad_Predicate>predicate, <Quad_Object>object))
+      }
     })
 
   return env.clownface({ dataset: env.dataset(quads as Quad[]) })
