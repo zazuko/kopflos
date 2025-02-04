@@ -12,7 +12,9 @@
   "files": [
     "CHANGELOG.md",
     "*.js",
-    "*.d.ts"
+    "*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts"
   ],
   "dependencies": {
     "is-graph-pointer": "^2.1.0",

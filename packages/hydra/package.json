@@ -17,7 +17,9 @@
     "*.js",
     "*.d.ts",
     "handlers/*.js",
-    "handlers/*.d.ts"
+    "handlers/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts"
   ],
   "dependencies": {
     "@hydrofoil/shape-to-query": "^0.13.8",
