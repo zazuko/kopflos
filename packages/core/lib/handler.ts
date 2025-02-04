@@ -12,6 +12,7 @@ import { logCode } from './log.js'
 type Dataset = ReturnType<KopflosEnvironment['dataset']>
 
 export interface HandlerArgs<D extends DatasetCore = Dataset> {
+  method: string
   resourceShape: GraphPointer<NamedNode, D>
   env: KopflosEnvironment
   subject: GraphPointer<NamedNode, D>
@@ -33,13 +34,14 @@ export interface ObjectHandler {
 
 export type Handler = SubjectHandler | ObjectHandler
 
-type HandlerFactory = (this: KopflosEnvironment, ...args: unknown[]) => Handler | Promise<Handler>
+type HandlerFactory = (this: Kopflos, ...args: unknown[]) => Handler | Promise<Handler>
 
 export interface HandlerLookup {
   (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Array<Promise<Handler> | Handler>
 }
 
-export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, { apis, env }: Kopflos) => {
+export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, instance: Kopflos) => {
+  const { apis, env } = instance
   const api = apis.node(rest.api)
 
   let shape: AnyPointer = api.node(resourceShape)
@@ -60,7 +62,7 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
       vars.set(k, v)
     }
   }
-  const createHandler = createHandlerFactory(env, vars)
+  const createHandler = createHandlerFactory(instance, vars)
 
   const impl = handler.out(env.ns.code.implementedBy)
   if (impl.isList()) {
@@ -80,7 +82,8 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
   return []
 }
 
-function createHandlerFactory(env: KopflosEnvironment, variables: Map<string, unknown>) {
+function createHandlerFactory(instance: Kopflos, variables: Map<string, unknown>) {
+  const { env } = instance
   return (impl: AnyPointer): Promise<Handler> | undefined => {
     const factory = env.load<HandlerFactory>(impl)
     if (!factory) {
@@ -100,10 +103,10 @@ function createHandlerFactory(env: KopflosEnvironment, variables: Map<string, un
           variables,
           ...env.load.options,
         })
-        return factory?.call(env, ...args)
+        return factory?.call(instance, ...args)
       }
 
-      return factory?.call(env)
+      return factory?.call(instance)
     })
   }
 }

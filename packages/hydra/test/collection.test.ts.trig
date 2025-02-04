@@ -1,3 +1,6 @@
+PREFIX ex: <http://example.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sparql: <http://datashapes.org/sparql#>
 PREFIX schema: <http://schema.org/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dash: <http://datashapes.org/dash#>
@@ -57,6 +60,60 @@ GRAPH <municipalities/all> {
   .
 }
 
+GRAPH <municipalities/limit-offset> {
+  <municipalities/limit-offset>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+    hydra:limit 10 ;
+    hydra:search
+      [
+        hydra:template "{?limit,offset}" ;
+        hydra:mapping
+          [
+            hydra:variable "limit" ;
+            hydra:property hydra:limit ;
+          ],
+          [
+            hydra:variable "offset" ;
+            hydra:property hydra:offset ;
+          ] ;
+      ] ;
+  .
+}
+
+GRAPH <municipalities/paged> {
+  <municipalities/paged>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+    hydra:limit 20 ;
+    hydra:search
+      [
+        hydra:template "{?page}" ;
+        hydra:mapping
+          [
+            hydra:variable "page" ;
+            hydra:property hydra:pageIndex ;
+          ] ;
+      ] ;
+  .
+}
+
 GRAPH <municipalities/from-static-district> {
   <municipalities/from-static-district>
     a hydra:Collection ;
@@ -108,4 +165,53 @@ GRAPH <countries/wrong-endpoint> {
         sh:property [ sh:path schema:identifier ] ;
       ] ;
   .
+}
+
+GRAPH <municipalities/writable-with-validation> {
+  <municipalities/writable-with-validation>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    hydra:writable true ;
+    kl-hydra:memberUriTemplate
+      (
+        "/municipality/"
+        [
+          sparql:encode_for_uri
+            (
+              [
+                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+              ]
+            )
+        ]
+      ) ;
+    kl-hydra:memberShape
+      [
+        sh:property
+          [
+            sh:path schema:name ;
+            sh:dataType xsd:string ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+          ] ;
+      ] ;
+  .
+}
+
+graph <municipality/already-exists> {
+  <municipality/already-exists>
+    schema:name "Already exists" .
+}
+
+graph <invalid-municipality> {
+  <invalid-municipality>
+    schema:name "One is good", "Two is bad" .
+}
+
+graph <valid-municipality> {
+  <valid-municipality>
+    schema:name "Valid name" .
 }

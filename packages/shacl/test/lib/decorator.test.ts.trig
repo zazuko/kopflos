@@ -1,0 +1,39 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX schema: <http://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX kl: <https://kopflos.described.at/>
+PREFIX ex: <http://example.org/>
+
+ex:noValidation
+  a kl:ResourceShape ;
+  kl:handler
+    [
+      a kl:Handler ;
+      kl:method "PUT" ;
+    ] ;
+.
+
+ex:oneShape
+  a kl:ResourceShape ;
+  kl:handler
+    [
+      a kl:Handler ;
+      kl:method "PUT" ;
+      dash:shape ex:Shape ;
+    ] ;
+.
+
+ex:twoShapes
+  a kl:ResourceShape ;
+  kl:handler
+    [
+      a kl:Handler ;
+      kl:method "PUT" ;
+      dash:shape
+        ex:Shape,
+        [
+          a sh:NodeShape ;
+        ] ;
+    ] ;
+.

@@ -1,0 +1,32 @@
+PREFIX hydra: <http://www.w3.org/ns/hydra/core#>
+PREFIX ex: <http://example.org/>
+
+ex:collection
+  hydra:memberAssertion [
+    hydra:subject ex:sp_s ;
+    hydra:property ex:sp_p ;
+  ] ;
+  hydra:memberAssertion [
+    hydra:object ex:op_o ;
+    hydra:property ex:op_p ;
+  ] ;
+  hydra:memberAssertion [
+    hydra:object ex:os_o ;
+    hydra:subject ex:os_s ;
+  ] ;
+.
+
+ex:invalidMemberAssertions
+  hydra:memberAssertion [
+    hydra:subject ex:s ;
+  ] ;
+  hydra:memberAssertion [
+    hydra:object ex:o ;
+    hydra:predicate ex:p ;
+  ] ;
+  hydra:memberAssertion [
+    hydra:object ex:o ;
+    hydra:property ex:p ;
+    hydra:subject ex:s ;
+  ] ;
+.

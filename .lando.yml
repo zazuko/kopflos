@@ -1,0 +1,34 @@
+name: read-the-plaque
+services:
+  oxigraph:
+    api: 3
+    type: lando
+    entrypoint: /usr/local/bin/oxigraph
+    app_mount: false
+    scanner: false
+    ssl: true
+    services:
+      image: ghcr.io/oxigraph/oxigraph:0.4.6
+      user: root
+      command: serve --location /data --bind 0.0.0.0:7878
+      ports:
+        - 7878
+      volumes:
+        - ./example/oxigraph:/data
+  app:
+    type: node:20
+    ssl: true
+    scanner: false
+    build:
+      - npm i
+    command: cd example; kopflos serve --mode development --trust-proxy
+    overrides:
+      environment:
+        API_BASE: https://read-the-plaque.lndo.site
+        DB_URI: http://db.read-the-plaque.lndo.site
+
+proxy:
+  oxigraph:
+    - db.read-the-plaque.lndo.site:7878
+  app:
+    - read-the-plaque.lndo.site:1429

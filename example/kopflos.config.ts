@@ -1,14 +1,17 @@
 import * as url from 'node:url'
 import type { KopflosConfig } from '@kopflos-cms/core'
 
+const baseIri = process.env.API_BASE || 'http://localhost:1429'
+const dbUri = process.env.DB_URI || 'http://localhost:7878'
+
 export default <KopflosConfig> {
-  baseIri: 'http://localhost:1429',
-  apiGraphs: ['http://localhost:1429/api'],
+  baseIri,
+  apiGraphs: [baseIri + '/api'],
   sparql: {
     default: {
-      endpointUrl: 'http://localhost:7878/query?union-default-graph',
-      updateUrl: 'http://localhost:7878/update',
-      storeUrl: 'http://localhost:7878/store',
+      endpointUrl: dbUri + '/query?union-default-graph',
+      updateUrl: dbUri + '/update',
+      storeUrl: dbUri + '/store',
     },
     lindas: 'https://lindas.admin.ch/query',
   },
@@ -27,9 +30,15 @@ export default <KopflosConfig> {
     '@kopflos-cms/vite': {
       root: 'ui',
       entrypoints: ['ui/*.html'],
+      config: {
+        server: {
+          allowedHosts: ['read-the-plaque.lndo.site'],
+        },
+      },
     },
     '@kopflos-cms/hydra': {
-      apis: ['http://localhost:1429/api'],
+      apis: [baseIri + '/api'],
     },
+    '@kopflos-cms/shacl': {},
   },
 }
