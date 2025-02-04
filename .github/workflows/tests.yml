@@ -72,16 +72,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: lando/setup-lando@v3
-        with:
-          lando-version: 3.21.2
-      - uses: tpluscode/action-lando-start@v0.2.2
-        with:
-          healthcheck: https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university
-          timeout: 60000
-          ignore-errors: true
+      - run: docker compose up -d
+      - run: npm run -w example start &
+      - run: npx wait-on http://localhost:1429/ -t 30000
 
-      - run: curl https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university.html -Ifk
-
-      - run: lando logs
-        if: failure()
+      - run: npx api-tuner example/tests/*.n3 --base-iri http://localhost:1429/
