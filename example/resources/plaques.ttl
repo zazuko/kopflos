@@ -21,10 +21,19 @@ prefix kl-hydra: <https://kopflos.described.at/hydra#>
     (
       "/plaque/"
       [
-        sparql:encode_for_uri
+        sparql:concat
           (
             [
-              sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+              sparql:encode_for_uri
+                (
+                  [
+                    sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+                  ]
+                )
+            ]
+            "-"
+            [
+              sparql:substr ( [ sparql:struuid () ] 1 8 )
             ]
           )
       ]
