@@ -84,4 +84,3 @@ jobs:
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
       - run: npm run -w example test -- --debug --raw
-        shell: bash
