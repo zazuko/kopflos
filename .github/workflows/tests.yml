@@ -79,6 +79,6 @@ jobs:
       - run: docker compose up -d
         working-directory: example
       - run: npm run -w example start &
-      - run: npx wait-on http://localhost:1429/ -t 30000
+      - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
       - run: npx api-tuner example/tests/*.n3 --base-iri http://localhost:1429/
