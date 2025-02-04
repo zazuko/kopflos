@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import express from 'express'
+import type { InlineConfig } from 'vite'
 import { build } from 'vite'
 import { createViteServer } from './lib/server.js'
 import { prepareConfig } from './lib/config.js'
@@ -10,6 +11,7 @@ export { defineConfig } from 'vite'
 
 export interface Options {
   configPath?: string
+  config?: InlineConfig
   root?: string
   outDir?: string
   entrypoints?: string[]

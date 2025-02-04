@@ -30,6 +30,11 @@ export default <KopflosConfig> {
     '@kopflos-cms/vite': {
       root: 'ui',
       entrypoints: ['ui/*.html'],
+      config: {
+        server: {
+          allowedHosts: ['read-the-plaque.lndo.site'],
+        },
+      },
     },
     '@kopflos-cms/hydra': {
       apis: [baseIri + '/api'],

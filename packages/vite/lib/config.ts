@@ -5,7 +5,7 @@ import { mergeConfig } from 'vite'
 import defaultConfig from '../vite.config.js'
 import type { Options } from '../index.js'
 
-export async function prepareConfig({ root, configPath, entrypoints, outDir }: Omit<Options, 'mode'>) {
+export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: Omit<Options, 'mode'>) {
   const inputConfig: InlineConfig = {
     root,
     build: {
@@ -26,5 +26,5 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir }: O
     return mergeConfig(mergeConfig(defaultConfig, inputConfig), userConfig.default)
   }
 
-  return mergeConfig(defaultConfig, inputConfig)
+  return mergeConfig(config, mergeConfig(defaultConfig, inputConfig))
 }
