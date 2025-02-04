@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/express",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
     "plugin/**/*.d.ts"
   ],
   "dependencies": {
-    "@kopflos-cms/core": "^0.3.1",
+    "@kopflos-cms/core": "^0.4.0",
     "@kopflos-cms/logger": "^0.1.0",
     "@rdfjs/express-handler": "^2.0.2",
     "@zazuko/env-node": "^2.1.3",

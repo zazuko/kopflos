@@ -1,5 +1,12 @@
 # @kopflos-cms/vite
 
+## 0.1.2
+
+### Patch Changes
+
+- 175c538: Add inline `config` to plugin config
+- 3370532: Plugins are now implemented as classes
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @kopflos-cms/express
 
+## 0.1.2
+
+### Patch Changes
+
+- 3370532: Plugins are now implemented as classes
+- Updated dependencies [ad51eef]
+- Updated dependencies [b84bd82]
+- Updated dependencies [b84bd82]
+- Updated dependencies [be60b63]
+- Updated dependencies [67c5db0]
+- Updated dependencies [608724b]
+  - @kopflos-cms/core@0.4.0
+
 ## 0.1.1
 
 ### Patch Changes

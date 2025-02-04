@@ -1,5 +1,19 @@
 # example
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [175c538]
+- Updated dependencies [dcddc48]
+- Updated dependencies [67c5db0]
+- Updated dependencies [b84bd82]
+- Updated dependencies [3370532]
+- Updated dependencies [be60b63]
+  - @kopflos-cms/vite@0.1.2
+  - @kopflos-cms/hydra@0.1.0
+  - kopflos@0.1.4
+
 ## 0.0.5
 
 ### Patch Changes

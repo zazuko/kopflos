@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/shacl",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "index.js",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "rdf-validate-shacl": "^0.5.6"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.3.3",
+    "@kopflos-cms/core": "^0.4.0",
     "@types/rdf-validate-shacl": "^0.4.9",
     "chai": "^5.1.2",
     "mocha-chai-rdf": "^0.1.6",

@@ -1,5 +1,19 @@
 # @kopflos-cms/core
 
+## 0.4.0
+
+### Minor Changes
+
+- b84bd82: Changed plugin setup to require classes
+
+### Patch Changes
+
+- ad51eef: Log API dataset to TRACE
+- b84bd82: Added helper to easily access plugin instance
+- be60b63: Added a `/ns.js` module which exports the kopflos namespace builder
+- 67c5db0: Added `kl:endpoint` predicate
+- 608724b: Added request decorators
+
 ## 0.3.3
 
 ### Patch Changes
