@@ -52,7 +52,7 @@ export default <PartialCollectionStrategy> {
     },
     previous({ query }) {
       const pageIndex = tryParse(query.out(hydra.pageIndex), 1)
-      if (pageIndex === 0) {
+      if (pageIndex <= 1) {
         return undefined
       }
 
