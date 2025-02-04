@@ -22,10 +22,13 @@
   "dependencies": {
     "@hydrofoil/shape-to-query": "^0.13.8",
     "@kopflos-cms/core": "^0.3.1",
+    "@rdfine/hydra": "^0.10.5",
     "@sindresorhus/merge-streams": "^4.0.0",
     "@tpluscode/rdf-ns-builders": "^4.3.0",
+    "@tpluscode/rdfine": "^0.7.10",
     "@tpluscode/sparql-builder": "^3.0.0",
     "@comunica/query-sparql": "^4.0.0",
+    "@zazuko/env": "^2.5.1",
     "get-stream": "^9.0.1",
     "http-errors": "^2.0.0",
     "is-graph-pointer": "^2.1.0",

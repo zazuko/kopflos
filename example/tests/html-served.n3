@@ -1,0 +1,26 @@
+base <http://localhost:1429/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX earl: <http://www.w3.org/ns/earl#>
+PREFIX tuner: <https://api-tuner.described.at/>
+prefix : <https://always-read-the-plaque.tests/html/>
+prefix string: <http://www.w3.org/2000/10/swap/string#>
+
+:fetchHTML
+  a earl:TestCase ;
+  rdfs:label "Check HTML is served" ;
+.
+
+:getPage
+  a tuner:Request ;
+  tuner:method "GET" ;
+  tuner:url <plaque/newton-s-apple-tree-monash-university.html> ;
+.
+
+{
+  :getPage tuner:response ?res .
+
+  ?res tuner:http_code 200 .
+  ?res tuner:header ( "content-type" "text/html.*" string:matches ) .
+} => {
+  :fetchHTML earl:outcome earl:passed .
+} .

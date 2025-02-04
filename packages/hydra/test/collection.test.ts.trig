@@ -60,6 +60,60 @@ GRAPH <municipalities/all> {
   .
 }
 
+GRAPH <municipalities/limit-offset> {
+  <municipalities/limit-offset>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+    hydra:limit 10 ;
+    hydra:search
+      [
+        hydra:template "{?limit,offset}" ;
+        hydra:mapping
+          [
+            hydra:variable "limit" ;
+            hydra:property hydra:limit ;
+          ],
+          [
+            hydra:variable "offset" ;
+            hydra:property hydra:offset ;
+          ] ;
+      ] ;
+  .
+}
+
+GRAPH <municipalities/paged> {
+  <municipalities/paged>
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+    hydra:limit 20 ;
+    hydra:search
+      [
+        hydra:template "{?page}" ;
+        hydra:mapping
+          [
+            hydra:variable "page" ;
+            hydra:property hydra:pageIndex ;
+          ] ;
+      ] ;
+  .
+}
+
 GRAPH <municipalities/from-static-district> {
   <municipalities/from-static-district>
     a hydra:Collection ;

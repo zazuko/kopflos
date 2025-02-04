@@ -692,8 +692,9 @@ describe('lib/Kopflos', () => {
 
     it('calls onStart on plugins once', async function () {
       // given
-      const plugin = {
-        onStart: sinon.spy(),
+      const onStart = sinon.spy()
+      const plugin = class {
+        onStart = onStart
       }
       const instance = new Kopflos({
         ...config,
@@ -708,15 +709,16 @@ describe('lib/Kopflos', () => {
       await instance.start()
 
       // then
-      expect(plugin.onStart).to.have.been.calledOnce
+      expect(onStart).to.have.been.calledOnce
     })
   })
 
   describe('stop', () => {
     it('calls onStop on plugins', async function () {
       // given
-      const plugin = {
-        onStop: sinon.spy(),
+      const onStop = sinon.spy()
+      const plugin = class {
+        onStop = onStop
       }
       const instance = new Kopflos({
         ...config,
@@ -731,12 +733,12 @@ describe('lib/Kopflos', () => {
       await instance.stop()
 
       // then
-      expect(plugin.onStop).to.have.been.called
+      expect(onStop).to.have.been.called
     })
 
     it('ignores plugins without onStop', async function () {
       // given
-      const plugin = {}
+      const plugin = class {}
       const instance = new Kopflos({
         ...config,
         sparql: {

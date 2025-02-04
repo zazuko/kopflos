@@ -67,24 +67,19 @@ jobs:
       - run: npm ci
       - run: npm run -ws --if-present build
 
-  smoke-tests:
+  smoke-test-example:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: lando/setup-lando@v3
-        with:
-          lando-version: 3.21.2
-      - uses: tpluscode/action-lando-start@v0.2.2
-        with:
-          healthcheck: https://read-the-plaque.lndo.site/plaque/newton-s-apple-tree-monash-university
-          timeout: 60000
-          ignore-errors: true
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
       - run: npm ci
-      - run: npm test -- --base-iri https://read-the-plaque.lndo.site/
+      - run: docker compose up -d
         working-directory: example
-      - run: lando logs
-        if: failure()
+      - run: npm run -w example start &
+      - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
+
+      - run: npm test -- --base-iri http://localhost:1429/
+        working-directory: example
