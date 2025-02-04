@@ -23,6 +23,8 @@ jobs:
             path: packages/serve-file
           - name: "@kopflos-cms/hydra"
             path: packages/hydra
+          - name: "@kopflos-cms/shacl"
+            path: packages/shacl
           - name: "@kopflos-cms/vite"
             path: packages/vite
           - name: "@kopflos-labs/html-template"
