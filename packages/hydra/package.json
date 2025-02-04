@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/hydra",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
@@ -40,7 +40,7 @@
     "sparqljs": "^3.7.3"
   },
   "devDependencies": {
-    "@kopflos-cms/shacl": "^0.1.0",
+    "@kopflos-cms/shacl": "^0.1.1",
     "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/http-errors": "^2.0.4",
     "@zazuko/env-node": "^2.1.4",

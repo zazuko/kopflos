@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "test": "api-tuner tests/smoke/*.n3"
   },
   "dependencies": {
-    "@kopflos-cms/hydra": "0.1.0",
+    "@kopflos-cms/hydra": "0.1.1",
     "@kopflos-cms/serve-file": "0.1.0",
     "@kopflos-cms/vite": "0.1.2",
     "@kopflos-labs/handlebars": "0.1.0",
