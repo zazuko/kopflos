@@ -15,6 +15,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - uses: fabasoad/setup-prolog-action@v1
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
