@@ -72,6 +72,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: fabasoad/setup-prolog-action@v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - run: npm ci
       - run: docker compose up -d
         working-directory: example
       - run: npm run -w example start &
