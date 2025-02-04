@@ -462,7 +462,7 @@ describe('@kopflos-cms/hydra', () => {
 
           // then
           expect(res.status).to.equal(201)
-          expect(res.headers?.Location).to.equal(`<${ex('municipality/valid-name').value}>`)
+          expect(res.headers?.Location).to.equal(`${ex('municipality/valid-name').value}`)
           const newMemberDataset = await $rdf.dataset()
             .import(clients.stream.store.get(ex('municipality/valid-name')))
           expect(newMemberDataset).canonical.toMatchSnapshot()
