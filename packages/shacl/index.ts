@@ -1,4 +1,5 @@
-import type { KopflosPlugin } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
+import type { MultiPointer } from 'clownface'
 
 type ExtendingTerms = 'shacl#shapeSelector'
 
@@ -18,23 +19,30 @@ declare module '@kopflos-cms/core' {
 
 const decoratorModule = new URL('./lib/decorator.js#decorator', import.meta.url).toString()
 
-export default function (): KopflosPlugin {
-  return {
-    async apiTriples(kopflos) {
-      const { env } = kopflos
-      const apis = env.clownface()
-        .node(kopflos.apis)
+export default function (): KopflosPluginConstructor {
+  return class implements KopflosPlugin {
+    private env: KopflosEnvironment
+    private apis: MultiPointer
+
+    constructor(instance: Kopflos) {
+      this.env = instance.env
+      this.apis = instance.apis
+    }
+
+    async apiTriples() {
+      const apis = this.env.clownface()
+        .node(this.apis.terms)
 
       const impl = apis.blankNode()
-        .addOut(env.ns.rdf.type, env.ns.code.EcmaScriptModule)
-        .addOut(env.ns.code.link, env.namedNode(decoratorModule))
+        .addOut(this.env.ns.rdf.type, this.env.ns.code.EcmaScriptModule)
+        .addOut(this.env.ns.code.link, this.env.namedNode(decoratorModule))
 
       apis
-        .addOut(env.ns.kl.decorator, decorator => {
-          decorator.addOut(env.ns.code.implementedBy, impl)
+        .addOut(this.env.ns.kl.decorator, decorator => {
+          decorator.addOut(this.env.ns.code.implementedBy, impl)
         })
 
       return apis.dataset
-    },
+    }
   }
 }

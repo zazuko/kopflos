@@ -1,6 +1,6 @@
 import rdf from '@zazuko/env-node'
 
-type Properties = 'api' | 'resourceLoader' | 'handler' | 'method' | 'config' | 'endpoint' | 'endpoint'
+type Properties = 'api' | 'resourceLoader' | 'handler' | 'method' | 'config' | 'decorator' | 'endpoint'
 type Classes = 'Config' | 'Api' | 'ResourceShape' | 'Handler'
 type Shorthands = 'DescribeLoader' | 'OwnGraphLoader'
 

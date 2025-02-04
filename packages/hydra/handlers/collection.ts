@@ -1,6 +1,6 @@
 import type { Readable } from 'node:stream'
 import merge from '@sindresorhus/merge-streams'
-import type { Handler } from '@kopflos-cms/core'
+import type { Handler, Kopflos } from '@kopflos-cms/core'
 import { log } from '@kopflos-cms/core'
 import { constructQuery } from '@hydrofoil/shape-to-query'
 import constraints from '@hydrofoil/shape-to-query/constraints.js'
@@ -21,9 +21,9 @@ import type { PrepareExpansionModel } from '../lib/partialCollection/index.js'
 
 constraints.set(kl['hydra#MemberAssertionConstraintComponent'], HydraMemberAssertionConstraint)
 
-export function get(): Handler {
-  return async ({ instance, subject, ...req }) => {
-    const hydraPlugin = instance.getPlugin('hydra')
+export function get(this: Kopflos): Handler {
+  return async ({ subject, ...req }) => {
+    const hydraPlugin = this.getPlugin('hydra')
     if (!hydraPlugin) {
       throw new Error('Hydra plugin not loaded')
     }

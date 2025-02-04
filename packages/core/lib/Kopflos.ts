@@ -185,7 +185,6 @@ export default class Impl implements Kopflos {
       : {}
     const args: HandlerArgs = {
       ...req,
-      instance: this,
       headers: req.headers,
       resourceShape,
       env: this.env,
