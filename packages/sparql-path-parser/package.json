@@ -27,7 +27,7 @@
     "@rdfjs/namespace": "^2.0.1",
     "antlr4": "^4.13.2",
     "chai": "^5.1.1",
-    "esbuild": "^0.12.28",
+    "esbuild": "^0.25.0",
     "is-relative-url": "^4.0.0",
     "mocha-chai-jest-snapshot": "^1.1.6"
   },
