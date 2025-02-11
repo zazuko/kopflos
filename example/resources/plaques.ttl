@@ -21,21 +21,16 @@ prefix kl-hydra: <https://kopflos.described.at/hydra#>
     (
       "/plaque/"
       [
-        sparql:concat
+        sparql:encode_for_uri
           (
             [
-              sparql:encode_for_uri
-                (
-                  [
-                    sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
-                  ]
-                )
-            ]
-            "-"
-            [
-              sparql:substr ( [ sparql:struuid () ] 1 8 )
+              sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
             ]
           )
+      ]
+      "-"
+      [
+        sparql:substr ( [ sparql:struuid () ] 1 8 )
       ]
     ) ;
 # TODO: load plaques from named graph
