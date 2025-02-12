@@ -752,6 +752,46 @@ describe('lib/Kopflos', () => {
       await instance.stop()
     })
   })
+
+  describe('ready', () => {
+    it('calls onReady on plugins', async function () {
+      // given
+      const onReady = sinon.spy()
+      const plugin = class {
+        onReady = onReady
+      }
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.ready()
+
+      // then
+      expect(onReady).to.have.been.called
+    })
+
+    it('ignores plugins without onReady', async function () {
+      // given
+      const plugin = class {}
+      const instance = new Kopflos({
+        ...config,
+        sparql: {
+          default: inMemoryClients(this.rdf),
+        },
+      }, {
+        plugins: [plugin],
+      })
+
+      // when
+      await instance.ready()
+    })
+  })
 })
 
 const testHandler: Handler = ({ subject, property, object }) => ({
