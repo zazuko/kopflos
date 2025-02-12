@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.5
+
+### Patch Changes
+
+- 6b3f86a: New plugin hook: `onReady`
+
 ## 0.1.4
 
 ### Patch Changes
