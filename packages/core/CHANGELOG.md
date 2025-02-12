@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.4.1
+
+### Patch Changes
+
+- 6b3f86a: New plugin hook: `onReady`
+
 ## 0.4.0
 
 ### Minor Changes
