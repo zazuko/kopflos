@@ -65,6 +65,7 @@ export interface PluginConfig {
 export interface KopflosPlugin {
   readonly name?: string
   onStart?(): Promise<void> | void
+  onReady?(): Promise<void> | void
   onStop?(): Promise<void> | void
   apiTriples?(): Promise<DatasetCore | Stream> | DatasetCore | Stream
 }
@@ -121,6 +122,7 @@ export default class Impl implements Kopflos {
   readonly env: KopflosEnvironment
   readonly plugins: Array<KopflosPlugin>
   readonly start: () => Promise<void>
+  readonly ready: () => Promise<void>
 
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv({ variables, ...config })
@@ -147,6 +149,10 @@ export default class Impl implements Kopflos {
 
     this.start = onetime(async function (this: Impl) {
       await Promise.all(this.plugins.map(plugin => plugin.onStart?.()))
+    }).bind(this)
+
+    this.ready = onetime(async function (this: Impl) {
+      await Promise.all(this.plugins.map(plugin => plugin.onReady?.()))
     }).bind(this)
   }
 
