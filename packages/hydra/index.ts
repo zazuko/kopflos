@@ -11,6 +11,8 @@ import limitOffsetStrategy from './lib/partialCollection/limitOffsetStrategy.js'
 import pageIndexStrategy from './lib/partialCollection/pageIndexStrategy.js'
 
 type ExtendingTerms = 'hydra#memberShape'
+| 'hydra#memberCreateShape'
+| 'hydra#memberQueryShape'
 | 'hydra#MemberAssertionConstraintComponent'
 | 'hydra'
 | 'hydra#DefaultCollectionShape'

@@ -1,8 +1,12 @@
 import type { HandlerArgs } from '@kopflos-cms/core'
 import type { MultiPointer } from 'clownface'
+import { isGraphPointer } from 'is-graph-pointer'
 
 export default function ({ env, subject }: HandlerArgs): MultiPointer {
-  const memberShape = subject.out(env.ns.kl('hydra#memberShape'))
+  let memberShape = subject.out(env.ns.kl('hydra#memberCreateShape'))
+  if (!isGraphPointer(memberShape)) {
+    memberShape = subject.out(env.ns.kl('hydra#memberShape'))
+  }
 
   const collectionShape = subject
     .blankNode()

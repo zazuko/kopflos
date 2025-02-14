@@ -5,3 +5,9 @@ exports[`@kopflos-cms/hydra hydra:Collection post when collection has validation
 <http://example.org/municipality/valid-name> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.ld.admin.ch/Municipality> <http://example.org/municipality/valid-name> .
 "
 `;
+
+exports[`@kopflos-cms/hydra hydra:Collection post when collection has validation when collection uses :hydraCreateShape creates a new resource 1`] = `
+"<http://example.org/municipality/valid-name> <http://schema.org/name> \\"Valid name\\" <http://example.org/municipality/valid-name> .
+<http://example.org/municipality/valid-name> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.ld.admin.ch/Municipality> <http://example.org/municipality/valid-name> .
+"
+`;
