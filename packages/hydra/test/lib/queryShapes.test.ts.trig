@@ -1,3 +1,4 @@
+PREFIX gn: <http://www.geonames.org/ontology#>
 PREFIX ex: <http://example.org/>
 PREFIX schema: <http://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
@@ -17,6 +18,26 @@ GRAPH <unordered-collection> {
     kl-hydra:memberShape
       [
         sh:property [ sh:path schema:name ] ;
+      ] ;
+  .
+}
+
+GRAPH <using-member-query-shape> {
+  ex:
+    a hydra:Collection ;
+    hydra:memberAssertion
+      [
+        hydra:property rdf:type ;
+        hydra:object <https://schema.ld.admin.ch/Municipality> ;
+      ] ;
+    kl-hydra:memberQueryShape
+      [
+        sh:property [ sh:path schema:name ] ;
+      ] ;
+    kl-hydra:memberShape
+      [
+        sh:property [ sh:path schema:name ] ;
+        sh:property [ sh:path gn:featureCode ] ;
       ] ;
   .
 }

@@ -516,6 +516,58 @@ describe('@kopflos-cms/hydra', () => {
           expect(res.status).to.equal(400)
         })
 
+        context('when collection uses :hydraCreateShape', () => {
+          it('should return 400 when body is invalid', async function () {
+            // given
+            const kopflos = await startKopflos()
+            const collection = ex['municipalities/writable-with-create-shape']
+            const newMember = ex('invalid-municipality')
+            const dataset = loadGraph(newMember)
+            $rdf.clownface({ dataset })
+              .node(collection)
+              .addOut(ns.hydra.member, newMember)
+
+            // when
+            const res = await kopflos.handleRequest({
+              method: 'POST',
+              iri: collection,
+              headers: {},
+              query: {},
+              body: asBody(dataset, collection),
+            })
+
+            // then
+            expect(res.status).to.equal(400)
+          })
+
+          it('creates a new resource', async function () {
+            // given
+            const kopflos = await startKopflos()
+            const collection = ex['municipalities/writable-with-create-shape']
+            const newMember = ex('valid-municipality')
+            const dataset = loadGraph(newMember)
+            $rdf.clownface({ dataset })
+              .node(collection)
+              .addOut(ns.hydra.member, newMember)
+
+            // when
+            const res = await kopflos.handleRequest({
+              method: 'POST',
+              iri: collection,
+              headers: {},
+              query: {},
+              body: asBody(dataset, collection),
+            })
+
+            // then
+            expect(res.status).to.equal(201)
+            expect(res.headers?.Location).to.equal(`${ex('municipality/valid-name').value}`)
+            const newMemberDataset = await $rdf.dataset()
+              .import(clients.stream.store.get(ex('municipality/valid-name')))
+            expect(newMemberDataset).canonical.toMatchSnapshot()
+          })
+        })
+
         it('should return 400 when body does not include hydra:member triple', async function () {
           // given
           const kopflos = await startKopflos()

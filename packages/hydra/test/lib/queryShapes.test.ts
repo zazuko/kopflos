@@ -33,6 +33,19 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
+    context('using member query shape', () => {
+      it('ignores :memberShape', async function () {
+        // given
+        const collection = this.rdf.graph.namedNode(ex())
+
+        // when
+        const shape = memberQueryShape({ env, collection })
+
+        // then
+        expect(await serialize(shape.dataset)).toMatchSnapshot()
+      })
+    })
+
     context('ordered collection', () => {
       it('returns shape with offset', async function () {
         // given

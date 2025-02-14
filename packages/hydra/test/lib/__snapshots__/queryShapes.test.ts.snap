@@ -265,6 +265,60 @@ _:t5 a sh:NodeShape ;
 "
 `;
 
+exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape using member query shape ignores :memberShape 1`] = `
+"@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix kl: <https://kopflos.described.at/> .
+
+_:t3 sh:property [
+		sh:path schema:name ;
+	] ;
+	sh:rule [
+		rdf:type sh:TripleRule ;
+		sh:predicate hydra:member ;
+		sh:subject <http://example.org/> ;
+		sh:object sh:this ;
+	], [
+		rdf:type sh:TripleRule ;
+		sh:predicate rdf:type ;
+		sh:subject sh:this ;
+		sh:object <https://schema.ld.admin.ch/Municipality> ;
+	] .
+
+_:t7 hydra:object <https://schema.ld.admin.ch/Municipality> ;
+	hydra:property rdf:type .
+
+<http://example.org/> a hydra:Collection ;
+	<https://kopflos.described.at/hydra#memberQueryShape> _:t3 ;
+	<https://kopflos.described.at/hydra#memberShape> [
+		sh:property [
+			sh:path <http://www.geonames.org/ontology#featureCode> ;
+		], [
+			sh:path schema:name ;
+		] ;
+	] ;
+	hydra:memberAssertion _:t7 .
+
+_:t8 a sh:NodeShape ;
+	sh:target [
+		rdf:type <https://hypermedia.app/shape-to-query#NodeExpressionTarget> ;
+		sh:expression [
+			sh:distinct [
+				sh:filterShape [
+					hydra:memberAssertion _:t7 ;
+				] ;
+			] ;
+		] ;
+	] ;
+	sh:and (
+		_:t3
+	) .
+
+"
+`;
+
 exports[`@kopflos-cms/hydra/lib/queryShapes.js totalsQueryShape multiple member assertions returns correct total count 1`] = `
 "@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
