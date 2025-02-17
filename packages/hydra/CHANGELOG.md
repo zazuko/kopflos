@@ -1,5 +1,11 @@
 # @kopflos-cms/hydra
 
+## 0.1.2
+
+### Patch Changes
+
+- 6328d5c: Collections: support `kl-hydra:memberCreateShape` and `kl-hydra:memberQueryShape` which can be used instead of `kl-hydra:memberShape` to separate querying from validation
+
 ## 0.1.1
 
 ### Patch Changes
