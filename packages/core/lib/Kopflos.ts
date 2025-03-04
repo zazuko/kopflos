@@ -9,6 +9,7 @@ import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
 import onetime from 'onetime'
+import { kl } from '../ns.js'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
@@ -20,7 +21,7 @@ import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
 import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
-import type { DecoratorLookup } from './decorators.js'
+import type { DecoratorLookup, RequestDecorator } from './decorators.js'
 import { loadDecorators } from './decorators.js'
 
 declare module '@rdfjs/types' {
@@ -124,9 +125,12 @@ export default class Impl implements Kopflos {
   readonly start: () => Promise<void>
   readonly ready: () => Promise<void>
 
+  private decorators: Map<Term, RequestDecorator[]>
+
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv({ variables, ...config })
     this.plugins = (options.plugins || []).map(Plugin => new Plugin(this))
+    this.decorators = this.env.termMap()
 
     this.dataset = this.env.dataset([
       ...options.dataset || [],
@@ -220,13 +224,32 @@ export default class Impl implements Kopflos {
       return this.asEnvelope(response)
     }
 
-    const decoratorLookup = this.options.decoratorLookup || loadDecorators
-    const decorators = await decoratorLookup(this, args)
-
+    const decorators = await this.applicableDecorators(args)
     const decoratedHandlers = decorators.reduceRight<HandlerClosure>((next, decorator) =>
-      decorator.bind(null, args, async () => this.asEnvelope(await next())), runHandlers)
+      decorator.run.bind(decorator, args, async () => this.asEnvelope(await next())), runHandlers)
 
     return decoratedHandlers()
+  }
+
+  private async applicableDecorators(args: HandlerArgs): Promise<RequestDecorator[]> {
+    const api = args.resourceShape.out(kl.api) as GraphPointer
+    if (!this.decorators.has(api.term)) {
+      const decoratorLookup = this.options.decoratorLookup || loadDecorators
+      const decorators = await decoratorLookup({ api, env: this.env })
+      this.decorators.set(api.term, decorators.map(Decorator => new Decorator(this)))
+    }
+
+    const allDecorators = this.decorators.get(api.term)!
+    const decorators = await Promise.all(allDecorators.map(async decorator => {
+      let isApplicable = true
+      if (decorator.applicable) {
+        isApplicable = await decorator.applicable(args)
+      }
+
+      return isApplicable ? decorator : undefined
+    }))
+
+    return decorators.filter(Boolean) as RequestDecorator[]
   }
 
   async handleRequest(req: KopflosRequest<Dataset>): Promise<ResultEnvelope> {

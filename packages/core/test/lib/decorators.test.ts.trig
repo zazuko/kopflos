@@ -14,11 +14,6 @@ GRAPH <loadDecorators/decorators-without-implementation> {
     kl:decorator [
     ]
   .
-
-  ex:resourceShape
-    a kl:ResourceShape ;
-    kl:api ex:api ;
-  .
 }
 
 GRAPH <loadDecorators/decorators-with-implementations> {
@@ -45,33 +40,5 @@ GRAPH <loadDecorators/decorators-with-implementations> {
   ex:resourceShape
     a kl:ResourceShape ;
     kl:api ex:api ;
-  .
-}
-
-GRAPH <loadDecorators/decorators-with-limitations> {
-  ex:api
-    a kl:Api ;
-    kl:decorator
-      [
-        code:implementedBy
-          [
-            a code:EcmaScriptModule ;
-            code:link <file:../../support/decorators.js#personOnly> ;
-          ]
-      ] ;
-    kl:decorator
-      [
-        code:implementedBy
-          [
-            a code:EcmaScriptModule ;
-            code:link <file:../../support/decorators.js#organizationOnly> ;
-          ]
-      ]
-  .
-
-  ex:resourceShape
-    a kl:ResourceShape ;
-    kl:api ex:api ;
-    sh:targetClass schema:Person ;
   .
 }

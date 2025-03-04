@@ -1,18 +1,15 @@
 import url from 'node:url'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { expect } from 'chai'
-import type { DatasetCore } from '@rdfjs/types'
-import rdf from '@zazuko/env-node'
 import { loadDecorators } from '../../lib/decorators.js'
-import type { HandlerArgs } from '../../lib/handler.js'
+import type { KopflosEnvironment } from '../../lib/env/index.js'
 import { createEnv } from '../../lib/env/index.js'
-import type { Kopflos, KopflosConfig } from '../../lib/Kopflos.js'
+import type { KopflosConfig } from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
-import { kl } from '../../ns.js'
-import { bar, foo, personOnly } from '../support/decorators.js'
+import { bar, foo } from '../support/decorators.js'
 
 describe('@kopflos-cms/core/lib/decorators.js', () => {
-  let kopflos: Pick<Kopflos<DatasetCore>, 'env' | 'apis'>
+  let env: KopflosEnvironment
   const config: KopflosConfig = {
     baseIri: 'http://localhost:1429/',
     sparql: {
@@ -29,23 +26,17 @@ describe('@kopflos-cms/core/lib/decorators.js', () => {
   }))
 
   beforeEach(function () {
-    const apis = this.rdf.graph.has(rdf.ns.rdf.type, kl.Api)
-    kopflos = {
-      env: createEnv(config),
-      apis,
-    }
+    env = createEnv(config)
   })
 
   describe('loadDecorators', () => {
     context('decorators without implementation', () => {
       it('are skipped', async function () {
         // given
-        const args = <HandlerArgs>{
-          resourceShape: this.rdf.graph.namedNode(ex.resourceShape),
-        }
+        const api = this.rdf.graph.namedNode(ex.api)
 
         // when
-        const decorators = await loadDecorators(kopflos, args)
+        const decorators = await loadDecorators({ env, api })
 
         // then
         expect(decorators).to.be.empty
@@ -55,30 +46,13 @@ describe('@kopflos-cms/core/lib/decorators.js', () => {
     context('decorators with implementations', () => {
       it('are loaded', async function () {
         // given
-        const args = <HandlerArgs>{
-          resourceShape: this.rdf.graph.namedNode(ex.resourceShape),
-        }
+        const api = this.rdf.graph.namedNode(ex.api)
 
         // when
-        const decorators = await loadDecorators(kopflos, args)
+        const decorators = await loadDecorators({ env, api })
 
         // then
         expect(decorators).to.contain.all.members([foo, bar])
-      })
-    })
-
-    context('decorators with limitations', () => {
-      it('loads only those passing the check', async function () {
-        // given
-        const args = <HandlerArgs>{
-          resourceShape: this.rdf.graph.namedNode(ex.resourceShape),
-        }
-
-        // when
-        const decorators = await loadDecorators(kopflos, args)
-
-        // then
-        expect(decorators).to.deep.eq([personOnly])
       })
     })
   })
