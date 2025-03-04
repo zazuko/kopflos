@@ -1,15 +1,19 @@
-import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
+import type { HandlerArgs, KopflosEnvironment, Plugins } from '@kopflos-cms/core'
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import sinon from 'sinon'
 // eslint-disable-next-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js'
-import { decorator } from '../../lib/decorator.js'
+import Kopflos from '@kopflos-cms/core'
+import ShaclDecorator from '../../lib/decorator.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
+import type { ShaclPlugin } from '../../index.js'
 
 describe('@kopflos-cms/shacl/lib/decorator.js', () => {
   let env: KopflosEnvironment
+  let decorator: () => ShaclDecorator
+  let plugin: ShaclPlugin
 
   beforeEach(createStore(import.meta.url, {
     format: 'trig',
@@ -23,6 +27,14 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         default: inMemoryClients(this.rdf),
       },
     })
+
+    plugin = {
+      options: {},
+    }
+    const kopflos = sinon.createStubInstance(Kopflos, {
+      getPlugin: sinon.stub<[name: keyof Plugins], ShaclPlugin | undefined>().callsFake(() => plugin),
+    })
+    decorator = () => new ShaclDecorator(kopflos)
   })
 
   describe('decorator', () => {
@@ -37,7 +49,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = await decorator.applicable!(req)
+        const result = await decorator().applicable!(req)
 
         // then
         expect(result).to.be.false
@@ -55,7 +67,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = await decorator.applicable!(req)
+        const result = await decorator().applicable!(req)
 
         // then
         expect(result).to.be.false
@@ -73,7 +85,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = await decorator.applicable!(req)
+        const result = await decorator().applicable!(req)
 
         // then
         expect(result).to.be.true
@@ -91,7 +103,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         }
 
         // when
-        const result = await decorator.applicable!(req)
+        const result = await decorator().applicable!(req)
 
         // then
         expect(result).to.be.true
@@ -115,7 +127,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
           })
 
         // when
-        const result = await decorator(req, () => Promise.resolve({ status: 200, body: 'OK' }), mockValidation)
+        const result = await decorator().run(req, () => Promise.resolve({ status: 200, body: 'OK' }), mockValidation)
 
         // then
         expect(result).to.deep.equal({ status: 200, body: 'OK' })
@@ -137,10 +149,38 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
           })
 
         // when
-        const result = await decorator(req, () => Promise.resolve({ status: 200, body: 'OK' }), mockValidation)
+        const result = await decorator().run(req, () => Promise.resolve({ status: 200, body: 'OK' }), mockValidation)
 
         // then
         expect(result).to.have.property('status', 400)
+      })
+
+      it('uses configured override to load data graph', async function () {
+        // given
+        const req = <HandlerArgs>{
+          env,
+          resourceShape: this.rdf.graph.node(ex.oneShape),
+          method: 'PUT',
+          body: {
+            isRDF: true,
+          },
+        }
+        const mockValidation = sinon.stub()
+          .resolves({
+            conforms: true,
+          })
+        const loadDataGraph = sinon.stub()
+        plugin = {
+          options: {
+            loadDataGraph,
+          },
+        }
+
+        // when
+        await decorator().run(req, () => Promise.resolve({ status: 200, body: 'OK' }), mockValidation)
+
+        // then
+        expect(mockValidation).to.have.been.calledWith(req, loadDataGraph)
       })
     })
   })
