@@ -406,7 +406,7 @@ export default class Impl implements Kopflos {
       for await (const quad of triples) {
         this.dataset.add(quad)
       }
-      log.debug('API triples loaded from plugin', plugin)
+      log.debug('API triples loaded from plugin', plugin.name)
     })
 
     await Promise.all(apiTriples)
