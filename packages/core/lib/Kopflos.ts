@@ -86,8 +86,8 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   loadApiGraphs(): Promise<void>
 }
 
-export interface KopflosPluginConstructor {
-  new(instance: Kopflos): KopflosPlugin
+export interface KopflosPluginConstructor<P extends KopflosPlugin = KopflosPlugin> {
+  new(instance: Kopflos): P
   build?: () => Promise<void> | void
 }
 
