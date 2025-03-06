@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.5.1
+
+### Patch Changes
+
+- e1c91d1: Export `DecoratorCallback`
+
 ## 0.5.0
 
 ### Minor Changes
