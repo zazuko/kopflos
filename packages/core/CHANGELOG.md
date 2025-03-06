@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.5.0
+
+### Minor Changes
+
+- 3f737fd: Request Decorators are now implemented as classes
+
 ## 0.4.1
 
 ### Patch Changes
