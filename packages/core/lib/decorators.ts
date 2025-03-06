@@ -1,34 +1,44 @@
-import type { DatasetCore } from '@rdfjs/types'
+import type { GraphPointer } from 'clownface'
 import { kl } from '../ns.js'
 import type { Kopflos, KopflosResponse, ResultEnvelope } from './Kopflos.js'
 import type { HandlerArgs } from './handler.js'
 import log from './log.js'
+import type { KopflosEnvironment } from './env/index.js'
+
+export interface DecoratorCallback {
+  (): Promise<ResultEnvelope>
+}
 
 export interface RequestDecorator {
   applicable?: (args: HandlerArgs) => boolean | Promise<boolean>
-  (args: HandlerArgs, next: () => Promise<ResultEnvelope>): Promise<KopflosResponse> | KopflosResponse
+  run(args: HandlerArgs, next: DecoratorCallback): Promise<KopflosResponse> | KopflosResponse
+}
+
+export interface RequestDecoratorConstructor {
+  new(instance: Kopflos): RequestDecorator
+}
+
+interface DecoratorLookupArgs {
+  api: GraphPointer
+  env: KopflosEnvironment
 }
 
 export interface DecoratorLookup {
-  (kopflos: Kopflos, args: HandlerArgs): Promise<RequestDecorator[]>
+  (arg: DecoratorLookupArgs): Promise<RequestDecoratorConstructor[]>
 }
 
-export const loadDecorators = async ({ env, apis }: Pick<Kopflos<DatasetCore>, 'env' | 'apis'>, args: HandlerArgs) => {
-  const api = apis.node(args.resourceShape.out(kl.api))
-
+export const loadDecorators = async function ({ api, env }: DecoratorLookupArgs) {
   const decorators = api.out(kl.decorator)
 
   const loaded = await Promise.all(decorators.map(async decorator => {
     const implNode = decorator.out(env.ns.code.implementedBy)
-    const impl = await env.load<RequestDecorator>(implNode)
+    const impl = await env.load<RequestDecoratorConstructor>(implNode)
     if (!impl) {
       log.warn('Decorator has no implementation')
     }
 
-    if (!impl?.applicable || await impl.applicable(args)) {
-      return impl
-    }
+    return impl
   }))
 
-  return loaded.filter(Boolean) as RequestDecorator[]
+  return loaded.filter(Boolean) as RequestDecoratorConstructor[]
 }

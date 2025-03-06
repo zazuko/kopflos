@@ -9,13 +9,13 @@ import type { KopflosConfig, Body, Options, KopflosResponse } from '../../lib/Ko
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import type { ResourceShapeObjectMatch } from '../../lib/resourceShape.js'
-import type { Handler } from '../../lib/handler.js'
+import type { Handler, HandlerArgs } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
 import * as resourceLoaders from '../../resourceLoaders.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { loadPlugins } from '../../plugins.js'
 import { kl } from '../../ns.js'
-import type { RequestDecorator } from '../../lib/decorators.js'
+import type { DecoratorCallback, RequestDecorator } from '../../lib/decorators.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
@@ -232,7 +232,11 @@ describe('lib/Kopflos', () => {
         const handler = sinon.spy()
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
-          decoratorLookup: async () => [() => ({ status: 200, body: 'decorated' })],
+          decoratorLookup: async () => [class {
+            run() {
+              return { status: 200, body: 'decorated' }
+            }
+          }],
           resourceShapeLookup: async () => [{
             api: ex.api,
             resourceShape: ex.FooShape,
@@ -263,16 +267,116 @@ describe('lib/Kopflos', () => {
           status: 200,
           body: 'response',
         })
-        const decorator: RequestDecorator = async (args, next) => {
-          const response = await next()
-          return {
-            ...response,
-            body: response.body + ' decorated',
+        const decorator = class implements RequestDecorator {
+          async run(args: HandlerArgs, next: DecoratorCallback) {
+            const response = await next()
+            return {
+              ...response,
+              body: response.body + ' decorated',
+            }
           }
         }
         const kopflos = new Kopflos(config, {
           dataset: this.rdf.dataset,
           decoratorLookup: async () => [decorator],
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [handler],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        const response = await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(response.status).to.eq(200)
+        expect(response.body).to.eq('response decorated')
+      })
+
+      it('are loaded only once for an API', async function () {
+        // given
+        const handler = () => ({
+          status: 200,
+          body: 'response',
+        })
+        const decorator = class implements RequestDecorator {
+          async run(args: HandlerArgs, next: DecoratorCallback) {
+            return next()
+          }
+        }
+        const decoratorLookup = sinon.stub().resolves([decorator])
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          decoratorLookup,
+          resourceShapeLookup: async () => [{
+            api: ex.api,
+            resourceShape: ex.FooShape,
+            subject: ex.foo,
+          }],
+          handlerLookup: () => [handler],
+          resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
+        })
+
+        // when
+        await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+        await kopflos.handleRequest({
+          iri: ex.foo,
+          method: 'GET',
+          headers: {},
+          body: {} as Body,
+          query: {},
+        })
+
+        // then
+        expect(decoratorLookup).to.have.been.calledOnce
+      })
+
+      it('only applicable decorators are executed', async function () {
+        // given
+        const handler = () => ({
+          status: 200,
+          body: 'response',
+        })
+        const decorator = class implements RequestDecorator {
+          async run(args: HandlerArgs, next: DecoratorCallback) {
+            const response = await next()
+            return {
+              ...response,
+              body: response.body + ' decorated',
+            }
+          }
+        }
+        const notApplicableDecorator = class implements RequestDecorator {
+          async run(args: HandlerArgs, next: DecoratorCallback) {
+            const response = await next()
+            return {
+              ...response,
+              body: response.body + ' twice',
+            }
+          }
+
+          applicable() {
+            return false
+          }
+        }
+        const kopflos = new Kopflos(config, {
+          dataset: this.rdf.dataset,
+          decoratorLookup: async () => [decorator, notApplicableDecorator],
           resourceShapeLookup: async () => [{
             api: ex.api,
             resourceShape: ex.FooShape,
