@@ -1,5 +1,12 @@
 # example
 
+## 0.0.10
+
+### Patch Changes
+
+- kopflos@0.1.6
+- @kopflos-cms/hydra@0.1.3
+
 ## 0.0.9
 
 ### Patch Changes

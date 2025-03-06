@@ -1,5 +1,12 @@
 # @kopflos-cms/hydra
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [3f737fd]
+  - @kopflos-cms/core@0.5.0
+
 ## 0.1.2
 
 ### Patch Changes
