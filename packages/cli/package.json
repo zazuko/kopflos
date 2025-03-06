@@ -31,6 +31,7 @@
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "@kopflos-cms/logger": "^0.1.0",
+    "@kopflos-cms/core": "^0.4.1",
     "@kopflos-cms/express": "^0.1.2",
     "@kopflos-cms/plugin-deploy-resources": "^0.1.1",
     "chokidar": "^4.0.1",
