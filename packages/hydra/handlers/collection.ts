@@ -61,7 +61,7 @@ export function get(this: Kopflos): Handler {
     const totalQuery = constructQuery(totalsQueryShape({ env, collection: subject }))
     const totals = await env.dataset().import(sparqlClient.stream.query.construct(totalQuery))
 
-    const view = env.clownface()
+    const graph = env.clownface()
     if (strategy && query && isGraphPointer(template)) {
       const templateObj = env.rdfine.hydra.IriTemplate(template) as unknown as IriTemplate
       const totalItems = tryParse(env.clownface({ dataset: totals })
@@ -83,32 +83,33 @@ export function get(this: Kopflos): Handler {
           return undefined
         }
 
-        return view.namedNode(
+        return graph.namedNode(
           applyTemplate(subject, templateObj.expand(expansionModel)),
         )
       }
 
+      const view = graph
+        .namedNode(applyTemplate(subject, templateObj.expand(query)))
+        .addIn(hydra.view, subject)
       const viewParams = strategy.viewLinksTemplateParams
-      view.node(subject).addOut(hydra.view, view => {
-        view
-          .addOut(rdf.type, hydra.PartialCollectionView)
-        const first = createPageLink(viewParams.first)
-        if (first) {
-          view.addOut(hydra.first, first)
-        }
-        const last = createPageLink(viewParams.last)
-        if (last) {
-          view.addOut(hydra.last, last)
-        }
-        const next = createPageLink(viewParams.next)
-        if (next) {
-          view.addOut(hydra.next, next)
-        }
-        const previous = createPageLink(viewParams.previous)
-        if (previous) {
-          view.addOut(hydra.previous, previous)
-        }
-      })
+      view
+        .addOut(rdf.type, hydra.PartialCollectionView)
+      const first = createPageLink(viewParams.first)
+      if (first) {
+        view.addOut(hydra.first, first)
+      }
+      const last = createPageLink(viewParams.last)
+      if (last) {
+        view.addOut(hydra.last, last)
+      }
+      const next = createPageLink(viewParams.next)
+      if (next) {
+        view.addOut(hydra.next, next)
+      }
+      const previous = createPageLink(viewParams.previous)
+      if (previous) {
+        view.addOut(hydra.previous, previous)
+      }
     }
 
     return {
@@ -116,7 +117,7 @@ export function get(this: Kopflos): Handler {
       body: merge([
         members,
         totals.toStream() as unknown as Readable,
-        view.dataset.toStream() as unknown as Readable,
+        graph.dataset.toStream() as unknown as Readable,
       ]),
     }
   }
