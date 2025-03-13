@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.5.1
+
+### Patch Changes
+
+- bab5fc1: Export `Variables` interface to allow module augmenting
+- e1c91d1: Export `DecoratorCallback`
+
 ## 0.5.0
 
 ### Minor Changes

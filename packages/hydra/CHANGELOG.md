@@ -1,5 +1,14 @@
 # @kopflos-cms/hydra
 
+## 0.1.4
+
+### Patch Changes
+
+- 21b4319: Assign partial collection view URI
+- Updated dependencies [bab5fc1]
+- Updated dependencies [e1c91d1]
+  - @kopflos-cms/core@0.5.1
+
 ## 0.1.3
 
 ### Patch Changes
