@@ -98,6 +98,10 @@ interface Clients {
 
 type Endpoint = string | EndpointOptions | Clients | Client
 
+export interface Variables {
+  [key: string]: unknown
+}
+
 export interface KopflosConfig {
   [key: string]: unknown
   mode?: 'development' | 'production'
@@ -106,7 +110,7 @@ export interface KopflosConfig {
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
   plugins?: PluginConfig
-  variables?: Record<string, unknown>
+  variables?: Variables
 }
 
 export interface Options {
