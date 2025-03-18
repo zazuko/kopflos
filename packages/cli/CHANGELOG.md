@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.7
+
+### Patch Changes
+
+- c33a135: Use `tsx` if it is available in PATH
+
 ## 0.1.6
 
 ### Patch Changes
