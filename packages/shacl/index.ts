@@ -8,12 +8,10 @@ declare module '@kopflos-cms/core/ns.js' {
   }
 }
 
-interface AdditionalDataGraphTriplesArgs extends HandlerArgs{
-  shapesGraph: DatasetCore
-}
-
 export interface Options {
-  loadDataGraph?(arg: AdditionalDataGraphTriplesArgs): Promise<DatasetCore>
+  loadDataGraph?(arg: HandlerArgs & {
+    shapesGraph: DatasetCore
+  }): Promise<DatasetCore>
 }
 
 export interface ShaclPlugin extends KopflosPlugin {
