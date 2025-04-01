@@ -55,7 +55,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         expect(result).to.be.false
       })
 
-      it('returns false when handler has no dash:shape', async function () {
+      it('returns false when handler has no sh:shapesGraph', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -73,7 +73,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         expect(result).to.be.false
       })
 
-      it('returns true when handler has a single dash:shape', async function () {
+      it('returns true when handler has a single sh:shapesGraph', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -91,7 +91,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
         expect(result).to.be.true
       })
 
-      it('returns true when handler has a multiple dash:shape', async function () {
+      it('returns true when handler has a multiple sh:shapesGraph', async function () {
         // given
         const req = <HandlerArgs>{
           env,

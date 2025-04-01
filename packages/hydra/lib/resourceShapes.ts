@@ -16,7 +16,7 @@ export function createDefaultShapes(env: KopflosEnvironment, { apis }: Options) 
 }
 
 const getHandlerPath = (method: string) => new URL(`../handlers/collection.js#${method}`, import.meta.url).toString()
-const shapeSelectorPath = new URL('./validation.js#default', import.meta.url).toString()
+const shapeSelectorPath = new URL('./validation.js#shapeSelector', import.meta.url).toString()
 
 export async function createHandlers({ env, dataset }: Kopflos) {
   const { rdf, kopflos: kl, sh, hydra, code, dash } = env.ns
