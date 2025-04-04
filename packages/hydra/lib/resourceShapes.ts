@@ -16,10 +16,10 @@ export function createDefaultShapes(env: KopflosEnvironment, { apis }: Options) 
 }
 
 const getHandlerPath = (method: string) => new URL(`../handlers/collection.js#${method}`, import.meta.url).toString()
-const shapeSelectorPath = new URL('./validation.js#default', import.meta.url).toString()
+const shapesGraphLoaderPath = new URL('./validation.js#shapesGraphLoader', import.meta.url).toString()
 
 export async function createHandlers({ env, dataset }: Kopflos) {
-  const { rdf, kopflos: kl, sh, hydra, code, dash } = env.ns
+  const { rdf, kopflos: kl, sh, hydra, code } = env.ns
 
   const hydraGraph = env.sparql.default.stream.store.get(kl.hydra)
   const apiTriples = env.clownface({
@@ -56,11 +56,11 @@ export async function createHandlers({ env, dataset }: Kopflos) {
   for (const shape of [...defaultShapes, ...userShapes]) {
     addMissingHandler(shape, 'get')
     addMissingHandler(shape, 'post', (handler: GraphPointer) => {
-      handler.addOut(kl('shacl#shapeSelector'), shapeSelector => {
-        shapeSelector.addOut(env.ns.code.implementedBy, impl => {
+      handler.addOut(sh.shapesGraph, loader => {
+        loader.addOut(env.ns.code.implementedBy, impl => {
           impl
             .addOut(rdf.type, code.EcmaScriptModule)
-            .addOut(code.link, env.namedNode(shapeSelectorPath))
+            .addOut(code.link, env.namedNode(shapesGraphLoaderPath))
         })
       })
     })

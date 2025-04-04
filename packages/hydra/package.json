@@ -48,11 +48,7 @@
     "mocha-chai-rdf": "^0.1.6"
   },
   "mocha": {
-    "extension": [
-      "ts"
-    ],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm/transpile-only",
-    "require": "../../mocha-setup.js"
+    "extends": "../../package.json"
   }
 }

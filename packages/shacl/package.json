@@ -17,22 +17,17 @@
     "lib/**/*.d.ts"
   ],
   "dependencies": {
+    "@kopflos-cms/core": "^0.5.0",
     "is-graph-pointer": "^2.1.0",
-    "rdf-validate-shacl": "^0.5.6"
+    "rdf-validate-shacl": "^0.6.1"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.5.0",
-    "@types/rdf-validate-shacl": "^0.4.9",
     "chai": "^5.1.2",
     "mocha-chai-rdf": "^0.1.6",
     "sinon": "^18"
   },
   "mocha": {
-    "extension": [
-      "ts"
-    ],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm/transpile-only",
-    "require": "../../mocha-setup.js"
+    "extends": "../../.mocharc.cjs"
   }
 }

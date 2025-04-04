@@ -2,7 +2,6 @@ import type { HandlerArgs, Kopflos, RequestDecorator, ResultEnvelope } from '@ko
 import type { ShaclPlugin } from '../index.js'
 import type { ValidationCallback } from './validation.js'
 import { shaclValidate } from './validation.js'
-import { findShapes } from './shapes.js'
 
 export default class implements RequestDecorator {
   plugin: ShaclPlugin
@@ -30,7 +29,7 @@ export default class implements RequestDecorator {
     return next()
   }
 
-  async applicable(args: HandlerArgs) {
-    return args.body.isRDF && (await findShapes(args)).terms.length > 0
+  async applicable({ env, body, handler }: HandlerArgs) {
+    return body.isRDF && handler.out(env.ns.sh.shapesGraph).terms.length > 0
   }
 }

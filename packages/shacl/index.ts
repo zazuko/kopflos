@@ -1,19 +1,12 @@
 import type { HandlerArgs, Kopflos, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import type { DatasetCore } from '@rdfjs/types'
 
-type ExtendingTerms = 'shacl#shapeSelector'
-
-declare module '@kopflos-cms/core/ns.js' {
-  interface KopflosTerms extends Record<ExtendingTerms, never> {
-  }
-}
-
-interface AdditionalDataGraphTriplesArgs extends HandlerArgs{
-  shapesGraph: DatasetCore
-}
+export type { ShapesGraphLoader } from './lib/shapes.js'
 
 export interface Options {
-  loadDataGraph?(arg: AdditionalDataGraphTriplesArgs): Promise<DatasetCore>
+  loadDataGraph?(arg: HandlerArgs & {
+    shapesGraph: DatasetCore
+  }): Promise<DatasetCore>
 }
 
 export interface ShaclPlugin extends KopflosPlugin {

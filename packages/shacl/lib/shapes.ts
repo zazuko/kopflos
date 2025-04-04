@@ -1,42 +1,46 @@
 import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
-import type { MultiPointer } from 'clownface'
-import type { DatasetCore } from '@rdfjs/types'
-import { isBlankNode, isGraphPointer } from 'is-graph-pointer'
-import { clone } from './dataset.js'
+import { log } from '@kopflos-cms/core'
+import type { DatasetCore, NamedNode } from '@rdfjs/types'
+import { isNamedNode } from 'is-graph-pointer'
 
-export async function findShapes(args: HandlerArgs): Promise<MultiPointer> {
-  const { env, resourceShape, method } = args
-
-  const findShapePointer = args.resourceShape
-    .out(env.ns.kl.handler)
-    .filter(handler => handler.out(env.ns.kl.method).value?.toUpperCase() === method.toUpperCase())
-    .out(env.ns.kl('shacl#shapeSelector'))
-    .out(env.ns.code.implementedBy)
-  if (isGraphPointer(findShapePointer)) {
-    const loaded = await env.load<typeof defaultShapeSelector>(findShapePointer)
-    if (!loaded) {
-      throw new Error(`Failed to load shape selector for resource shape ${resourceShape.value}`)
-    }
-
-    return loaded(args)
-  }
-
-  return defaultShapeSelector(args)
+export interface ShapesGraphLoader {
+  (args: HandlerArgs): Promise<DatasetCore> | DatasetCore
 }
 
-function defaultShapeSelector({ env, resourceShape, method }: HandlerArgs): MultiPointer {
-  return resourceShape
-    .out(env.ns.kl.handler)
-    .filter(handler => handler.out(env.ns.kl.method).value?.toUpperCase() === method.toUpperCase())
-    .filter(handler => handler.out(env.ns.dash.shape).terms.length > 0)
-}
+export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
+  const { env, handler } = args
 
-export async function loadShapes(shapes: MultiPointer, env: KopflosEnvironment): Promise<DatasetCore> {
-  const blankNodeShapes = clone(shapes.filter(isBlankNode), env)
+  const dataset = env.dataset()
+  const loadImport = loadImportTo(env, dataset)
 
-  const dataset = env.dataset(blankNodeShapes)
+  const loadingGraphs = handler
+    .out(env.ns.sh.shapesGraph)
+    .map(async (ptr) => {
+      if (isNamedNode(ptr)) {
+        await loadImport(ptr.term)
+        return
+      }
 
-  // TODO: load named node shapes from graphs
+      const impl = await env.load<ShapesGraphLoader>(ptr.out(env.ns.code.implementedBy))
+      if (impl) {
+        try {
+          env.dataset.addAll(dataset, await impl(args))
+        } catch (e) {
+          log.error('Failed to load shapes graph', e)
+          throw e
+        }
+      } else {
+        throw new Error('Bad shapes graph loader implementation')
+      }
+    })
+
+  await Promise.all(loadingGraphs)
 
   return dataset
+}
+
+export function loadImportTo(env: KopflosEnvironment, dataset = env.dataset()) {
+  return (url: NamedNode) => {
+    return dataset.import(env.sparql.default.stream.store.get(url))
+  }
 }

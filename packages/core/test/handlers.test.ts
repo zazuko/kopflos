@@ -7,6 +7,7 @@ import { getCoreRepresentation } from '../handlers.js'
 import type { Body, KopflosConfig } from '../lib/Kopflos.js'
 import { ex } from '../../testing-helpers/ns.js'
 import Kopflos from '../lib/Kopflos.js'
+import handlerLookupStub from './support/handlerLookupStub.js'
 
 describe('@kopflos-cms/handlers.js', () => {
   use(snapshots)
@@ -29,7 +30,7 @@ describe('@kopflos-cms/handlers.js', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: () => [getCoreRepresentation()],
+        handlerLookup: handlerLookupStub(getCoreRepresentation()),
       })
 
       // when

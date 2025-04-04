@@ -14,6 +14,7 @@ type Dataset = ReturnType<KopflosEnvironment['dataset']>
 export interface HandlerArgs<D extends DatasetCore = Dataset> {
   method: string
   resourceShape: GraphPointer<NamedNode, D>
+  handler: GraphPointer
   env: KopflosEnvironment
   subject: GraphPointer<NamedNode, D>
   subjectVariables: Record<string, string>
@@ -37,7 +38,10 @@ export type Handler = SubjectHandler | ObjectHandler
 type HandlerFactory = (this: Kopflos, ...args: unknown[]) => Handler | Promise<Handler>
 
 export interface HandlerLookup {
-  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): Array<Promise<Handler> | Handler>
+  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): {
+    pointer: GraphPointer
+    implementation: Array<Promise<Handler> | Handler>
+  } | undefined
 }
 
 export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, instance: Kopflos) => {
@@ -56,6 +60,10 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
     .out(env.ns.kopflos.handler)
     .filter(matchingMethod(env, method))
 
+  if (!isGraphPointer(handler)) {
+    return undefined
+  }
+
   const vars = new Map(Object.entries(env.kopflos.variables))
   if ('subjectVariables' in rest) {
     for (const [k, v] of rest.subjectVariables) {
@@ -67,19 +75,30 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
   const impl = handler.out(env.ns.code.implementedBy)
   if (impl.isList()) {
     const pointers = [...impl.list()]
-    return pointers.map(chainedHandler => {
+    const implementation = pointers.map(chainedHandler => {
       logCode(chainedHandler, 'handler')
       return createHandler(chainedHandler)
     }).filter(Boolean) as Array<Promise<Handler>>
+
+    return {
+      pointer: handler,
+      implementation,
+    }
   }
 
   logCode(impl, 'handler')
   const loaded = createHandler(impl)
   if (loaded) {
-    return [loaded]
+    return {
+      pointer: handler,
+      implementation: [loaded],
+    }
   }
 
-  return []
+  return {
+    pointer: handler,
+    implementation: [],
+  }
 }
 
 function createHandlerFactory(instance: Kopflos, variables: Map<string, unknown>) {

@@ -38,11 +38,7 @@
     "chai": "^5.1.1"
   },
   "mocha": {
-    "extension": [
-      "ts"
-    ],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm/transpile-only",
-    "require": "../../mocha-setup.js"
+    "extends": "../../package.json"
   }
 }
