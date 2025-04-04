@@ -30,7 +30,7 @@ export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
           throw e
         }
       } else {
-        log.warn('Missing shapes graph loader implementation')
+        throw new Error('Bad shapes graph loader implementation')
       }
     })
 

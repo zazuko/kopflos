@@ -9,3 +9,7 @@ const loader: ShapesGraphLoader = async ({ env }) => {
 }
 
 export default loader
+
+export function throws() {
+  throw new Error('This is a test error')
+}

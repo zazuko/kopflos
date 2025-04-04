@@ -51,5 +51,18 @@ describe('@kopflos-cms/shacl/lib/shapes.js', () => {
       const graph = env.clownface({ dataset })
       expect(graph.has(env.ns.rdf.type, env.ns.sh.NodeShape).term).to.eq(ex.generatedShape)
     })
+
+    ;['IncompleteCodeImport', 'BadCodeImport', 'MissingImplementation', 'ImportedCodeThrows'].forEach(term => {
+      it(`throws when import is broken (${term})`, async function () {
+        // given
+        const args = <HandlerArgs>{
+          env,
+          handler: this.rdf.graph.node(ex(term)),
+        }
+
+        // then
+        await expect(loadShapesGraph(args)).to.have.rejected
+      })
+    })
   })
 })
