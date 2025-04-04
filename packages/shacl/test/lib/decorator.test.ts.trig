@@ -20,7 +20,7 @@ ex:oneShape
     [
       a kl:Handler ;
       kl:method "PUT" ;
-      dash:shape ex:Shape ;
+      sh:shapesGraph ex:Shape ;
     ] ;
 .
 
@@ -30,7 +30,7 @@ ex:twoShapes
     [
       a kl:Handler ;
       kl:method "PUT" ;
-      dash:shape
+      sh:shapesGraph
         ex:Shape,
         [
           a sh:NodeShape ;

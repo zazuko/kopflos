@@ -2,7 +2,7 @@ import { createStore } from 'mocha-chai-rdf/store.js'
 import { expect } from 'chai'
 import rdf from '@zazuko/env-node'
 import type { HandlerArgs } from '../../index.js'
-import Kopflos, { defaultHandlerLookup as loadHandler } from '../../index.js'
+import Kopflos, { defaultHandlerLookup } from '../../index.js'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import type {
@@ -12,8 +12,17 @@ import type {
 } from '../../lib/resourceShape.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import * as handlers from '../support/handlers.js'
+import { matchingMethod } from '../../lib/handler.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
+
+function loadHandler(match: ResourceShapeSubjectMatch, method: string, kopflos: Kopflos) {
+  const [ptr] = kopflos.apis.node(match.resourceShape)
+    .out(kopflos.env.ns.kopflos.handler)
+    .filter(matchingMethod(kopflos.env, method))
+    .toArray()
+  return defaultHandlerLookup(match, ptr, kopflos)
+}
 
 describe('lib/handler', () => {
   let config: KopflosConfig

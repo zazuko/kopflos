@@ -5,6 +5,8 @@ import sinon from 'sinon'
 // eslint-disable-next-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js'
 import Kopflos from '@kopflos-cms/core'
+// eslint-disable-next-line import/no-unresolved
+import { kl } from '@kopflos-cms/core/ns.js'
 import ShaclDecorator from '../../lib/decorator.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
@@ -57,9 +59,11 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
 
       it('returns false when handler has no sh:shapesGraph', async function () {
         // given
+        const resourceShape = this.rdf.graph.node(ex.noValidation)
         const req = <HandlerArgs>{
           env,
-          resourceShape: this.rdf.graph.node(ex.noValidation),
+          resourceShape,
+          handler: resourceShape.out(kl.handler),
           method: 'PUT',
           body: {
             isRDF: true,
@@ -75,9 +79,11 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
 
       it('returns true when handler has a single sh:shapesGraph', async function () {
         // given
+        const resourceShape = this.rdf.graph.node(ex.oneShape)
         const req = <HandlerArgs>{
           env,
-          resourceShape: this.rdf.graph.node(ex.oneShape),
+          resourceShape,
+          handler: resourceShape.out(kl.handler),
           method: 'PUT',
           body: {
             isRDF: true,
@@ -93,9 +99,11 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
 
       it('returns true when handler has a multiple sh:shapesGraph', async function () {
         // given
+        const resourceShape = this.rdf.graph.node(ex.twoShapes)
         const req = <HandlerArgs>{
           env,
-          resourceShape: this.rdf.graph.node(ex.twoShapes),
+          resourceShape,
+          handler: resourceShape.out(kl.handler),
           method: 'PUT',
           body: {
             isRDF: true,
