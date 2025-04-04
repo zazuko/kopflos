@@ -7,7 +7,9 @@ export interface ShapesGraphLoader {
   (args: HandlerArgs): Promise<DatasetCore> | DatasetCore
 }
 
-export async function loadShapesGraph({ env, handler, ...args }: HandlerArgs): Promise<DatasetCore> {
+export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
+  const { env, handler } = args
+
   const dataset = env.dataset()
   const loadImport = loadImportTo(env, dataset)
 
@@ -22,10 +24,13 @@ export async function loadShapesGraph({ env, handler, ...args }: HandlerArgs): P
       const impl = await env.load<ShapesGraphLoader>(ptr.out(env.ns.code.implementedBy))
       if (impl) {
         try {
-          env.dataset.addAll(dataset, await impl({ env, handler, ...args }))
+          env.dataset.addAll(dataset, await impl(args))
         } catch (e) {
           log.error('Failed to load shapes graph', e)
+          throw e
         }
+      } else {
+        log.warn('Missing shapes graph loader implementation')
       }
     })
 

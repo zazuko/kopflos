@@ -1,0 +1,22 @@
+PREFIX code: <https://code.described.at/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX ex: <http://example.org/>
+
+ex:ImportsWithUri
+  sh:shapesGraph ex:shapesGraph ;
+.
+
+ex:ImportsWithCode
+  sh:shapesGraph
+    [
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:test/support/shapes-graph.js#default> ;
+        ] ;
+    ] ;
+.
+
+graph ex:shapesGraph {
+  ex:shape a sh:NodeShape .
+}
