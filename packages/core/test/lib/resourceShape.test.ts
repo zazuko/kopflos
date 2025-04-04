@@ -1,4 +1,3 @@
-import exp = require('node:constants');
 import rdf from '@zazuko/env-node'
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
