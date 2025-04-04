@@ -22,7 +22,7 @@ export async function loadShapesGraph({ env, handler, ...args }: HandlerArgs): P
       const impl = await env.load<ShapesGraphLoader>(ptr.out(env.ns.code.implementedBy))
       if (impl) {
         try {
-          await impl({ env, handler, ...args })
+          env.dataset.addAll(dataset, await impl({ env, handler, ...args }))
         } catch (e) {
           log.error('Failed to load shapes graph', e)
         }
