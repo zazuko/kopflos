@@ -12,16 +12,12 @@ import type {
 } from '../../lib/resourceShape.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import * as handlers from '../support/handlers.js'
-import { matchingMethod } from '../../lib/handler.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
 
 function loadHandler(match: ResourceShapeSubjectMatch, method: string, kopflos: Kopflos) {
-  const [ptr] = kopflos.apis.node(match.resourceShape)
-    .out(kopflos.env.ns.kopflos.handler)
-    .filter(matchingMethod(kopflos.env, method))
-    .toArray()
-  return defaultHandlerLookup(match, ptr, kopflos)
+  const result = defaultHandlerLookup(match, method, kopflos)
+  return result?.implementation || []
 }
 
 describe('lib/handler', () => {

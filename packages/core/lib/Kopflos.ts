@@ -2,14 +2,13 @@ import type { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from '
 import type { parse } from 'node:querystring'
 import type { ReadableStream } from 'node:stream/web'
 import type { DatasetCore, NamedNode, Quad, Stream, Term } from '@rdfjs/types'
-import type { AnyContext, AnyPointer, GraphPointer, MultiPointer } from 'clownface'
+import type { GraphPointer, MultiPointer } from 'clownface'
 import type { Options as EndpointOptions, StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
 import onetime from 'onetime'
-import { isGraphPointer } from 'is-graph-pointer'
 import { kl } from '../ns.js'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
@@ -19,7 +18,7 @@ import { isResponse } from './isResponse.js'
 import type { ResourceLoader, ResourceLoaderLookup } from './resourceLoader.js'
 import { fromOwnGraph, findResourceLoader } from './resourceLoader.js'
 import type { Handler, HandlerArgs, HandlerLookup } from './handler.js'
-import { matchingMethod, loadHandlers } from './handler.js'
+import { loadHandlers } from './handler.js'
 import type { HttpMethod } from './httpMethods.js'
 import log from './log.js'
 import type { DecoratorLookup, RequestDecorator } from './decorators.js'
@@ -198,9 +197,11 @@ export default class Impl implements Kopflos {
     const subjectVariables = 'subjectVariables' in resourceShapeMatch
       ? Object.fromEntries(resourceShapeMatch.subjectVariables)
       : {}
+
+    const [handler, implementation] = handlerChain
     const args: HandlerArgs = {
       ...req,
-      handler: handlerChain.ptr,
+      handler,
       headers: req.headers,
       resourceShape,
       env: this.env,
@@ -217,8 +218,8 @@ export default class Impl implements Kopflos {
     type HandlerClosure = () => Promise<KopflosResponse> | KopflosResponse
     const runHandlers: HandlerClosure = async () => {
       let response: ResultEnvelope | undefined
-      for (let i = 0; i < handlerChain.handlers.length; i++) {
-        const handler = handlerChain.handlers[i]
+      for (let i = 0; i < implementation.length; i++) {
+        const handler = implementation[i]
         const rawResult = await handler(args, response)
 
         response = this.asEnvelope(rawResult)
@@ -334,38 +335,16 @@ export default class Impl implements Kopflos {
     return fromOwnGraph
   }
 
-  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<{ ptr: GraphPointer<Term, Dataset>; handlers: Handler[] } | KopflosResponse> {
+  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<[GraphPointer, Handler[]] | KopflosResponse> {
     const handlerLookup = this.options.handlerLookup || loadHandlers
 
-    const { apis, env } = this
-    const api = apis.node(resourceShapeMatch.api)
+    const result = handlerLookup(resourceShapeMatch, method, this)
 
-    let shape: AnyPointer<AnyContext, Dataset> = api.node(resourceShapeMatch.resourceShape)
-
-    if ('property' in resourceShapeMatch) {
-      shape = shape
-        .out(env.ns.sh.property)
-        .filter(path => resourceShapeMatch.property.equals(path.out(env.ns.sh.path).term))
-    }
-
-    const ptr = shape
-      .out(env.ns.kopflos.handler)
-      .filter(matchingMethod(env, method))
-
-    if (isGraphPointer(ptr)) {
-      const handlers = await Promise.all(handlerLookup(resourceShapeMatch, ptr, this))
-
+    if (result) {
+      const handlers = await Promise.all(result.implementation)
       if (handlers.length) {
-        return {
-          ptr: ptr as GraphPointer<Term, Dataset>,
-          handlers,
-        }
+        return [result.pointer, handlers]
       }
-    }
-
-    if (ptr.terms.length > 1) {
-      log.error('Multiple handlers found:', ptr.terms.map(h => h.value))
-      return new Error('Multiple handlers found')
     }
 
     if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {

@@ -16,9 +16,19 @@ import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { loadPlugins } from '../../plugins.js'
 import { kl } from '../../ns.js'
 import type { DecoratorCallback, RequestDecorator } from '../../lib/decorators.js'
+import handlerLookupStub from '../support/handlerLookupStub.js'
 
 describe('lib/Kopflos', () => {
   use(snapshots)
+
+  const testHandler: Handler = ({ subject, property, object }) => ({
+    status: 200,
+    body: JSON.stringify({
+      subject: subject.value,
+      property: property?.value,
+      object: object?.value,
+    }, null, 2),
+  })
 
   const config: KopflosConfig = {
     baseIri: 'http://example.com/',
@@ -72,7 +82,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: () => [testHandler],
+        handlerLookup: handlerLookupStub(testHandler),
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -105,7 +115,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          handlerLookup: handlerLookupStub(chainedHandler('A'), chainedHandler('B'), chainedHandler('C')),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -138,7 +148,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          handlerLookup: handlerLookupStub(chainedHandler('A'), chainedHandler('B'), chainedHandler('C')),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -172,7 +182,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [chainedHandler('A'), chainedHandler('B'), chainedHandler('C')],
+          handlerLookup: handlerLookupStub(chainedHandler('A'), chainedHandler('B'), chainedHandler('C')),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -204,11 +214,11 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [
+          handlerLookup: handlerLookupStub(
             chainedHandler('A'),
             () => undefined as unknown as KopflosResponse,
             chainedHandler('C'),
-          ],
+          ),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -242,7 +252,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [handler],
+          handlerLookup: handlerLookupStub(handler),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -284,7 +294,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [handler],
+          handlerLookup: handlerLookupStub(handler),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -322,7 +332,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [handler],
+          handlerLookup: handlerLookupStub(handler),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -382,7 +392,7 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [handler],
+          handlerLookup: handlerLookupStub(handler),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -410,7 +420,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: () => [() => undefined as unknown as KopflosResponse],
+        handlerLookup: handlerLookupStub(() => undefined as unknown as KopflosResponse),
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -433,9 +443,9 @@ describe('lib/Kopflos', () => {
       const kopflos = new Kopflos(config, {
         dataset: this.rdf.dataset,
         resourceShapeLookup: async () => body,
-        handlerLookup: () => [() => {
+        handlerLookup: handlerLookupStub(() => {
           throw new Error('Should not be called')
-        }],
+        }),
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       })
 
@@ -465,12 +475,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [({ headers }) => {
+          handlerLookup: handlerLookupStub(({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers }),
             }
-          }],
+          }),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -498,12 +508,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [({ headers }) => {
+          handlerLookup: handlerLookupStub(({ headers }) => {
             return {
               status: 200,
               body: JSON.stringify({ headers: Object.keys(headers).length }),
             }
-          }],
+          }),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -528,7 +538,7 @@ describe('lib/Kopflos', () => {
           resourceShape: ex.FooShape,
           subject: ex.foo,
         }],
-        handlerLookup: () => [testHandler],
+        handlerLookup: handlerLookupStub(testHandler),
         resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
       }
 
@@ -543,7 +553,7 @@ describe('lib/Kopflos', () => {
         ['resourceShapeLookup ' + fun.name, { resourceShapeLookup: fun }],
         ['resourceLoaderLookup ' + fun.name, { resourceLoaderLookup: fun }],
         ['handlerLookup ' + fun.name, { handlerLookup: fun }],
-        ['handler ' + fun.name, { handlerLookup: () => [fun] }],
+        ['handler ' + fun.name, { handlerLookup: handlerLookupStub(fun) }],
       ])
 
       for (const [name, failingFunction] of failingFunctions) {
@@ -580,12 +590,12 @@ describe('lib/Kopflos', () => {
             resourceShape: ex.FooShape,
             subject: ex.foo,
           }],
-          handlerLookup: () => [({ body }) => {
+          handlerLookup: handlerLookupStub(({ body }) => {
             return {
               status: 200,
               body: JSON.stringify({ body: !!body }),
             }
-          }],
+          }),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -615,7 +625,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: () => [],
+              handlerLookup: () => undefined,
             })
 
             // when
@@ -646,7 +656,7 @@ describe('lib/Kopflos', () => {
                 resourceShape: ex.FooShape,
                 subject: ex.foo,
               }],
-              handlerLookup: () => [],
+              handlerLookup: () => undefined,
             })
 
             // when
@@ -677,7 +687,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: () => [testHandler],
+          handlerLookup: handlerLookupStub(testHandler),
           resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
         })
 
@@ -706,7 +716,7 @@ describe('lib/Kopflos', () => {
             property: ex.bar,
             object: ex.baz,
           }],
-          handlerLookup: () => [testHandler],
+          handlerLookup: handlerLookupStub(testHandler),
           resourceLoaderLookup: async () => resourceLoader,
         })
 
@@ -737,7 +747,7 @@ describe('lib/Kopflos', () => {
                   property: ex.bar,
                   object: ex.baz,
                 }],
-                handlerLookup: () => [],
+                handlerLookup: () => undefined,
                 resourceLoaderLookup: async () => () => rdf.dataset().toStream(),
               })
 
@@ -896,13 +906,4 @@ describe('lib/Kopflos', () => {
       await instance.ready()
     })
   })
-})
-
-const testHandler: Handler = ({ subject, property, object }) => ({
-  status: 200,
-  body: JSON.stringify({
-    subject: subject.value,
-    property: property?.value,
-    object: object?.value,
-  }, null, 2),
 })

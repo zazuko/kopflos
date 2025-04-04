@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders } from 'node:http'
 import type { AnyPointer, GraphPointer } from 'clownface'
-import type { DatasetCore, NamedNode, Term } from '@rdfjs/types'
+import type { DatasetCore, NamedNode } from '@rdfjs/types'
 import { isGraphPointer } from 'is-graph-pointer'
 import loadArguments from 'rdf-loader-code/arguments.js'
 import type { KopflosEnvironment } from './env/index.js'
@@ -14,7 +14,7 @@ type Dataset = ReturnType<KopflosEnvironment['dataset']>
 export interface HandlerArgs<D extends DatasetCore = Dataset> {
   method: string
   resourceShape: GraphPointer<NamedNode, D>
-  handler: GraphPointer<Term, D>
+  handler: GraphPointer
   env: KopflosEnvironment
   subject: GraphPointer<NamedNode, D>
   subjectVariables: Record<string, string>
@@ -38,11 +38,31 @@ export type Handler = SubjectHandler | ObjectHandler
 type HandlerFactory = (this: Kopflos, ...args: unknown[]) => Handler | Promise<Handler>
 
 export interface HandlerLookup {
-  (match: ResourceShapeMatch, handler: GraphPointer, kopflos: Kopflos): Array<Promise<Handler> | Handler>
+  (match: ResourceShapeMatch, method: HttpMethod, kopflos: Kopflos): {
+    pointer: GraphPointer
+    implementation: Array<Promise<Handler> | Handler>
+  } | undefined
 }
 
-export const loadHandlers: HandlerLookup = (rest: ResourceShapeMatch, handler: GraphPointer, instance: Kopflos) => {
-  const { env } = instance
+export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: ResourceShapeMatch, method: HttpMethod, instance: Kopflos) => {
+  const { apis, env } = instance
+  const api = apis.node(rest.api)
+
+  let shape: AnyPointer = api.node(resourceShape)
+
+  if ('property' in rest) {
+    shape = shape
+      .out(env.ns.sh.property)
+      .filter(path => rest.property.equals(path.out(env.ns.sh.path).term))
+  }
+
+  const handler = shape
+    .out(env.ns.kopflos.handler)
+    .filter(matchingMethod(env, method))
+
+  if (!isGraphPointer(handler)) {
+    return undefined
+  }
 
   const vars = new Map(Object.entries(env.kopflos.variables))
   if ('subjectVariables' in rest) {
@@ -55,19 +75,30 @@ export const loadHandlers: HandlerLookup = (rest: ResourceShapeMatch, handler: G
   const impl = handler.out(env.ns.code.implementedBy)
   if (impl.isList()) {
     const pointers = [...impl.list()]
-    return pointers.map(chainedHandler => {
+    const implementation = pointers.map(chainedHandler => {
       logCode(chainedHandler, 'handler')
       return createHandler(chainedHandler)
     }).filter(Boolean) as Array<Promise<Handler>>
+
+    return {
+      pointer: handler,
+      implementation,
+    }
   }
 
   logCode(impl, 'handler')
   const loaded = createHandler(impl)
   if (loaded) {
-    return [loaded]
+    return {
+      pointer: handler,
+      implementation: [loaded],
+    }
   }
 
-  return []
+  return {
+    pointer: handler,
+    implementation: [],
+  }
 }
 
 function createHandlerFactory(instance: Kopflos, variables: Map<string, unknown>) {
@@ -99,7 +130,7 @@ function createHandlerFactory(instance: Kopflos, variables: Map<string, unknown>
   }
 }
 
-export function matchingMethod(env: KopflosEnvironment, requestMethod: HttpMethod): Parameters<AnyPointer['filter']>[0] {
+function matchingMethod(env: KopflosEnvironment, requestMethod: HttpMethod): Parameters<AnyPointer['filter']>[0] {
   function headHandlerExists(pointers: GraphPointer[]) {
     return pointers.some(p => p.out(env.ns.kopflos.method).value === 'HEAD')
   }
