@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.5.2
+
+### Patch Changes
+
+- bfc7e90: Include `handler` graph pointer in `HandlerArgs`
+
 ## 0.5.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @kopflos-cms/shacl
 
+## 0.2.0
+
+### Minor Changes
+
+- bfc7e90: Drop `shacl#shapeSelector` term and use `sh:shapesGraph` instead
+
+### Patch Changes
+
+- bfc7e90: Update `rdf-validate-shacl` to gain support for `owl:imports`
+- Updated dependencies [bfc7e90]
+  - @kopflos-cms/core@0.5.2
+
 ## 0.1.2
 
 ### Patch Changes
