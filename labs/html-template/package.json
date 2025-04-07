@@ -47,11 +47,7 @@
   },
   "homepage": "https://github.com/zazuko/kopflos",
   "mocha": {
-    "extension": [
-      "ts"
-    ],
-    "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm",
-    "require": "../../mocha-setup.js"
+    "extends": "../../package.json",
+    "spec": "test/**/*.test.ts"
   }
 }

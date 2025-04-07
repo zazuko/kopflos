@@ -70,11 +70,7 @@
     "into-stream": "^8.0.1"
   },
   "mocha": {
-    "extension": [
-      "ts"
-    ],
     "spec": "test/**/*.test.ts",
-    "loader": "ts-node/esm",
-    "require": "../../mocha-setup.js"
+    "extends": "../../package.json"
   }
 }

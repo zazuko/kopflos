@@ -30,7 +30,7 @@
     "c8": "^10.1.2",
     "eslint-import-resolver-typescript": "^3.6.1",
     "mocha": "^10.7.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.5.4"
   },
   "workspaces": [
@@ -38,12 +38,6 @@
     "labs/*",
     "example"
   ],
-  "mocha": {
-    "extensions": [
-      "ts"
-    ],
-    "loader": "ts-node/esm"
-  },
   "c8": {
     "all": true,
     "reporters": [

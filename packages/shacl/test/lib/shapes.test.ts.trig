@@ -1,0 +1,59 @@
+PREFIX code: <https://code.described.at/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX ex: <http://example.org/>
+
+ex:ImportsWithUri
+  sh:shapesGraph ex:shapesGraph ;
+.
+
+ex:ImportsWithCode
+  sh:shapesGraph
+    [
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:test/support/shapes-graph.js#default> ;
+        ] ;
+    ] ;
+.
+
+ex:IncompleteCodeImport
+  sh:shapesGraph
+    [
+      code:implementedBy
+        [
+        ] ;
+    ] ;
+.
+
+ex:BadCodeImport
+  sh:shapesGraph
+    [
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:test/support/shapes-graph.js#foobar> ;
+        ] ;
+    ] ;
+.
+
+ex:ImportedCodeThrows
+  sh:shapesGraph
+    [
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:test/support/shapes-graph.js#throws> ;
+        ] ;
+    ] ;
+.
+
+ex:MissingImplementation
+  sh:shapesGraph
+    [
+    ] ;
+.
+
+graph ex:shapesGraph {
+  ex:shape a sh:NodeShape .
+}

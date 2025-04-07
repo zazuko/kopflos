@@ -197,8 +197,11 @@ export default class Impl implements Kopflos {
     const subjectVariables = 'subjectVariables' in resourceShapeMatch
       ? Object.fromEntries(resourceShapeMatch.subjectVariables)
       : {}
+
+    const [handler, implementation] = handlerChain
     const args: HandlerArgs = {
       ...req,
+      handler,
       headers: req.headers,
       resourceShape,
       env: this.env,
@@ -215,8 +218,8 @@ export default class Impl implements Kopflos {
     type HandlerClosure = () => Promise<KopflosResponse> | KopflosResponse
     const runHandlers: HandlerClosure = async () => {
       let response: ResultEnvelope | undefined
-      for (let i = 0; i < handlerChain.length; i++) {
-        const handler = handlerChain[i]
+      for (let i = 0; i < implementation.length; i++) {
+        const handler = implementation[i]
         const rawResult = await handler(args, response)
 
         response = this.asEnvelope(rawResult)
@@ -332,13 +335,16 @@ export default class Impl implements Kopflos {
     return fromOwnGraph
   }
 
-  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<Handler[] | KopflosResponse> {
+  async loadHandlerChain(method: HttpMethod, resourceShapeMatch: ResourceShapeMatch, coreRepresentation: Stream): Promise<[GraphPointer, Handler[]] | KopflosResponse> {
     const handlerLookup = this.options.handlerLookup || loadHandlers
 
-    const handlers = await Promise.all(handlerLookup(resourceShapeMatch, method, this))
+    const result = handlerLookup(resourceShapeMatch, method, this)
 
-    if (handlers.length) {
-      return handlers
+    if (result) {
+      const handlers = await Promise.all(result.implementation)
+      if (handlers.length) {
+        return [result.pointer, handlers]
+      }
     }
 
     if (!('property' in resourceShapeMatch) && (method === 'GET' || method === 'HEAD')) {
