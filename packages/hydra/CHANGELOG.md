@@ -1,5 +1,14 @@
 # @kopflos-cms/hydra
 
+## 0.1.5
+
+### Patch Changes
+
+- bfc7e90: `hydra:Collection`: `sh:shapesGraph` can be used to import shapes used in `kl-hydra:memberShape` and `kl-hydra:memberCreateShape`
+- bfc7e90: Update `@kopflos-cms/shacl` to use `sh:shapesGraph`
+- Updated dependencies [bfc7e90]
+  - @kopflos-cms/core@0.5.2
+
 ## 0.1.4
 
 ### Patch Changes

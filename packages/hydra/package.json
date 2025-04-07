@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/hydra",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@hydrofoil/shape-to-query": "^0.13.8",
-    "@kopflos-cms/core": "^0.5.1",
+    "@kopflos-cms/core": "^0.5.2",
     "@rdfine/hydra": "^0.10.5",
     "@sindresorhus/merge-streams": "^4.0.0",
     "@tpluscode/rdf-ns-builders": "^4.3.0",
@@ -40,7 +40,7 @@
     "sparqljs": "^3.7.3"
   },
   "devDependencies": {
-    "@kopflos-cms/shacl": "^0.1.2",
+    "@kopflos-cms/shacl": "^0.2.0",
     "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/http-errors": "^2.0.4",
     "@zazuko/env-node": "^2.1.4",
