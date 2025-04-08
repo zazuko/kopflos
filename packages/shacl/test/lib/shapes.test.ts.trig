@@ -17,6 +17,18 @@ ex:ImportsWithCode
     ] ;
 .
 
+ex:ImportsWithArgs
+  sh:shapesGraph
+    [
+      code:arguments ( "foo" 5 ) ;
+      code:implementedBy
+        [
+          a code:EcmaScriptModule ;
+          code:link <file:test/support/shapes-graph.js#default> ;
+        ] ;
+    ] ;
+.
+
 ex:IncompleteCodeImport
   sh:shapesGraph
     [

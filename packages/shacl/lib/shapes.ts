@@ -2,9 +2,10 @@ import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
 import { log } from '@kopflos-cms/core'
 import type { DatasetCore, NamedNode } from '@rdfjs/types'
 import { isNamedNode } from 'is-graph-pointer'
+import loadArguments from 'rdf-loader-code/arguments.js'
 
-export interface ShapesGraphLoader {
-  (args: HandlerArgs): Promise<DatasetCore> | DatasetCore
+export interface ShapesGraphLoader<A extends unknown[] = never[]> {
+  (args: HandlerArgs, ...userArgs: A): Promise<DatasetCore> | DatasetCore
 }
 
 export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
@@ -21,10 +22,13 @@ export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
         return
       }
 
-      const impl = await env.load<ShapesGraphLoader>(ptr.out(env.ns.code.implementedBy))
-      if (impl) {
+      const impl = ptr.out(env.ns.code.implementedBy)
+      const loader = await env.load<ShapesGraphLoader<unknown[]>>(impl)
+      if (loader) {
         try {
-          env.dataset.addAll(dataset, await impl(args))
+          const userArgs = await loadArguments(ptr, env.load.options)
+
+          env.dataset.addAll(dataset, await loader(args, ...userArgs))
         } catch (e) {
           log.error('Failed to load shapes graph', e)
           throw e
