@@ -1,5 +1,11 @@
 # @kopflos-cms/shacl
 
+## 0.2.1
+
+### Patch Changes
+
+- 504e7b6: Allow additional arguments passed to `sh:shapesGraph` code reference
+
 ## 0.2.0
 
 ### Minor Changes
