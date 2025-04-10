@@ -45,7 +45,7 @@
     "@types/http-errors": "^2.0.4",
     "@zazuko/env-node": "^2.1.4",
     "chai": "^5.1.2",
-    "mocha-chai-rdf": "^0.1.6"
+    "mocha-chai-rdf": "^0.1.9"
   },
   "mocha": {
     "spec": "test/**/*.test.ts",

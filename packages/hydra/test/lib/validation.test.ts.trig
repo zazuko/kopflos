@@ -1,0 +1,33 @@
+PREFIX schema: <http://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX ex: <http://example.org/>
+prefix kl-hydra: <https://kopflos.described.at/hydra#>
+
+GRAPH <shapesGraphLoader/when-collection-has-sh:shapesGraph> {
+    ex:collection
+        sh:shapesGraph ex:fooShapes, ex:barShapes ;
+    .
+}
+
+GRAPH <shapesGraphLoader/collection-has-hydra#memberCreateShape> {
+    ex:collection
+        kl-hydra:memberCreateShape [
+            sh:property [
+                sh:path rdf:type ;
+                sh:hasValue schema:Person ;
+            ]
+        ] ;
+    .
+}
+
+GRAPH <shapesGraphLoader/collection-has-hydra#createMemberCreateShape> {
+    ex:collection
+        kl-hydra:memberCreateShape [
+            sh:property [
+                sh:path rdf:type ;
+                sh:hasValue schema:Person ;
+            ]
+        ] ;
+    .
+}

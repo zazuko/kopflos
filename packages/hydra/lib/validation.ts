@@ -1,8 +1,10 @@
-import type { HandlerArgs } from '@kopflos-cms/core'
+import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
 import { isGraphPointer, isNamedNode } from 'is-graph-pointer'
 import type { ShapesGraphLoader } from '@kopflos-cms/shacl'
+import type { MultiPointer } from 'clownface'
+import type { DatasetCore } from '@rdfjs/types'
 
-export const shapesGraphLoader: ShapesGraphLoader = ({ env, subject, handler }: HandlerArgs) => {
+export const shapesGraphLoader: ShapesGraphLoader = ({ env, subject }: HandlerArgs) => {
   const { sh, owl, kl, hydra, rdf } = env.ns
 
   let memberShape = subject.out(kl('hydra#memberCreateShape'))
@@ -10,7 +12,10 @@ export const shapesGraphLoader: ShapesGraphLoader = ({ env, subject, handler }: 
     memberShape = subject.out(kl('hydra#memberShape'))
   }
 
-  subject
+  const shapesGraph = env.clownface()
+  copySubgraph(env, memberShape, shapesGraph.dataset)
+
+  shapesGraph
     .blankNode()
     .addOut(rdf.type, sh.NodeShape)
     .addOut(sh.targetNode, subject)
@@ -22,17 +27,30 @@ export const shapesGraphLoader: ShapesGraphLoader = ({ env, subject, handler }: 
         .addOut(sh.message, 'Posting to a collection requires a single new hydra:member')
     })
 
-  subject
+  shapesGraph
     .blankNode()
     .addOut(sh.targetObjectsOf, hydra.member)
     .addOut(sh.node, memberShape)
 
-  const shapesGraphs = handler
+  const imports = subject
     .out(sh.shapesGraph)
     .filter(isNamedNode)
-  subject
+  shapesGraph
     .blankNode()
-    .addOut(owl.imports, shapesGraphs)
+    .addOut(owl.imports, imports)
 
-  return subject.dataset
+  return shapesGraph.dataset
+}
+
+function copySubgraph(env: KopflosEnvironment, source: MultiPointer, destination: DatasetCore) {
+  const traverser = env.traverser<DatasetCore>(({ level, quad: { subject } }) => {
+    return level === 0 || subject.termType === 'BlankNode'
+  })
+
+  source.toArray()
+    .forEach(ptr => {
+      traverser.forEach(ptr, ({ quad }) => {
+        destination.add(quad)
+      })
+    })
 }

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/hydra/lib/validation.js shapesGraphLoader collection has hydra#createMemberCreateShape copies it to output shapes 1`] = `
+"_:c14n0 <http://www.w3.org/ns/shacl#node> _:c14n3 .
+_:c14n0 <http://www.w3.org/ns/shacl#targetObjectsOf> <http://www.w3.org/ns/hydra/core#member> .
+_:c14n1 <http://www.w3.org/ns/shacl#hasValue> <http://schema.org/Person> .
+_:c14n1 <http://www.w3.org/ns/shacl#path> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+_:c14n2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/shacl#NodeShape> .
+_:c14n2 <http://www.w3.org/ns/shacl#property> _:c14n4 .
+_:c14n2 <http://www.w3.org/ns/shacl#targetNode> <http://example.org/collection> .
+_:c14n3 <http://www.w3.org/ns/shacl#property> _:c14n1 .
+_:c14n4 <http://www.w3.org/ns/shacl#maxCount> \\"1\\"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n4 <http://www.w3.org/ns/shacl#message> \\"Posting to a collection requires a single new hydra:member\\" .
+_:c14n4 <http://www.w3.org/ns/shacl#minCount> \\"1\\"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n4 <http://www.w3.org/ns/shacl#path> <http://www.w3.org/ns/hydra/core#member> .
+"
+`;
+
+exports[`@kopflos-cms/hydra/lib/validation.js shapesGraphLoader collection has hydra#memberCreateShape copies it to output shapes 1`] = `
+"_:c14n0 <http://www.w3.org/ns/shacl#node> _:c14n3 .
+_:c14n0 <http://www.w3.org/ns/shacl#targetObjectsOf> <http://www.w3.org/ns/hydra/core#member> .
+_:c14n1 <http://www.w3.org/ns/shacl#hasValue> <http://schema.org/Person> .
+_:c14n1 <http://www.w3.org/ns/shacl#path> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+_:c14n2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/shacl#NodeShape> .
+_:c14n2 <http://www.w3.org/ns/shacl#property> _:c14n4 .
+_:c14n2 <http://www.w3.org/ns/shacl#targetNode> <http://example.org/collection> .
+_:c14n3 <http://www.w3.org/ns/shacl#property> _:c14n1 .
+_:c14n4 <http://www.w3.org/ns/shacl#maxCount> \\"1\\"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n4 <http://www.w3.org/ns/shacl#message> \\"Posting to a collection requires a single new hydra:member\\" .
+_:c14n4 <http://www.w3.org/ns/shacl#minCount> \\"1\\"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n4 <http://www.w3.org/ns/shacl#path> <http://www.w3.org/ns/hydra/core#member> .
+"
+`;
