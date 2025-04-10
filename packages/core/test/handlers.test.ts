@@ -9,7 +9,7 @@ import { ex } from '../../testing-helpers/ns.js'
 import Kopflos from '../lib/Kopflos.js'
 import handlerLookupStub from './support/handlerLookupStub.js'
 
-describe('@kopflos-cms/handlers.js', () => {
+describe('@kopflos-cms/handlers.js', function () {
   use(snapshots)
 
   before(createStore(import.meta.url, { format: 'trig', includeDefaultGraph: true }))
@@ -20,7 +20,8 @@ describe('@kopflos-cms/handlers.js', () => {
       default: 'http://localhost:8080/sparql',
     },
   }
-  describe('getCoreRepresentation', () => {
+
+  describe('getCoreRepresentation', function () {
     it('forwards core representation', async function () {
       // given
       const kopflos = new Kopflos(config, {

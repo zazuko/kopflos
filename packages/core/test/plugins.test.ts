@@ -2,9 +2,9 @@ import url from 'node:url'
 import { expect } from 'chai'
 import { loadPlugins } from '../plugins.js'
 
-describe('@kopflos-cms/core/plugins.js', () => {
-  describe('loadPlugins', () => {
-    it('includes default plugins', async () => {
+describe('@kopflos-cms/core/plugins.js', function () {
+  describe('loadPlugins', function () {
+    it('includes default plugins', async function () {
       // when
       const plugins = await loadPlugins({})
 
@@ -12,7 +12,7 @@ describe('@kopflos-cms/core/plugins.js', () => {
       expect(plugins).to.have.length(1)
     })
 
-    it('can explicitly disable plugins', async () => {
+    it('can explicitly disable plugins', async function () {
       // when
       const plugins = await loadPlugins({
         '@kopflos-cms/core/plugin/shorthandTerms.js': false,
@@ -22,7 +22,7 @@ describe('@kopflos-cms/core/plugins.js', () => {
       expect(plugins).to.have.length(0)
     })
 
-    it('allows referencing named exports', async () => {
+    it('allows referencing named exports', async function () {
       // given
       const pluginPath = url.fileURLToPath(
         new URL('./support/plugin.js', import.meta.url),

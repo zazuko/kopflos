@@ -7,10 +7,11 @@ import Kopflos from '../../lib/Kopflos.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { ex } from '../../../testing-helpers/ns.js'
 
-describe('lib/resourceShape', () => {
+describe('lib/resourceShape', function () {
   let options: KopflosConfig
 
   beforeEach(createStore(import.meta.url, { format: 'trig' }))
+
   beforeEach(async function () {
     options = {
       baseIri: 'http://example.com',
@@ -20,9 +21,9 @@ describe('lib/resourceShape', () => {
     }
   })
 
-  describe('default resource shape lookup', () => {
-    context('when directly matching resource shape is available', () => {
-      it('is found by resource IRI', async () => {
+  describe('default resource shape lookup', function () {
+    context('when directly matching resource shape is available', function () {
+      it('is found by resource IRI', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -38,7 +39,7 @@ describe('lib/resourceShape', () => {
         expect(results).to.have.length(1)
       })
 
-      it('does not find anything when requested resource does not match that shape', async () => {
+      it('does not find anything when requested resource does not match that shape', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -50,8 +51,8 @@ describe('lib/resourceShape', () => {
       })
     })
 
-    context('when class targeting resource shape is available', () => {
-      it('is found when requested resource has that type', async () => {
+    context('when class targeting resource shape is available', function () {
+      it('is found when requested resource has that type', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -67,7 +68,7 @@ describe('lib/resourceShape', () => {
         expect(results).to.have.length(1)
       })
 
-      it('is found when requested resource has derived type', async () => {
+      it('is found when requested resource has derived type', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -83,7 +84,7 @@ describe('lib/resourceShape', () => {
         expect(results).to.have.length(1)
       })
 
-      it('find nothing when a resource exists but has a different type', async () => {
+      it('find nothing when a resource exists but has a different type', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -95,8 +96,8 @@ describe('lib/resourceShape', () => {
       })
     })
 
-    context('when class targeting resource shapes has property shape', () => {
-      it('finds matching resource by property usage of class targeting shape', async () => {
+    context('when class targeting resource shapes has property shape', function () {
+      it('finds matching resource by property usage of class targeting shape', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -115,8 +116,8 @@ describe('lib/resourceShape', () => {
       })
     })
 
-    context('when node targeting resource shapes has property shape', () => {
-      it('finds matching resource by property usage of resource shape with target node', async () => {
+    context('when node targeting resource shapes has property shape', function () {
+      it('finds matching resource by property usage of resource shape with target node', async function () {
         // given
         const kopflos = new Kopflos(options)
 
@@ -135,8 +136,8 @@ describe('lib/resourceShape', () => {
       })
     })
 
-    context('when resource is matched against pattern', () => {
-      it('extracts variables', async () => {
+    context('when resource is matched against pattern', function () {
+      it('extracts variables', async function () {
         // given
         const kopflos = new Kopflos(options)
 

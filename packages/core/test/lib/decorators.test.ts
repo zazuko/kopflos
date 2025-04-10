@@ -8,7 +8,7 @@ import type { KopflosConfig } from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import { bar, foo } from '../support/decorators.js'
 
-describe('@kopflos-cms/core/lib/decorators.js', () => {
+describe('@kopflos-cms/core/lib/decorators.js', function () {
   let env: KopflosEnvironment
   const config: KopflosConfig = {
     baseIri: 'http://localhost:1429/',
@@ -29,8 +29,8 @@ describe('@kopflos-cms/core/lib/decorators.js', () => {
     env = createEnv(config)
   })
 
-  describe('loadDecorators', () => {
-    context('decorators without implementation', () => {
+  describe('loadDecorators', function () {
+    context('decorators without implementation', function () {
       it('are skipped', async function () {
         // given
         const api = this.rdf.graph.namedNode(ex.api)
@@ -43,7 +43,7 @@ describe('@kopflos-cms/core/lib/decorators.js', () => {
       })
     })
 
-    context('decorators with implementations', () => {
+    context('decorators with implementations', function () {
       it('are loaded', async function () {
         // given
         const api = this.rdf.graph.namedNode(ex.api)

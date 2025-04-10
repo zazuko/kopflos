@@ -6,14 +6,14 @@ import { createStore } from 'mocha-chai-rdf/store.js'
 import { fromQuery, applyTemplate } from '../../lib/iriTemplate.js'
 import { ex } from '../../../testing-helpers/ns.js'
 
-describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
+describe('@kopflos-cms/hydra/lib/iriTemplate.js', function () {
   beforeEach(createStore(import.meta.url, {
     format: 'trig',
     sliceTestPath: [2, -1],
   }))
 
-  describe('fromQuery', () => {
-    context('explicit variable representation', () => {
+  describe('fromQuery', function () {
+    context('explicit variable representation', function () {
       it('should parse unquoted template variable as named node', async function () {
         // given
         const template = this.rdf.graph.node(ex('query-only/id'))
@@ -106,9 +106,9 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
     })
   })
 
-  describe('applyTemplate', () => {
-    context('template is only query params', () => {
-      it('sets params to resource', () => {
+  describe('applyTemplate', function () {
+    context('template is only query params', function () {
+      it('sets params to resource', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo/bar')
@@ -120,7 +120,7 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
         expect(result).to.eq('http://example.com/foo/bar?baz=qux')
       })
 
-      it('replaces existing params', () => {
+      it('replaces existing params', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo?baz=bar')
@@ -132,7 +132,7 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
         expect(result).to.eq('http://example.com/foo?baz=qux')
       })
 
-      it('combines with existing params', () => {
+      it('combines with existing params', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo?bar=bar')
@@ -145,8 +145,8 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
       })
     })
 
-    context('template is partial query params', () => {
-      it('sets params to resource', () => {
+    context('template is partial query params', function () {
+      it('sets params to resource', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo/bar')
@@ -158,7 +158,7 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
         expect(result).to.eq('http://example.com/foo/bar?baz=qux')
       })
 
-      it('replaces params', () => {
+      it('replaces params', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo?bar=bar')
@@ -170,7 +170,7 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
         expect(result).to.eq('http://example.com/foo?bar=qux')
       })
 
-      it('combines with other params', () => {
+      it('combines with other params', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo?bar=bar')
@@ -183,8 +183,8 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
       })
     })
 
-    context('template is path', () => {
-      it('creates a URL from absolute path', () => {
+    context('template is path', function () {
+      it('creates a URL from absolute path', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo/bar')
@@ -196,7 +196,7 @@ describe('@kopflos-cms/hydra/lib/iriTemplate.js', () => {
         expect(result).to.eq('http://example.com/baz')
       })
 
-      it('creates a URL from relative path', () => {
+      it('creates a URL from relative path', function () {
         // given
         const resource = $rdf.clownface()
           .namedNode('http://example.com/foo/bar')

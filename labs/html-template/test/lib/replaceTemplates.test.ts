@@ -8,7 +8,7 @@ import { expect } from 'chai'
 import { replaceTemplates } from '../../lib/replaceTemplates.js'
 import type { TemplateFunc } from '../../index.js'
 
-describe('@kopflos-labs/html-template/lib/replaceTemplates.js', () => {
+describe('@kopflos-labs/html-template/lib/replaceTemplates.js', function () {
   before(createStore(import.meta.url, {
     format: 'ttl',
   }))
@@ -20,7 +20,7 @@ describe('@kopflos-labs/html-template/lib/replaceTemplates.js', () => {
     },
   })
 
-  context('<template target-class>', () => {
+  context('<template target-class>', function () {
     it('finds target by absolute url', function () {
       // given
       const graph = this.rdf.graph
@@ -43,7 +43,7 @@ http://example.org/Foo
     })
   })
 
-  context('<template property>', () => {
+  context('<template property>', function () {
     it('descends into the graph', function () {
       // given
       const graph = this.rdf.graph

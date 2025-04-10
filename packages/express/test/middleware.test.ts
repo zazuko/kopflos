@@ -6,7 +6,7 @@ import kopflos from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 import { ex } from '../../testing-helpers/ns.js'
 
-describe('@kopflos-cms/express/middleware', () => {
+describe('@kopflos-cms/express/middleware', function () {
   let app: Express
 
   beforeEach(createStore(import.meta.url, {
@@ -42,7 +42,7 @@ describe('@kopflos-cms/express/middleware', () => {
       .use(middleware)
   })
 
-  it('sets headers in before middleware', async () => {
+  it('sets headers in before middleware', async function () {
     await request(app)
       .get('/')
       .set('host', 'example.org')
@@ -51,7 +51,7 @@ describe('@kopflos-cms/express/middleware', () => {
       .expect('Access-Control-Allow-Origin', 'example.org')
   })
 
-  it('runs after middleware when kopflos middleware returns 404', async () => {
+  it('runs after middleware when kopflos middleware returns 404', async function () {
     await request(app)
       .get('/not-found')
       .set('host', 'example.org')
@@ -59,7 +59,7 @@ describe('@kopflos-cms/express/middleware', () => {
       .expect('after')
   })
 
-  it('can return from before middleware', async () => {
+  it('can return from before middleware', async function () {
     await request(app)
       .get('/stop')
       .set('host', 'example.org')

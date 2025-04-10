@@ -2,9 +2,9 @@ import { resolve } from 'node:path'
 import { expect } from 'chai'
 import { prepareConfig } from '../../lib/config.js'
 
-describe('@kopflos-cms/vite/lib/config.js', () => {
-  describe('prepareConfig', () => {
-    it('returns minimal default config', async () => {
+describe('@kopflos-cms/vite/lib/config.js', function () {
+  describe('prepareConfig', function () {
+    it('returns minimal default config', async function () {
       const config = await prepareConfig({})
 
       expect(config).to.deep.contain({
@@ -18,7 +18,7 @@ describe('@kopflos-cms/vite/lib/config.js', () => {
       })
     })
 
-    it('can override out dir relative to cwd', async () => {
+    it('can override out dir relative to cwd', async function () {
       const config = await prepareConfig({
         outDir: 'build',
       })
@@ -26,7 +26,7 @@ describe('@kopflos-cms/vite/lib/config.js', () => {
       expect(config.build.outDir).to.eq(resolve(process.cwd(), 'build'))
     })
 
-    it('finds input HTMLs from globs and paths', async () => {
+    it('finds input HTMLs from globs and paths', async function () {
       const config = await prepareConfig({
         entrypoints: [
           'test/fixtures/foo.html',
@@ -41,7 +41,7 @@ describe('@kopflos-cms/vite/lib/config.js', () => {
       ])
     })
 
-    it('merges user config', async () => {
+    it('merges user config', async function () {
       const config = await prepareConfig({
         configPath: '@kopflos-cms/vite/test/fixtures/vite.config.js',
       })

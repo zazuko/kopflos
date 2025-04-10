@@ -11,7 +11,7 @@ import { ex } from '../../../testing-helpers/ns.js'
 
 env.formats.import(formatsPretty)
 
-describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
+describe('@kopflos-cms/hydra/lib/queryShapes.js', function () {
   use(snapshots)
 
   beforeEach(createStore(import.meta.url, {
@@ -19,8 +19,8 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
     sliceTestPath: [2, -1],
   }))
 
-  describe('memberQueryShape', () => {
-    context('unordered collection', () => {
+  describe('memberQueryShape', function () {
+    context('unordered collection', function () {
       it('returns shape without limit or offset', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -33,7 +33,7 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
-    context('using member query shape', () => {
+    context('using member query shape', function () {
       it('ignores :memberShape', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -46,7 +46,7 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
-    context('ordered collection', () => {
+    context('ordered collection', function () {
       it('returns shape with offset', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -81,7 +81,7 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
-    context('multiple member assertions', () => {
+    context('multiple member assertions', function () {
       it('produces constraint for each', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -95,8 +95,8 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
     })
   })
 
-  describe('totalsQueryShape', () => {
-    context('unordered collection', () => {
+  describe('totalsQueryShape', function () {
+    context('unordered collection', function () {
       it('returns correct total count', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -109,7 +109,7 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
-    context('ordered collection', () => {
+    context('ordered collection', function () {
       it('returns correct total count', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())
@@ -122,7 +122,7 @@ describe('@kopflos-cms/hydra/lib/queryShapes.js', () => {
       })
     })
 
-    context('multiple member assertions', () => {
+    context('multiple member assertions', function () {
       it('returns correct total count', async function () {
         // given
         const collection = this.rdf.graph.namedNode(ex())

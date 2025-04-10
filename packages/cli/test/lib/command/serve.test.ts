@@ -13,6 +13,7 @@ describe('kopflos/lib/command/serve', function () {
   let process: ReturnType<typeof fork>
 
   beforeEach(createEmpty)
+
   beforeEach(function () {
     process = fork(serve)
     fs.mkdirSync(fixturesDir)

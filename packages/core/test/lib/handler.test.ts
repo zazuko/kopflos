@@ -20,11 +20,12 @@ function loadHandler(match: ResourceShapeSubjectMatch, method: string, kopflos: 
   return result?.implementation || []
 }
 
-describe('lib/handler', () => {
+describe('lib/handler', function () {
   let config: KopflosConfig
 
-  describe('loadHandlers', () => {
+  describe('loadHandlers', function () {
     beforeEach(createStore(import.meta.url, { format: 'trig', sliceTestPath: [1, -2] }))
+
     beforeEach(function () {
       config = {
         baseIri: 'http://example.com/',
@@ -38,7 +39,7 @@ describe('lib/handler', () => {
       }
     })
 
-    context('subject request', () => {
+    context('subject request', function () {
       it('finds matching handler', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -194,7 +195,7 @@ describe('lib/handler', () => {
       })
     })
 
-    context('object request', () => {
+    context('object request', function () {
       it('finds matching handler', async function () {
         // given
         const kopflos = new Kopflos(config, {

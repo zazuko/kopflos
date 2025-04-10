@@ -15,14 +15,14 @@ import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 const baseIri = 'http://example.org'
 const ex = rdf.namespace(baseIri + '/')
 
-describe('@kopflos-cms/plugin-deploy-resources', () => {
+describe('@kopflos-cms/plugin-deploy-resources', function () {
   use(snapshots)
 
   let env: Kopflos
 
   beforeEach(createEmpty)
 
-  describe('onStart', () => {
+  describe('onStart', function () {
     beforeEach(function () {
       env = new Kopflos({
         baseIri,
@@ -32,8 +32,8 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
-    context('disabled', () => {
-      beforeEach(async () => {
+    context('disabled', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           enabled: false,
         })
@@ -47,8 +47,8 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
-    context('no paths', () => {
-      beforeEach(async () => {
+    context('no paths', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           paths: [],
         })
@@ -62,8 +62,8 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
-    context('path does not exist', () => {
-      beforeEach(async () => {
+    context('path does not exist', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           paths: ['foobar'],
         })
@@ -77,8 +77,8 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
-    context('enabled', () => {
-      beforeEach(async () => {
+    context('enabled', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
         })
@@ -101,7 +101,7 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
     })
   })
 
-  context('watch', () => {
+  context('watch', function () {
     let plugin: KopflosPlugin
     let tempDir: string
 
@@ -118,13 +118,13 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       await fs.cp(url.fileURLToPath(new URL('resources', import.meta.url)), tempDir, { recursive: true })
     })
 
-    afterEach(async () => {
+    afterEach(async function () {
       await plugin?.onStop?.()
       await fs.rm(tempDir, { recursive: true, force: true })
     })
 
-    context('enabled', () => {
-      beforeEach(async () => {
+    context('enabled', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           paths: [tempDir],
         })
@@ -158,8 +158,8 @@ describe('@kopflos-cms/plugin-deploy-resources', () => {
       })
     })
 
-    context('disabled', () => {
-      beforeEach(async () => {
+    context('disabled', function () {
+      beforeEach(async function () {
         const Plugin = configure({
           paths: [tempDir],
           watch: false,

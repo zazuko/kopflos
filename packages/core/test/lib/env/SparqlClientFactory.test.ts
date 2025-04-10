@@ -6,11 +6,11 @@ import type { Environment as E } from '@rdfjs/environment/Environment.js'
 import Factory from '../../../lib/env/SparqlClientFactory.js'
 import type { KopflosFactory } from '../../../lib/env/KopflosFactory.js'
 
-describe('lib/env/SparqlClientFactory', () => {
+describe('lib/env/SparqlClientFactory', function () {
   let factory: E<Factory>
 
-  context('initialised from endpoint URL', () => {
-    before(() => {
+  context('initialised from endpoint URL', function () {
+    before(function () {
       // given
       const Kopflos = class implements KopflosFactory {
         static exports = ['kopflos']
@@ -32,13 +32,13 @@ describe('lib/env/SparqlClientFactory', () => {
       factory = new Environment([Kopflos, Factory], { parent: rdf })
     })
 
-    it('uses factory itself with sparql clients', () => {
+    it('uses factory itself with sparql clients', function () {
       // then
       expect(factory.sparql.default.stream).to.have.property('factory', factory)
       expect(factory.sparql.default.parsed).to.have.property('factory', factory)
     })
 
-    it('initializes clients', () => {
+    it('initializes clients', function () {
       // then
       expect(factory.sparql.default.stream).to.be.instanceOf(StreamClient)
       expect(factory.sparql.default.parsed).to.be.instanceOf(ParsingClient)
@@ -47,8 +47,8 @@ describe('lib/env/SparqlClientFactory', () => {
     })
   })
 
-  context('initialised from endpoint config', () => {
-    before(() => {
+  context('initialised from endpoint config', function () {
+    before(function () {
       // given
       const Kopflos = class implements KopflosFactory {
         static exports = ['kopflos']
@@ -73,7 +73,7 @@ describe('lib/env/SparqlClientFactory', () => {
       factory = new Environment([Kopflos, Factory], { parent: rdf })
     })
 
-    it('initializes clients', () => {
+    it('initializes clients', function () {
       // then
       expect(factory.sparql.default.stream).to.be.instanceOf(StreamClient)
       expect(factory.sparql.default.parsed).to.be.instanceOf(ParsingClient)
@@ -83,14 +83,14 @@ describe('lib/env/SparqlClientFactory', () => {
       expect(factory.sparql.default.parsed).to.have.property('updateUrl', 'http://example.com/update')
     })
 
-    it('uses factory itself with sparql clients', () => {
+    it('uses factory itself with sparql clients', function () {
       // then
       expect(factory.sparql.default.stream).to.have.property('factory', factory)
       expect(factory.sparql.default.parsed).to.have.property('factory', factory)
     })
   })
 
-  context('initialised from client instances', () => {
+  context('initialised from client instances', function () {
     const stream = {
       name: 'stream',
     } as unknown as StreamClient
@@ -98,7 +98,7 @@ describe('lib/env/SparqlClientFactory', () => {
       name: 'parsed',
     } as unknown as ParsingClient
 
-    before(() => {
+    before(function () {
       // given
       const Kopflos = class implements KopflosFactory {
         static exports = ['kopflos']
@@ -123,14 +123,14 @@ describe('lib/env/SparqlClientFactory', () => {
       factory = new Environment([Kopflos, Factory], { parent: rdf })
     })
 
-    it('sets clients', () => {
+    it('sets clients', function () {
       // then
       expect(factory.sparql.default.stream).to.have.property('name', 'stream')
       expect(factory.sparql.default.parsed).to.have.property('name', 'parsed')
     })
   })
 
-  context('initialised from client single instance', () => {
+  context('initialised from client single instance', function () {
     const endpoints = {
       endpointUrl: 'http://example.com/sparql',
       updateUrl: 'http://example.com/update',
@@ -143,8 +143,8 @@ describe('lib/env/SparqlClientFactory', () => {
     ]
 
     for (const [name, client] of singleClients) {
-      context(`of ${name}`, () => {
-        before(() => {
+      context(`of ${name}`, function () {
+        before(function () {
           // given
           const Kopflos = class implements KopflosFactory {
             static exports = ['kopflos']
@@ -166,13 +166,13 @@ describe('lib/env/SparqlClientFactory', () => {
           factory = new Environment([Kopflos, Factory], { parent: rdf })
         })
 
-        it('sets both clients', () => {
+        it('sets both clients', function () {
           // then
           expect(factory.sparql.default.stream).to.be.ok
           expect(factory.sparql.default.parsed).to.be.ok
         })
 
-        it('uses same endpoint URLs for both clients', () => {
+        it('uses same endpoint URLs for both clients', function () {
           // then
           expect(factory.sparql.default.stream).to.have.property('endpointUrl', 'http://example.com/sparql')
           expect(factory.sparql.default.parsed).to.have.property('endpointUrl', 'http://example.com/sparql')
@@ -182,7 +182,7 @@ describe('lib/env/SparqlClientFactory', () => {
           expect(factory.sparql.default.parsed).to.have.property('storeUrl', 'http://example.com/store')
         })
 
-        it('uses factory itself with sparql clients', () => {
+        it('uses factory itself with sparql clients', function () {
           // then
           expect(factory.sparql.default.stream).to.have.property('factory', factory)
           expect(factory.sparql.default.parsed).to.have.property('factory', factory)
