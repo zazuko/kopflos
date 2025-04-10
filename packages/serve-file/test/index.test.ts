@@ -6,8 +6,8 @@ import type { ResultEnvelope } from '@kopflos-cms/core'
 import getStream from 'get-stream'
 import factory from '../index.js'
 
-describe('@kopflos-cms/serve-file', () => {
-  it('serves from path', async () => {
+describe('@kopflos-cms/serve-file', function () {
+  it('serves from path', async function () {
     // given
     const serveFile = factory('test/test.txt')
 
@@ -24,7 +24,7 @@ describe('@kopflos-cms/serve-file', () => {
     })
   })
 
-  it('detects media type', async () => {
+  it('detects media type', async function () {
     // given
     const serveFile = factory('test/test.json')
 
@@ -39,7 +39,7 @@ describe('@kopflos-cms/serve-file', () => {
     })
   })
 
-  it('falls back to application/octet-stream', async () => {
+  it('falls back to application/octet-stream', async function () {
     // given
     const serveFile = factory('test/foo.bar')
 
@@ -55,7 +55,7 @@ describe('@kopflos-cms/serve-file', () => {
     })
   })
 
-  it('allows media type override', async () => {
+  it('allows media type override', async function () {
     // given
     const serveFile = factory({
       path: 'test/test.json',
@@ -73,7 +73,7 @@ describe('@kopflos-cms/serve-file', () => {
     })
   })
 
-  it('serves stream', async () => {
+  it('serves stream', async function () {
     // given
     const serveFile = factory({
       path: 'test/test.txt',

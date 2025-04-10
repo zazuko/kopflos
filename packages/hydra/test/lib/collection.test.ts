@@ -5,12 +5,12 @@ import { createStore } from 'mocha-chai-rdf/store.js'
 import { prepareMember } from '../../lib/collection.js'
 import { ex } from '../../../testing-helpers/ns.js'
 
-describe('@kopflos-cms/hydra/lib/collection.js', () => {
+describe('@kopflos-cms/hydra/lib/collection.js', function () {
   use(snapshots)
 
   before(createStore(import.meta.url))
 
-  describe('prepareMember', () => {
+  describe('prepareMember', function () {
     it('asserts all combinations of member assertions', function () {
       // given
       const collection = this.rdf.graph.node(ex.collection)

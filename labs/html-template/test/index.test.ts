@@ -7,10 +7,10 @@ import type { AnyPointer } from 'clownface'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
 import bindTemplate from '../index.js'
 
-describe('@kopflos-labs/html-template', () => {
+describe('@kopflos-labs/html-template', function () {
   use(snapshots)
 
-  it('uses core representation a default template data', async () => {
+  it('uses core representation a default template data', async function () {
     // given
     const templateFunc = sinon.stub()
     const context = {
@@ -41,7 +41,7 @@ describe('@kopflos-labs/html-template', () => {
     expect(templateData.dataset).canonical.toMatchSnapshot()
   })
 
-  it('fetches data with given arguments', async () => {
+  it('fetches data with given arguments', async function () {
     // given
     const templateFunc = sinon.stub()
     const fetchData = sinon.stub().returns(({ env }: HandlerArgs) => {
@@ -77,7 +77,7 @@ describe('@kopflos-labs/html-template', () => {
     expect(templateData.dataset).canonical.toMatchSnapshot()
   })
 
-  it('fetches data as stream', async () => {
+  it('fetches data as stream', async function () {
     // given
     const templateFunc = sinon.stub()
     const fetchData = sinon.stub().returns(({ env }: HandlerArgs) => {
@@ -112,7 +112,7 @@ describe('@kopflos-labs/html-template', () => {
     expect(templateData.dataset).canonical.toMatchSnapshot()
   })
 
-  it('returns error if previous response is not a string', async () => {
+  it('returns error if previous response is not a string', async function () {
     // given
     const context = {
       env: createEnv({
@@ -135,7 +135,7 @@ describe('@kopflos-labs/html-template', () => {
     expect(result).to.be.an('error')
   })
 
-  it('returns error if there is no previous response', async () => {
+  it('returns error if there is no previous response', async function () {
     // given
     const context = {
       env: createEnv({

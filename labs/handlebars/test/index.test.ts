@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
 import process from '../index.js'
 
-describe('@kopflos-labs/handlebars', () => {
+describe('@kopflos-labs/handlebars', function () {
   beforeEach(createStore(import.meta.url, {
     format: 'ttl',
   }))
@@ -23,7 +23,7 @@ describe('@kopflos-labs/handlebars', () => {
     expect(result).to.equal('http://example.org/article')
   })
 
-  describe('valueof helper', () => {
+  describe('valueof helper', function () {
     it('follows the path and prints value', function () {
       const result = process('{{ valueof "schema:image/schema:thumbnail/schema:contentUrl" }}', {
         pointer: this.rdf.graph.namedNode('http://example.org/article'),

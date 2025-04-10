@@ -5,8 +5,8 @@ import { loadConfig, prepareConfig } from '../../lib/config.js'
 describe('kopflos/lib/config.js', function () {
   this.timeout(10000)
 
-  describe('loadConfig', () => {
-    it('should discover the config file', async () => {
+  describe('loadConfig', function () {
+    it('should discover the config file', async function () {
       const { config } = await loadConfig({
         path: undefined,
         root: url.fileURLToPath(new URL('..', import.meta.url)),
@@ -17,7 +17,7 @@ describe('kopflos/lib/config.js', function () {
       })
     })
 
-    it('should load config from path', async () => {
+    it('should load config from path', async function () {
       // given
       const configPath = url.fileURLToPath(new URL('../fixtures/config.json', import.meta.url))
 
@@ -33,8 +33,8 @@ describe('kopflos/lib/config.js', function () {
     })
   })
 
-  describe('prepareConfig', () => {
-    it('sets config itself as watched paths', async () => {
+  describe('prepareConfig', function () {
+    it('sets config itself as watched paths', async function () {
       // given
       const configPath = url.fileURLToPath(new URL('../fixtures/config.json', import.meta.url))
 
@@ -50,7 +50,7 @@ describe('kopflos/lib/config.js', function () {
       expect(config.watch).to.deep.eq([configPath])
     })
 
-    it('adds config itself to watched paths', async () => {
+    it('adds config itself to watched paths', async function () {
       // given
       const configPath = url.fileURLToPath(new URL('../fixtures/config.with-watch.json', import.meta.url))
 
@@ -66,7 +66,7 @@ describe('kopflos/lib/config.js', function () {
       expect(config.watch).to.contain.all.members([configPath, 'lib'])
     })
 
-    it('rebase relative plugin paths to config path', async () => {
+    it('rebase relative plugin paths to config path', async function () {
       // given
       const configPath = url.fileURLToPath(new URL('../fixtures/config.with-relative.json', import.meta.url))
 

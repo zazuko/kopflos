@@ -5,10 +5,11 @@ import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 
-describe('loadApi', () => {
+describe('loadApi', function () {
   let config: KopflosConfig
 
   beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true }))
+
   beforeEach(function () {
     config = {
       baseIri: 'http://example.com/',
@@ -18,8 +19,8 @@ describe('loadApi', () => {
     }
   })
 
-  describe('loadGraphs', () => {
-    it('fetches combined graph contents', async () => {
+  describe('loadGraphs', function () {
+    it('fetches combined graph contents', async function () {
       // given
       const kopflos = new Kopflos({
         ...config,
@@ -33,7 +34,7 @@ describe('loadApi', () => {
       expect(kopflos.dataset).to.have.property('size', 11)
     })
 
-    it('fetches combined graph contents (string names)', async () => {
+    it('fetches combined graph contents (string names)', async function () {
       // given
       const kopflos = new Kopflos({
         ...config,

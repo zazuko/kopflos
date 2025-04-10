@@ -12,7 +12,7 @@ import { ex } from '../../../testing-helpers/ns.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import type { ShaclPlugin } from '../../index.js'
 
-describe('@kopflos-cms/shacl/lib/decorator.js', () => {
+describe('@kopflos-cms/shacl/lib/decorator.js', function () {
   let env: KopflosEnvironment
   let decorator: () => ShaclDecorator
   let plugin: ShaclPlugin
@@ -39,9 +39,9 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
     decorator = () => new ShaclDecorator(kopflos)
   })
 
-  describe('decorator', () => {
-    describe('.applicable', () => {
-      it('returns false when args.body is not RDF', async () => {
+  describe('decorator', function () {
+    describe('.applicable', function () {
+      it('returns false when args.body is not RDF', async function () {
         // given
         const req = <HandlerArgs>{
           env,
@@ -118,7 +118,7 @@ describe('@kopflos-cms/shacl/lib/decorator.js', () => {
       })
     })
 
-    describe('when called', () => {
+    describe('when called', function () {
       it('calls next when validation passes', async function () {
         // given
         const req = <HandlerArgs>{

@@ -3,9 +3,9 @@ import $rdf from '@zazuko/env-node'
 import { hydra } from '@tpluscode/rdf-ns-builders'
 import pageIndexStrategy from '../../../lib/partialCollection/pageIndexStrategy.js'
 
-describe('@kopflos-cms/hydra/lib/partialCollection/pageIndexStrategy.js', () => {
-  describe('viewLinksTemplateParams', () => {
-    it('skips next when page is last', () => {
+describe('@kopflos-cms/hydra/lib/partialCollection/pageIndexStrategy.js', function () {
+  describe('viewLinksTemplateParams', function () {
+    it('skips next when page is last', function () {
       // given
       const collection = $rdf.clownface().blankNode()
         .addOut(hydra.limit, 1)
@@ -23,7 +23,7 @@ describe('@kopflos-cms/hydra/lib/partialCollection/pageIndexStrategy.js', () => 
       expect(next).to.be.undefined
     })
 
-    it('skips next when page is beyond last', () => {
+    it('skips next when page is beyond last', function () {
       // given
       const collection = $rdf.clownface().blankNode()
         .addOut(hydra.limit, 1)
@@ -41,7 +41,7 @@ describe('@kopflos-cms/hydra/lib/partialCollection/pageIndexStrategy.js', () => 
       expect(next).to.be.undefined
     })
 
-    it('skips previous when page is first', () => {
+    it('skips previous when page is first', function () {
       // given
       const collection = $rdf.clownface().blankNode()
       const query = $rdf.clownface().blankNode()
@@ -58,7 +58,7 @@ describe('@kopflos-cms/hydra/lib/partialCollection/pageIndexStrategy.js', () => 
       expect(previous).to.be.undefined
     })
 
-    it('skips previous when page is below 1', () => {
+    it('skips previous when page is below 1', function () {
       // given
       const collection = $rdf.clownface().blankNode()
       const query = $rdf.clownface().blankNode()

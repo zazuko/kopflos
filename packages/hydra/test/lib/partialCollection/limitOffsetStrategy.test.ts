@@ -3,7 +3,7 @@ import { hydra } from '@tpluscode/rdf-ns-builders'
 import { expect } from 'chai'
 import limitOffsetStrategy from '../../../lib/partialCollection/limitOffsetStrategy.js'
 
-describe('@kopflos-cms/hydra/lib/partialCollection/limitOffsetStrategy.js', () => {
+describe('@kopflos-cms/hydra/lib/partialCollection/limitOffsetStrategy.js', function () {
   it('defaults hydra:limit to value from collection itself', function () {
     // given
     const query = rdf.clownface().blankNode()

@@ -7,7 +7,7 @@ import { loadShapesGraph } from '../../lib/shapes.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
 import { ex } from '../../../testing-helpers/ns.js'
 
-describe('@kopflos-cms/shacl/lib/shapes.js', () => {
+describe('@kopflos-cms/shacl/lib/shapes.js', function () {
   let env: KopflosEnvironment
 
   beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true }))
@@ -21,7 +21,7 @@ describe('@kopflos-cms/shacl/lib/shapes.js', () => {
     })
   })
 
-  describe('loadShapesGraph', () => {
+  describe('loadShapesGraph', function () {
     it('loads IRI references from the store', async function () {
       // given
       const args = <HandlerArgs>{

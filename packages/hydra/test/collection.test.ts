@@ -16,7 +16,7 @@ import { asBody } from '../../testing-helpers/body.js'
 const baseIri = 'http://example.org'
 const ex = $rdf.namespace(baseIri + '/')
 
-describe('@kopflos-cms/hydra', () => {
+describe('@kopflos-cms/hydra', function () {
   beforeEach(createStore(import.meta.url, {
     format: 'trig',
     loadAll: true,
@@ -24,6 +24,7 @@ describe('@kopflos-cms/hydra', () => {
 
   let config: KopflosConfig
   let clients: ReturnType<typeof inMemoryClients>
+
   beforeEach(function () {
     this.rdf.store.load(fs.readFileSync(new URL('./data/municipalities.ttl', import.meta.url)).toString(), {
       format: 'text/turtle',
@@ -57,9 +58,9 @@ describe('@kopflos-cms/hydra', () => {
     return kopflos
   }
 
-  describe('hydra:Collection', () => {
-    context('get', () => {
-      context('when collection has no memberAssertion', () => {
+  describe('hydra:Collection', function () {
+    context('get', function () {
+      context('when collection has no memberAssertion', function () {
         it('should return 500', async function () {
           // given
           const kopflos = await startKopflos()
@@ -78,7 +79,7 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('when collection is not readable', () => {
+      context('when collection is not readable', function () {
         it('should return 405', async function () {
           // given
           const kopflos = await startKopflos()
@@ -97,7 +98,7 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('when collection has single memberAssertion', () => {
+      context('when collection has single memberAssertion', function () {
         it('should return a stream of members', async function () {
           // given
           const kopflos = await startKopflos()
@@ -120,13 +121,13 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('collection paged', () => {
+      context('collection paged', function () {
         let res: ResultEnvelope
 
-        context('with limit/offset', () => {
+        context('with limit/offset', function () {
           const collection = ex['municipalities/limit-offset']
 
-          context('first page', () => {
+          context('first page', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -152,7 +153,7 @@ describe('@kopflos-cms/hydra', () => {
             })
           })
 
-          context('last page', () => {
+          context('last page', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -178,7 +179,7 @@ describe('@kopflos-cms/hydra', () => {
             })
           })
 
-          context('limit and offset given', () => {
+          context('limit and offset given', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -204,7 +205,7 @@ describe('@kopflos-cms/hydra', () => {
               expect(pointer.out(ns.hydra.totalItems).term).to.deep.eq(toRdf(3449))
             })
 
-            it('includes next page link', async () => {
+            it('includes next page link', async function () {
               // then
               const dataset = await $rdf.dataset().import(res.body as Stream)
               const pointer = $rdf.clownface({ dataset }).node(collection)
@@ -212,7 +213,7 @@ describe('@kopflos-cms/hydra', () => {
                 .to.deep.eq(ex['municipalities/limit-offset?limit=10&offset=50'])
             })
 
-            it('includes previous page link', async () => {
+            it('includes previous page link', async function () {
               // then
               const dataset = await $rdf.dataset().import(res.body as Stream)
               const pointer = $rdf.clownface({ dataset }).node(collection)
@@ -220,7 +221,7 @@ describe('@kopflos-cms/hydra', () => {
                 .to.deep.eq(ex['municipalities/limit-offset?limit=10&offset=30'])
             })
 
-            it('includes first page link', async () => {
+            it('includes first page link', async function () {
               // then
               const dataset = await $rdf.dataset().import(res.body as Stream)
               const pointer = $rdf.clownface({ dataset }).node(collection)
@@ -228,7 +229,7 @@ describe('@kopflos-cms/hydra', () => {
                 .to.deep.eq(ex['municipalities/limit-offset?limit=10&offset=0'])
             })
 
-            it('includes last page link', async () => {
+            it('includes last page link', async function () {
               // then
               const dataset = await $rdf.dataset().import(res.body as Stream)
               const pointer = $rdf.clownface({ dataset }).node(collection)
@@ -237,7 +238,7 @@ describe('@kopflos-cms/hydra', () => {
             })
           })
 
-          context('only limit given', () => {
+          context('only limit given', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -263,7 +264,7 @@ describe('@kopflos-cms/hydra', () => {
             })
           })
 
-          context('only offset given', () => {
+          context('only offset given', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -290,10 +291,10 @@ describe('@kopflos-cms/hydra', () => {
           })
         })
 
-        context('with page index', () => {
+        context('with page index', function () {
           const collection = ex['municipalities/paged']
 
-          context('page index given', () => {
+          context('page index given', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -319,7 +320,7 @@ describe('@kopflos-cms/hydra', () => {
             })
           })
 
-          context('page index not given', () => {
+          context('page index not given', function () {
             beforeEach(async function () {
               // given
               const kopflos = await startKopflos()
@@ -345,7 +346,7 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('when collection has multiple memberAssertion', () => {
+      context('when collection has multiple memberAssertion', function () {
         it('should return a stream of members', async function () {
           // given
           const kopflos = await startKopflos()
@@ -423,7 +424,7 @@ describe('@kopflos-cms/hydra', () => {
         }
       })
 
-      context('when collection is not writable', () => {
+      context('when collection is not writable', function () {
         it('should return 405', async function () {
           // given
           const kopflos = await startKopflos()
@@ -442,7 +443,7 @@ describe('@kopflos-cms/hydra', () => {
         })
       })
 
-      context('when collection has validation', () => {
+      context('when collection has validation', function () {
         it('creates a new resource', async function () {
           // given
           const kopflos = await startKopflos()
@@ -516,7 +517,7 @@ describe('@kopflos-cms/hydra', () => {
           expect(res.status).to.equal(400)
         })
 
-        context('when collection uses :hydraCreateShape', () => {
+        context('when collection uses :hydraCreateShape', function () {
           it('should return 400 when body is invalid', async function () {
             // given
             const kopflos = await startKopflos()

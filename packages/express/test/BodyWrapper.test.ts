@@ -6,7 +6,7 @@ import type { Request } from 'express'
 import { BodyWrapper } from '../BodyWrapper.js'
 import { ex } from '../../testing-helpers/ns.js'
 
-describe('BodyWrapper', () => {
+describe('BodyWrapper', function () {
   class FakeRequest extends IncomingMessage {
     get quadStream(): Pick<Request, 'quadStream'>['quadStream'] {
       return this._quadStream
@@ -19,8 +19,8 @@ describe('BodyWrapper', () => {
     private declare _quadStream: Pick<Request, 'quadStream'>['quadStream']
   }
 
-  describe('.dataset', () => {
-    it('consumes stream only once', async () => {
+  describe('.dataset', function () {
+    it('consumes stream only once', async function () {
       // given
       const quadStream = sinon.stub().returns(rdf.dataset().toStream())
       const req = sinon.createStubInstance(FakeRequest, { quadStream })
@@ -35,8 +35,8 @@ describe('BodyWrapper', () => {
     })
   })
 
-  describe('.pointer', () => {
-    it('consumes stream only once', async () => {
+  describe('.pointer', function () {
+    it('consumes stream only once', async function () {
       // given
       const quadStream = sinon.stub().returns(rdf.dataset().toStream())
       const req = sinon.createStubInstance(FakeRequest, { quadStream })

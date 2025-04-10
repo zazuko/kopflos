@@ -12,7 +12,7 @@ import { findResourceLoader } from '../../lib/resourceLoader.js'
 import type { KopflosEnvironment } from '../../lib/env/index.js'
 import { createEnv } from '../../lib/env/index.js'
 
-describe('lib/resourceLoader', () => {
+describe('lib/resourceLoader', function () {
   function config(ctx: Mocha.Context): KopflosConfig {
     return {
       baseIri: 'http://example.com/',
@@ -22,16 +22,17 @@ describe('lib/resourceLoader', () => {
     }
   }
 
-  describe('built-in loaders', () => {
+  describe('built-in loaders', function () {
     let kopflos: Kopflos
 
     beforeEach(createStore(import.meta.url, { format: 'trig', loadAll: true, baseIri: ex }))
+
     beforeEach(async function () {
       kopflos = new Kopflos(config(this))
     })
 
-    describe('describe', () => {
-      it('should return a stream of a DESCRIBE query', async () => {
+    describe('describe', function () {
+      it('should return a stream of a DESCRIBE query', async function () {
         // when
         const dataset = await rdf.dataset().import(loader.describe(ex.foo, kopflos))
 
@@ -40,8 +41,8 @@ describe('lib/resourceLoader', () => {
       })
     })
 
-    describe('fromOwnGraph', () => {
-      it('should contents of correct graph', async () => {
+    describe('fromOwnGraph', function () {
+      it('should contents of correct graph', async function () {
         // when
         const dataset = await rdf.dataset().import(loader.fromOwnGraph(ex.foo, kopflos))
 
@@ -51,7 +52,7 @@ describe('lib/resourceLoader', () => {
     })
   })
 
-  describe('findResourceLoader', () => {
+  describe('findResourceLoader', function () {
     beforeEach(createStore(import.meta.url, { format: 'trig' }))
 
     class StubbedLoader {
@@ -63,11 +64,12 @@ describe('lib/resourceLoader', () => {
     }
 
     let env: KopflosEnvironment
+
     beforeEach(function () {
       env = new Environment([StubbedLoader], { parent: createEnv(config(this)) })
     })
 
-    context('when resource shape has a resource loader', () => {
+    context('when resource shape has a resource loader', function () {
       it('it will be used', async function () {
         // given
         const resourceShape = this.rdf.graph.node(ex.PersonShape)
@@ -82,7 +84,7 @@ describe('lib/resourceLoader', () => {
       })
     })
 
-    context('when resource shape has no resource loader', () => {
+    context('when resource shape has no resource loader', function () {
       it('API loader will be used', async function () {
         // given
         const resourceShape = this.rdf.graph.node(ex.PersonShape)
@@ -97,7 +99,7 @@ describe('lib/resourceLoader', () => {
       })
     })
 
-    context('when resource shape and API have no loaders', () => {
+    context('when resource shape and API have no loaders', function () {
       it('loader from k:Config will be used', async function () {
         // given
         const resourceShape = this.rdf.graph.node(ex.PersonShape)

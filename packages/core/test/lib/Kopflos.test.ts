@@ -18,7 +18,7 @@ import { kl } from '../../ns.js'
 import type { DecoratorCallback, RequestDecorator } from '../../lib/decorators.js'
 import handlerLookupStub from '../support/handlerLookupStub.js'
 
-describe('lib/Kopflos', () => {
+describe('lib/Kopflos', function () {
   use(snapshots)
 
   const testHandler: Handler = ({ subject, property, object }) => ({
@@ -39,7 +39,7 @@ describe('lib/Kopflos', () => {
 
   before(createStore(import.meta.url, { format: 'trig', includeDefaultGraph: true }))
 
-  describe('constructor', () => {
+  describe('constructor', function () {
     it('initializes pointer', async function () {
       // when
       const kopflos = new Kopflos(config, {
@@ -51,7 +51,7 @@ describe('lib/Kopflos', () => {
     })
   })
 
-  describe('handleRequest', () => {
+  describe('handleRequest', function () {
     it('returns 404 if no resource shape is found', async function () {
       // given
       const kopflos = new Kopflos(config, {
@@ -99,7 +99,7 @@ describe('lib/Kopflos', () => {
       expect(response).toMatchSnapshot()
     })
 
-    context('handler chains', () => {
+    context('handler chains', function () {
       it('can access previous handler', async function () {
         // given
         const chainedHandler = (letter: string): Handler => (arg, previous) => {
@@ -236,7 +236,7 @@ describe('lib/Kopflos', () => {
       })
     })
 
-    describe('decorators', () => {
+    describe('decorators', function () {
       it('decorator can end the request immediately', async function () {
         // given
         const handler = sinon.spy()
@@ -465,7 +465,7 @@ describe('lib/Kopflos', () => {
       })
     })
 
-    context('headers', () => {
+    context('headers', function () {
       it('are always forwarded to handler', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -531,7 +531,7 @@ describe('lib/Kopflos', () => {
       })
     })
 
-    context('when errors occur', () => {
+    context('when errors occur', function () {
       const passingFunctions = {
         resourceShapeLookup: async () => [{
           api: ex.api,
@@ -580,7 +580,7 @@ describe('lib/Kopflos', () => {
       }
     })
 
-    context('body', () => {
+    context('body', function () {
       it('is forwarded to handler when defined', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -613,9 +613,9 @@ describe('lib/Kopflos', () => {
       })
     })
 
-    context('when no handler is found', () => {
+    context('when no handler is found', function () {
       for (const method of ['GET', 'HEAD'] as const) {
-        context('when method is ' + method, () => {
+        context('when method is ' + method, function () {
           it('forwards core representation', async function () {
             // given
             const kopflos = new Kopflos(config, {
@@ -646,7 +646,7 @@ describe('lib/Kopflos', () => {
       }
 
       for (const method of HttpMethods.filter(m => m !== 'GET' && m !== 'HEAD')) {
-        context('when method is ' + method, () => {
+        context('when method is ' + method, function () {
           it('returns error', async function () {
             // given
             const kopflos = new Kopflos(config, {
@@ -675,7 +675,7 @@ describe('lib/Kopflos', () => {
       }
     })
 
-    describe('property handlers', () => {
+    describe('property handlers', function () {
       it('returns result from handler', async function () {
         // given
         const kopflos = new Kopflos(config, {
@@ -733,9 +733,9 @@ describe('lib/Kopflos', () => {
         expect(resourceLoader).to.have.been.calledWith(ex.foo, kopflos)
       })
 
-      context('when no handler is found', () => {
+      context('when no handler is found', function () {
         for (const method of HttpMethods) {
-          context('when method is ' + method, () => {
+          context('when method is ' + method, function () {
             it('returns 405', async function () {
               // given
               const kopflos = new Kopflos(config, {
@@ -769,7 +769,7 @@ describe('lib/Kopflos', () => {
     })
   })
 
-  describe('start', () => {
+  describe('start', function () {
     const shorthands = rdf.termMap([
       [kl.DescribeLoader, resourceLoaders.describe],
       [kl.OwnGraphLoader, resourceLoaders.fromOwnGraph],
@@ -789,7 +789,7 @@ describe('lib/Kopflos', () => {
         await instance.loadApiGraphs()
       })
 
-      context(`inserts ${shorthand.value} shorthand`, () => {
+      context(`inserts ${shorthand.value} shorthand`, function () {
         it('which has correct type', async function () {
           // then
           const type = instance.graph.node(shorthand).out(rdf.ns.rdf.type)
@@ -827,7 +827,7 @@ describe('lib/Kopflos', () => {
     })
   })
 
-  describe('stop', () => {
+  describe('stop', function () {
     it('calls onStop on plugins', async function () {
       // given
       const onStop = sinon.spy()
@@ -867,7 +867,7 @@ describe('lib/Kopflos', () => {
     })
   })
 
-  describe('ready', () => {
+  describe('ready', function () {
     it('calls onReady on plugins', async function () {
       // given
       const onReady = sinon.spy()
