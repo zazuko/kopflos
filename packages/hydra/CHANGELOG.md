@@ -1,5 +1,11 @@
 # @kopflos-cms/hydra
 
+## 0.1.6
+
+### Patch Changes
+
+- 2b37739: Improve shapes graph for hydra Collections
+
 ## 0.1.5
 
 ### Patch Changes
