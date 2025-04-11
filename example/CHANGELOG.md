@@ -1,5 +1,12 @@
 # example
 
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies [a4443d9]
+  - @kopflos-cms/hydra@0.1.7
+
 ## 0.0.14
 
 ### Patch Changes

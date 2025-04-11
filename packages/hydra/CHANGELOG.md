@@ -1,5 +1,11 @@
 # @kopflos-cms/hydra
 
+## 0.1.7
+
+### Patch Changes
+
+- a4443d9: Updated `@hydrofoil/shape-to-query`
+
 ## 0.1.6
 
 ### Patch Changes
