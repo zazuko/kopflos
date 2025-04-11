@@ -22,7 +22,7 @@
     "lib/**/*.d.ts"
   ],
   "dependencies": {
-    "@hydrofoil/shape-to-query": "^0.13.8",
+    "@hydrofoil/shape-to-query": "^0.14",
     "@kopflos-cms/core": "^0.5.2",
     "@rdfine/hydra": "^0.10.5",
     "@sindresorhus/merge-streams": "^4.0.0",
