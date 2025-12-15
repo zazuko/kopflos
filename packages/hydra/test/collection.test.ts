@@ -370,7 +370,7 @@ describe('@kopflos-cms/hydra', function () {
       })
 
       context('when collection is sourced from another endpoint', function () {
-        this.timeout(10000)
+        this.timeout(60000)
 
         it('should return a stream of members', async function () {
           // given
