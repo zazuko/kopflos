@@ -1,5 +1,14 @@
 # kopflos
 
+## 0.1.8
+
+### Patch Changes
+
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+- Updated dependencies [2472e18]
+- Updated dependencies [5295694]
+  - @kopflos-cms/express@0.1.5
+
 ## 0.1.7
 
 ### Patch Changes
