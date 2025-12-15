@@ -1,5 +1,12 @@
 # @kopflos-cms/vite
 
+## 0.1.3
+
+### Patch Changes
+
+- 6511af6: build(deps): bump glob from 11.0.0 to 11.1.0
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+
 ## 0.1.2
 
 ### Patch Changes

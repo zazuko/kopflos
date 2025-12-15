@@ -1,5 +1,12 @@
 # @kopflos-cms/express
 
+## 0.1.5
+
+### Patch Changes
+
+- 2472e18: Update compression to 1.8.1
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+
 ## 0.1.4
 
 ### Patch Changes
