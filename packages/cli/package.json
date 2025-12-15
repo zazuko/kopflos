@@ -37,7 +37,7 @@
     "chokidar": "^4.0.1",
     "commander": "^12.0.0",
     "cosmiconfig": "^9.0.0",
-    "express": "^5.0.1",
+    "express": "^5.2.0",
     "ulog": "^2.0.0-beta.19"
   },
   "devDependencies": {
