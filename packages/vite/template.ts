@@ -1,32 +1,34 @@
 import type { OutgoingHttpHeaders } from 'node:http'
-import type { KopflosEnvironment, ResultEnvelope, SubjectHandler } from '@kopflos-cms/core'
+import type { Kopflos, ResultEnvelope, SubjectHandler } from '@kopflos-cms/core'
 import type { GraphPointer } from 'clownface'
-import { createViteServer } from './lib/server.js'
 import { log } from './lib/log.js'
-import type { Options } from './index.js'
 
-async function prepareDevTemplate(env: KopflosEnvironment, subject: GraphPointer, template: string): Promise<string> {
-  const config = env.kopflos.config.plugins?.['@kopflos-cms/vite'] as Options | undefined
+export const transform = function (this: Kopflos): SubjectHandler {
+  const prepareDevTemplate = async (subject: GraphPointer, template: string): Promise<string> => {
+    const vite = this.getPlugin('@kopflos-cms/vite')
 
-  const vite = await createViteServer(config || {})
+    if (!vite?.viteDevServer) {
+      throw new Error('Vite dev server not initialized. Check vite plugin configuration.')
+    }
 
-  const subjectPath = new URL(subject.value).pathname
-  return vite.transformIndexHtml(subjectPath, template)
-}
-
-export const transform = (): SubjectHandler => async ({ subject, env }, response) => {
-  if (!isHtmlResponse(response)) {
-    throw new Error('Vite handler must be chained after another which returns a HTML response')
+    const subjectPath = new URL(subject.value).pathname
+    return vite.viteDevServer.transformIndexHtml(subjectPath, template)
   }
 
-  if (env.kopflos.config.mode === 'production') {
-    return response
-  }
+  return async ({ subject, env }, response) => {
+    if (!isHtmlResponse(response)) {
+      throw new Error('Vite handler must be chained after another which returns a HTML response')
+    }
 
-  log.debug('Compiling page template')
-  return {
-    ...response,
-    body: await prepareDevTemplate(env, subject, response.body),
+    if (env.kopflos.config.mode === 'production') {
+      return response
+    }
+
+    log.debug('Compiling page template')
+    return {
+      ...response,
+      body: await prepareDevTemplate(subject, response.body),
+    }
   }
 }
 

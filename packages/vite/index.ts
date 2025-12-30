@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import express from 'express'
-import type { InlineConfig } from 'vite'
+import type { InlineConfig, ViteDevServer } from 'vite'
 import { build } from 'vite'
 import { createViteServer } from './lib/server.js'
 import { prepareConfig } from './lib/config.js'
@@ -17,18 +17,33 @@ export interface Options {
   entrypoints?: string[]
 }
 
+interface VitePlugin extends KopflosPlugin {
+  viteDevServer?: ViteDevServer
+}
+
 declare module '@kopflos-cms/core' {
   interface PluginConfig {
     '@kopflos-cms/vite'?: Options
   }
+
+  interface Plugins {
+    '@kopflos-cms/vite': VitePlugin
+  }
 }
 
-export default function ({ outDir = 'dist', ...options }: Options): KopflosPluginConstructor {
+export default function ({ outDir = 'dist', ...options }: Options): KopflosPluginConstructor<VitePlugin> {
   const rootDir = resolve(process.cwd(), options.root || '')
   const buildDir = resolve(process.cwd(), outDir)
 
-  return class implements KopflosPlugin {
+  return class implements VitePlugin {
+    public readonly name = '@kopflos-cms/vite'
+
     private env: KopflosEnvironment
+    private _viteDevServer?: ViteDevServer
+
+    get viteDevServer(): ViteDevServer | undefined {
+      return this._viteDevServer
+    }
 
     constructor(instance: Kopflos) {
       this.env = instance.env
@@ -45,8 +60,9 @@ export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugi
     async beforeMiddleware(host: express.Router) {
       if (this.env.kopflos.config.mode === 'development') {
         log.info('Development UI mode. Creating Vite server...')
-        const viteServer = await createViteServer(options)
-        host.use(viteServer.middlewares)
+
+        this._viteDevServer = await createViteServer(options)
+        host.use(this._viteDevServer.middlewares)
       } else {
         log.info('Serving UI from build directory')
         log.debug('Build directory:', buildDir)
