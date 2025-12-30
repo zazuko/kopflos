@@ -1,12 +1,27 @@
 import { Readable } from 'node:stream'
 import { expect } from 'chai'
-import type { HandlerArgs } from '@kopflos-cms/core'
+import type { HandlerArgs, SubjectHandler } from '@kopflos-cms/core'
 import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import Kopflos from '@kopflos-cms/core'
 import { transform } from '../template.js'
 
-const handler = transform()
-
 describe('@kopflos-cms/vite/template.js', function () {
+  let handler: SubjectHandler
+
+  before(function () {
+    const kopflos = new Kopflos({
+      baseIri: 'http://example.com/',
+      sparql: {
+        default: 'http://example.com/sparql',
+      },
+      plugins: {
+        '@kopflos-cms/vite': {
+        },
+      },
+    })
+    handler = transform.bind(kopflos)()
+  })
+
   describe('transform', function () {
     it('throws an error if there is no previous response', async function () {
       const context = {} as HandlerArgs
