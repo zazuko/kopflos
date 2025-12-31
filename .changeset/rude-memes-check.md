@@ -7,4 +7,4 @@
 "kopflos": patch
 ---
 
-Adopt a simpler definition of a plugin where all methods are instance methods
+Adopt a simpler definition of a plugin where all methods are instance methods. Kopflos instance is passed as parameter
