@@ -1,7 +1,9 @@
 import log from './lib/log.js'
-import type { KopflosConfig, KopflosPluginConstructor } from './lib/Kopflos.js'
+import type { KopflosConfig, KopflosPlugin } from './lib/Kopflos.js'
 
-export async function loadPlugins(plugins: KopflosConfig['plugins']): Promise<KopflosPluginConstructor[]> {
+type KopflosPluginConstructor = new (options: unknown) => KopflosPlugin
+
+export async function loadPlugins(plugins: KopflosConfig['plugins']): Promise<KopflosPlugin[]> {
   const pluginsCombined = Object.entries({
     '@kopflos-cms/core/plugin/shorthandTerms.js': {},
     ...plugins,
@@ -19,7 +21,7 @@ export async function loadPlugins(plugins: KopflosConfig['plugins']): Promise<Ko
 
     const [module, exportName = 'default'] = plugin.split('#')
 
-    const pluginFactory = await import(module)
-    return pluginFactory[exportName](options)
+    const Plugin: KopflosPluginConstructor = (await import(module))[exportName]
+    return new Plugin(options)
   }))
 }

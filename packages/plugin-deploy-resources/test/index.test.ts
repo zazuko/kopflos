@@ -9,7 +9,7 @@ import snapshots from 'mocha-chai-rdf/snapshots.js'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import Kopflos from '@kopflos-cms/core'
 import { temporaryDirectory } from 'tempy'
-import configure from '../index.js'
+import Plugin from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 
 const baseIri = 'http://example.org'
@@ -34,12 +34,10 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('disabled', function () {
       beforeEach(async function () {
-        const Plugin = configure({
-          enabled: false,
-        })
-
         // when
-        await new Plugin(env).onStart()
+        await new Plugin({
+          enabled: false,
+        }).onStart(env)
       })
 
       it('does nothing', function () {
@@ -49,12 +47,10 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('no paths', function () {
       beforeEach(async function () {
-        const Plugin = configure({
-          paths: [],
-        })
-
         // when
-        await new Plugin(env).onStart()
+        await new Plugin({
+          paths: [],
+        }).onStart(env)
       })
 
       it('does nothing', function () {
@@ -64,12 +60,10 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('path does not exist', function () {
       beforeEach(async function () {
-        const Plugin = configure({
-          paths: ['foobar'],
-        })
-
         // when
-        await new Plugin(env).onStart()
+        await new Plugin({
+          paths: ['foobar'],
+        }).onStart(env)
       })
 
       it('does nothing', function () {
@@ -79,12 +73,10 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('enabled', function () {
       beforeEach(async function () {
-        const Plugin = configure({
-          paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
-        })
-
         // when
-        await new Plugin(env).onStart()
+        await new Plugin({
+          paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
+        }).onStart(env)
       })
 
       it('deploys trig', async function () {
@@ -125,10 +117,9 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('enabled', function () {
       beforeEach(async function () {
-        const Plugin = configure({
+        plugin = new Plugin({
           paths: [tempDir],
         })
-        plugin = new Plugin(env)
         await plugin.onStart?.(env)
       })
 
@@ -160,11 +151,10 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     context('disabled', function () {
       beforeEach(async function () {
-        const Plugin = configure({
+        plugin = new Plugin({
           paths: [tempDir],
           watch: false,
         })
-        plugin = new Plugin(env)
         await plugin.onStart?.(env)
       })
 

@@ -88,8 +88,6 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   loadApiGraphs(): Promise<void>
 }
 
-export type KopflosPluginConstructor<T extends KopflosPlugin = KopflosPlugin> = new () => T
-
 interface Clients {
   stream: StreamClient
   parsed: ParsingClient
