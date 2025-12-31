@@ -8,4 +8,4 @@
 "kopflos": patch
 ---
 
-Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly
+Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
