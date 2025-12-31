@@ -119,7 +119,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
     })
 
     afterEach(async function () {
-      await plugin?.onStop?.()
+      await plugin?.onStop?.(env)
       await fs.rm(tempDir, { recursive: true, force: true })
     })
 
@@ -129,7 +129,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
           paths: [tempDir],
         })
         plugin = new Plugin(env)
-        await plugin.onStart?.()
+        await plugin.onStart?.(env)
       })
 
       it('redeploys when file changes', async function () {
@@ -165,7 +165,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
           watch: false,
         })
         plugin = new Plugin(env)
-        await plugin.onStart?.()
+        await plugin.onStart?.(env)
       })
 
       it('does not react to any changes', async function () {
@@ -174,7 +174,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
         const fileToCreate = path.resolve(tempDir, 'baz.ttl')
         const fileToDelete = path.resolve(tempDir, 'index.trig')
 
-        await plugin.onStart?.()
+        await plugin.onStart?.(env)
 
         // when
         await Promise.all([

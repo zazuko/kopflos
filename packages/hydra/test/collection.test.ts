@@ -44,13 +44,14 @@ describe('@kopflos-cms/hydra', function () {
   })
 
   async function startKopflos({ apis = [ex('readonly-api')] } = {}) {
+    const HydraPlugin = hydra({ apis })
+    const ShaclPlugin = shacl()
+
     const kopflos = new Kopflos({
       ...config,
       apiGraphs: apis.map(api => api.value),
     }, {
-      plugins: [hydra({
-        apis,
-      }), shacl()],
+      plugins: [new HydraPlugin(), new ShaclPlugin()],
     })
     await kopflos.start()
     await kopflos.loadApiGraphs()

@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
+import type { Kopflos, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
 import express from 'express'
 import type { InlineConfig, ViteDevServer } from 'vite'
 import { build } from 'vite'
@@ -38,27 +38,22 @@ export default function ({ outDir = 'dist', ...options }: Options): KopflosPlugi
   return class implements VitePlugin {
     public readonly name = '@kopflos-cms/vite'
 
-    private env: KopflosEnvironment
     private _viteDevServer?: ViteDevServer
 
     get viteDevServer(): ViteDevServer | undefined {
       return this._viteDevServer
     }
 
-    constructor(instance: Kopflos) {
-      this.env = instance.env
-    }
-
-    onStart(): Promise<void> | void {
+    onStart({ env }: Kopflos): Promise<void> | void {
       const viteVars = {
-        basePath: this.env.kopflos.config.mode === 'development' ? rootDir : buildDir,
+        basePath: env.kopflos.config.mode === 'development' ? rootDir : buildDir,
       }
       log.info('Variables', viteVars)
-      this.env.kopflos.variables.VITE = Object.freeze(viteVars)
+      env.kopflos.variables.VITE = Object.freeze(viteVars)
     }
 
-    async beforeMiddleware(host: express.Router) {
-      if (this.env.kopflos.config.mode === 'development') {
+    async beforeMiddleware(host: express.Router, { env }: Kopflos) {
+      if (env.kopflos.config.mode === 'development') {
         log.info('Development UI mode. Creating Vite server...')
 
         this._viteDevServer = await createViteServer(options)

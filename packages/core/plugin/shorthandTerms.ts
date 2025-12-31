@@ -3,11 +3,7 @@ import type { Kopflos, KopflosPlugin, KopflosPluginConstructor } from '../lib/Ko
 
 export default function (): KopflosPluginConstructor {
   return class implements KopflosPlugin {
-    constructor(private readonly kopflos: Kopflos) {
-    }
-
-    apiTriples(): Stream {
-      const { env } = this.kopflos
+    apiTriples({ env }: Kopflos): Stream {
       return env.fromFile(new URL('../graphs/shorthands.ttl', import.meta.url))
     }
   }

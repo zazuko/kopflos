@@ -38,7 +38,7 @@ declare module '@kopflos-cms/core' {
 }
 
 export interface HydraPlugin extends KopflosPlugin {
-  readonly env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
+  createHydraEnv(instance: Kopflos): DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
   readonly partialCollectionStrategies: PartialCollectionStrategy[]
 }
 
@@ -52,11 +52,10 @@ export default (options : Options): KopflosPluginConstructor => {
   return class implements HydraPlugin {
     readonly name = 'hydra'
 
-    readonly env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
+    private env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment> | undefined
     readonly partialCollectionStrategies: PartialCollectionStrategy[]
 
-    constructor(private readonly instance: Kopflos) {
-      this.env = new E([RdfineFactory, HydraFactory], { parent: instance.env })
+    constructor() {
       this.partialCollectionStrategies = [
         ...options.partialCollectionStrategies ?? [],
         limitOffsetStrategy,
@@ -64,18 +63,28 @@ export default (options : Options): KopflosPluginConstructor => {
       ]
     }
 
-    async onStart() {
-      const { kopflos: kl } = this.env.ns
+    createHydraEnv(instance: Kopflos) {
+      if (!this.env) {
+        this.env = new E([RdfineFactory, HydraFactory], { parent: instance.env })
+      }
 
-      const dataset = createDefaultShapes(this.env, options)
+      return this.env
+    }
 
-      await this.env.sparql.default.stream.store.put(dataset.toStream(), {
+    async onStart(instance: Kopflos) {
+      const env = this.createHydraEnv(instance)
+
+      const { kopflos: kl } = env.ns
+
+      const dataset = createDefaultShapes(env, options)
+
+      await env.sparql.default.stream.store.put(dataset.toStream(), {
         graph: kl.hydra,
       })
     }
 
-    async apiTriples() {
-      return createHandlers(this.instance)
+    async apiTriples(instance: Kopflos) {
+      return createHandlers(instance)
     }
   }
 }

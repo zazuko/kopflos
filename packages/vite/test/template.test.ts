@@ -9,16 +9,14 @@ import { transform } from '../template.js'
 describe('@kopflos-cms/vite/template.js', function () {
   let handler: SubjectHandler
 
-  function mockPlugin() {
-    return class {
-      public readonly name = '@kopflos-cms/vite'
+  class MockPlugin {
+    public readonly name = '@kopflos-cms/vite'
 
-      get viteDevServer() {
-        return {
-          transformIndexHtml() {
-            return 'transformed'
-          },
-        }
+    get viteDevServer() {
+      return {
+        transformIndexHtml() {
+          return 'transformed'
+        },
       }
     }
   }
@@ -57,7 +55,7 @@ describe('@kopflos-cms/vite/template.js', function () {
           default: 'http://example.com/sparql',
         },
       }, {
-        plugins: [mockPlugin()],
+        plugins: [new MockPlugin()],
       })
       handler = transform.bind(kopflos)()
     })

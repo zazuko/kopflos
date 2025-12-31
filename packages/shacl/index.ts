@@ -31,14 +31,11 @@ export default function factory(options: Options = {}): KopflosPluginConstructor
 
     public readonly name = '@kopflos-cms/shacl'
 
-    constructor(private readonly instance: Kopflos) {
-    }
-
-    async apiTriples() {
-      const { env } = this.instance
+    async apiTriples(instance: Kopflos) {
+      const { env } = instance
 
       const apis = env.clownface()
-        .node(this.instance.apis)
+        .node(instance.apis)
 
       const impl = apis.blankNode()
         .addOut(env.ns.rdf.type, env.ns.code.EcmaScriptModule)
