@@ -1,4 +1,4 @@
-import type { Kopflos, KopflosEnvironment, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import type { NamedNode } from '@rdfjs/types'
 import type { DerivedEnvironment } from '@zazuko/env'
 import E from '@zazuko/env/Environment.js'
@@ -38,7 +38,7 @@ declare module '@kopflos-cms/core' {
 }
 
 export interface HydraPlugin extends KopflosPlugin {
-  readonly env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
+  createHydraEnv(instance: Kopflos): DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
   readonly partialCollectionStrategies: PartialCollectionStrategy[]
 }
 
@@ -48,34 +48,41 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default (options : Options): KopflosPluginConstructor => {
-  return class implements HydraPlugin {
-    readonly name = 'hydra'
+export default class implements HydraPlugin {
+  readonly name = 'hydra'
 
-    readonly env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment>
-    readonly partialCollectionStrategies: PartialCollectionStrategy[]
+  private env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment> | undefined
+  readonly partialCollectionStrategies: PartialCollectionStrategy[]
 
-    constructor(private readonly instance: Kopflos) {
+  constructor(private readonly options: Options) {
+    this.partialCollectionStrategies = [
+      ...this.options.partialCollectionStrategies ?? [],
+      limitOffsetStrategy,
+      pageIndexStrategy,
+    ]
+  }
+
+  createHydraEnv(instance: Kopflos): DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment> {
+    if (!this.env) {
       this.env = new E([RdfineFactory, HydraFactory], { parent: instance.env })
-      this.partialCollectionStrategies = [
-        ...options.partialCollectionStrategies ?? [],
-        limitOffsetStrategy,
-        pageIndexStrategy,
-      ]
     }
 
-    async onStart() {
-      const { kopflos: kl } = this.env.ns
+    return this.env
+  }
 
-      const dataset = createDefaultShapes(this.env, options)
+  async onStart(instance: Kopflos) {
+    const env = this.createHydraEnv(instance)
 
-      await this.env.sparql.default.stream.store.put(dataset.toStream(), {
-        graph: kl.hydra,
-      })
-    }
+    const { kopflos: kl } = env.ns
 
-    async apiTriples() {
-      return createHandlers(this.instance)
-    }
+    const dataset = createDefaultShapes(env, this.options)
+
+    await env.sparql.default.stream.store.put(dataset.toStream(), {
+      graph: kl.hydra,
+    })
+  }
+
+  async apiTriples(instance: Kopflos) {
+    return createHandlers(instance)
   }
 }

@@ -28,7 +28,7 @@ export function get(this: Kopflos): Handler {
       throw new Error('Hydra plugin not loaded')
     }
 
-    const { env } = hydraPlugin
+    const env = hydraPlugin.createHydraEnv(this)
     const { hydra, rdf } = env.ns
     const endpoint = subject.out(kl.endpoint).value || 'default'
     const sparqlClient = env.sparql[endpoint]

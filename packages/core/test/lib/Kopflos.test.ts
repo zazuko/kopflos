@@ -807,7 +807,7 @@ describe('lib/Kopflos', function () {
     it('calls onStart on plugins once', async function () {
       // given
       const onStart = sinon.spy()
-      const plugin = class {
+      class Plugin {
         onStart = onStart
       }
       const instance = new Kopflos({
@@ -816,7 +816,7 @@ describe('lib/Kopflos', function () {
           default: inMemoryClients(this.rdf),
         },
       }, {
-        plugins: [plugin],
+        plugins: [new Plugin()],
       })
 
       // when
@@ -831,7 +831,7 @@ describe('lib/Kopflos', function () {
     it('calls onStop on plugins', async function () {
       // given
       const onStop = sinon.spy()
-      const plugin = class {
+      class Plugin {
         onStop = onStop
       }
       const instance = new Kopflos({
@@ -840,7 +840,7 @@ describe('lib/Kopflos', function () {
           default: inMemoryClients(this.rdf),
         },
       }, {
-        plugins: [plugin],
+        plugins: [new Plugin()],
       })
 
       // when
@@ -852,14 +852,13 @@ describe('lib/Kopflos', function () {
 
     it('ignores plugins without onStop', async function () {
       // given
-      const plugin = class {}
       const instance = new Kopflos({
         ...config,
         sparql: {
           default: inMemoryClients(this.rdf),
         },
       }, {
-        plugins: [plugin],
+        plugins: [{}],
       })
 
       // when
@@ -871,7 +870,7 @@ describe('lib/Kopflos', function () {
     it('calls onReady on plugins', async function () {
       // given
       const onReady = sinon.spy()
-      const plugin = class {
+      class Plugin {
         onReady = onReady
       }
       const instance = new Kopflos({
@@ -880,7 +879,7 @@ describe('lib/Kopflos', function () {
           default: inMemoryClients(this.rdf),
         },
       }, {
-        plugins: [plugin],
+        plugins: [new Plugin()],
       })
 
       // when
@@ -892,14 +891,13 @@ describe('lib/Kopflos', function () {
 
     it('ignores plugins without onReady', async function () {
       // given
-      const plugin = class {}
       const instance = new Kopflos({
         ...config,
         sparql: {
           default: inMemoryClients(this.rdf),
         },
       }, {
-        plugins: [plugin],
+        plugins: [{}],
       })
 
       // when

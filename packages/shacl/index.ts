@@ -1,4 +1,4 @@
-import type { HandlerArgs, Kopflos, KopflosPlugin, KopflosPluginConstructor } from '@kopflos-cms/core'
+import type { HandlerArgs, Kopflos, KopflosPlugin } from '@kopflos-cms/core'
 import type { DatasetCore } from '@rdfjs/types'
 
 export type { ShapesGraphLoader } from './lib/shapes.js'
@@ -25,31 +25,30 @@ declare module '@kopflos-cms/core' {
 
 const decoratorModule = new URL('./lib/decorator.js#default', import.meta.url).toString()
 
-export default function factory(options: Options = {}): KopflosPluginConstructor<ShaclPlugin> {
-  return class implements ShaclPlugin {
-    public readonly options = Object.freeze(options)
+export default class implements ShaclPlugin {
+  public readonly options
 
-    public readonly name = '@kopflos-cms/shacl'
+  public readonly name = '@kopflos-cms/shacl'
 
-    constructor(private readonly instance: Kopflos) {
-    }
+  constructor(options: Options = {}) {
+    this.options = Object.freeze(options)
+  }
 
-    async apiTriples() {
-      const { env } = this.instance
+  async apiTriples(instance: Kopflos) {
+    const { env } = instance
 
-      const apis = env.clownface()
-        .node(this.instance.apis)
+    const apis = env.clownface()
+      .node(instance.apis)
 
-      const impl = apis.blankNode()
-        .addOut(env.ns.rdf.type, env.ns.code.EcmaScriptModule)
-        .addOut(env.ns.code.link, env.namedNode(decoratorModule))
+    const impl = apis.blankNode()
+      .addOut(env.ns.rdf.type, env.ns.code.EcmaScriptModule)
+      .addOut(env.ns.code.link, env.namedNode(decoratorModule))
 
-      apis
-        .addOut(env.ns.kl.decorator, decorator => {
-          decorator.addOut(env.ns.code.implementedBy, impl)
-        })
+    apis
+      .addOut(env.ns.kl.decorator, decorator => {
+        decorator.addOut(env.ns.code.implementedBy, impl)
+      })
 
-      return apis.dataset
-    }
+    return apis.dataset
   }
 }

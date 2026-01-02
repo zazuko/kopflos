@@ -7,10 +7,10 @@ import { expect } from 'chai'
 import type { NamedNode, Stream } from '@rdfjs/types'
 import * as ns from '@tpluscode/rdf-ns-builders'
 import { toRdf } from 'rdf-literal'
-import shacl from '@kopflos-cms/shacl'
+import ShaclPlugin from '@kopflos-cms/shacl'
 import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
-import hydra from '../index.js'
+import HydraPlugin from '../index.js'
 import { asBody } from '../../testing-helpers/body.js'
 
 const baseIri = 'http://example.org'
@@ -48,9 +48,7 @@ describe('@kopflos-cms/hydra', function () {
       ...config,
       apiGraphs: apis.map(api => api.value),
     }, {
-      plugins: [hydra({
-        apis,
-      }), shacl()],
+      plugins: [new HydraPlugin({ apis }), new ShaclPlugin()],
     })
     await kopflos.start()
     await kopflos.loadApiGraphs()
