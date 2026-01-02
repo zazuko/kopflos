@@ -31,5 +31,10 @@
   "mocha": {
     "spec": "test/**/*.test.ts",
     "extends": "../../package.json"
+  },
+  "repository": {
+    "url": "https://github.com/zazuko/kopflos",
+    "type": "git",
+    "directory": "packages/plugin-deploy-resources"
   }
 }
