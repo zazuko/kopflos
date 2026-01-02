@@ -1,5 +1,19 @@
 # example
 
+## 0.0.16
+
+### Patch Changes
+
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+- Updated dependencies [6511af6]
+- Updated dependencies [4214fce]
+- Updated dependencies [accad6e]
+- Updated dependencies [cdbb172]
+- Updated dependencies [5295694]
+  - @kopflos-cms/vite@0.2.0
+  - @kopflos-cms/hydra@0.2.0
+  - kopflos@0.1.8
+
 ## 0.0.15
 
 ### Patch Changes
