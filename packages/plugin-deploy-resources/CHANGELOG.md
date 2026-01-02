@@ -1,5 +1,15 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.2.0
+
+### Minor Changes
+
+- accad6e: Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
+
+### Patch Changes
+
+- accad6e: Add the possibility for plugins to deploy additional resources
+
 ## 0.1.2
 
 ### Patch Changes

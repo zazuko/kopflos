@@ -1,5 +1,21 @@
 # kopflos
 
+## 0.1.8
+
+### Patch Changes
+
+- accad6e: Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
+- cdbb172: Adopt a simpler definition of a plugin where all methods are instance methods. Kopflos instance is passed as parameter
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+- Updated dependencies [accad6e]
+- Updated dependencies [2472e18]
+- Updated dependencies [cdbb172]
+- Updated dependencies [5295694]
+- Updated dependencies [accad6e]
+  - @kopflos-cms/core@0.6.0
+  - @kopflos-cms/plugin-deploy-resources@0.2.0
+  - @kopflos-cms/express@0.2.0
+
 ## 0.1.7
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.6.0
+
+### Minor Changes
+
+- accad6e: Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
+- cdbb172: Adopt a simpler definition of a plugin where all methods are instance methods. Kopflos instance is passed as parameter
+
 ## 0.5.2
 
 ### Patch Changes

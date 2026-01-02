@@ -1,5 +1,18 @@
 # @kopflos-cms/vite
 
+## 0.2.0
+
+### Minor Changes
+
+- accad6e: Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
+
+### Patch Changes
+
+- 6511af6: build(deps): bump glob from 11.0.0 to 11.1.0
+- 4214fce: Added an accessor to the `ViteDevServer` the plugin instance
+- cdbb172: Adopt a simpler definition of a plugin where all methods are instance methods. Kopflos instance is passed as parameter
+- 5295694: build(deps): bump express from 5.0.1 to 5.2.0
+
 ## 0.1.2
 
 ### Patch Changes

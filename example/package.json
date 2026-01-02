@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,9 +12,9 @@
     "test": "api-tuner tests/smoke/*.n3 --base-iri http://localhost:1429/"
   },
   "dependencies": {
-    "@kopflos-cms/hydra": "0.1.7",
+    "@kopflos-cms/hydra": "0.2.0",
     "@kopflos-cms/serve-file": "0.1.0",
-    "@kopflos-cms/vite": "0.1.2",
+    "@kopflos-cms/vite": "0.2.0",
     "@kopflos-labs/handlebars": "0.1.0",
     "@kopflos-labs/html-template": "0.1.0",
     "@kopflos-labs/lit": "0.1.0",
@@ -25,7 +25,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^5.2.0",
-    "kopflos": "0.1.7",
+    "kopflos": "0.1.8",
     "lit-element": "^4.1.1"
   },
   "devDependencies": {

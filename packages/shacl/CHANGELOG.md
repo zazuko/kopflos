@@ -1,5 +1,18 @@
 # @kopflos-cms/shacl
 
+## 0.3.0
+
+### Minor Changes
+
+- accad6e: Removed the type `KopflosPluginConstructor` and now all plugins are exported as classes directly and their options are passed to the constructor
+
+### Patch Changes
+
+- cdbb172: Adopt a simpler definition of a plugin where all methods are instance methods. Kopflos instance is passed as parameter
+- Updated dependencies [accad6e]
+- Updated dependencies [cdbb172]
+  - @kopflos-cms/core@0.6.0
+
 ## 0.2.1
 
 ### Patch Changes
