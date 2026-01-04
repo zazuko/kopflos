@@ -1,0 +1,14 @@
+{
+  "name": "@kopflos-labs/pages",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "glob": "11.1.0"
+  },
+  "peerDependencies": {
+    "vite": ">=6.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6"
+  }
+}
