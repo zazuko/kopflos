@@ -15,6 +15,7 @@ import { createEnv } from '../../lib/env/index.js'
 describe('lib/resourceLoader', function () {
   function config(ctx: Mocha.Context): KopflosConfig {
     return {
+      basePath: import.meta.dirname,
       baseIri: 'http://example.com/',
       sparql: {
         default: inMemoryClients(ctx.rdf),

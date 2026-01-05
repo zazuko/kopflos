@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import type { Kopflos, KopflosPlugin } from '@kopflos-cms/core'
+import type { Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import express from 'express'
 import type { InlineConfig, ViteDevServer } from 'vite'
 import { build } from 'vite'
@@ -41,8 +41,8 @@ export default class implements VitePlugin {
 
   constructor(private readonly options: Options) {
     this.outDir = options.outDir || 'dist'
-    this.rootDir = resolve(process.cwd(), options.root || '')
-    this.buildDir = resolve(process.cwd(), this.outDir)
+    this.rootDir = options.root || ''
+    this.buildDir = this.outDir
   }
 
   get viteDevServer(): ViteDevServer | undefined {
@@ -51,7 +51,7 @@ export default class implements VitePlugin {
 
   onStart({ env }: Kopflos): Promise<void> | void {
     const viteVars = {
-      basePath: env.kopflos.config.mode === 'development' ? this.rootDir : this.buildDir,
+      basePath: resolve(env.kopflos.config.basePath, env.kopflos.config.mode === 'development' ? this.rootDir : this.buildDir),
     }
     log.info('Variables', viteVars)
     env.kopflos.variables.VITE = Object.freeze(viteVars)
@@ -61,17 +61,32 @@ export default class implements VitePlugin {
     if (env.kopflos.config.mode === 'development') {
       log.info('Development UI mode. Creating Vite server...')
 
-      this._viteDevServer = await createViteServer(this.options)
+      const configPath = this.options.configPath
+        ? resolve(env.kopflos.config.basePath, this.options.configPath)
+        : this.options.configPath
+      this._viteDevServer = await createViteServer({
+        configPath,
+        ...this.options,
+      })
       host.use(this._viteDevServer.middlewares)
     } else {
+      const buildDir = resolve(env.kopflos.config.basePath, this.buildDir)
       log.info('Serving UI from build directory')
-      log.debug('Build directory:', this.buildDir)
-      host.use(express.static(this.buildDir))
+      log.debug('Build directory:', buildDir)
+      host.use(express.static(buildDir))
     }
   }
 
-  async build() {
+  async build(env: KopflosEnvironment) {
     log.info('Building UI...')
-    await build(await prepareConfig({ outDir: this.outDir, ...this.options }))
+    const outDir = resolve(env.kopflos.config.basePath, this.outDir)
+    const configPath = this.options.configPath
+      ? resolve(env.kopflos.config.basePath, this.options.configPath)
+      : this.options.configPath
+    await build(await prepareConfig({
+      outDir,
+      configPath,
+      ...this.options,
+    }))
   }
 }

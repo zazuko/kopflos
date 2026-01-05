@@ -14,6 +14,7 @@ describe('@kopflos-cms/shacl/lib/shapes.js', function () {
 
   beforeEach(function () {
     env = createEnv({
+      basePath: import.meta.dirname,
       baseIri: 'http://example.com/',
       sparql: {
         default: inMemoryClients(this.rdf),

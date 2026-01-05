@@ -21,6 +21,7 @@ describe('@kopflos-cms/express', function () {
   describe('configured api graphs', function () {
     beforeEach(async function () {
       const { middleware } = await kopflos({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.org/',
         codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
         sparql: {
@@ -178,6 +179,7 @@ describe('@kopflos-cms/express', function () {
   describe('automatic API graph', function () {
     beforeEach(async function () {
       const { middleware } = await kopflos({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.org/',
         codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
         sparql: {

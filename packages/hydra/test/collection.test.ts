@@ -35,6 +35,7 @@ describe('@kopflos-cms/hydra', function () {
 
     clients = inMemoryClients(this.rdf)
     config = {
+      basePath: process.cwd(),
       baseIri,
       sparql: {
         default: clients,

@@ -31,6 +31,7 @@ describe('lib/Kopflos', function () {
   })
 
   const config: KopflosConfig = {
+    basePath: import.meta.dirname,
     baseIri: 'http://example.com/',
     sparql: {
       default: 'http://localhost:8080/sparql',

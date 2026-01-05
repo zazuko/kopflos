@@ -18,6 +18,7 @@ describe('@kopflos-labs/html-template', function () {
         .namedNode('')
         .addOut(rdf.ns.rdf.type, rdf.namedNode('http://example.com/Foo')),
       env: createEnv({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/query',
@@ -53,6 +54,7 @@ describe('@kopflos-labs/html-template', function () {
     const context = {
       subject: rdf.clownface().namedNode(''),
       env: createEnv({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/query',
@@ -89,6 +91,7 @@ describe('@kopflos-labs/html-template', function () {
     const context = {
       subject: rdf.clownface().namedNode(''),
       env: createEnv({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/query',
@@ -116,6 +119,7 @@ describe('@kopflos-labs/html-template', function () {
     // given
     const context = {
       env: createEnv({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/query',
@@ -139,6 +143,7 @@ describe('@kopflos-labs/html-template', function () {
     // given
     const context = {
       env: createEnv({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/query',

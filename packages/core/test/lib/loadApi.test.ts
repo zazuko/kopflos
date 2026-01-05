@@ -12,6 +12,7 @@ describe('loadApi', function () {
 
   beforeEach(function () {
     config = {
+      basePath: import.meta.dirname,
       baseIri: 'http://example.com/',
       sparql: {
         default: inMemoryClients(this.rdf),

@@ -16,6 +16,7 @@ describe('@kopflos-cms/hydra/lib/validation.js', function () {
 
   beforeEach(function () {
     env = createEnv({
+      basePath: import.meta.dirname,
       baseIri: 'http://example.org/',
       sparql: {
         default: inMemoryClients(this.rdf),

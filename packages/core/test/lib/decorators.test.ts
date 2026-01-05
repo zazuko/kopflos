@@ -11,6 +11,7 @@ import { bar, foo } from '../support/decorators.js'
 describe('@kopflos-cms/core/lib/decorators.js', function () {
   let env: KopflosEnvironment
   const config: KopflosConfig = {
+    basePath: process.cwd(),
     baseIri: 'http://localhost:1429/',
     sparql: {
       default: {

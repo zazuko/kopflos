@@ -25,6 +25,7 @@ describe('@kopflos-cms/vite/template.js', function () {
     describe('when vite plugin is missing', function () {
       before(function () {
         const kopflos = new Kopflos({
+          basePath: import.meta.dirname,
           baseIri: 'http://example.com/',
           sparql: {
             default: 'http://example.com/sparql',
@@ -36,6 +37,7 @@ describe('@kopflos-cms/vite/template.js', function () {
       it('throws an error', async function () {
         const context = {
           env: createEnv({
+            basePath: import.meta.dirname,
             baseIri: 'http://example.com/',
             sparql: {
               default: 'http://example.com/sparql',
@@ -50,6 +52,7 @@ describe('@kopflos-cms/vite/template.js', function () {
 
     before(function () {
       const kopflos = new Kopflos({
+        basePath: import.meta.dirname,
         baseIri: 'http://example.com/',
         sparql: {
           default: 'http://example.com/sparql',
@@ -83,6 +86,7 @@ describe('@kopflos-cms/vite/template.js', function () {
     it('does nothing if running in production mode', async function () {
       const context = {
         env: createEnv({
+          basePath: import.meta.dirname,
           baseIri: 'http://example.com/',
           sparql: {
             default: 'http://example.com/sparql',
@@ -98,6 +102,7 @@ describe('@kopflos-cms/vite/template.js', function () {
     it('calls transform on the vite dev server', async function () {
       const context = {
         env: createEnv({
+          basePath: import.meta.dirname,
           baseIri: 'http://example.com/',
           sparql: {
             default: 'http://example.com/sparql',

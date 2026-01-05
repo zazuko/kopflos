@@ -70,7 +70,7 @@ export interface KopflosPlugin {
   onReady?(instance: Kopflos): Promise<void> | void
   onStop?(instance: Kopflos): Promise<void> | void
   apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
-  build?: () => Promise<void> | void
+  build?: (env: KopflosEnvironment) => Promise<void> | void
 }
 
 export interface Plugins extends Record<string, KopflosPlugin> {
@@ -108,6 +108,7 @@ export interface KopflosConfig {
   apiGraphs?: Array<NamedNode | string>
   plugins?: PluginConfig
   variables?: Variables
+  basePath: string
 }
 
 export interface Options {
