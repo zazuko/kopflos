@@ -1,9 +1,10 @@
-import type {HandlerArgs, KopflosEnvironment, KopflosPlugin} from '@kopflos-cms/core'
+import type {HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin} from '@kopflos-cms/core'
 import type {DatasetCore} from "@rdfjs/types";
 import {globIterate} from 'glob'
-import {join} from "node:path";
+import * as path from "node:path";
 import type {AnyPointer} from "clownface";
 import type {ViteDevServer} from "vite";
+import litSsr from "./ssr.js";
 
 export interface PageRenderer {
     head?(): string | Promise<string>
@@ -23,12 +24,13 @@ export interface SsrModule {
 interface Options {
     api: string
     path: string
-    ssr: SsrModule
+    ssr?: SsrModule
     pattern?: string
 }
 
 interface PagesPlugin extends KopflosPlugin {
-    ssr: SsrModule
+    readonly ssr: SsrModule
+    readonly path: string
 }
 
 declare module '@kopflos-cms/core' {
@@ -46,11 +48,11 @@ export const definePageRenderer = (fn: (req: HandlerArgs) => Promise<PageRendere
 export default class implements PagesPlugin {
     readonly name = '@kopflos-labs/pages'
     private readonly pattern: string;
-    private readonly path: string;
+    public readonly path: string;
     private readonly api: string;
     public readonly ssr: SsrModule;
 
-    constructor({api, path, pattern = '**/*.html.ts', ssr}: Options) {
+    constructor({api, path, pattern = '**/*.html.ts', ssr = litSsr}: Options) {
         this.ssr = ssr
         this.api = api
         this.path = path;
@@ -74,8 +76,8 @@ export default class implements PagesPlugin {
             const resourceShape = graph
                 .namedNode(kl.Pages.value + '#' + encodeURIComponent(file))
 
-            const ssrModule = join(this.path, file)
-            const html = ssrModule.replace(/\.\w+$/, '')
+            const ssrModule = path.join(this.path, file)
+            const html = path.relative(this.path, ssrModule.replace(/\.\w+$/, ''))
 
             resourceShape
                 .addOut(rdf.type, kl.ResourceShape)
