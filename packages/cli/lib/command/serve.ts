@@ -41,8 +41,8 @@ async function run({
     app.set('trust proxy', trustProxy)
   }
 
-  const config = await prepareConfig({ mode, watch, ...rest })
-  const { instance, middleware } = await kopflos(config)
+  const { config, configPath } = await prepareConfig({ mode, watch, ...rest })
+  const { instance, middleware } = await kopflos(config, configPath)
   app.use(middleware)
 
   await instance.start()

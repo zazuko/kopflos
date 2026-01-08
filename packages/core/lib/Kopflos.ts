@@ -117,6 +117,7 @@ export interface Options {
   decoratorLookup?: DecoratorLookup
   handlerLookup?: HandlerLookup
   plugins?: KopflosPlugin[]
+  basePath?: string
 }
 
 export default class Impl implements Kopflos {
@@ -129,7 +130,7 @@ export default class Impl implements Kopflos {
   private decorators: Map<Term, RequestDecorator[]>
 
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
-    this.env = createEnv({ variables, ...config })
+    this.env = createEnv({ variables, ...config }, options.basePath)
     this.plugins = options.plugins || []
     this.decorators = this.env.termMap()
 

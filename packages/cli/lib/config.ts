@@ -38,8 +38,8 @@ interface PrepareConfigArgs {
   variable: Record<string, unknown>
 }
 
-export async function prepareConfig({ mode, config, watch, variable }: PrepareConfigArgs): Promise<KopflosConfig> {
-  const { config: loadedConfig, filepath: configPath } = await loadConfig({
+export async function prepareConfig({ mode, config, watch, variable }: PrepareConfigArgs) {
+  const { config: loadedConfig, filepath } = await loadConfig({
     path: config,
   })
 
@@ -47,19 +47,22 @@ export async function prepareConfig({ mode, config, watch, variable }: PrepareCo
 
   loadedConfig.plugins = Object.fromEntries(Object.entries(loadedConfig.plugins || {}).map(([plugin, options]) => {
     if (plugin.startsWith('.')) {
-      return [resolve(dirname(configPath), plugin), options]
+      return [resolve(dirname(filepath), plugin), options]
     }
 
     return [plugin, options]
   }))
 
   return {
-    mode,
-    ...loadedConfig,
-    watch: watch ? [...watchedPaths, configPath] : undefined,
-    variables: {
-      ...(loadedConfig.variables || {}),
-      ...variable,
+    config: <KopflosConfig>{
+      mode,
+      ...loadedConfig,
+      watch: watch ? [...watchedPaths, filepath] : undefined,
+      variables: {
+        ...(loadedConfig.variables || {}),
+        ...variable,
+      },
     },
+    configPath: dirname(filepath),
   }
 }

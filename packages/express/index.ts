@@ -23,9 +23,10 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default async (options: KopflosConfig): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
-  const kopflos = new Kopflos(options, {
-    plugins: await loadPlugins(options.plugins),
+export default async (config: KopflosConfig, basePath = process.cwd()): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
+  const kopflos = new Kopflos(config, {
+    plugins: await loadPlugins(config.plugins),
+    basePath,
   })
 
   const loadApiGraphs = onetime(() => kopflos.loadApiGraphs())
