@@ -39,7 +39,7 @@ describe('kopflos/lib/config.js', function () {
       const configPath = url.fileURLToPath(new URL('../fixtures/config.json', import.meta.url))
 
       // when
-      const config = await prepareConfig({
+      const { config } = await prepareConfig({
         config: configPath,
         mode: 'development',
         watch: true,
@@ -55,7 +55,7 @@ describe('kopflos/lib/config.js', function () {
       const configPath = url.fileURLToPath(new URL('../fixtures/config.with-watch.json', import.meta.url))
 
       // when
-      const config = await prepareConfig({
+      const { config } = await prepareConfig({
         config: configPath,
         mode: 'development',
         watch: true,
@@ -71,7 +71,7 @@ describe('kopflos/lib/config.js', function () {
       const configPath = url.fileURLToPath(new URL('../fixtures/config.with-relative.json', import.meta.url))
 
       // when
-      const config = await prepareConfig({
+      const { config } = await prepareConfig({
         config: configPath,
         mode: 'development',
         watch: true,

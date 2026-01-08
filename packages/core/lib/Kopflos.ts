@@ -70,7 +70,7 @@ export interface KopflosPlugin {
   onReady?(instance: Kopflos): Promise<void> | void
   onStop?(instance: Kopflos): Promise<void> | void
   apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
-  build?: () => Promise<void> | void
+  build?: (env: KopflosEnvironment) => Promise<void> | void
 }
 
 export interface Plugins extends Record<string, KopflosPlugin> {
@@ -117,6 +117,7 @@ export interface Options {
   decoratorLookup?: DecoratorLookup
   handlerLookup?: HandlerLookup
   plugins?: KopflosPlugin[]
+  basePath?: string
 }
 
 export default class Impl implements Kopflos {
@@ -129,7 +130,7 @@ export default class Impl implements Kopflos {
   private decorators: Map<Term, RequestDecorator[]>
 
   constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
-    this.env = createEnv({ variables, ...config })
+    this.env = createEnv({ variables, ...config }, options.basePath)
     this.plugins = options.plugins || []
     this.decorators = this.env.termMap()
 
