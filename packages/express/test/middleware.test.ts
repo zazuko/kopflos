@@ -18,7 +18,6 @@ describe('@kopflos-cms/express/middleware', function () {
     this.timeout(5000)
 
     const { middleware } = await kopflos({
-      basePath: import.meta.dirname,
       baseIri: 'http://example.org/',
       codeBase: url.fileURLToPath(new URL('.', import.meta.url)),
       sparql: {

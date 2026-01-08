@@ -108,7 +108,6 @@ export interface KopflosConfig {
   apiGraphs?: Array<NamedNode | string>
   plugins?: PluginConfig
   variables?: Variables
-  basePath: string
 }
 
 export interface Options {

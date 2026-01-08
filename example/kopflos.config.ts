@@ -5,7 +5,6 @@ const baseIri = process.env.API_BASE || 'http://localhost:1429'
 const dbUri = process.env.DB_URI || 'http://localhost:7878'
 
 export default <KopflosConfig> {
-  basePath: import.meta.dirname,
   baseIri,
   apiGraphs: [baseIri + '/api'],
   sparql: {

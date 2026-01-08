@@ -15,7 +15,6 @@ describe('@kopflos-cms/handlers.js', function () {
   before(createStore(import.meta.url, { format: 'trig', includeDefaultGraph: true }))
 
   const config: KopflosConfig = {
-    basePath: process.cwd(),
     baseIri: 'http://example.com/',
     sparql: {
       default: 'http://localhost:8080/sparql',

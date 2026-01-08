@@ -18,7 +18,6 @@ describe('lib/env/SparqlClientFactory', function () {
         get kopflos() {
           return {
             config: {
-              basePath: import.meta.dirname,
               baseIri: 'http://example.com/',
               sparql: {
                 default: 'http://example.com/sparql',
@@ -57,7 +56,6 @@ describe('lib/env/SparqlClientFactory', function () {
         get kopflos() {
           return {
             config: {
-              basePath: import.meta.dirname,
               baseIri: 'http://example.com/',
               sparql: {
                 default: {
@@ -108,7 +106,6 @@ describe('lib/env/SparqlClientFactory', function () {
         get kopflos() {
           return {
             config: {
-              basePath: import.meta.dirname,
               baseIri: 'http://example.com/',
               sparql: {
                 default: {
@@ -156,7 +153,6 @@ describe('lib/env/SparqlClientFactory', function () {
               return {
                 variables: {},
                 config: {
-                  basePath: import.meta.dirname,
                   baseIri: 'http://example.com/',
                   sparql: {
                     default: client,

@@ -7,12 +7,13 @@ export interface KopflosFactory {
   }
 }
 
-export default (config: KopflosConfig) => {
+export default (config: KopflosConfig, basePath: string) => {
   const variables = config.variables || {}
 
   return class implements KopflosFactory {
     get kopflos() {
       return {
+        basePath,
         config: Object.freeze(config),
         variables,
       }

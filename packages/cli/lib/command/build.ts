@@ -1,3 +1,4 @@
+import { dirname } from 'node:path'
 import log from '@kopflos-cms/logger'
 import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
@@ -8,11 +9,11 @@ interface BuildArgs {
 }
 
 export default async function (args: BuildArgs) {
-  const { config } = await loadConfig({
+  const { config, filepath } = await loadConfig({
     path: args.config,
   })
   const plugins = await loadPlugins(config.plugins)
-  const env = createEnv(config)
+  const env = createEnv(config, dirname(filepath))
 
   log.info('Running build actions...')
   const buildActions = plugins.map(Plugin => Plugin.build?.(env))

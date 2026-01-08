@@ -24,7 +24,6 @@ describe('@kopflos-cms/shacl/lib/decorator.js', function () {
 
   beforeEach(function () {
     env = createEnv({
-      basePath: process.cwd(),
       baseIri: 'http://localhost:1429/',
       sparql: {
         default: inMemoryClients(this.rdf),

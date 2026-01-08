@@ -3,4 +3,4 @@
 "kopflos": minor
 ---
 
-Require `basePath` in configuration. Use `import.meta.dirname`
+The `KopflosEnvironment` now includes a `configPath` property 

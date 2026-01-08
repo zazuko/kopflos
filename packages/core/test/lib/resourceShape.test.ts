@@ -14,7 +14,6 @@ describe('lib/resourceShape', function () {
 
   beforeEach(async function () {
     options = {
-      basePath: import.meta.dirname,
       baseIri: 'http://example.com',
       sparql: {
         default: inMemoryClients(this.rdf),

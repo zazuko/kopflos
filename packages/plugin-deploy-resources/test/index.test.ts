@@ -25,7 +25,6 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
   describe('onStart', function () {
     beforeEach(function () {
       env = new Kopflos({
-        basePath: import.meta.dirname,
         baseIri,
         sparql: {
           default: inMemoryClients(this.rdf),
@@ -100,7 +99,6 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
 
     beforeEach(async function () {
       env = new Kopflos({
-        basePath: import.meta.dirname,
         baseIri,
         sparql: {
           default: inMemoryClients(this.rdf),

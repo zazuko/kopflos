@@ -51,7 +51,7 @@ export default class implements VitePlugin {
 
   onStart({ env }: Kopflos): Promise<void> | void {
     const viteVars = {
-      basePath: resolve(env.kopflos.config.basePath, env.kopflos.config.mode === 'development' ? this.rootDir : this.buildDir),
+      basePath: resolve(env.kopflos.basePath, env.kopflos.config.mode === 'development' ? this.rootDir : this.buildDir),
     }
     log.info('Variables', viteVars)
     env.kopflos.variables.VITE = Object.freeze(viteVars)
@@ -62,7 +62,7 @@ export default class implements VitePlugin {
       log.info('Development UI mode. Creating Vite server...')
 
       const configPath = this.options.configPath
-        ? resolve(env.kopflos.config.basePath, this.options.configPath)
+        ? resolve(env.kopflos.basePath, this.options.configPath)
         : this.options.configPath
       this._viteDevServer = await createViteServer({
         configPath,
@@ -70,7 +70,7 @@ export default class implements VitePlugin {
       })
       host.use(this._viteDevServer.middlewares)
     } else {
-      const buildDir = resolve(env.kopflos.config.basePath, this.buildDir)
+      const buildDir = resolve(env.kopflos.basePath, this.buildDir)
       log.info('Serving UI from build directory')
       log.debug('Build directory:', buildDir)
       host.use(express.static(buildDir))
@@ -79,9 +79,9 @@ export default class implements VitePlugin {
 
   async build(env: KopflosEnvironment) {
     log.info('Building UI...')
-    const outDir = resolve(env.kopflos.config.basePath, this.outDir)
+    const outDir = resolve(env.kopflos.basePath, this.outDir)
     const configPath = this.options.configPath
-      ? resolve(env.kopflos.config.basePath, this.options.configPath)
+      ? resolve(env.kopflos.basePath, this.options.configPath)
       : this.options.configPath
     await build(await prepareConfig({
       outDir,

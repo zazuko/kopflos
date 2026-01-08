@@ -28,7 +28,6 @@ describe('lib/handler', function () {
 
     beforeEach(function () {
       config = {
-        basePath: process.cwd(),
         baseIri: 'http://example.com/',
         codeBase: __dirname,
         sparql: {
