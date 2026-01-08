@@ -65,6 +65,7 @@ async function run({
     }
 
     chokidar.watch(config.watch, {
+      ignored: /\.d\.ts$/i,
       ignoreInitial: true,
     })
       .on('change', restartServer)
