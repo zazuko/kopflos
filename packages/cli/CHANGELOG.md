@@ -1,5 +1,14 @@
 # kopflos
 
+## 0.1.9
+
+### Patch Changes
+
+- d3b614c: Ignore TypeScript declaration files from file watching
+- Updated dependencies [46491b5]
+- Updated dependencies [0c33953]
+  - @kopflos-cms/core@0.6.1
+
 ## 0.1.8
 
 ### Patch Changes

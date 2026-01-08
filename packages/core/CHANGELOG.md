@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.6.1
+
+### Patch Changes
+
+- 46491b5: The `KopflosEnvironment` now includes a `basePath` property, which correspodes to the loaded config path
+- 0c33953: Build plugin command now receives `KopflosEnvironment` as argument
+
 ## 0.6.0
 
 ### Minor Changes

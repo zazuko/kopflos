@@ -1,6 +1,6 @@
 {
   "name": "kopflos",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "type": "module",
   "bin": {
     "kopflos": "./bin/kopflos.sh"
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/zazuko/kopflos",
   "dependencies": {
     "@kopflos-cms/logger": "^0.1.0",
-    "@kopflos-cms/core": "^0.6.0",
+    "@kopflos-cms/core": "^0.6.1",
     "@kopflos-cms/express": "^0.2.0",
     "@kopflos-cms/plugin-deploy-resources": "^0.2.0",
     "chokidar": "^4.0.1",

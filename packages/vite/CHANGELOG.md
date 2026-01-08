@@ -1,5 +1,12 @@
 # @kopflos-cms/vite
 
+## 0.2.1
+
+### Patch Changes
+
+- 46491b5: Relative `configPath` option will be resolved against `basePath` from kopflos environment.
+- 0c33953: Build plugin command now receives `KopflosEnvironment` as argument
+
 ## 0.2.0
 
 ### Minor Changes
