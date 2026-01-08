@@ -1,6 +1,5 @@
 ---
-"@kopflos-cms/core": minor
-"kopflos": minor
+"@kopflos-cms/core": patch
 ---
 
-The `KopflosEnvironment` now includes a `configPath` property 
+The `KopflosEnvironment` now includes a `basePath` property, which correspodes to the loaded config path
