@@ -9,7 +9,6 @@ describe('@kopflos-labs/handlebars', function () {
   }))
 
   const env = createEnv({
-    basePath: import.meta.dirname,
     baseIri: 'http://example.org/',
     sparql: {
       default: 'http://example.org/sparql',
