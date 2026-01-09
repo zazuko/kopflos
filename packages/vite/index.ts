@@ -65,8 +65,8 @@ export default class implements VitePlugin {
         ? resolve(env.kopflos.basePath, this.options.configPath)
         : this.options.configPath
       this._viteDevServer = await createViteServer({
-        configPath,
         ...this.options,
+        configPath,
       })
       host.use(this._viteDevServer.middlewares)
     } else {
@@ -84,9 +84,9 @@ export default class implements VitePlugin {
       ? resolve(env.kopflos.basePath, this.options.configPath)
       : this.options.configPath
     await build(await prepareConfig({
+      ...this.options,
       outDir,
       configPath,
-      ...this.options,
     }))
   }
 }
