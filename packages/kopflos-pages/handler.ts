@@ -2,13 +2,14 @@ import {Kopflos, SubjectHandler} from "@kopflos-cms/core";
 import type * as vite from '@kopflos-cms/vite'
 import type * as pages from './index.js'
 import * as fs from "node:fs/promises";
-import { join } from "node:path";
+import { resolve } from "node:path";
 import {parseDocument} from "htmlparser2";
 import {load} from "cheerio";
 
 export default function (this: Kopflos, templatePath: string, ssrModulePath: string): SubjectHandler {
     const vite = this.getPlugin('@kopflos-cms/vite')
-    const { ssr, path } = this.getPlugin('@kopflos-labs/pages')!
+    const { basePath } = this.env.kopflos
+    const { ssr } = this.getPlugin('@kopflos-labs/pages')!
 
     return async (req) => {
         const {subject, resourceShape, env} = req
@@ -20,7 +21,7 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
 
         let html: string
         if(vite.viteDevServer.environments.client.mode === 'dev') {
-            let template = await fs.readFile(join(path, templatePath)).then(buf => buf.toString())
+            let template = await fs.readFile(resolve(basePath, templatePath)).then(buf => buf.toString())
             const $ = load(parseDocument(template))
 
             $('head').append(`    
@@ -56,7 +57,7 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
             throw new Error('Production mode not implemented yet in kopflos-labs/pages handler.')
         }
 
-        const {default: renderer} = await vite.viteDevServer.ssrLoadModule(ssrModulePath)
+        const {default: renderer} = await vite.viteDevServer.ssrLoadModule(resolve(basePath, ssrModulePath))
 
         const body = await ssr({
             renderer,

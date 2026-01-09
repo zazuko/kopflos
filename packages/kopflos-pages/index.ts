@@ -23,7 +23,7 @@ export interface SsrModule {
 
 interface Options {
     api: string
-    path: string
+    path?: string
     ssr?: SsrModule
     pattern?: string
 }
@@ -52,7 +52,7 @@ export default class implements PagesPlugin {
     private readonly api: string;
     public readonly ssr: SsrModule;
 
-    constructor({api, path, pattern = '**/*.html.ts', ssr = litSsr}: Options) {
+    constructor({api, path = 'pages', pattern = '**/*.html.ts', ssr = litSsr}: Options) {
         this.ssr = ssr
         this.api = api
         this.path = path;
@@ -63,6 +63,8 @@ export default class implements PagesPlugin {
         const {rdf, kl, sh, code} = env.ns
         const talos = env.namespace('urn:talos:')
 
+        const cwd = path.resolve(env.kopflos.basePath, this.path)
+
         const dataset = env.dataset()
         const graph = env.clownface({
             dataset,
@@ -72,12 +74,12 @@ export default class implements PagesPlugin {
             .node(kl.Pages)
             .addOut(talos.action, talos.overwrite)
 
-        for await(const file of globIterate(this.pattern, {cwd: this.path})) {
+        for await(const file of globIterate(this.pattern, { cwd })) {
             const resourceShape = graph
                 .namedNode(kl.Pages.value + '#' + encodeURIComponent(file))
 
             const ssrModule = path.join(this.path, file)
-            const html = path.relative(this.path, ssrModule.replace(/\.\w+$/, ''))
+            const html = ssrModule.replace(/\.\w+$/, '')
 
             resourceShape
                 .addOut(rdf.type, kl.ResourceShape)
