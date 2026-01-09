@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
   "dependencies": {
     "@kopflos-cms/hydra": "0.2.0",
     "@kopflos-cms/serve-file": "0.1.0",
-    "@kopflos-cms/vite": "0.2.1",
+    "@kopflos-cms/vite": "0.2.2",
     "@kopflos-labs/handlebars": "0.1.0",
     "@kopflos-labs/html-template": "0.1.0",
     "@kopflos-labs/lit": "0.1.0",

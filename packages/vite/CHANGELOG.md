@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.2.2
+
+### Patch Changes
+
+- 17ef296: Loading config from the right path
+
 ## 0.2.1
 
 ### Patch Changes
