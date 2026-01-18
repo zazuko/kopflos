@@ -9,7 +9,7 @@ import {load} from "cheerio";
 export default function (this: Kopflos, templatePath: string, ssrModulePath: string): SubjectHandler {
     const vite = this.getPlugin('@kopflos-cms/vite')
     const { basePath } = this.env.kopflos
-    const { ssr } = this.getPlugin('@kopflos-labs/pages')!
+    const { ssr, ssrOptions } = this.getPlugin('@kopflos-labs/pages')!
 
     return async (req) => {
         const {subject, resourceShape, env} = req
@@ -30,7 +30,9 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
         display: none;
     }
 </style>`)
-            $('body')
+            const body = $('body')
+
+            body
                 .attr('dsd-pending', '')
                 .prepend(`
 <script>
@@ -46,6 +48,14 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
 <script type="module">
     import '@kopflos-labs/pages/shadow.js'
 </script>`)
+
+            if(ssrOptions?.deferHydration) {
+                body.append(`
+<script type="module">
+    import '@kopflos-labs/pages/runtime/hydrate.js';
+</script>
+                `)
+            }
 
             template = $.html({
                 xml: {
@@ -64,6 +74,7 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
             vite: vite.viteDevServer,
             req,
             html,
+            options: ssrOptions
         })
         return {
             body

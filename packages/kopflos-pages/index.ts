@@ -4,6 +4,7 @@ import {globIterate} from 'glob'
 import * as path from "node:path";
 import type {AnyPointer} from "clownface";
 import type {ViteDevServer} from "vite";
+import {render} from "@lit-labs/ssr";
 import litSsr from "./ssr.js";
 
 export interface PageRenderer {
@@ -12,11 +13,14 @@ export interface PageRenderer {
     data?: Record<string, AnyPointer | DatasetCore>
 }
 
+type SsrOptions = Parameters<typeof render>[1]
+
 export interface SsrModule {
     (arg: {
         req: HandlerArgs
         vite: ViteDevServer
         html: string
+        options: SsrOptions
         renderer(req: HandlerArgs): Promise<PageRenderer>
     }): Promise<string>
 }
@@ -26,11 +30,13 @@ interface Options {
     path?: string
     ssr?: SsrModule
     pattern?: string
+    ssrOptions?: SsrOptions
 }
 
 interface PagesPlugin extends KopflosPlugin {
     readonly ssr: SsrModule
     readonly path: string
+    readonly ssrOptions: SsrOptions
 }
 
 declare module '@kopflos-cms/core' {
@@ -51,12 +57,14 @@ export default class implements PagesPlugin {
     public readonly path: string;
     private readonly api: string;
     public readonly ssr: SsrModule;
+    public readonly ssrOptions: SsrOptions
 
-    constructor({api, path = 'pages', pattern = '**/*.html.ts', ssr = litSsr}: Options) {
+    constructor({api, path = 'pages', pattern = '**/*.html.ts', ssr = litSsr, ssrOptions = { deferHydration: true }}: Options) {
         this.ssr = ssr
         this.api = api
         this.path = path;
         this.pattern = pattern
+        this.ssrOptions = ssrOptions;
     }
 
     async deployedResources(env: KopflosEnvironment): Promise<DatasetCore> {

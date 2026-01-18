@@ -1,7 +1,6 @@
 import { render } from '@lit-labs/ssr'
 import { collectResult } from '@lit-labs/ssr/lib/render-result.js'
 import { getWindow } from '@lit-labs/ssr/lib/dom-shim.js'
-import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import Serializer from '@rdfjs/serializer-rdfjs'
 import * as esbuild from 'esbuild';
@@ -17,7 +16,7 @@ globalThis.litSsrCallConnectedCallback = (element: any) => {
     return element.constructor.__ssrConnectedCallback === true
 }
 
-const ssr: SsrModule = async ({ renderer, vite, html, req }) => {
+const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions }) => {
     const { head, body, data } = await renderer(req)
 
     setLanguages(...req.headers["accept-language"] || [])
@@ -45,7 +44,7 @@ const ssr: SsrModule = async ({ renderer, vite, html, req }) => {
         $('head').prepend(`<script type="module">${script}</script>`)
     }
 
-    $('body').prepend(await collectResult(render(body())))
+    $('body').prepend(await collectResult(render(body(), ssrOptions)))
 
     return $.html({
         xml: {
