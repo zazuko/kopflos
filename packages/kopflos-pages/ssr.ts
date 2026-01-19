@@ -13,7 +13,7 @@ const serializer = new Serializer();
     includeJSBuiltIns: true,
 })
 globalThis.litSsrCallConnectedCallback = (element: any) => {
-    return element.constructor.__ssrConnectedCallback === true
+    return !element.tagName.startsWith('WA-')
 }
 
 const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions }) => {
