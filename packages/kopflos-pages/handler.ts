@@ -15,12 +15,9 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
         const {subject, resourceShape, env} = req
         const subjectPath = new URL(subject.value).pathname
 
-        if (!vite?.viteDevServer) {
-            throw new Error('Vite dev server not initialized. Check vite plugin configuration.')
-        }
-
         let html: string
-        if(vite.viteDevServer.environments.client.mode === 'dev') {
+        let renderer: any
+        if (vite?.viteDevServer && vite.viteDevServer.environments.client.mode === 'dev') {
             let template = await fs.readFile(resolve(basePath, templatePath)).then(buf => buf.toString())
             const $ = load(parseDocument(template))
 
@@ -63,15 +60,21 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
                 },
             })
             html = await vite.viteDevServer.transformIndexHtml(subjectPath, template)
+            const rendererModule = await vite.viteDevServer.ssrLoadModule(resolve(basePath, ssrModulePath))
+            renderer = rendererModule.default
         } else {
-            throw new Error('Production mode not implemented yet in kopflos-labs/pages handler.')
-        }
+            const outDir = resolve(basePath, 'dist')
+            const clientDir = resolve(outDir, 'client')
+            const serverDir = resolve(outDir, 'server')
 
-        const {default: renderer} = await vite.viteDevServer.ssrLoadModule(resolve(basePath, ssrModulePath))
+            html = await fs.readFile(resolve(clientDir, templatePath)).then(buf => buf.toString())
+            const rendererModule = await import(resolve(serverDir, ssrModulePath).replace('.ts', '.js'))
+            renderer = rendererModule.default
+        }
 
         const body = await ssr({
             renderer,
-            vite: vite.viteDevServer,
+            vite: vite?.viteDevServer,
             req,
             html,
             options: ssrOptions

@@ -36,7 +36,8 @@ const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions }
             })
         ].join('\n')
 
-        if (vite.config.build.minify && vite.environments.client.mode !== 'dev') {
+        const isMinify = vite ? (vite.config.build.minify && vite.environments.client.mode !== 'dev') : true;
+        if (isMinify) {
             script = (await esbuild.transform(script, {
                 minify: true
             })).code
