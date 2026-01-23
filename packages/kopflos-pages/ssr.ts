@@ -1,4 +1,5 @@
-import {render} from '@lit-labs/ssr'
+import {ElementRenderer, render} from '@lit-labs/ssr'
+import {LitElementRenderer} from '@lit-labs/ssr/lib/lit-element-renderer.js'
 import {collectResult} from '@lit-labs/ssr/lib/render-result.js'
 import {getWindow} from '@lit-labs/ssr/lib/dom-shim.js'
 import {load} from 'cheerio'
@@ -21,8 +22,10 @@ globalThis.litSsrCallConnectedCallback = (element: any) => {
     return !element.tagName.startsWith('WA-')
 }
 
-async function executeQueries(renderer: PageRenderer, queries: QueryMap, env: KopflosEnvironment, subjectVariables: Record<string, string>, queryParams: NodeJS.Dict<string | string[]>): Promise<NonNullable<PageRenderer['data']>> {
-    const data: NonNullable<PageRenderer['data']> = renderer.data || {}
+type RendererData = NonNullable<PageRenderer['data']>
+
+async function executeQueries(renderer: PageRenderer, queries: QueryMap, env: KopflosEnvironment, subjectVariables: Record<string, string>, queryParams: NodeJS.Dict<string | string[]>): Promise<RendererData> {
+    const data: RendererData = renderer.data || {}
 
     for (const [name, descriptor] of Object.entries(queries)) {
         const query: QueryExecutor = typeof descriptor === 'function' ? descriptor : descriptor.query
@@ -45,7 +48,7 @@ async function executeQueries(renderer: PageRenderer, queries: QueryMap, env: Ko
             }, {}),
         }
 
-        const result = await query(params, client, env) as Stream
+        const result = await query(params, env, client) as Stream
         data[name] = env.clownface({
             dataset: await env.dataset().import(result)
         })
@@ -68,12 +71,21 @@ const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions }
         $('head').append(await (typeof head === 'function' ? head({ ...req, data: data as Record<string, AnyPointer> }) : head))
     }
 
-    if (data && Object.keys(data).length > 0) {
+    await renderer.import?.()
+
+    const { Renderer, usedData } = prepareRenderer(data)
+    $('body').prepend(await collectResult(render(await body({...req, data}), {
+        ...ssrOptions,
+        elementRenderers: [Renderer],
+    })))
+
+    if (usedData.size) {
         let script = [
             'window.graphs = window.graphs || {};',
-            ...Object.entries(data).map(([name, datasetOrPointer]) => {
-                const dataset = 'terms' in (datasetOrPointer as AnyPointer) ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
-                return serializer.transform(dataset as any).replace('export default', `window.graphs.${name} =`);
+            ...[...usedData].map((name) => {
+                const datasetOrPointer = data[name];
+                const dataset = 'terms' in datasetOrPointer ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
+                return serializer.transform(dataset).replace('export default', `window.graphs.${name} =`);
             })
         ].join('\n')
 
@@ -86,13 +98,79 @@ const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions }
         $('head').prepend(`<script type="module">${script}</script>`)
     }
 
-    $('body').prepend(await collectResult(render(body({...req, data}), ssrOptions)))
-
     return $.html({
         xml: {
             xmlMode: false,
         },
     })
+}
+
+function prepareRenderer(data: RendererData) {
+    const usedData: Set<string> = new Set()
+
+    class Renderer implements ElementRenderer {
+        static matchesClass(el: typeof HTMLElement, tag: string, attrs: Map<string, string>): boolean {
+            return attrs.has('data-graph')
+        }
+
+        private readonly inner: ElementRenderer
+
+        get element(): HTMLElement | undefined {
+            return this.inner.element
+        }
+
+        get tagName(): string {
+            return this.inner.tagName
+        }
+
+        constructor(element: string) {
+            this.inner = new LitElementRenderer(element)
+        }
+
+        connectedCallback(): void {
+            return this.inner.connectedCallback()
+        }
+
+        attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+            return this.inner.attributeChangedCallback(name, old, value)
+        }
+
+        setProperty(name: string, value: unknown): void {
+            return this.inner.setProperty(name, value)
+        }
+
+        setAttribute(name: string, value: string): void {
+            if (name === 'data-graph') {
+                usedData.add(value)
+                this.inner.setProperty('graph', data[value])
+                this.inner.setAttribute(name, value)
+                return
+            }
+
+            this.inner.setAttribute(name, value)
+        }
+
+        get shadowRootOptions(): ShadowRootInit {
+            return this.inner.shadowRootOptions
+        }
+
+        renderShadow(renderInfo: any): any {
+            return this.inner.renderShadow(renderInfo)
+        }
+
+        renderLight(renderInfo: any): any {
+            return this.inner.renderLight(renderInfo)
+        }
+
+        renderAttributes(): any {
+            return this.inner.renderAttributes()
+        }
+    }
+
+    return {
+        Renderer,
+        usedData,
+    }
 }
 
 export default ssr
