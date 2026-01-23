@@ -1,16 +1,27 @@
 import type {HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin} from '@kopflos-cms/core'
-import type {DatasetCore} from "@rdfjs/types";
+import type {DatasetCore, Term} from "@rdfjs/types";
 import {globIterate} from 'glob'
 import * as path from "node:path";
 import type {AnyPointer} from "clownface";
 import type {ViteDevServer} from "vite";
 import {render} from "@lit-labs/ssr";
+import type {TemplateResult} from 'lit';
+import type {QueryExecutor} from 'sparqlc'
 import litSsr from "./ssr.js";
 
-export interface PageRenderer {
-    head?(): string | Promise<string>
-    body(): unknown | Promise<unknown>
+export interface QueryDescriptor {
+    query: QueryExecutor
+    endpoint?: string
+}
+
+export type QueryMap = Record<string, QueryDescriptor | QueryExecutor>
+
+export interface PageRenderer<TQueries extends QueryMap | undefined = {}> {
+    head?: string | ((args: HandlerArgs & { data: { [P in keyof TQueries]: AnyPointer } }) => string | Promise<string>)
+    import?: () => Promise<void>
+    body: (args: HandlerArgs & { data: { [P in keyof TQueries]: AnyPointer } }) => TemplateResult | Promise<TemplateResult>
     data?: Record<string, AnyPointer | DatasetCore>
+    queries?: TQueries
 }
 
 type SsrOptions = Parameters<typeof render>[1]
@@ -21,7 +32,7 @@ export interface SsrModule {
         vite: ViteDevServer
         html: string
         options: SsrOptions
-        renderer(req: HandlerArgs): Promise<PageRenderer>
+        renderer: PageRenderer<{}>
     }): Promise<string>
 }
 
@@ -49,7 +60,7 @@ declare module '@kopflos-cms/core' {
     }
 }
 
-export const definePageRenderer = (fn: (req: HandlerArgs) => Promise<PageRenderer>) => fn;
+export const definePageRenderer = <TQueries extends Record<string, QueryDescriptor | QueryExecutor>>(renderer: PageRenderer<TQueries>) => renderer;
 
 export default class implements PagesPlugin {
     readonly name = '@kopflos-labs/pages'
