@@ -1,15 +1,15 @@
 import {Kopflos, SubjectHandler} from "@kopflos-cms/core";
 import type * as vite from '@kopflos-cms/vite'
-import type * as pages from './index.js'
 import * as fs from "node:fs/promises";
 import { resolve } from "node:path";
 import {parseDocument} from "htmlparser2";
 import {load} from "cheerio";
+import render from './lib/ssr.js'
 
 export default function (this: Kopflos, templatePath: string, ssrModulePath: string): SubjectHandler {
     const vite = this.getPlugin('@kopflos-cms/vite')
     const { basePath } = this.env.kopflos
-    const { ssr, ssrOptions } = this.getPlugin('@kopflos-labs/pages')!
+    const { ssrOptions } = this.getPlugin('@kopflos-labs/pages')!
 
     return async (req) => {
         const {subject, resourceShape, env} = req
@@ -72,9 +72,9 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
             renderer = rendererModule.default
         }
 
-        const body = await ssr({
+        const body = await render({
             renderer,
-            vite: vite?.viteDevServer,
+            vite: vite?.viteDevServer!,
             req,
             html,
             options: ssrOptions
