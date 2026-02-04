@@ -41,6 +41,7 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
 </script>
 <script type="module">
     import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
+    import '@kopflos-labs/pages/runtime/open-styles.js'
 </script>`).append(`
 <script type="module">
     import '@kopflos-labs/pages/shadow.js'

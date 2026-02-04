@@ -179,6 +179,13 @@ function prepareRenderer(data: RendererData) {
 
             return super.connectedCallback()
         }
+
+        *renderShadow(ri: any) {
+            const shadow = super.renderShadow(ri)
+
+            yield '<open-styles></open-styles>'
+            yield * shadow
+        }
     }
 
     return {
