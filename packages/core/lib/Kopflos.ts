@@ -100,6 +100,7 @@ export interface KopflosConfig {
   [key: string]: unknown
   mode?: 'development' | 'production'
   baseIri: string
+  buildDir?: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>

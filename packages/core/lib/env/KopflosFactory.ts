@@ -14,6 +14,7 @@ export default (config: KopflosConfig, basePath: string) => {
     get kopflos() {
       return {
         basePath,
+        buildDir: config.buildDir,
         config: Object.freeze(config),
         variables,
       }

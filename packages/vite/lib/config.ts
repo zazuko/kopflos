@@ -5,7 +5,12 @@ import { mergeConfig } from 'vite'
 import defaultConfig from '../vite.config.js'
 import type { Options } from '../index.js'
 
-export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: Omit<Options, 'mode'>) {
+type ConfigOptions = Omit<Options, 'mode'> & {
+  root: string
+  outDir: string
+}
+
+export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: ConfigOptions) {
   const inputConfig: InlineConfig = {
     root,
     build: {
@@ -13,7 +18,7 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir, con
     },
   }
   if (outDir) {
-    inputConfig.build!.outDir = resolve(process.cwd(), outDir)
+    inputConfig.build!.outDir = resolve(root, outDir)
   }
   if (entrypoints) {
     inputConfig.build!.rollupOptions = {
