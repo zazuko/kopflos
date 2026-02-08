@@ -10,6 +10,7 @@ import { IN } from '@tpluscode/sparql-builder/expressions'
 import type { Client } from 'sparql-http-client'
 import onetime from 'onetime'
 import { kl } from '../ns.js'
+import ShorthandTerms from '../plugin/shorthandTerms.js'
 import type { KopflosEnvironment } from './env/index.js'
 import { createEnv } from './env/index.js'
 import type { ResourceShapeLookup, ResourceShapeMatch } from './resourceShape.js'
@@ -59,10 +60,6 @@ export interface ResultEnvelope {
 
 export type KopflosResponse = ResultBody | ResultEnvelope
 
-export interface PluginConfig {
-  [plugin: string]: unknown
-}
-
 export interface KopflosPlugin {
   /* eslint-disable no-use-before-define */
   readonly name?: string
@@ -81,9 +78,9 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
   // eslint-disable-next-line no-use-before-define
-  get plugins(): Array<KopflosPlugin>
+  get plugins(): ReadonlyArray<KopflosPlugin>
   get start(): () => Promise<void>
-  getPlugin<N extends keyof PluginConfig>(name: N): Plugins[N] | undefined
+  getPlugin<N extends keyof Plugins>(name: N): Plugins[N] | undefined
   handleRequest(req: KopflosRequest<D>): Promise<ResultEnvelope>
   loadApiGraphs(): Promise<void>
 }
@@ -106,7 +103,7 @@ export interface KopflosConfig {
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
   apiGraphs?: Array<NamedNode | string>
-  plugins?: PluginConfig
+  plugins?: KopflosPlugin[]
   variables?: Variables
 }
 
@@ -116,7 +113,6 @@ export interface Options {
   resourceLoaderLookup?: ResourceLoaderLookup
   decoratorLookup?: DecoratorLookup
   handlerLookup?: HandlerLookup
-  plugins?: KopflosPlugin[]
   basePath?: string
 }
 
@@ -129,9 +125,12 @@ export default class Impl implements Kopflos {
 
   private decorators: Map<Term, RequestDecorator[]>
 
-  constructor({ variables = {}, ...config }: KopflosConfig, private readonly options: Options = {}) {
+  constructor({ variables = {}, plugins = [], ...config }: KopflosConfig, private readonly options: Options = {}) {
     this.env = createEnv({ variables, ...config }, options.basePath)
-    this.plugins = options.plugins || []
+    this.plugins = [
+      new ShorthandTerms(),
+      ...plugins,
+    ]
     this.decorators = this.env.termMap()
 
     this.dataset = this.env.dataset([

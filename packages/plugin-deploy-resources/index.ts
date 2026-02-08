@@ -12,9 +12,13 @@ interface Options {
   watch?: boolean
 }
 
+interface DeployResourcesPlugin extends KopflosPlugin {
+  deploy(env: KopflosEnvironment, plugins: KopflosPlugin[]): Promise<void>
+}
+
 declare module '@kopflos-cms/core' {
-  interface PluginConfig {
-    '@kopflos-cms/plugin-deploy-resources'?: Options
+  interface Plugins {
+    '@kopflos-cms/plugin-deploy-resources': DeployResourcesPlugin
   }
 
   interface KopflosPlugin {
@@ -24,33 +28,13 @@ declare module '@kopflos-cms/core' {
 
 const log = createLogger('deploy-resources')
 
-export async function deploy(paths: string[], env: KopflosEnvironment, plugins: KopflosPlugin[]) {
-  const dataset = await plugins.reduce(async (promise, plugin) => {
-    if (!plugin.deployedResources) {
-      return promise
-    }
-
-    const previous = await promise
-    const resources = await plugin.deployedResources()
-    if ('size' in resources) {
-      previous.addAll(resources)
-      return previous
-    } else {
-      return previous.import(resources)
-    }
-  }, fromDirectories(paths, env.kopflos.config.baseIri))
-
-  await bootstrap({
-    dataset,
-    store: new ResourcePerGraphStore(env.sparql.default.stream, env),
-  })
-}
-
-export default class implements KopflosPlugin {
+export default class implements DeployResourcesPlugin {
   private readonly instances = new WeakMap<Kopflos, chokidar.FSWatcher>()
-  private readonly paths: string[]
+  public readonly paths: string[]
   private readonly enabled: boolean
   private readonly watch: boolean
+
+  public readonly name = '@kopflos-cms/plugin-deploy-resources'
 
   constructor({ paths = [], enabled = true, watch = true }: Options = {}) {
     this.paths = paths
@@ -72,22 +56,44 @@ export default class implements KopflosPlugin {
     log.info(`Auto deploy enabled. Deploying from: ${this.paths}`)
 
     if (this.watch && instance.env.kopflos.config.watch) {
-      async function redeploy(paths: string[], changedFile: string) {
+      const redeploy = async (changedFile: string) => {
         log.info('Resources changed, redeploying')
         log.debug(`Changed path: ${changedFile}`)
-        await deploy(paths, instance.env, instance.plugins)
+        await this.deploy(instance.env, instance.plugins)
         await instance.loadApiGraphs()
       }
 
       const watcher = chokidar.watch(this.paths, { ignoreInitial: true })
-        .on('change', redeploy.bind(null, this.paths))
-        .on('add', redeploy.bind(null, this.paths))
-        .on('unlink', redeploy.bind(null, this.paths))
+        .on('change', redeploy)
+        .on('add', redeploy)
+        .on('unlink', redeploy)
 
       this.instances.set(instance, watcher)
     }
 
-    return deploy(this.paths, instance.env, instance.plugins)
+    return this.deploy(instance.env, instance.plugins)
+  }
+
+  async deploy(env: KopflosEnvironment, plugins: KopflosPlugin[]) {
+    const dataset = await plugins.reduce(async (promise, plugin) => {
+      if (!plugin.deployedResources) {
+        return promise
+      }
+
+      const previous = await promise
+      const resources = await plugin.deployedResources()
+      if ('size' in resources) {
+        previous.addAll(resources)
+        return previous
+      } else {
+        return previous.import(resources)
+      }
+    }, fromDirectories(this.paths, env.kopflos.config.baseIri))
+
+    await bootstrap({
+      dataset,
+      store: new ResourcePerGraphStore(env.sparql.default.stream, env),
+    })
   }
 
   async onStop(instance: Kopflos) {

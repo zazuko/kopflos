@@ -7,7 +7,6 @@ import rdfHandler from '@rdfjs/express-handler'
 import factory from '@zazuko/env-node'
 import onetime from 'onetime'
 import { match, P } from 'ts-pattern'
-import { loadPlugins } from '@kopflos-cms/core/plugins.js' // eslint-disable-line import/no-unresolved
 import { BodyWrapper } from './BodyWrapper.js'
 
 declare module 'express-serve-static-core' {
@@ -25,7 +24,6 @@ declare module '@kopflos-cms/core' {
 
 export default async (config: KopflosConfig, basePath = process.cwd()): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
   const kopflos = new Kopflos(config, {
-    plugins: await loadPlugins(config.plugins),
     basePath,
   })
 

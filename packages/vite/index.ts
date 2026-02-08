@@ -22,10 +22,6 @@ interface VitePlugin extends KopflosPlugin {
 }
 
 declare module '@kopflos-cms/core' {
-  interface PluginConfig {
-    '@kopflos-cms/vite'?: Options
-  }
-
   interface Plugins {
     '@kopflos-cms/vite': VitePlugin
   }
