@@ -1,9 +1,12 @@
 import { createStore } from 'mocha-chai-rdf/store.js'
-import { expect } from 'chai'
+import snapshots from 'mocha-chai-rdf/snapshots.js'
+import { expect, use } from 'chai'
 import type { KopflosConfig } from '../../lib/Kopflos.js'
 import Kopflos from '../../lib/Kopflos.js'
 import { ex } from '../../../testing-helpers/ns.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
+
+use(snapshots)
 
 describe('loadApi', function () {
   let config: KopflosConfig
@@ -31,7 +34,7 @@ describe('loadApi', function () {
       await kopflos.loadApiGraphs()
 
       // then
-      expect(kopflos.dataset).to.have.property('size', 11)
+      expect(kopflos.dataset).canonical.toMatchSnapshot()
     })
 
     it('fetches combined graph contents (string names)', async function () {
@@ -45,7 +48,7 @@ describe('loadApi', function () {
       await kopflos.loadApiGraphs()
 
       // then
-      expect(kopflos.dataset).to.have.property('size', 11)
+      expect(kopflos.dataset).canonical.toMatchSnapshot()
     })
   })
 })
