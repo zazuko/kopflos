@@ -1,5 +1,13 @@
 # kopflos
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [fb10e4b]
+  - @kopflos-cms/core@0.7.0
+  - @kopflos-cms/express@0.2.1
+
 ## 0.1.9
 
 ### Patch Changes
