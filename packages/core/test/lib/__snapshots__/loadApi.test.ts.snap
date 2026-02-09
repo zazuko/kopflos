@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadApi loadGraphs fetches combined graph contents (string names) 1`] = `
+"<http://example.org/PersonShape> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/ResourceShape> .
+<http://example.org/PersonShape> <http://www.w3.org/ns/shacl#targetClass> <http://example.org/Person> .
+<http://example.org/PersonShape> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+<http://example.org/PersonShape> <https://kopflos.described.at/handler> _:c14n0 .
+<http://example.org/PersonShape> <https://kopflos.described.at/handler> _:c14n1 .
+<http://example.org/PrivateApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
+<http://example.org/PublicApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
+<http://example.org/PublicConfig> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Config> .
+<http://example.org/PublicConfig> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+_:c14n0 <https://kopflos.described.at/method> \\"GET\\" .
+_:c14n1 <https://kopflos.described.at/method> \\"PUT\\" .
+"
+`;
+
+exports[`loadApi loadGraphs fetches combined graph contents 1`] = `
+"<http://example.org/PersonShape> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/ResourceShape> .
+<http://example.org/PersonShape> <http://www.w3.org/ns/shacl#targetClass> <http://example.org/Person> .
+<http://example.org/PersonShape> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+<http://example.org/PersonShape> <https://kopflos.described.at/handler> _:c14n0 .
+<http://example.org/PersonShape> <https://kopflos.described.at/handler> _:c14n1 .
+<http://example.org/PrivateApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
+<http://example.org/PublicApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
+<http://example.org/PublicConfig> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Config> .
+<http://example.org/PublicConfig> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+_:c14n0 <https://kopflos.described.at/method> \\"GET\\" .
+_:c14n1 <https://kopflos.described.at/method> \\"PUT\\" .
+"
+`;
