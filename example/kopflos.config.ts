@@ -1,10 +1,15 @@
 import * as url from 'node:url'
 import type { KopflosConfig } from '@kopflos-cms/core'
+import DeployResources from '@kopflos-cms/plugin-deploy-resources'
+import ExpressMiddleware from '@kopflos-cms/express/middleware' // eslint-disable-line import/no-unresolved
+import Vite from '@kopflos-cms/vite'
+import Hydra from '@kopflos-cms/hydra'
+import Shacl from '@kopflos-cms/shacl'
 
 const baseIri = process.env.API_BASE || 'http://localhost:1429'
 const dbUri = process.env.DB_URI || 'http://localhost:7878'
 
-export default <KopflosConfig> {
+export default <KopflosConfig>{
   baseIri,
   apiGraphs: [baseIri + '/api'],
   sparql: {
@@ -16,18 +21,18 @@ export default <KopflosConfig> {
     lindas: 'https://lindas.admin.ch/query',
   },
   watch: ['lib'],
-  plugins: {
-    '@kopflos-cms/plugin-deploy-resources': {
+  plugins: [
+    new DeployResources({
       paths: ['resources', 'resources.dev'],
-    },
-    '@kopflos-cms/express/middleware': {
+    }),
+    new ExpressMiddleware({
       before: [
         'cors',
         ['compression', { level: 9 }],
         url.fileURLToPath(new URL('lib/static.js', import.meta.url)),
       ],
-    },
-    '@kopflos-cms/vite': {
+    }),
+    new Vite({
       root: 'ui',
       entrypoints: ['ui/*.html'],
       config: {
@@ -35,10 +40,10 @@ export default <KopflosConfig> {
           allowedHosts: ['read-the-plaque.lndo.site'],
         },
       },
-    },
-    '@kopflos-cms/hydra': {
+    }),
+    new Hydra({
       apis: [baseIri + '/api'],
-    },
-    '@kopflos-cms/shacl': {},
-  },
+    }),
+    new Shacl(),
+  ],
 }

@@ -1,7 +1,8 @@
-import { resolve, dirname } from 'node:path'
+import { dirname } from 'node:path'
 import type { CosmiconfigResult } from 'cosmiconfig'
 import { cosmiconfig } from 'cosmiconfig'
 import type { KopflosConfig } from '@kopflos-cms/core'
+import { loadPlugins } from './plugins.js'
 
 const explorer = cosmiconfig('kopflos')
 
@@ -28,7 +29,14 @@ export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: 
     throw new Error('Configuration not found')
   }
 
-  return ccResult
+  const { config: { plugins, ...config }, ...rest } = ccResult
+  return {
+    config: {
+      plugins: Array.isArray(plugins) ? plugins : await loadPlugins(plugins),
+      ...config,
+    },
+    ...rest,
+  }
 }
 
 interface PrepareConfigArgs {
@@ -44,14 +52,6 @@ export async function prepareConfig({ mode, config, watch, variable }: PrepareCo
   })
 
   const watchedPaths = loadedConfig.watch || []
-
-  loadedConfig.plugins = Object.fromEntries(Object.entries(loadedConfig.plugins || {}).map(([plugin, options]) => {
-    if (plugin.startsWith('.')) {
-      return [resolve(dirname(filepath), plugin), options]
-    }
-
-    return [plugin, options]
-  }))
 
   return {
     config: <KopflosConfig>{

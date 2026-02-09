@@ -10,6 +10,10 @@ exports[`loadApi loadGraphs fetches combined graph contents (string names) 1`] =
 <http://example.org/PublicApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
 <http://example.org/PublicConfig> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Config> .
 <http://example.org/PublicConfig> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+<https://kopflos.described.at/DescribeLoader> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> .
+<https://kopflos.described.at/DescribeLoader> <https://code.described.at/link> <node:@kopflos-cms/core/resourceLoaders.js#describe> .
+<https://kopflos.described.at/OwnGraphLoader> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> .
+<https://kopflos.described.at/OwnGraphLoader> <https://code.described.at/link> <node:@kopflos-cms/core/resourceLoaders.js#fromOwnGraph> .
 _:c14n0 <https://kopflos.described.at/method> \\"GET\\" .
 _:c14n1 <https://kopflos.described.at/method> \\"PUT\\" .
 "
@@ -25,6 +29,10 @@ exports[`loadApi loadGraphs fetches combined graph contents 1`] = `
 <http://example.org/PublicApi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Api> .
 <http://example.org/PublicConfig> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Config> .
 <http://example.org/PublicConfig> <https://kopflos.described.at/api> <http://example.org/PublicApi> .
+<https://kopflos.described.at/DescribeLoader> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> .
+<https://kopflos.described.at/DescribeLoader> <https://code.described.at/link> <node:@kopflos-cms/core/resourceLoaders.js#describe> .
+<https://kopflos.described.at/OwnGraphLoader> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> .
+<https://kopflos.described.at/OwnGraphLoader> <https://code.described.at/link> <node:@kopflos-cms/core/resourceLoaders.js#fromOwnGraph> .
 _:c14n0 <https://kopflos.described.at/method> \\"GET\\" .
 _:c14n1 <https://kopflos.described.at/method> \\"PUT\\" .
 "

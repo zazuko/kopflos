@@ -13,7 +13,6 @@ import type { Handler, HandlerArgs } from '../../lib/handler.js'
 import HttpMethods from '../../lib/httpMethods.js'
 import * as resourceLoaders from '../../resourceLoaders.js'
 import inMemoryClients from '../../../testing-helpers/in-memory-clients.js'
-import { loadPlugins } from '../../plugins.js'
 import { kl } from '../../ns.js'
 import type { DecoratorCallback, RequestDecorator } from '../../lib/decorators.js'
 import handlerLookupStub from '../support/handlerLookupStub.js'
@@ -783,8 +782,7 @@ describe('lib/Kopflos', function () {
           sparql: {
             default: inMemoryClients(this.rdf),
           },
-        }, {
-          plugins: await loadPlugins({}),
+          plugins: [],
         })
         await instance.loadApiGraphs()
       })
@@ -815,7 +813,6 @@ describe('lib/Kopflos', function () {
         sparql: {
           default: inMemoryClients(this.rdf),
         },
-      }, {
         plugins: [new Plugin()],
       })
 
@@ -839,7 +836,6 @@ describe('lib/Kopflos', function () {
         sparql: {
           default: inMemoryClients(this.rdf),
         },
-      }, {
         plugins: [new Plugin()],
       })
 
@@ -857,7 +853,6 @@ describe('lib/Kopflos', function () {
         sparql: {
           default: inMemoryClients(this.rdf),
         },
-      }, {
         plugins: [{}],
       })
 
@@ -878,7 +873,6 @@ describe('lib/Kopflos', function () {
         sparql: {
           default: inMemoryClients(this.rdf),
         },
-      }, {
         plugins: [new Plugin()],
       })
 
@@ -896,7 +890,6 @@ describe('lib/Kopflos', function () {
         sparql: {
           default: inMemoryClients(this.rdf),
         },
-      }, {
         plugins: [{}],
       })
 

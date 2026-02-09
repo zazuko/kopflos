@@ -54,7 +54,6 @@ describe('@kopflos-cms/vite/template.js', function () {
         sparql: {
           default: 'http://example.com/sparql',
         },
-      }, {
         plugins: [new MockPlugin()],
       })
       handler = transform.bind(kopflos)()

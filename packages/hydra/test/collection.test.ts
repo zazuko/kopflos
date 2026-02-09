@@ -47,7 +47,6 @@ describe('@kopflos-cms/hydra', function () {
     const kopflos = new Kopflos({
       ...config,
       apiGraphs: apis.map(api => api.value),
-    }, {
       plugins: [new HydraPlugin({ apis }), new ShaclPlugin()],
     })
     await kopflos.start()

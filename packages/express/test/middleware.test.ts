@@ -2,6 +2,7 @@ import url from 'node:url'
 import express, { type Express } from 'express'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import request from 'supertest'
+import ExpressMiddleware from '../plugin/middleware.js'
 import kopflos from '../index.js'
 import inMemoryClients from '../../testing-helpers/in-memory-clients.js'
 import { ex } from '../../testing-helpers/ns.js'
@@ -24,17 +25,15 @@ describe('@kopflos-cms/express/middleware', function () {
         default: inMemoryClients(this.rdf),
       },
       apiGraphs: [ex.api],
-      plugins: {
-        '@kopflos-cms/express/middleware': {
-          before: [
-            ['cors', { origin: 'example.org' }],
-            url.fileURLToPath(new URL('.', import.meta.url) + 'middleware/before.js'),
-          ],
-          after: [
-            url.fileURLToPath(new URL('.', import.meta.url) + 'middleware/after.js'),
-          ],
-        },
-      },
+      plugins: [new ExpressMiddleware({
+        before: [
+          ['cors', { origin: 'example.org' }],
+          url.fileURLToPath(new URL('.', import.meta.url) + 'middleware/before.js'),
+        ],
+        after: [
+          url.fileURLToPath(new URL('.', import.meta.url) + 'middleware/after.js'),
+        ],
+      })],
     })
 
     app = express()

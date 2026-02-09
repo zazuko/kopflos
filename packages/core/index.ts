@@ -1,4 +1,4 @@
-export type { KopflosResponse, KopflosPlugin, PluginConfig, ResultEnvelope, Plugins } from './lib/Kopflos.js'
+export type { KopflosResponse, KopflosPlugin, ResultEnvelope, Plugins } from './lib/Kopflos.js'
 export type { Kopflos, KopflosConfig, Body, Query, Variables } from './lib/Kopflos.js'
 export { default } from './lib/Kopflos.js'
 export { loadHandlers as defaultHandlerLookup } from './lib/handler.js'
