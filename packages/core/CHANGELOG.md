@@ -1,5 +1,12 @@
 # @kopflos-cms/core
 
+## 0.7.0
+
+### Minor Changes
+
+- fb10e4b: All plugins are now added to `kopflos.config.(js|ts)` as now instances. Removed `PluginConfig` interface.
+  Non-code configuration flavors still allow the plugin map object.
+
 ## 0.6.1
 
 ### Patch Changes

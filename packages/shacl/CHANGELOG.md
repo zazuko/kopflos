@@ -1,5 +1,12 @@
 # @kopflos-cms/shacl
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [fb10e4b]
+  - @kopflos-cms/core@0.7.0
+
 ## 0.3.0
 
 ### Minor Changes

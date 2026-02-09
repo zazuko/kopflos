@@ -1,5 +1,14 @@
 # example
 
+## 0.0.19
+
+### Patch Changes
+
+- kopflos@0.1.10
+- @kopflos-cms/express@0.2.1
+- @kopflos-cms/hydra@0.2.1
+- @kopflos-cms/shacl@0.3.1
+
 ## 0.0.18
 
 ### Patch Changes
