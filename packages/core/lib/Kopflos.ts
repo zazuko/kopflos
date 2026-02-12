@@ -284,7 +284,7 @@ export default class Impl implements Kopflos {
       }
     }
 
-    log.info('Response status', result.status)
+    log.info('Response status', result.status || 200)
     return result
   }
 
