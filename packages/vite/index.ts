@@ -8,78 +8,130 @@ import { prepareConfig } from './lib/config.js'
 
 export { defineConfig } from 'vite'
 
-export interface Options {
-  configPath?: string
-  entrypoints?: string[]
-}
-
 export interface BuildConfiguration {
   root: string
+  entrypoints: string[]
   outDir?: string
 }
 
 declare module '@kopflos-cms/core' {
   interface Plugins {
-    '@kopflos-cms/vite': VitePlugin
+    '@kopflos-cms/vite': DefaultPlugin
   }
 }
 
 export abstract class VitePlugin implements KopflosPlugin {
   private readonly log: ReturnType<typeof createLogger>
-  private _viteDevServer?: ViteDevServer
+  private _viteDevServer: WeakMap<BuildConfiguration, ViteDevServer> = new WeakMap()
 
-  protected constructor(public readonly name: string, protected readonly options: Array<BuildConfiguration>) {
-    this.log = createLogger(this.name)
+  protected constructor(public readonly name: string, protected readonly buildConfigurations: Array<BuildConfiguration>) {
+    this.log = createLogger(this.name.replace(/^@kopflos-cms\//, ''))
   }
 
-  abstract get buildDir(): string
+  protected getDefaultPlugin(plugins: readonly KopflosPlugin[]): DefaultPlugin {
+    const defaultPlugin = plugins.find(plugin => plugin instanceof DefaultPlugin) as DefaultPlugin | undefined
 
-  abstract get rootDir(): string
-
-  async createViteDevServer(env: KopflosEnvironment, options: Options) {
-    if (!this._viteDevServer) {
-      const root = resolve(env.kopflos.basePath, this.buildDir)
-      this._viteDevServer = await createServer(await prepareConfig({ ...options, root }))
+    if (!defaultPlugin) {
+      throw new Error('No default plugin found. Please add @kopflos-cms/vite to your plugins list')
     }
 
-    return this._viteDevServer!
+    return defaultPlugin
   }
 
-  async beforeMiddleware(host: express.Router, { env }: Kopflos) {
-    if (env.kopflos.config.mode === 'development') {
-      this.log.info('Development UI mode. Creating Vite server...')
-
-      const configPath = this.options.configPath
-        ? resolve(env.kopflos.basePath, this.options.configPath)
-        : this.options.configPath
-
-      const viteDevServer = await this.createViteDevServer(env, { ...this.options, configPath })
-      host.use(viteDevServer.middlewares)
-    } else {
-      const buildDir = resolve(env.kopflos.basePath, env.kopflos.buildDir, this.buildDir)
-      this.log.info('Serving from build directory')
-      this.log.debug('Build directory:', buildDir)
-      host.use(express.static(buildDir))
+  protected async getViteDevServer(env: KopflosEnvironment, vitePlugin: DefaultPlugin, options: BuildConfiguration) {
+    if (!this._viteDevServer.has(options)) {
+      const viteDevServer = await createServer(await this.createConfig(env, vitePlugin, options))
+      this._viteDevServer.set(options, viteDevServer)
     }
+
+    return this._viteDevServer.get(options)!
   }
 
-  async build(env: KopflosEnvironment) {
-    const outDir = resolve(env.kopflos.basePath, env.kopflos.buildDir, this.buildDir)
-    const configPath = this.options.configPath
-      ? resolve(env.kopflos.basePath, this.options.configPath)
-      : this.options.configPath
-
-    if (!this.options.entrypoints?.length) {
-      this.log.debug('No entrypoints specified. Skipping build')
-      return
-    }
-
-    this.log.info('Building UI...')
-    await build(await prepareConfig({
-      ...this.options,
-      root: env.kopflos.basePath,
+  private createConfig(env: KopflosEnvironment, vitePlugin: DefaultPlugin, options: BuildConfiguration) {
+    const root = resolve(env.kopflos.basePath, options.root)
+    const outDir = this.resolveOutDir(env, options)
+    return prepareConfig({
+      ...options,
+      root,
       outDir,
-      configPath,
-    }))
+      config: vitePlugin.config,
+      configPath: vitePlugin.configPath,
+    })
+  }
+
+  private resolveOutDir(env: KopflosEnvironment, options: BuildConfiguration) {
+    return resolve(env.kopflos.basePath, env.kopflos.buildDir, options.outDir || '')
+  }
+
+  async beforeMiddleware(host: express.Router, { env, plugins }: Kopflos) {
+    const vitePlugin = this.getDefaultPlugin(plugins)
+
+    for (const options of this.buildConfigurations) {
+      if (env.kopflos.config.mode === 'development') {
+        this.log.info('Development UI mode. Creating Vite server...')
+        const viteDevServer = await this.getViteDevServer(env, vitePlugin, options)
+        host.use(viteDevServer.middlewares)
+      } else {
+        const buildDir = this.resolveOutDir(env, options)
+        this.log.info('Serving from build directory')
+        this.log.debug('Build directory:', buildDir)
+        host.use(express.static(buildDir))
+      }
+    }
+  }
+
+  async build(env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) {
+    const vitePlugin = this.getDefaultPlugin(plugins)
+
+    for (const options of this.buildConfigurations) {
+      if (!options.entrypoints?.length) {
+        this.log.debug('No entrypoints specified. Skipping build')
+        return
+      }
+
+      this.log.info('Building UI...')
+      const config = await this.createConfig(env, vitePlugin, options)
+      await build(config)
+    }
+  }
+}
+
+interface DefaultPluginOptions {
+  build?: Array<BuildConfiguration> | BuildConfiguration
+  configPath?: string
+  config?: InlineConfig
+}
+
+export default class DefaultPlugin extends VitePlugin {
+  public readonly config: InlineConfig | undefined
+  public readonly configPath: string | undefined
+  public readonly buildConfiguration?: BuildConfiguration
+
+  public constructor({ build = [], config, configPath }: DefaultPluginOptions) {
+    if (!Array.isArray(build)) {
+      super('@kopflos-cms/vite', [build])
+      this.buildConfiguration = build
+    } else {
+      super('@kopflos-cms/vite', build)
+      if (build.length === 1) {
+        this.buildConfiguration = build[0]
+      }
+    }
+
+    this.config = config
+    this.configPath = configPath
+  }
+
+  protected getDefaultPlugin() {
+    return this
+  }
+
+  getDefaultViteDevServer(env: KopflosEnvironment) {
+    // only work when there is exactly one build configuration
+    if (!this.buildConfiguration) {
+      throw new Error('No build configuration found. Please add a build configuration to your vite plugin')
+    }
+
+    return this.getViteDevServer(env, this, this.buildConfiguration)
   }
 }

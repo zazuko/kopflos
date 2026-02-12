@@ -67,7 +67,7 @@ export interface KopflosPlugin {
   onReady?(instance: Kopflos): Promise<void> | void
   onStop?(instance: Kopflos): Promise<void> | void
   apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
-  build?: (env: KopflosEnvironment) => Promise<void> | void
+  build?: (env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) => Promise<void> | void
 }
 
 export interface Plugins extends Record<string, KopflosPlugin> {

@@ -74,7 +74,7 @@ export default class implements DeployResourcesPlugin {
     return this.deploy(instance.env, instance.plugins)
   }
 
-  async deploy(env: KopflosEnvironment, plugins: KopflosPlugin[]) {
+  async deploy(env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) {
     const dataset = await plugins.reduce(async (promise, plugin) => {
       if (!plugin.deployedResources) {
         return promise
