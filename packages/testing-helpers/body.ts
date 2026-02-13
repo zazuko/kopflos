@@ -1,8 +1,8 @@
 import type { Readable } from 'node:stream'
 import type { NamedNode } from '@rdfjs/types'
-import type { Body } from '@kopflos-cms/core'
 import rdf from '@zazuko/env-node'
 import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
+import type { Body } from '@kopflos-cms/core'
 
 declare module '@rdfjs/types' {
   interface Stream extends Readable {}

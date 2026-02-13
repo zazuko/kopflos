@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.6.1",
-    "@zazuko/env-node": "^2.0.0",
+    "@zazuko/env-node": "^3.0.0",
     "@types/glob": "^8.1.0",
     "chai": "^5.1.1"
   },

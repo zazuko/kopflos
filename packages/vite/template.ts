@@ -1,45 +1,42 @@
-import type { OutgoingHttpHeaders } from 'node:http'
-import type { Kopflos, ResultEnvelope, SubjectHandler } from '@kopflos-cms/core'
+import * as fs from 'node:fs/promises'
+import { resolve } from 'node:path'
+import type { Kopflos, SubjectHandler } from '@kopflos-cms/core'
 import type { GraphPointer } from 'clownface'
-import { log } from './lib/log.js'
+import { createLogger } from '@kopflos-cms/logger'
 
-export const transform = function (this: Kopflos): SubjectHandler {
+const log = createLogger('template')
+
+export const transform = function (this: Kopflos, path: string): SubjectHandler {
+  const vitePlugin = this.getPlugin('@kopflos-cms/vite')
+
   const prepareDevTemplate = async (subject: GraphPointer, template: string): Promise<string> => {
-    const vite = this.getPlugin('@kopflos-cms/vite')
-
-    if (!vite?.viteDevServer) {
-      throw new Error('Vite dev server not initialized. Check vite plugin configuration.')
+    if (!vitePlugin) {
+      throw new Error('Vite plugin not found. Did you forget to add it to the config?')
     }
 
+    const viteDevServer = await vitePlugin.getDefaultViteDevServer(this.env)
+
     const subjectPath = new URL(subject.value).pathname
-    return vite.viteDevServer.transformIndexHtml(subjectPath, template)
+    return viteDevServer.transformIndexHtml(subjectPath, template)
   }
 
   return async ({ subject, env }, response) => {
-    if (!isHtmlResponse(response)) {
-      throw new Error('Vite handler must be chained after another which returns a HTML response')
-    }
-
     if (env.kopflos.config.mode === 'production') {
-      return response
+      const template = await fs.readFile(resolve(env.kopflos.basePath, env.kopflos.buildDir, path))
+      return {
+        status: 200,
+        body: template.toString(),
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      }
     }
 
     log.debug('Compiling page template')
+    const template = await fs.readFile(resolve(env.kopflos.basePath, vitePlugin!.buildConfiguration!.root, path))
     return {
       ...response,
-      body: await prepareDevTemplate(subject, response.body),
+      body: await prepareDevTemplate(subject, template.toString()),
     }
   }
-}
-
-function isHtmlResponse(response: ResultEnvelope | undefined): response is ResultEnvelope & { body: string } {
-  return typeof response?.body === 'string' || hasHeader(response?.headers, 'Content-Type', 'text/html')
-}
-
-function hasHeader(headers: OutgoingHttpHeaders | undefined, headerName: string, headerValue: string): boolean {
-  const normalizedHeaderName = headerName.toLowerCase()
-  return !!headers && Object.entries(headers)
-    .some(([key, value]) => {
-      return key.toLowerCase() === normalizedHeaderName && (value === headerValue || (Array.isArray(value) && value.includes(headerValue)))
-    })
 }

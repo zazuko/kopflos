@@ -12,7 +12,7 @@
   "author": "Zazuko GmbH",
   "license": "MIT",
   "dependencies": {
-    "@zazuko/env-node": "^2.1.4",
+    "@zazuko/env-node": "^3",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10"
   },

@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.6.0",
-    "@zazuko/env-node": "^2.1.3",
+    "@zazuko/env-node": "^3",
     "chai": "^5.1.1",
     "mocha-chai-rdf": "^0.1.4",
     "tempy": "^3.1.0"

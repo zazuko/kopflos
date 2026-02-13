@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream'
+import url from 'node:url'
 import { expect } from 'chai'
 import type { HandlerArgs, SubjectHandler } from '@kopflos-cms/core'
 import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
@@ -11,17 +12,26 @@ describe('@kopflos-cms/vite/template.js', function () {
 
   class MockPlugin {
     public readonly name = '@kopflos-cms/vite'
+    public buildConfiguration = {
+      root: 'fixtures',
+    }
 
-    get viteDevServer() {
+    getDefaultViteDevServer() {
       return {
-        transformIndexHtml() {
-          return 'transformed'
+        transformIndexHtml(subjectPath: unknown, template: string) {
+          return template + 'transformed'
         },
       }
     }
   }
 
   describe('transform', function () {
+    let templatePath: string
+
+    before(function () {
+      templatePath = url.fileURLToPath(new URL('fixtures/foo.html', import.meta.url))
+    })
+
     describe('when vite plugin is missing', function () {
       before(function () {
         const kopflos = new Kopflos({
@@ -30,7 +40,7 @@ describe('@kopflos-cms/vite/template.js', function () {
             default: 'http://example.com/sparql',
           },
         })
-        handler = transform.bind(kopflos)()
+        handler = transform.bind(kopflos, templatePath)()
       })
 
       it('throws an error', async function () {
@@ -56,7 +66,7 @@ describe('@kopflos-cms/vite/template.js', function () {
         },
         plugins: [new MockPlugin()],
       })
-      handler = transform.bind(kopflos)()
+      handler = transform.bind(kopflos, templatePath)()
     })
 
     it('throws an error if there is no previous response', async function () {
@@ -89,9 +99,13 @@ describe('@kopflos-cms/vite/template.js', function () {
           mode: 'production',
         }),
       } as HandlerArgs
-      const response = { headers: { 'content-type': 'text/html' }, body: '' }
 
-      await expect(handler(context, response)).to.eventually.equal(response)
+      const response = await handler(context)
+      expect(response).to.deep.equal({
+        headers: { 'Content-Type': 'text/html' },
+        body: 'foo\n',
+        status: 200,
+      })
     })
 
     it('calls transform on the vite dev server', async function () {
@@ -104,9 +118,8 @@ describe('@kopflos-cms/vite/template.js', function () {
         }),
         subject: rdf.clownface({ value: 'http://example.com/page' }),
       } as unknown as HandlerArgs
-      const response = { headers: { 'content-type': 'text/html' }, body: '' }
 
-      await expect(handler(context, response)).to.eventually.have.property('body', 'transformed')
+      await expect(handler(context)).to.eventually.have.property('body', 'foo\ntransformed')
     })
   })
 })

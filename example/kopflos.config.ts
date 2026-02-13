@@ -33,8 +33,10 @@ export default <KopflosConfig>{
       ],
     }),
     new Vite({
-      root: 'ui',
-      entrypoints: ['ui/*.html'],
+      build: {
+        root: 'ui',
+        entrypoints: ['*.html'],
+      },
       config: {
         server: {
           allowedHosts: ['read-the-plaque.lndo.site'],
