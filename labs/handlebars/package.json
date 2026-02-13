@@ -19,6 +19,7 @@
     "sparql-path-parser": "^0.1.0"
   },
   "devDependencies": {
+    "@kopflos-cms/core": "^0.6.1",
     "chai": "^5.1.1",
     "mocha-chai-rdf": "^0.1.4"
   },

@@ -1,6 +1,6 @@
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { expect } from 'chai'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import process from '../index.js'
 
 describe('@kopflos-labs/handlebars', function () {
