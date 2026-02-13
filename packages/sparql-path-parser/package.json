@@ -17,7 +17,7 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "@tpluscode/rdf-ns-builders": "^4",
+    "@tpluscode/rdf-ns-builders": ">=4",
     "@types/sparqljs": "^3.1.11",
     "@zazuko/prefixes": "^2.2.0",
     "clownface-shacl-path": "^2.4.0"

@@ -12,7 +12,7 @@
     ".": "./index.js"
   },
   "dependencies": {
-    "@zazuko/env": "^2.3.0",
+    "@zazuko/env": "^3.0",
     "@zazuko/prefixes": "^2.2.0",
     "clownface-shacl-path": "^2.4.0",
     "handlebars": "^4.7.8",
