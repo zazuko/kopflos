@@ -20,7 +20,7 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir, con
   if (outDir) {
     inputConfig.build!.outDir = resolve(root, outDir)
   }
-  if (entrypoints) {
+  if (entrypoints.length > 0) {
     inputConfig.build!.rollupOptions = {
       input: entrypoints.flatMap(entry => glob.sync(resolve(root, entry))),
     }

@@ -1,11 +1,23 @@
 import { resolve } from 'node:path'
 import { expect } from 'chai'
 import { prepareConfig } from '../../lib/config.js'
+import undefinedError = Mocha.utils.undefinedError;
 
 describe('@kopflos-cms/vite/lib/config.js', function () {
+  let root: string
+
+  before(function () {
+    root = process.cwd()
+  })
+
   describe('prepareConfig', function () {
     it('returns minimal default config', async function () {
-      const config = await prepareConfig({})
+      const config = await prepareConfig({
+        root,
+        config: undefined,
+        configPath: undefined,
+        entrypoints: [],
+      })
 
       expect(config).to.deep.contain({
         server: {
@@ -20,29 +32,39 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
 
     it('can override out dir relative to cwd', async function () {
       const config = await prepareConfig({
+        root,
+        entrypoints: [],
         outDir: 'build',
+        config: undefined,
+        configPath: undefined,
       })
 
-      expect(config.build.outDir).to.eq(resolve(process.cwd(), 'build'))
+      expect(config.build.outDir).to.eq(resolve(root, 'build'))
     })
 
     it('finds input HTMLs from globs and paths', async function () {
       const config = await prepareConfig({
+        root,
         entrypoints: [
           'test/fixtures/foo.html',
           'test/fixtures/ba?.html',
         ],
+        config: undefined,
+        configPath: undefined,
       })
 
       expect(config.build.rollupOptions.input).to.contain.all.members([
-        'test/fixtures/foo.html',
-        'test/fixtures/bar.html',
-        'test/fixtures/baz.html',
+        resolve(root, 'test/fixtures/foo.html'),
+        resolve(root, 'test/fixtures/bar.html'),
+        resolve(root, 'test/fixtures/baz.html'),
       ])
     })
 
     it('merges user config', async function () {
       const config = await prepareConfig({
+        root,
+        entrypoints: [],
+        config: undefined,
         configPath: '@kopflos-cms/vite/test/fixtures/vite.config.js',
       })
 
