@@ -1,7 +1,6 @@
 import { resolve } from 'node:path'
 import { expect } from 'chai'
 import { prepareConfig } from '../../lib/config.js'
-import undefinedError = Mocha.utils.undefinedError;
 
 describe('@kopflos-cms/vite/lib/config.js', function () {
   let root: string
