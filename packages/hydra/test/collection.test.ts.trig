@@ -183,7 +183,7 @@ GRAPH <municipalities/writable-with-validation> {
           sparql:encode_for_uri
             (
               [
-                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" )
               ]
             )
         ]
@@ -217,7 +217,7 @@ GRAPH <municipalities/writable-with-create-shape> {
           sparql:encode_for_uri
             (
               [
-                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+                sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" )
               ]
             )
         ]

@@ -16,7 +16,7 @@
     "@zazuko/env": "^3.0",
     "@zazuko/prefixes": "^2.2.0",
     "cheerio": "^1.0.0",
-    "htmlparser2": "^9.1.0"
+    "htmlparser2": "^10"
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.6.0",

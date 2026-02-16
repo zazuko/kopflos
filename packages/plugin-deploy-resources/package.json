@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "@hydrofoil/resource-store": "^0.2.2",
-    "@hydrofoil/talos-core": "^0.3.0",
+    "@hydrofoil/talos-core": "^0.3.2",
     "@kopflos-cms/logger": "^0.1.0",
     "anylogger": "^1.0.11",
     "chokidar": "^4.0.1"
