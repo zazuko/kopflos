@@ -1,5 +1,20 @@
 # kopflos
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [c1a1f48]
+- Updated dependencies [fb10e4b]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+  - @kopflos-cms/core@0.7.0
+  - @kopflos-cms/express@0.2.1
+  - @kopflos-cms/plugin-deploy-resources@0.2.1
+
 ## 0.1.9
 
 ### Patch Changes

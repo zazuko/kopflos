@@ -1,5 +1,31 @@
 # example
 
+## 0.0.19
+
+### Patch Changes
+
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+  - @kopflos-cms/hydra@0.2.1
+  - @kopflos-cms/vite@0.3.0
+  - @kopflos-labs/handlebars@0.1.1
+  - @kopflos-labs/html-template@0.1.1
+  - @kopflos-cms/express@0.2.1
+  - @kopflos-cms/plugin-deploy-resources@0.2.1
+  - @kopflos-labs/lit@0.1.1
+  - kopflos@0.1.10
+  - @kopflos-cms/shacl@0.3.1
+
 ## 0.0.18
 
 ### Patch Changes

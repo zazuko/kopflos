@@ -1,5 +1,11 @@
 # sparql-path-parser
 
+## 0.1.1
+
+### Patch Changes
+
+- c1a1f48: Updated `@tpluscode/rdf-ns-builders` to allow v4+
+
 ## 0.1.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @kopflos-cms/vite
 
+## 0.3.0
+
+### Minor Changes
+
+- c1a1f48: Plugin configuration: `root`/`entrypoints`/`outDir` options moved to `build`, which can be single object or an array. If absent, nothing will be built. This way multiple builds can be configured.
+- c1a1f48: `@kopflos-cms/vite/template.js` now does not require a previous step but loads a file provided in argument. The file path will be resolved against the correct root/build path depending on running `dev`/prod` environment
+
+### Patch Changes
+
+- c1a1f48: Plugin authors can now derive from `VitePlugin` to provide build configurations
+- c1a1f48: Build: `entrypoints` will be resolved against the `root` option of its respective build configuration
+- c1a1f48: Updated `@zazuko/env` to v3
+
 ## 0.2.2
 
 ### Patch Changes

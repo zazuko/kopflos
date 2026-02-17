@@ -1,5 +1,23 @@
 # @kopflos-cms/hydra
 
+## 0.2.1
+
+### Patch Changes
+
+- c1a1f48: When the member identifier could not be generated, 500 is sent instead 400
+- c1a1f48: Updated `@tpluscode/rdf-ns-builders` to allow v4+
+- c1a1f48: Updated `sparqlalgebrajs` to v5.0.2
+- c1a1f48: Updated `@zazuko/env` to v3
+- c1a1f48: Updated `@hydrofoil/shape-to-query` to v0.15
+- c1a1f48: Updated `rdf-literal` to v2
+- Updated dependencies [c1a1f48]
+- Updated dependencies [fb10e4b]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+  - @kopflos-cms/core@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @kopflos-cms/express
 
+## 0.2.1
+
+### Patch Changes
+
+- c1a1f48: Updated `@zazuko/env` to v3
+- Updated dependencies [c1a1f48]
+- Updated dependencies [fb10e4b]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+- Updated dependencies [c1a1f48]
+  - @kopflos-cms/core@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

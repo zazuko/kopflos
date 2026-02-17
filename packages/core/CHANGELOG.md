@@ -1,5 +1,20 @@
 # @kopflos-cms/core
 
+## 0.7.0
+
+### Minor Changes
+
+- fb10e4b: All plugins are now added to `kopflos.config.(js|ts)` as now instances. Removed `PluginConfig` interface.
+  Non-code configuration flavors still allow the plugin map object.
+
+### Patch Changes
+
+- c1a1f48: Added a new configuration option `buildDir` (defaults to `dist`) where plugin build output will be be written
+- c1a1f48: Plugins: `build` step now includes a second parameter - array of plugins
+- c1a1f48: Updated `rdf-loader-code` to v2.2.2
+- c1a1f48: Updated `@rdfjs/types` to v2
+- c1a1f48: Updated `@zazuko/env` to v3
+
 ## 0.6.1
 
 ### Patch Changes

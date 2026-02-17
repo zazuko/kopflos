@@ -1,5 +1,12 @@
 # @kopflos-labs/html-template
 
+## 0.1.1
+
+### Patch Changes
+
+- c1a1f48: Updated `@zazuko/env` to v3
+- c1a1f48: Updated `htmlparser2` to v10
+
 ## 0.1.0
 
 ### Minor Changes
