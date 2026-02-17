@@ -14,13 +14,23 @@ describe('kopflos/lib/command/serve', function () {
 
   beforeEach(createEmpty)
 
+  before(function () {
+    if (!fs.existsSync(fixturesDir)) {
+      fs.mkdirSync(fixturesDir)
+    }
+  })
+
   beforeEach(function () {
-    process = fork(serve)
-    fs.mkdirSync(fixturesDir)
+    process = fork(serve, {
+      execArgv: ['--import', 'tsx'],
+    })
   })
 
   afterEach(function () {
     process.kill()
+  })
+
+  after(function () {
     fs.rmSync(fixturesDir, { recursive: true, force: true })
   })
 
@@ -39,7 +49,10 @@ describe('kopflos/lib/command/serve', function () {
           }
         })
 
-        fs.writeFileSync(new URL('./file.txt', fixturesDir), '')
+        new Promise(resolve => setTimeout(resolve, 1000))
+          .then(() => {
+            fs.writeFileSync(new URL('./file.txt', fixturesDir), '')
+          })
       }))
     })
 
@@ -76,7 +89,10 @@ describe('kopflos/lib/command/serve', function () {
           }
         })
 
-        fs.writeFileSync(new URL('./file.txt', fixturesDir), '')
+        new Promise(resolve => setTimeout(resolve, 1000))
+          .then(() => {
+            fs.writeFileSync(new URL('./file.txt', fixturesDir), '')
+          })
       }))
     })
 
