@@ -12,13 +12,14 @@
     ".": "./index.js"
   },
   "dependencies": {
-    "@zazuko/env": "^2.3.0",
+    "@zazuko/env": "^3.0",
     "@zazuko/prefixes": "^2.2.0",
     "clownface-shacl-path": "^2.4.0",
     "handlebars": "^4.7.8",
     "sparql-path-parser": "^0.1.0"
   },
   "devDependencies": {
+    "@kopflos-cms/core": "^0.6.1",
     "chai": "^5.1.1",
     "mocha-chai-rdf": "^0.1.4"
   },

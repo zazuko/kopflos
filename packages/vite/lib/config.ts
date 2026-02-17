@@ -3,9 +3,14 @@ import { glob } from 'glob'
 import type { InlineConfig } from 'vite'
 import { mergeConfig } from 'vite'
 import defaultConfig from '../vite.config.js'
-import type { Options } from '../index.js'
+import type { BuildConfiguration } from '../index.js'
 
-export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: Omit<Options, 'mode'>) {
+type ConfigOptions = BuildConfiguration & {
+  configPath: string | undefined
+  config: InlineConfig | undefined
+}
+
+export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: ConfigOptions) {
   const inputConfig: InlineConfig = {
     root,
     build: {
@@ -13,11 +18,11 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir, con
     },
   }
   if (outDir) {
-    inputConfig.build!.outDir = resolve(process.cwd(), outDir)
+    inputConfig.build!.outDir = resolve(root, outDir)
   }
-  if (entrypoints) {
+  if (entrypoints.length > 0) {
     inputConfig.build!.rollupOptions = {
-      input: entrypoints.flatMap(entry => glob.sync(entry)),
+      input: entrypoints.flatMap(entry => glob.sync(resolve(root, entry))),
     }
   }
 

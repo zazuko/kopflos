@@ -15,7 +15,7 @@ export default async function (args: BuildArgs) {
   const env = createEnv(config, dirname(filepath))
 
   log.info('Running build actions...')
-  const buildActions = plugins.map(Plugin => Plugin.build?.(env))
+  const buildActions = plugins.map(Plugin => Plugin.build?.(env, plugins))
   if (buildActions.length === 0) {
     return log.warn('No plugins with build actions found')
   } else {

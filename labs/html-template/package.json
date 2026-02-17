@@ -13,16 +13,16 @@
   },
   "dependencies": {
     "@kopflos-cms/logger": "^0.1.0",
-    "@zazuko/env": "^2.3.0",
+    "@zazuko/env": "^3.0",
     "@zazuko/prefixes": "^2.2.0",
     "cheerio": "^1.0.0",
-    "htmlparser2": "^9.1.0"
+    "htmlparser2": "^10"
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.6.0",
     "@types/chai-html": "^3.0.0",
     "@types/sinon": "^17.0.3",
-    "@zazuko/env-node": "^2.1.4",
+    "@zazuko/env-node": "^3",
     "chai": "^5.1.1",
     "chai-html": "^3.0.0",
     "mocha-chai-rdf": "^0.1.4",

@@ -24,7 +24,7 @@ prefix kl-hydra: <https://kopflos.described.at/hydra#>
         sparql:encode_for_uri
           (
             [
-              sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" "g" )
+              sparql:replace ( [ sparql:lcase ( [ sh:path schema:name ] ) ] " " "-" )
             ]
           )
       ]

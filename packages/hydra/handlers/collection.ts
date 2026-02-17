@@ -152,7 +152,7 @@ export function post(): Handler {
     }
 
     if (!createdMember) {
-      return new error.BadRequest('Failed to generate resource identifier')
+      return new error.InternalServerError('Failed to generate resource identifier')
     }
 
     const graphExistsQuery = ASK`GRAPH ${createdMember} { ?s ?p ?o }`.LIMIT(1).build()
