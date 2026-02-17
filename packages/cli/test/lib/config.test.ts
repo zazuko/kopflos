@@ -1,6 +1,7 @@
 import url from 'node:url'
 import { expect } from 'chai'
 import { loadConfig, prepareConfig } from '../../lib/config.js'
+import BarPlugin from '../fixtures/foo/bar.js'
 
 describe('kopflos/lib/config.js', function () {
   this.timeout(10000)
@@ -29,6 +30,7 @@ describe('kopflos/lib/config.js', function () {
       // given
       expect(config).to.be.deep.equal({
         baseIri: 'https://example.com/',
+        plugins: [],
       })
     })
   })
@@ -79,9 +81,8 @@ describe('kopflos/lib/config.js', function () {
       })
 
       // then
-      expect(config.plugins).to.contain.keys([
-        url.fileURLToPath(new URL('../fixtures/foo/bar.js', import.meta.url)),
-      ])
+      expect(config.plugins).to.have.length(1)
+      expect(config.plugins![0]).to.be.instanceOf(BarPlugin)
     })
   })
 })

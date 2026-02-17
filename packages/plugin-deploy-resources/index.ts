@@ -13,7 +13,7 @@ interface Options {
 }
 
 interface DeployResourcesPlugin extends KopflosPlugin {
-  deploy(env: KopflosEnvironment, plugins: KopflosPlugin[]): Promise<void>
+  deploy(env: KopflosEnvironment, plugins: readonly KopflosPlugin[]): Promise<void>
 }
 
 declare module '@kopflos-cms/core' {
