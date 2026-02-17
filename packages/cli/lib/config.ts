@@ -32,7 +32,7 @@ export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: 
   const { config: { plugins, ...config }, ...rest } = ccResult
   return {
     config: {
-      plugins: Array.isArray(plugins) ? plugins : await loadPlugins(plugins),
+      plugins: Array.isArray(plugins) ? plugins : await loadPlugins(dirname(rest.filepath), plugins),
       ...config,
     },
     ...rest,

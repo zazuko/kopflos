@@ -13,6 +13,8 @@ jobs:
       matrix:
         node: [ 18, 20, "lts/*" ]
         package:
+          - name: kopflos
+            path: packages/cli
           - name: "@kopflos-cms/core"
             path: packages/core
           - name: "@kopflos-cms/express"
@@ -40,7 +42,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
-      - run: npx c8 --all --src ${{ matrix.package.path }} --reporter lcovonly --reporter text npm run -w ${{ matrix.package.path }} test
+      - run: npx c8 --all --src ${{ matrix.package.path }} --include ${{ matrix.package.path }} --reporter lcovonly --reporter text npm run -w ${{ matrix.package.name }} test
       - name: Codecov
         uses: codecov/codecov-action@v4
         with:
