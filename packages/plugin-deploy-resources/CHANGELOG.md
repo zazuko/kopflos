@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.2.1
+
+### Patch Changes
+
+- c1a1f48: Updated `@hydrofoil/talos-core` to v0.3.2
+
 ## 0.2.0
 
 ### Minor Changes

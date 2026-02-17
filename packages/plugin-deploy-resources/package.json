@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/plugin-deploy-resources",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "main": "index.js",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "chokidar": "^4.0.1"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.6.0",
+    "@kopflos-cms/core": "^0.7.0",
     "@zazuko/env-node": "^3",
     "chai": "^5.1.1",
     "mocha-chai-rdf": "^0.1.4",

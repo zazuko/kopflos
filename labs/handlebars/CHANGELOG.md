@@ -1,5 +1,13 @@
 # @kopflos-labs/handlebars
 
+## 0.1.1
+
+### Patch Changes
+
+- c1a1f48: Updated `@zazuko/env` to v3
+- Updated dependencies [c1a1f48]
+  - sparql-path-parser@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
