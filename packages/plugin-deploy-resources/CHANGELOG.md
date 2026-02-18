@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.2.2
+
+### Patch Changes
+
+- 7a3975d: Pass `env` to `deployedResources` plugin method
+
 ## 0.2.1
 
 ### Patch Changes
