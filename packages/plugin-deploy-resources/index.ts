@@ -22,7 +22,7 @@ declare module '@kopflos-cms/core' {
   }
 
   interface KopflosPlugin {
-    deployedResources?(): DatasetCore | Promise<DatasetCore> | Stream | Promise<Stream>
+    deployedResources?(env: KopflosEnvironment): DatasetCore | Promise<DatasetCore> | Stream | Promise<Stream>
   }
 }
 
@@ -81,7 +81,7 @@ export default class implements DeployResourcesPlugin {
       }
 
       const previous = await promise
-      const resources = await plugin.deployedResources()
+      const resources = await plugin.deployedResources(env)
       if ('size' in resources) {
         previous.addAll(resources)
         return previous
