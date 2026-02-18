@@ -8,6 +8,10 @@
     "*.js",
     "*.d.ts"
   ],
+  "repository": {
+    "directory": "labs/lit",
+    "url": "https://github.com/zazuko/kopflos"
+  },
   "dependencies": {
     "@lit-labs/ssr": "^3.2.2",
     "@lit-labs/ssr-client": "^1.1.7",

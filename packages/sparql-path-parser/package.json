@@ -16,6 +16,10 @@
     "index.js",
     "index.d.ts"
   ],
+  "repository": {
+    "directory": "packages/sparql-path-parser",
+    "url": "https://github.com/zazuko/kopflos"
+  },
   "dependencies": {
     "@tpluscode/rdf-ns-builders": ">=4",
     "@types/sparqljs": "^3.1.11",
