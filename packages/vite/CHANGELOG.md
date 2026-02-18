@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.1
+
+### Patch Changes
+
+- 5ca6fa4: Resolve `configPath` against the kopflos' base path
+
 ## 0.3.0
 
 ### Minor Changes
