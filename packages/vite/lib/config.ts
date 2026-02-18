@@ -6,11 +6,12 @@ import defaultConfig from '../vite.config.js'
 import type { BuildConfiguration } from '../index.js'
 
 type ConfigOptions = BuildConfiguration & {
+  appRoot: string
   configPath: string | undefined
   config: InlineConfig | undefined
 }
 
-export async function prepareConfig({ root, configPath, entrypoints, outDir, config = {} }: ConfigOptions) {
+export async function prepareConfig({ appRoot, root, configPath, entrypoints, outDir, config = {} }: ConfigOptions) {
   const inputConfig: InlineConfig = {
     root,
     build: {
@@ -27,6 +28,10 @@ export async function prepareConfig({ root, configPath, entrypoints, outDir, con
   }
 
   if (configPath) {
+    if (configPath.startsWith('.')) {
+      configPath = resolve(appRoot, configPath)
+    }
+
     const userConfig = await import(configPath)
     return mergeConfig(mergeConfig(defaultConfig, inputConfig), userConfig.default)
   }

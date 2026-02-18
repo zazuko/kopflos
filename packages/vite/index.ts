@@ -52,6 +52,7 @@ export abstract class VitePlugin implements KopflosPlugin {
     const outDir = this.resolveOutDir(env, options)
     return prepareConfig({
       ...options,
+      appRoot: env.kopflos.basePath,
       root,
       outDir,
       config: vitePlugin.config,
