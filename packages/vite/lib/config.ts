@@ -36,6 +36,6 @@ export async function prepareConfig({ appRoot, root, entrypoints, outDir, config
     userConfig = (await import(config)).default
   }
 
-  return [defaultConfig, inputConfig, config, userConfig, buildConfig]
+  return [defaultConfig, inputConfig, userConfig, buildConfig]
     .reduce((merged: InlineConfig, next: InlineConfig) => mergeConfig(merged, next), {})
 }

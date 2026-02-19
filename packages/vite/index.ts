@@ -57,6 +57,7 @@ export abstract class VitePlugin implements KopflosPlugin {
       root,
       outDir,
       config: vitePlugin.config || vitePlugin.configPath,
+      buildConfig: options.config,
     })
   }
 
