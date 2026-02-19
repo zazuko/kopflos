@@ -152,6 +152,7 @@ export default class extends VitePlugin implements PagesPlugin {
         })
         await esbuild.build({
             bundle: true,
+            splitting: true,
             format: 'esm',
             platform: "node",
             entryPoints: [path.join(env.kopflos.basePath, this.path, this.pattern)],

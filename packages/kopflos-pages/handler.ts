@@ -16,7 +16,7 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
             const viteDevServer = await Plugin.getDevServer(this)
             let template = await fs.readFile(resolve(basePath, Plugin.path, templatePath)).then(buf => buf.toString())
             html = await viteDevServer.transformIndexHtml(subjectPath, template)
-            const rendererModule = await viteDevServer.ssrLoadModule(resolve(basePath, ssrModulePath))
+            const rendererModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, ssrModulePath))
             renderer = rendererModule.default
         } else {
             const outDir = resolve(basePath, buildDir, Plugin.path)
