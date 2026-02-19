@@ -18,7 +18,6 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
         appRoot,
         root,
         config: undefined,
-        configPath: undefined,
         entrypoints: [],
       })
 
@@ -40,10 +39,9 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
         entrypoints: [],
         outDir: 'build',
         config: undefined,
-        configPath: undefined,
       })
 
-      expect(config.build.outDir).to.eq(resolve(root, 'build'))
+      expect(config.build!.outDir).to.eq(resolve(root, 'build'))
     })
 
     it('finds input HTMLs from globs and paths', async function () {
@@ -55,10 +53,9 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
           'test/fixtures/ba?.html',
         ],
         config: undefined,
-        configPath: undefined,
       })
 
-      expect(config.build.rollupOptions.input).to.contain.all.members([
+      expect(config.build!.rollupOptions!.input).to.contain.all.members([
         resolve(root, 'test/fixtures/foo.html'),
         resolve(root, 'test/fixtures/bar.html'),
         resolve(root, 'test/fixtures/baz.html'),
@@ -70,11 +67,10 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
         appRoot,
         root,
         entrypoints: [],
-        config: undefined,
-        configPath: '@kopflos-cms/vite/test/fixtures/vite.config.js',
+        config: '@kopflos-cms/vite/test/fixtures/vite.config.js',
       })
 
-      delete config.build.outDir
+      delete config.build!.outDir
 
       expect(config).to.deep.contain({
         define: {
@@ -90,16 +86,76 @@ describe('@kopflos-cms/vite/lib/config.js', function () {
       })
     })
 
-    it('loads relative paths resolved against root path', async function () {
+    it('merges per-build config', async function () {
       const config = await prepareConfig({
         appRoot,
         root,
         entrypoints: [],
         config: undefined,
-        configPath: '../fixtures/vite.config.js',
+        buildConfig: {
+          css: {
+            devSourcemap: true,
+          },
+        },
       })
 
-      delete config.build.outDir
+      delete config.build!.outDir
+
+      expect(config).to.deep.contain({
+        server: {
+          middlewareMode: true,
+        },
+        appType: 'custom',
+        build: {
+          emptyOutDir: true,
+        },
+        css: {
+          devSourcemap: true,
+        },
+      })
+    })
+
+    it('merges per-build config with loaded config', async function () {
+      const config = await prepareConfig({
+        appRoot,
+        root,
+        entrypoints: [],
+        config: '@kopflos-cms/vite/test/fixtures/vite.config.js',
+        buildConfig: {
+          css: {
+            devSourcemap: true,
+          },
+        },
+      })
+
+      delete config.build!.outDir
+
+      expect(config).to.deep.contain({
+        define: {
+          APP_VERSION: 'v1.0.0',
+        },
+        server: {
+          middlewareMode: true,
+        },
+        appType: 'custom',
+        build: {
+          emptyOutDir: true,
+        },
+        css: {
+          devSourcemap: true,
+        },
+      })
+    })
+
+    it('loads relative paths resolved against root path', async function () {
+      const config = await prepareConfig({
+        appRoot,
+        root,
+        entrypoints: [],
+        config: '../fixtures/vite.config.js',
+      })
+
+      delete config.build!.outDir
 
       expect(config).to.deep.contain({
         define: {
