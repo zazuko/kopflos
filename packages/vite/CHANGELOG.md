@@ -1,5 +1,12 @@
 # @kopflos-cms/vite
 
+## 0.3.4
+
+### Patch Changes
+
+- 5c7f745: update glob to v13
+- 78ac295: Serve dev server using `beforeMiddleware` but build output using `afterMiddleware` to avoid raw HTML responses
+
 ## 0.3.3
 
 ### Patch Changes
