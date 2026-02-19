@@ -66,14 +66,20 @@ export abstract class VitePlugin implements KopflosPlugin {
   }
 
   async beforeMiddleware(host: express.Router, { env, plugins }: Kopflos) {
-    const vitePlugin = this.getDefaultPlugin(plugins)
+    if (env.kopflos.config.mode === 'development') {
+      const vitePlugin = this.getDefaultPlugin(plugins)
 
-    for (const options of this.buildConfigurations) {
-      if (env.kopflos.config.mode === 'development') {
+      for (const options of this.buildConfigurations) {
         this.log.info('Development UI mode. Creating Vite server...')
         const viteDevServer = await this.getViteDevServer(env, vitePlugin, options)
         host.use(viteDevServer.middlewares)
-      } else {
+      }
+    }
+  }
+
+  async afterMiddleware(host: express.Router, { env }: Kopflos) {
+    if (env.kopflos.config.mode === 'production') {
+      for (const options of this.buildConfigurations) {
         const buildDir = this.resolveOutDir(env, options)
         this.log.info('Serving from build directory')
         this.log.debug('Build directory:', buildDir)
