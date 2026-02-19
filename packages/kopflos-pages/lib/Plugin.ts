@@ -1,4 +1,4 @@
-import type {HandlerArgs, KopflosEnvironment, KopflosPlugin} from '@kopflos-cms/core'
+import type {HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin} from '@kopflos-cms/core'
 import type {DatasetCore} from "@rdfjs/types";
 import {globIterate} from 'glob'
 import * as path from "node:path";
@@ -7,6 +7,10 @@ import type {TemplateResult} from 'lit';
 import type {QueryExecutor} from 'sparqlc'
 import {toPattern} from "./route";
 import {SsrOptions} from "./ssr";
+import {BuildConfiguration, VitePlugin} from "@kopflos-cms/vite";
+import {ViteDevServer} from "vite";
+import sparqlLoaderPlugin from 'vite-plugin-sparql'
+import pagesVitePlugin from './vitePlugin.js'
 
 export interface QueryDescriptor {
     query: QueryExecutor
@@ -34,13 +38,10 @@ interface Options {
 interface PagesPlugin extends KopflosPlugin {
     readonly path: string
     readonly ssrOptions: SsrOptions
+    getDevServer({ env, plugins }: Kopflos): Promise<ViteDevServer>
 }
 
 declare module '@kopflos-cms/core' {
-    interface PluginConfig {
-        '@kopflos-labs/pages': Options
-    }
-
     interface Plugins {
         '@kopflos-labs/pages': PagesPlugin
     }
@@ -48,18 +49,34 @@ declare module '@kopflos-cms/core' {
 
 export const definePageRenderer = <TQueries extends Record<string, QueryDescriptor | QueryExecutor>>(renderer: PageRenderer<TQueries>) => renderer;
 
-export default class implements PagesPlugin {
-    readonly name = '@kopflos-labs/pages'
+export default class extends VitePlugin implements PagesPlugin {
     private readonly pattern: string;
     public readonly path: string;
     private readonly api: string;
     public readonly ssrOptions: SsrOptions
+    private readonly buildConfiguration: BuildConfiguration;
 
     constructor({api, path = 'pages', pattern = '**/*.html.ts', ssrOptions = { deferHydration: true }}: Options) {
+        const buildConfiguration = <BuildConfiguration>{
+            root: path,
+            entrypoints: ['**/*.html'],
+            config: {
+                plugins: [
+                    sparqlLoaderPlugin,
+                    pagesVitePlugin(ssrOptions),
+                ],
+            }
+        }
+        super('@kopflos-labs/pages', [buildConfiguration])
+        this.buildConfiguration = buildConfiguration
         this.api = api
         this.path = path;
         this.pattern = pattern
         this.ssrOptions = ssrOptions;
+    }
+
+    getDevServer({ env, plugins }: Kopflos) {
+        return super.getViteDevServer(env, this.getDefaultPlugin(plugins), this.buildConfiguration)
     }
 
     async deployedResources(env: KopflosEnvironment): Promise<DatasetCore> {

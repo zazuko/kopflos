@@ -10,21 +10,21 @@ import {PageRenderer, QueryMap} from "@kopflos-labs/pages";
 import { Stream, Term} from "@rdfjs/types";
 import {AnyPointer} from "clownface";
 import {QueryExecutor} from "sparqlc";
-import {HandlerArgs} from "@kopflos-cms/core";
+import {HandlerArgs, KopflosConfig} from "@kopflos-cms/core";
 import TermMap from "@rdfjs/term-map";
 import {expand} from "@zazuko/prefixes";
 import SparqlProcessor from './SparqlProcessor.js'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import type {ViteDevServer} from "vite";
 import type {Readable} from "node:stream";
 import PageUrlTransform from "./PageUrlTransform";
+import kopflosConfig from "wikibus-kopflos/kopflos.config";
 
 export type SsrOptions = Parameters<typeof render>[1]
 
 interface SsrModule {
     (arg: {
+        kopflos: KopflosConfig
         req: HandlerArgs
-        vite: ViteDevServer
         html: string
         options: SsrOptions
         renderer: PageRenderer<{}>
@@ -114,7 +114,7 @@ async function executeQueries(renderer: PageRenderer, queries: QueryMap, { env, 
     return data;
 }
 
-const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions = {} }) => {
+const ssr: SsrModule = async ({ renderer, html, req, options: ssrOptions = {} }) => {
     const { head, body } = renderer
     const queries: QueryMap = renderer.queries || {}
 
@@ -149,8 +149,7 @@ const ssr: SsrModule = async ({ renderer, vite, html, req, options: ssrOptions =
             })
         ].join('\n')
 
-        const isMinify = vite ? (vite.config.build.minify && vite.environments.client.mode !== 'dev') : true;
-        if (isMinify) {
+        if (kopflosConfig.mode === 'production') {
             script = (await esbuild.transform(script, {
                 minify: true,
                 target: 'esnext'

@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "@kopflos-cms/vite": "^0.3.3",
     "@webcomponents/template-shadowroot": "^0.2.1",
-    "glob": "11.1.0"
+    "glob": "11.1.0",
+    "vite-plugin-sparql": "^0.0.0"
   },
   "peerDependencies": {
     "vite": ">=6.0.0"
