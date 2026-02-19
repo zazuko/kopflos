@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.3
+
+### Patch Changes
+
+- 120a270: Plugin build config would not be forwarded to vite
+
 ## 0.3.2
 
 ### Patch Changes
