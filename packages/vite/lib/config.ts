@@ -7,11 +7,11 @@ import type { BuildConfiguration } from '../index.js'
 
 type ConfigOptions = BuildConfiguration & {
   appRoot: string
-  configPath: string | undefined
-  config: InlineConfig | undefined
+  config?: InlineConfig | string
+  buildConfig?: InlineConfig
 }
 
-export async function prepareConfig({ appRoot, root, configPath, entrypoints, outDir, config = {} }: ConfigOptions) {
+export async function prepareConfig({ appRoot, root, entrypoints, outDir, config = {}, buildConfig = {} }: ConfigOptions) {
   const inputConfig: InlineConfig = {
     root,
     build: {
@@ -27,14 +27,15 @@ export async function prepareConfig({ appRoot, root, configPath, entrypoints, ou
     }
   }
 
-  if (configPath) {
-    if (configPath.startsWith('.')) {
-      configPath = resolve(appRoot, configPath)
+  let userConfig: InlineConfig = config
+  if (typeof config === 'string') {
+    if (config.startsWith('.')) {
+      config = resolve(appRoot, config)
     }
 
-    const userConfig = await import(configPath)
-    return mergeConfig(mergeConfig(defaultConfig, inputConfig), userConfig.default)
+    userConfig = (await import(config)).default
   }
 
-  return mergeConfig(config, mergeConfig(defaultConfig, inputConfig))
+  return [defaultConfig, inputConfig, config, userConfig, buildConfig]
+    .reduce((merged: InlineConfig, next: InlineConfig) => mergeConfig(merged, next), {})
 }

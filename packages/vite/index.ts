@@ -12,6 +12,7 @@ export interface BuildConfiguration {
   root: string
   entrypoints: string[]
   outDir?: string
+  config?: InlineConfig
 }
 
 declare module '@kopflos-cms/core' {
@@ -51,12 +52,11 @@ export abstract class VitePlugin implements KopflosPlugin {
     const root = resolve(env.kopflos.basePath, options.root)
     const outDir = this.resolveOutDir(env, options)
     return prepareConfig({
-      ...options,
+      entrypoints: options.entrypoints,
       appRoot: env.kopflos.basePath,
       root,
       outDir,
-      config: vitePlugin.config,
-      configPath: vitePlugin.configPath,
+      config: vitePlugin.config || vitePlugin.configPath,
     })
   }
 
