@@ -2,6 +2,7 @@ import type {HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin} from '@kop
 import type {DatasetCore} from "@rdfjs/types";
 import {globIterate} from 'glob'
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
 import type {AnyPointer} from "clownface";
 import type {TemplateResult} from 'lit';
 import type {QueryExecutor} from 'sparqlc'
@@ -9,8 +10,12 @@ import {toPattern} from "./route";
 import {SsrOptions} from "./ssr";
 import {BuildConfiguration, VitePlugin} from "@kopflos-cms/vite";
 import {ViteDevServer} from "vite";
-import sparqlLoaderPlugin from 'vite-plugin-sparql'
+import viteSparqlLoaderPlugin from 'vite-plugin-sparql'
 import pagesVitePlugin from './vitePlugin.js'
+import esbuild from 'esbuild';
+import esbuildSparqlLoaderPlugin from 'esbuild-plugin-sparql';
+import {resolve} from "node:path";
+import { nodeExternalsPlugin } from 'esbuild-node-externals';
 
 export interface QueryDescriptor {
     query: QueryExecutor
@@ -60,9 +65,10 @@ export default class extends VitePlugin implements PagesPlugin {
         const buildConfiguration = <BuildConfiguration>{
             root: path,
             entrypoints: ['**/*.html'],
+            outDir: `${path}/client`,
             config: {
                 plugins: [
-                    sparqlLoaderPlugin,
+                    viteSparqlLoaderPlugin,
                     pagesVitePlugin(ssrOptions),
                 ],
             }
@@ -94,11 +100,10 @@ export default class extends VitePlugin implements PagesPlugin {
             .node(kl.Pages)
             .addOut(talos.action, talos.overwrite)
 
-        for await(const file of globIterate(this.pattern, { cwd })) {
+        for await(const ssrModule of globIterate(this.pattern, { cwd })) {
             const resourceShape = graph
-                .namedNode(kl.Pages.value + '#' + encodeURIComponent(file))
+                .namedNode(kl.Pages.value + '#' + encodeURIComponent(ssrModule))
 
-            const ssrModule = path.join(this.path, file)
             const html = ssrModule.replace(/\.\w+$/, '')
 
             resourceShape
@@ -107,7 +112,7 @@ export default class extends VitePlugin implements PagesPlugin {
                 .addOut(sh.target, target => {
                     target
                         .addOut(rdf.type, kl.PatternedTarget)
-                        .addOut(kl.regex, toPattern(file))
+                        .addOut(kl.regex, toPattern(ssrModule))
                 })
                 .addOut(kl.handler, handler => {
                     handler
@@ -117,11 +122,11 @@ export default class extends VitePlugin implements PagesPlugin {
                             graph.blankNode()
                                 .addOut(rdf.type, code.EcmaScriptModule)
                                 .addOut(code.link, graph.namedNode('node:@kopflos-labs/pages/handler.js#default'))
-                                .addList(code.arguments, [graph.literal(html), ssrModule]),
+                                .addList(code.arguments, [html, ssrModule]),
                         ])
                 })
 
-            const renderer: PageRenderer = (await import(path.join(cwd, file))).default
+            const renderer: PageRenderer = (await import(path.join(cwd, ssrModule))).default
 
             const mainEntity = renderer.parameters?.['schema:mainEntity']
             if (mainEntity) {
@@ -135,5 +140,26 @@ export default class extends VitePlugin implements PagesPlugin {
         }
 
         return dataset
+    }
+
+    async build(env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) {
+        await super.build(env, plugins)
+
+        const outdir = resolve(env.kopflos.basePath, env.kopflos.buildDir, this.path, 'server')
+        await fs.rm(outdir, {
+            recursive: true,
+            force: true
+        })
+        await esbuild.build({
+            bundle: true,
+            format: 'esm',
+            platform: "node",
+            entryPoints: [path.join(env.kopflos.basePath, this.path, this.pattern)],
+            outdir,
+            plugins: [
+                esbuildSparqlLoaderPlugin,
+                nodeExternalsPlugin(),
+            ],
+        })
     }
 }
