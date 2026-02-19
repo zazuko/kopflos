@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.2
+
+### Patch Changes
+
+- fc0e9fb: feat: support per-build config provided by plugins
+
 ## 0.3.1
 
 ### Patch Changes
