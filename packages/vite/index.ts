@@ -22,11 +22,11 @@ declare module '@kopflos-cms/core' {
 }
 
 export abstract class VitePlugin implements KopflosPlugin {
-  private readonly log: ReturnType<typeof createLogger>
+  protected readonly log: ReturnType<typeof createLogger>
   private _viteDevServer: WeakMap<BuildConfiguration, ViteDevServer> = new WeakMap()
 
   protected constructor(public readonly name: string, protected readonly buildConfigurations: Array<BuildConfiguration>) {
-    this.log = createLogger(this.name.replace(/^@kopflos-cms\//, ''))
+    this.log = createLogger(this.name.replace(/^@kopflos-(cms|labs)\//, ''))
   }
 
   protected getDefaultPlugin(plugins: readonly KopflosPlugin[]): DefaultPlugin {
