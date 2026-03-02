@@ -62,7 +62,11 @@ export default class extends VitePlugin implements PagesPlugin {
   public readonly ssrOptions: SsrOptions
   private readonly buildConfiguration: BuildConfiguration
 
-  constructor({ api, path = 'pages', pattern = '**/*.html.ts', ssrOptions = { deferHydration: true } }: Options) {
+  constructor({ api, path = 'pages', pattern = '**/*.html.ts', ssrOptions = {} }: Options) {
+    const finalSsrOptions: SsrOptions = {
+      deferHydration: true,
+      ...ssrOptions,
+    }
     const buildConfiguration = <BuildConfiguration>{
       root: path,
       entrypoints: ['**/*.html'],
@@ -70,7 +74,7 @@ export default class extends VitePlugin implements PagesPlugin {
       config: {
         plugins: [
           viteSparqlLoaderPlugin,
-          pagesVitePlugin(ssrOptions),
+          pagesVitePlugin(finalSsrOptions),
         ],
       },
     }
@@ -79,7 +83,7 @@ export default class extends VitePlugin implements PagesPlugin {
     this.api = api
     this.path = path
     this.pattern = pattern
-    this.ssrOptions = ssrOptions
+    this.ssrOptions = finalSsrOptions
   }
 
   getDevServer({ env, plugins }: Kopflos) {

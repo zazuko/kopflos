@@ -3,7 +3,7 @@ import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import type { SsrOptions } from './ssr.js'
 
-export default (ssrOptions: SsrOptions): Plugin => {
+export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
   return {
     name: 'pages-transform',
     transformIndexHtml: {
@@ -37,7 +37,7 @@ export default (ssrOptions: SsrOptions): Plugin => {
     import '@kopflos-labs/pages/shadow.js'
 </script>`)
 
-        if (ssrOptions?.deferHydration) {
+        if (deferHydration) {
           body.append(`
 <script type="module">
     import '@kopflos-labs/pages/runtime/hydrate.js';
