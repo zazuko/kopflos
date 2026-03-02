@@ -102,9 +102,13 @@ export default class extends VitePlugin implements PagesPlugin {
       .node(kl.Pages)
       .addOut(talos.action, talos.overwrite)
 
+    this.log.info(`Loading pages from ${cwd}/${this.pattern}`)
+
     for await (const ssrModule of globIterate(this.pattern, { cwd })) {
       const resourceShape = graph
         .namedNode(kl.Pages.value + '#' + encodeURIComponent(ssrModule))
+
+      this.log.info(`Found page: ${ssrModule}. Generating resource shape: ${resourceShape.value}`)
 
       const html = ssrModule.replace(/\.\w+$/, '')
 

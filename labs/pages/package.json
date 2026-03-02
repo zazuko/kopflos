@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.1",
+    "@kopflos-cms/logger": "^0.1.0",
     "@kopflos-cms/vite": "^0.3.4",
     "@lit-labs/ssr": "^3.0.0",
     "@rdfjs/term-map": "^2.0.2",

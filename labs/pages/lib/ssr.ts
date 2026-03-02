@@ -13,10 +13,13 @@ import type { ExecuteConstruct } from 'sparqlc'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
 import TermMap from '@rdfjs/term-map'
 import { expand } from '@zazuko/prefixes'
+import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
 import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
 import type { PageRenderer, QueryMap } from '@kopflos-labs/pages'
+
+const log = createLogger('ssr')
 
 export type SsrOptions = Parameters<typeof render>[1]
 
