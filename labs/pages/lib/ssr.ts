@@ -21,7 +21,10 @@ import type { PageRenderer, QueryMap } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
 
-export type SsrOptions = Parameters<typeof render>[1]
+export type SsrOptions = Parameters<typeof render>[1] & {
+  disallowConnectedCallback?: Array<RegExp | string>
+  allowConnectedCallback?: Array<RegExp | string>
+}
 
 interface SsrModule {
   (arg: {
@@ -129,7 +132,7 @@ const ssr: SsrModule = async ({ kopflos, renderer, html, req, options: ssrOption
 
   await renderer.import?.()
 
-  const { Renderer, usedData } = prepareRenderer(data)
+  const { Renderer, usedData } = prepareRenderer(data, ssrOptions)
   $('body').prepend(await collectResult(render(await body({ ...req, data }), {
     ...ssrOptions,
     elementRenderers: [
@@ -164,8 +167,18 @@ const ssr: SsrModule = async ({ kopflos, renderer, html, req, options: ssrOption
   })
 }
 
-function prepareRenderer(data: RendererData) {
+function ensureCaseInsensitiveRegex(regex: RegExp | string) {
+  if (regex instanceof RegExp) {
+    return new RegExp(regex.source, [...new Set(['i', ...regex.flags])].join(''))
+  }
+  return new RegExp(`^${regex}$`, 'i')
+}
+
+function prepareRenderer(data: RendererData, options: SsrOptions) {
   const usedData: Set<string> = new Set()
+
+  const allowConnectedCallback = (options.allowConnectedCallback || []).map(ensureCaseInsensitiveRegex)
+  const disallowConnectedCallback = (options.disallowConnectedCallback || []).map(ensureCaseInsensitiveRegex)
 
   class Renderer extends LitElementRenderer {
     connectedCallback(): void {
@@ -173,6 +186,21 @@ function prepareRenderer(data: RendererData) {
         const value = this.element.getAttribute('data-graph')!
         usedData.add(value)
         this.setProperty('graph', data[value])
+      }
+
+      const connectedCallbackAllowed = allowConnectedCallback.length === 0 || allowConnectedCallback.some((regex) => regex.test(this.element.tagName))
+      const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some((regex) => regex.test(this.element.tagName))
+
+      if (connectedCallbackAllowed && !connectedCallbackDisallowed) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.element.enableUpdating = function () { }
+          this.element.connectedCallback()
+        } catch (e: unknown) {
+          log.warn(`Error in connectedCallback for element ${this.element.tagName}`)
+          log.debug(e)
+        }
       }
 
       return super.connectedCallback()
