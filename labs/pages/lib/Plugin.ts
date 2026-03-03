@@ -26,6 +26,7 @@ export interface QueryDescriptor {
 export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 
 export interface Page<TQueries extends QueryMap | undefined = undefined> {
+  mainEntity?: string
   parameters?: Record<string, string>
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
   import?: () => Promise<void>
@@ -138,13 +139,16 @@ export default class extends VitePlugin implements PagesPlugin {
 
       const renderer: Page = (await import(path.join(cwd, ssrModule))).default
 
-      const mainEntity = renderer.parameters?.['schema:mainEntity']
+      let mainEntity = renderer.mainEntity
       if (mainEntity) {
+        if (mainEntity.startsWith('/')) {
+          mainEntity = env.kopflos.appNs(mainEntity).value
+        }
         resourceShape
           .addOut(sh.property, property => {
             property
               .addOut(sh.path, schema.mainEntity)
-              .addOut(sh.pattern, toPattern(mainEntity))
+              .addOut(sh.pattern, toPattern(mainEntity!))
           })
       }
     }
