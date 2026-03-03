@@ -25,7 +25,7 @@ export interface QueryDescriptor {
 
 export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 
-export interface PageRenderer<TQueries extends QueryMap | undefined = undefined> {
+export interface Page<TQueries extends QueryMap | undefined = undefined> {
   parameters?: Record<string, string>
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
   import?: () => Promise<void>
@@ -53,7 +53,7 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export const definePageRenderer = <TQueries extends Record<string, QueryDescriptor | ExecuteConstruct>>(renderer: PageRenderer<TQueries>) => renderer
+export const definePage = <TQueries extends Record<string, QueryDescriptor | ExecuteConstruct>>(renderer: Page<TQueries>) => renderer
 
 export default class extends VitePlugin implements PagesPlugin {
   private readonly pattern: string
@@ -136,7 +136,7 @@ export default class extends VitePlugin implements PagesPlugin {
             ])
         })
 
-      const renderer: PageRenderer = (await import(path.join(cwd, ssrModule))).default
+      const renderer: Page = (await import(path.join(cwd, ssrModule))).default
 
       const mainEntity = renderer.parameters?.['schema:mainEntity']
       if (mainEntity) {

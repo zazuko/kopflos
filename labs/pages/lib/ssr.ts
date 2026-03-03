@@ -17,7 +17,7 @@ import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
 import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
-import type { PageRenderer, QueryMap } from '@kopflos-labs/pages'
+import type { Page, QueryMap } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
 
@@ -32,7 +32,7 @@ interface SsrModule {
     req: HandlerArgs
     html: string
     options: SsrOptions
-    renderer: PageRenderer
+    page: Page
   }): Promise<string>
 }
 
@@ -43,10 +43,10 @@ const serializer = new Serializer();
   includeJSBuiltIns: true,
 })
 
-type RendererData = NonNullable<PageRenderer['data']>
+type RendererData = NonNullable<Page['data']>
 type ParamMapEntry = [Term, Term | Term[]]
 
-async function executeQueries(renderer: PageRenderer, queries: QueryMap, { env, subjectVariables, query: queryParams }: HandlerArgs): Promise<RendererData> {
+async function executeQueries(renderer: Page, queries: QueryMap, { env, subjectVariables, query: queryParams }: HandlerArgs): Promise<RendererData> {
   const data: RendererData = renderer.data || {}
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
@@ -116,11 +116,11 @@ async function executeQueries(renderer: PageRenderer, queries: QueryMap, { env, 
   return data
 }
 
-const ssr: SsrModule = async ({ kopflos, renderer, html, req, options: ssrOptions = {} }) => {
-  const { head, body } = renderer
-  const queries: QueryMap = renderer.queries || {}
+const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = {} }) => {
+  const { head, body } = page
+  const queries: QueryMap = page.queries || {}
 
-  const data = await executeQueries(renderer, queries, req)
+  const data = await executeQueries(page, queries, req)
 
   setLanguages(...req.headers['accept-language'] || [])
 
@@ -130,7 +130,7 @@ const ssr: SsrModule = async ({ kopflos, renderer, html, req, options: ssrOption
     $('head').append(await (typeof head === 'function' ? head({ ...req, data: data as Record<string, AnyPointer> }) : head))
   }
 
-  await renderer.import?.()
+  await page.import?.()
 
   const { Renderer, usedData } = prepareRenderer(data, ssrOptions)
   $('body').prepend(await collectResult(render(await body({ ...req, data }), {
