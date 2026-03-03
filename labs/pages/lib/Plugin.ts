@@ -31,6 +31,7 @@ export interface Page<TQueries extends QueryMap | undefined = undefined> {
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
   import?: () => Promise<void>
   body: (args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => TemplateResult | Promise<TemplateResult>
+  // TODO: combine queries and data
   data?: Record<string, AnyPointer | DatasetCore>
   queries?: TQueries
 }
