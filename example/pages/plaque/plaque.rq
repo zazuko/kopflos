@@ -1,0 +1,11 @@
+PREFIX schema: <http://schema.org/>
+PREFIX sparqlc: <https://sparqlc.described.at/>
+
+CONSTRUCT {
+ ?s ?p ?o
+} {
+  BIND(IRI(sparqlc:param(schema:mainEntity)) as ?plaque)
+  GRAPH ?plaque {
+    ?s ?p ?o
+  }
+}
