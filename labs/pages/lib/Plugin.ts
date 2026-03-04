@@ -138,7 +138,7 @@ export default class extends VitePlugin implements PagesPlugin {
             ])
         })
 
-      const renderer: Page = (await import(path.join(cwd, ssrModule))).default
+      const renderer: Page = (await import(/* @vite-ignore */ path.join(cwd, ssrModule))).default
 
       let mainEntity = renderer.mainEntity
       if (mainEntity) {

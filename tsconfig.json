@@ -11,7 +11,7 @@
     "noImplicitThis": true,
     "skipLibCheck": true,
     "plugins": [
-      { "name": "ts-plugins-sparqlc" }
+      { "name": "ts-plugin-sparqlc" }
     ]
   },
   "exclude": [
