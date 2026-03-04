@@ -52,6 +52,7 @@ export default <KopflosConfig>{
       ssrOptions: {
         disallowConnectedCallback: [
           /^sl-/,
+          /^ol-/,
         ],
       },
     }),

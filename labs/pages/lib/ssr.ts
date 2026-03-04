@@ -130,8 +130,6 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
     $('head').append(await (typeof head === 'function' ? head({ ...req, data: data as Record<string, AnyPointer> }) : head))
   }
 
-  await page.import?.()
-
   const { Renderer, usedData } = prepareRenderer(data, ssrOptions)
   $('body').prepend(await collectResult(render(await body({ ...req, data }), {
     ...ssrOptions,

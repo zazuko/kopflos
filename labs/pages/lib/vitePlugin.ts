@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import type { Plugin } from 'vite'
 import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
@@ -8,7 +9,13 @@ export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
     name: 'pages-transform',
     transformIndexHtml: {
       order: 'pre',
-      handler(template) {
+      handler(template, { filename, originalUrl }) {
+        const depsModule = (originalUrl || filename).replace(/\.html$/, '.js')
+        const clientOnlyDepsModule = (originalUrl || filename).replace(/\.html$/, '.client.js')
+
+        const depsModuleImport = getImport(depsModule)
+        const clientOnlyDepsModuleImport = getImport(clientOnlyDepsModule)
+
         const $ = load(parseDocument(template))
 
         $('head').append(`    
@@ -35,6 +42,8 @@ export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
 </script>`).append(`
 <script type="module">
     import '@kopflos-labs/pages/shadow.js'
+    ${depsModuleImport}
+    ${clientOnlyDepsModuleImport}
 </script>`)
 
         if (deferHydration) {
@@ -53,4 +62,12 @@ export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
       },
     },
   }
+}
+
+function getImport(module: string) {
+  if (existsSync(module) || existsSync(module.replace(/\.js$/, '.ts'))) {
+    return `import '${module}';`
+  }
+
+  return ''
 }

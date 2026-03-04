@@ -1,9 +1,10 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import type { DatasetCore } from '@rdfjs/types'
-import { globIterate } from 'glob'
+import { globIterate, glob } from 'glob'
 import type { AnyPointer } from 'clownface'
 import type { TemplateResult } from 'lit'
 import type { ExecuteConstruct } from 'sparqlc'
@@ -29,7 +30,6 @@ export interface Page<TQueries extends QueryMap | undefined = undefined> {
   mainEntity?: string
   parameters?: Record<string, string>
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
-  import?: () => Promise<void>
   body: (args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => TemplateResult | Promise<TemplateResult>
   // TODO: combine queries and data
   data?: Record<string, AnyPointer | DatasetCore>
@@ -64,7 +64,7 @@ export default class extends VitePlugin implements PagesPlugin {
   public readonly ssrOptions: SsrOptions
   private readonly buildConfiguration: BuildConfiguration
 
-  constructor({ api, path = 'pages', pattern = '**/*.html.ts', ssrOptions = {} }: Options) {
+  constructor({ api, path = 'pages', ssrOptions = {} }: Options) {
     const finalSsrOptions: SsrOptions = {
       deferHydration: true,
       ...ssrOptions,
@@ -84,7 +84,7 @@ export default class extends VitePlugin implements PagesPlugin {
     this.buildConfiguration = buildConfiguration
     this.api = api
     this.path = path
-    this.pattern = pattern
+    this.pattern = '**/*.html.ts'
     this.ssrOptions = finalSsrOptions
   }
 
@@ -116,8 +116,6 @@ export default class extends VitePlugin implements PagesPlugin {
 
       this.log.info(`Found page: ${ssrModule}. Generating resource shape: ${resourceShape.value}`)
 
-      const html = ssrModule.replace(/\.\w+$/, '')
-
       resourceShape
         .addOut(rdf.type, kl.ResourceShape)
         .addOut(kl.api, env.namedNode(this.api))
@@ -134,7 +132,7 @@ export default class extends VitePlugin implements PagesPlugin {
               graph.blankNode()
                 .addOut(rdf.type, code.EcmaScriptModule)
                 .addOut(code.link, graph.namedNode('node:@kopflos-labs/pages/handler.js#default'))
-                .addList(code.arguments, [html, ssrModule]),
+                .addList(code.arguments, [ssrModule]),
             ])
         })
 
@@ -160,6 +158,17 @@ export default class extends VitePlugin implements PagesPlugin {
   async build(env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) {
     await super.build(env, plugins)
 
+    const cwd = path.resolve(env.kopflos.basePath, this.path)
+    const entryPoints = (await glob(this.pattern, { cwd, absolute: true })).reduce<string[]>((acc, file) => {
+      const ssrModuleDependencies = file.replace(/\.html\.(js|ts)$/, '.$1')
+
+      if (existsSync(ssrModuleDependencies)) {
+        return [...acc, file, ssrModuleDependencies]
+      }
+
+      return [...acc, file]
+    }, [])
+
     const outdir = resolve(env.kopflos.basePath, env.kopflos.buildDir, this.path, 'server')
     await fs.rm(outdir, {
       recursive: true,
@@ -170,8 +179,9 @@ export default class extends VitePlugin implements PagesPlugin {
       splitting: true,
       format: 'esm',
       platform: 'node',
-      entryPoints: [path.join(env.kopflos.basePath, this.path, this.pattern)],
+      entryPoints,
       outdir,
+      outbase: cwd,
       plugins: [
         esbuildSparqlLoaderPlugin,
         nodeExternalsPlugin(),

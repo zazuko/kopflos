@@ -4,9 +4,11 @@ import type { Kopflos, SubjectHandler } from '@kopflos-cms/core'
 import render from './lib/ssr.js'
 import type { Page } from './lib/Plugin.js'
 
-export default function (this: Kopflos, templatePath: string, ssrModulePath: string): SubjectHandler {
+export default function (this: Kopflos, modulePath: string): SubjectHandler {
   const { basePath, buildDir } = this.env.kopflos
   const Plugin = this.getPlugin('@kopflos-labs/pages')!
+  const templatePath = modulePath.replace(/.(ts|js)$/, '')
+  const serverPath = modulePath.replace(/.html.(ts|js)$/, '.$1')
 
   return async (req) => {
     const subjectPath = new URL(req.subject.value).pathname
@@ -15,9 +17,11 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
     let page: Page
     if (this.env.kopflos.config.mode === 'development') {
       const viteDevServer = await Plugin.getDevServer(this)
-      const template = await fs.readFile(resolve(basePath, Plugin.path, templatePath)).then(buf => buf.toString())
-      html = await viteDevServer.transformIndexHtml(subjectPath, template)
-      const pageModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, ssrModulePath))
+      const templatePathAbsolute = resolve(basePath, Plugin.path, templatePath)
+      const template = await fs.readFile(templatePathAbsolute).then(buf => buf.toString())
+      html = await viteDevServer.transformIndexHtml(subjectPath, template, templatePathAbsolute)
+      const pageModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, modulePath))
+      await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, serverPath))
       page = pageModule.default
     } else {
       const outDir = resolve(basePath, buildDir, Plugin.path)
@@ -25,7 +29,8 @@ export default function (this: Kopflos, templatePath: string, ssrModulePath: str
       const serverDir = resolve(outDir, 'server')
 
       html = await fs.readFile(resolve(clientDir, templatePath)).then(buf => buf.toString())
-      const pageModule = await import(resolve(serverDir, ssrModulePath).replace('.ts', '.js'))
+      const pageModule = await import(resolve(serverDir, modulePath).replace('.ts', '.js'))
+      await import(resolve(serverDir, serverPath).replace('.ts', '.js'))
       page = pageModule.default
     }
 
