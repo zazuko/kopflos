@@ -25,41 +25,41 @@ export default class extends Processor<KopflosEnvironment> {
       return <sparqljs.GroupPattern>{
         type: 'group',
         patterns: [
-                    <sparqljs.ValuesPattern>{
-                      type: 'values',
-                      values: this.pages.map(({ resourcePattern, pagePattern }) => ({
-                        '?resourcePattern': resourcePattern,
-                        '?pagePattern': pagePattern,
-                      })),
+          <sparqljs.ValuesPattern>{
+            type: 'values',
+            values: this.pages.map(({ resourcePattern, pagePattern }) => ({
+              '?resourcePattern': resourcePattern,
+              '?pagePattern': pagePattern,
+            })),
+          },
+          <sparqljs.BindPattern>{
+            type: 'bind',
+            variable: this.factory.variable('page'),
+            expression: {
+              type: 'operation',
+              operator: 'if',
+              args: [
+                {
+                  type: 'operation',
+                  operator: 'regex',
+                  args: [
+                    {
+                      type: 'operation',
+                      operator: 'str',
+                      args: [resourceVariable],
                     },
-                    <sparqljs.BindPattern>{
-                      type: 'bind',
-                      variable: this.factory.variable('page'),
-                      expression: {
-                        type: 'operation',
-                        operator: 'if',
-                        args: [
-                          {
-                            type: 'operation',
-                            operator: 'regex',
-                            args: [
-                              {
-                                type: 'operation',
-                                operator: 'str',
-                                args: [resourceVariable],
-                              },
-                              this.factory.variable('resourcePattern'),
-                            ],
-                          },
-                          this.factory.variable('pagePattern'),
-                          {
-                            type: 'operation',
-                            operator: '/',
-                            args: [toRdf(1), toRdf(0)],
-                          },
-                        ],
-                      },
-                    },
+                    this.factory.variable('resourcePattern'),
+                  ],
+                },
+                this.factory.variable('pagePattern'),
+                {
+                  type: 'operation',
+                  operator: '/',
+                  args: [toRdf(1), toRdf(0)],
+                },
+              ],
+            },
+          },
         ],
       }
     }
