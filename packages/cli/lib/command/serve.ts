@@ -52,8 +52,12 @@ async function run({
     instance.ready()
   })
 
-  if (config.watch) {
-    log.info(`Watch mode. Watching for changes in: ${config.watch.join(', ')}`)
+  const watchPaths = [
+    ...config.watch || [],
+    ...instance.plugins.flatMap(p => p.watchPaths?.(instance) || []),
+  ]
+  if (watch) {
+    log.info(`Watch mode. Watching for changes in: ${watchPaths.join(', ')}`)
     async function restartServer(path: string) {
       log.info('Changes detected, restarting server')
       log.debug(`Changed file: ${path}`)
@@ -64,7 +68,8 @@ async function run({
       })
     }
 
-    chokidar.watch(config.watch, {
+    chokidar.watch(watchPaths, {
+      cwd: instance.env.kopflos.basePath,
       ignored: /\.d\.ts$/i,
       ignoreInitial: true,
     })

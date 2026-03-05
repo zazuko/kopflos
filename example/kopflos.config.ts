@@ -12,10 +12,6 @@ const dbUri = process.env.DB_URI || 'http://localhost:7878'
 
 export default <KopflosConfig>{
   baseIri,
-  apiGraphs: [
-    baseIri + '/api',
-    'https://kopflos.described.at/Pages', // TODO: configuration should be pre-processable by plugins to add api graph
-  ],
   sparql: {
     default: {
       endpointUrl: dbUri + '/query?union-default-graph',
@@ -24,7 +20,7 @@ export default <KopflosConfig>{
     },
     lindas: 'https://lindas.admin.ch/query',
   },
-  watch: ['lib'], // TODO: configuration should be pre-processable by plugins to add watch paths
+  watch: ['lib'],
   plugins: [
     new DeployResources({
       paths: ['resources', 'resources.dev'],
@@ -48,7 +44,6 @@ export default <KopflosConfig>{
     }),
     new Shacl(),
     new PluginPages({
-      api: baseIri + '/api',
       ssrOptions: {
         disallowConnectedCallback: [
           /^sl-/,

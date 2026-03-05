@@ -67,6 +67,8 @@ export interface KopflosPlugin {
   onReady?(instance: Kopflos): Promise<void> | void
   onStop?(instance: Kopflos): Promise<void> | void
   apiTriples?(instance: Kopflos): Promise<DatasetCore | Stream> | DatasetCore | Stream
+  apiGraphs?(instance: Kopflos): Array<NamedNode | string>
+  watchPaths?(instance: Kopflos): Array<string>
   build?: (env: KopflosEnvironment, plugins: readonly KopflosPlugin[]) => Promise<void> | void
 }
 
@@ -100,6 +102,7 @@ export interface KopflosConfig {
   [key: string]: unknown
   mode?: 'development' | 'production'
   baseIri: string
+  apiPath?: string
   buildDir?: string
   sparql: Record<string, Endpoint> & { default: Endpoint }
   codeBase?: string
@@ -118,6 +121,7 @@ export interface Options {
 }
 
 export default class Impl implements Kopflos {
+  readonly apiGraphs: Array<NamedNode | string>
   readonly dataset: Dataset
   readonly env: KopflosEnvironment
   readonly plugins: Array<KopflosPlugin>
@@ -126,11 +130,16 @@ export default class Impl implements Kopflos {
 
   private decorators: Map<Term, RequestDecorator[]>
 
-  constructor({ variables = {}, plugins = [], ...config }: KopflosConfig, private readonly options: Options = {}) {
-    this.env = createEnv({ variables, ...config }, options.basePath)
+  constructor({ variables = {}, plugins = [], apiPath = '/api', ...config }: KopflosConfig, private readonly options: Options = {}) {
+    this.env = createEnv({ variables, apiPath, ...config }, options.basePath)
     this.plugins = [
       new ShorthandTerms(),
       ...plugins,
+    ]
+    this.apiGraphs = [
+      ...this.env.kopflos.config.apiGraphs || [],
+      this.env.kopflos.api,
+      ...this.plugins.flatMap(plugin => plugin.apiGraphs?.(this) || []),
     ]
     this.decorators = this.env.termMap()
 
@@ -381,15 +390,9 @@ export default class Impl implements Kopflos {
   }
 
   async loadApiGraphs(): Promise<void> {
-    const graphs = this.env.kopflos.config.apiGraphs
-
-    if (!graphs?.length) {
-      throw new Error('No API graphs configured. In a future release it will be possible to select graphs dynamically.')
-    }
-
     this.dataset.deleteMatches()
 
-    const graphsIris = graphs.map(graph => typeof graph === 'string' ? this.env.namedNode(graph) : graph)
+    const graphsIris = this.apiGraphs.map(graph => typeof graph === 'string' ? this.env.namedNode(graph) : graph)
     log.info('Loading graphs', graphsIris.map(g => g.value))
 
     const quads = CONSTRUCT`?s ?p ?o `

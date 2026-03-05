@@ -37,7 +37,6 @@ export interface Page<TQueries extends QueryMap | undefined = undefined> {
 }
 
 interface Options {
-  api: string
   path?: string
   pattern?: string
   ssrOptions?: SsrOptions
@@ -60,11 +59,10 @@ export const definePage = <TQueries extends Record<string, QueryDescriptor | Exe
 export default class extends VitePlugin implements PagesPlugin {
   private readonly pattern: string
   public readonly path: string
-  private readonly api: string
   public readonly ssrOptions: SsrOptions
   private readonly buildConfiguration: BuildConfiguration
 
-  constructor({ api, path = 'pages', ssrOptions = {} }: Options) {
+  constructor({ path = 'pages', ssrOptions = {} }: Options) {
     const finalSsrOptions: SsrOptions = {
       deferHydration: true,
       ...ssrOptions,
@@ -82,7 +80,6 @@ export default class extends VitePlugin implements PagesPlugin {
     }
     super('@kopflos-labs/pages', [buildConfiguration])
     this.buildConfiguration = buildConfiguration
-    this.api = api
     this.path = path
     this.pattern = '**/*.html.ts'
     this.ssrOptions = finalSsrOptions
@@ -90,6 +87,17 @@ export default class extends VitePlugin implements PagesPlugin {
 
   getDevServer({ env, plugins }: Kopflos) {
     return super.getViteDevServer(env, this.getDefaultPlugin(plugins), this.buildConfiguration)
+  }
+
+  apiGraphs({ env }: Kopflos) {
+    const kl = env.namespace(env.ns.kl().value)
+    return [
+      kl.Pages.value,
+    ]
+  }
+
+  watchPaths(): Array<string> {
+    return [this.path]
   }
 
   async deployedResources(env: KopflosEnvironment): Promise<DatasetCore> {
@@ -118,7 +126,7 @@ export default class extends VitePlugin implements PagesPlugin {
 
       resourceShape
         .addOut(rdf.type, kl.ResourceShape)
-        .addOut(kl.api, env.namedNode(this.api))
+        .addOut(kl.api, env.kopflos.api)
         .addOut(sh.target, target => {
           target
             .addOut(rdf.type, kl.PatternedTarget)

@@ -1,4 +1,4 @@
-import { dirname } from 'node:path'
+import { dirname, basename } from 'node:path'
 import type { CosmiconfigResult } from 'cosmiconfig'
 import { cosmiconfig } from 'cosmiconfig'
 import type { KopflosConfig } from '@kopflos-cms/core'
@@ -46,7 +46,7 @@ interface PrepareConfigArgs {
   variable: Record<string, unknown>
 }
 
-export async function prepareConfig({ mode, config, watch, variable }: PrepareConfigArgs) {
+export async function prepareConfig({ mode, config, variable }: PrepareConfigArgs) {
   const { config: loadedConfig, filepath } = await loadConfig({
     path: config,
   })
@@ -57,7 +57,7 @@ export async function prepareConfig({ mode, config, watch, variable }: PrepareCo
     config: <KopflosConfig>{
       mode,
       ...loadedConfig,
-      watch: watch ? [...watchedPaths, filepath] : undefined,
+      watch: [...watchedPaths, basename(filepath)],
       variables: {
         ...(loadedConfig.variables || {}),
         ...variable,

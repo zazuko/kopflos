@@ -25,18 +25,16 @@ const baseIri = process.env.API_BASE || 'http://localhost:1429'
 
 export default {
   baseIri,
-  apiGraphs: [
-    baseIri + '/api',
-    'https://kopflos.described.at/Pages', // Required for standard Pages functionality
-  ],
   plugins: [
     new PluginPages({
-      api: baseIri + '/api',
+      // Optional:
       ssrOptions: {
-        // Optional: elements to skip during Server-Side Rendering
+        // if present, do not call connectedCallback on these custom elements
         disallowConnectedCallback: [
           /^sl-/, // e.g., Shoelace components
         ],
+        // if present, only call connectedCallback on these custom elements
+        allowConnectedCallback: [],
         // for other SSR options, consult '@lir-labs/ssr package
       },
     }),
