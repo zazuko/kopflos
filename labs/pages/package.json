@@ -40,6 +40,9 @@
   },
   "mocha": {
     "spec": "test/**/*.test.ts",
-    "extends": "../../package.json"
+    "extends": "../../package.json",
+    "require": [
+      "node-loader-sparql"
+    ]
   }
 }
