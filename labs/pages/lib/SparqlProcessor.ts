@@ -1,12 +1,15 @@
 import Processor from '@hydrofoil/sparql-processor'
 import type * as sparqljs from 'sparqljs'
-import type { Variable } from '@rdfjs/types'
-import type { KopflosEnvironment } from '@kopflos-cms/core'
+import type { DataFactory, Variable } from '@rdfjs/types'
 import { toRdf } from 'rdf-literal'
+import type { Environment } from '@rdfjs/environment/Environment.js'
+import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import type { Bindings } from '../queries/page-patterns.rq'
 
-export default class extends Processor<KopflosEnvironment> {
-  constructor(factory: KopflosEnvironment, private pages: Bindings[]) {
+type E = Environment<NsBuildersFactory | Required<DataFactory>>
+
+export default class extends Processor<E> {
+  constructor(factory: E, private pages: Bindings[]) {
     super(factory)
   }
 

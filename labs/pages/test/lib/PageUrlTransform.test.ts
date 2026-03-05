@@ -115,6 +115,29 @@ describe('@kopflos-labs/pages/lib/PageUrlTransform', function () {
     expect(output).to.have.length(1)
     expect(output[0].object.value).to.equal('http://example.org/page/123')
   })
+
+  it('should handle missing groups in pagePattern replacement', async function () {
+    // given
+    const patterns: Bindings[] = [{
+      pagePattern: env.literal('http://example.org/page/(?<id>.+)/(?<missing>.+)'),
+      resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
+    }]
+    const transform = new PageUrlTransform(patterns, env)
+    const input = [
+      env.quad(
+        env.namedNode('http://example.org/resource/123'),
+        env.ns.schema.mainEntityOfPage,
+        env.literal('http://example.org/page/(?<id>.+)/(?<missing>.+)'),
+      ),
+    ]
+
+    // when
+    const output = await collectQuads(Readable.from(input).pipe(transform))
+
+    // then
+    expect(output).to.have.length(1)
+    expect(output[0].object.value).to.equal('http://example.org/page/123/')
+  })
 })
 
 async function collectQuads(stream: Readable): Promise<Quad[]> {
