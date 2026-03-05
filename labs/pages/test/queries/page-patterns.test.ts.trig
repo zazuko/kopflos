@@ -1,0 +1,28 @@
+@prefix kopflos: <https://kopflos.described.at/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+{
+    [] a kopflos:ResourceShape ;
+        sh:property [
+            sh:path schema:mainEntity ;
+            sh:pattern "^http://example.org/resource/(?<id>.+)$"
+        ] ;
+        sh:target [
+            a kopflos:PatternedTarget ;
+            kopflos:regex "http://example.org/page/(?<id>.+)" ;
+        ] .
+}
+
+<https://kopflos.described.at/Pages> {
+    [] a kopflos:ResourceShape ;
+        sh:property [
+            sh:path schema:mainEntity ;
+            sh:pattern "^http://example.org/resource/(?<id>.+)$"
+        ] ;
+        sh:target [
+            a kopflos:PatternedTarget ;
+            kopflos:regex "http://example.org/page/(?<id>.+)" ;
+        ] .
+}
