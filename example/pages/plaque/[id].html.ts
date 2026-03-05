@@ -26,7 +26,7 @@ export default definePage({
             <main>
               <sl-card class="card-overview">
                 <traverse-graph slot="image" property-path="schema:image">
-                    <schema-image></schema-image>
+                  <schema-image></schema-image>
                 </traverse-graph>
 
                 <resource-label property="schema:text"></resource-label>
@@ -38,18 +38,17 @@ export default definePage({
                 </div>
               </sl-card>
 
-              <sl-card class="card-overview card-map">
-                <traverse-graph property-path="schema:geo">
+              <traverse-graph property-path="schema:geo">
+                <sl-card class="card-overview">
                   <schema-geo-map></schema-geo-map>
-                  
+
                   <div slot="footer">
-                    <sl-button variant="primary" pill target="_blank"
-                               href="http://maps.google.com/maps?&z=21&t=m&q=loc:{{ valueof 'schema:latitude' }}+{{ valueof 'schema:longitude' }}">
+                    <schema-geo-map-button>
                       See on Google Maps
-                    </sl-button>
+                    </schema-geo-map-button>
                   </div>
-                </traverse-graph>
-              </sl-card>
+                </sl-card>
+              </traverse-graph>
             </main>
           </target-node>
         </data-graph>
