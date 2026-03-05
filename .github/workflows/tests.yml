@@ -33,6 +33,8 @@ jobs:
             path: labs/html-template
           - name: "@kopflos-labs/handlebars"
             path: labs/handlebars
+          - name: "@kopflos-labs/pages"
+            path: labs/pages
           - name: sparql-path-parser
             path: packages/sparql-path-parser
     steps:
