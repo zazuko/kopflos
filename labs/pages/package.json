@@ -2,6 +2,9 @@
   "name": "@kopflos-labs/pages",
   "version": "0.0.0",
   "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.1",
     "@kopflos-cms/logger": "^0.1.0",
@@ -28,6 +31,12 @@
   },
   "devDependencies": {
     "@types/rdfjs__serializer-rdfjs": "^0.1.6",
+    "@zazuko/env-node": "^3.0.0",
+    "chai": "^5",
     "vite": "^6"
+  },
+  "mocha": {
+    "spec": "test/**/*.test.ts",
+    "extends": "../../package.json"
   }
 }
