@@ -85,6 +85,8 @@ jobs:
       - run: docker compose up -d
         working-directory: example
       - run: npm run -w example start 2>&1 | tee example.log &
+        env:
+          log_color: off
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
       - run: npm run -w example test -- --debug
