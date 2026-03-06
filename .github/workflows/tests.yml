@@ -90,6 +90,8 @@ jobs:
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
       - run: npm run -w example test -- --debug
+        env:
+          TMPDIR: ${{ runner.temp }}
       - if: failure()
         name: upload debug artifacts
         uses: actions/upload-artifact@v4
