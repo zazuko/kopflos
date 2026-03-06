@@ -91,12 +91,14 @@ jobs:
 
       - run: npm run -w example test -- --debug
       - if: failure()
+        name: upload app logs
         uses: actions/upload-artifact@v4
         with:
           name: smoke-test-logs
           path: example.log
       - if: failure()
+        name: upload api-tuner response data
         uses: actions/upload-artifact@v7
         with:
           name: api-tuner-debug
-          path: /tmp
+          path: '${{ runner.temp }}/api-tuner*'

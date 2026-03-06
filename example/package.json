@@ -34,6 +34,6 @@
   },
   "devDependencies": {
     "@types/express": "^5",
-    "api-tuner": "^0.5.3"
+    "api-tuner": "^0.5.4"
   }
 }
