@@ -84,7 +84,17 @@ jobs:
       - run: npm ci
       - run: docker compose up -d
         working-directory: example
-      - run: npm run -w example start &
+      - run: npm run -w example start 2>&1 | tee example.log &
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
       - run: npm run -w example test -- --debug
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-logs
+          path: example.log
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-tuner-debug
+          path: /tmp
