@@ -49,7 +49,7 @@ describe('kopflos/lib/config.js', function () {
       })
 
       // then
-      expect(config.watch).to.deep.eq([configPath])
+      expect(config.watch).to.deep.eq(['config.json'])
     })
 
     it('adds config itself to watched paths', async function () {
@@ -65,7 +65,7 @@ describe('kopflos/lib/config.js', function () {
       })
 
       // then
-      expect(config.watch).to.contain.all.members([configPath, 'lib'])
+      expect(config.watch).to.contain.all.members(['config.with-watch.json', 'lib'])
     })
 
     it('rebase relative plugin paths to config path', async function () {
