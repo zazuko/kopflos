@@ -17,6 +17,7 @@ import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
 import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
+import { fillTemplate } from './pageParameters.js'
 import type { Page, QueryMap } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
@@ -56,6 +57,7 @@ async function executeQueries(renderer: Page, queries: QueryMap, { env, subjectV
     const endpoint: string | undefined = typeof descriptor === 'object' ? descriptor.endpoint : undefined
 
     const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
+
     const params: TermMap<Term, Term | Term[]> = new TermMap<Term, Term | Term[]>([
       ...Object.entries(subjectVariables).map<ParamMapEntry>(([key, value]) => [env.literal(key), env.literal(value)]),
       ...Object.entries(queryParams).reduce((acc, [key, value]): ParamMapEntry[] => {
@@ -75,30 +77,18 @@ async function executeQueries(renderer: Page, queries: QueryMap, { env, subjectV
 
         if (params.has(keyTerm)) continue
 
-        const variables: string[] = []
-        const regexStr = pattern.replace(/\[(\w+)]/g, (_, name) => {
-          variables.push(name)
-          return '(?<' + name + '>[^/]+)'
-        })
-        const regex = new RegExp(`^${regexStr}$`)
+        const bound = fillTemplate(pattern, subjectVariables)
 
-        // We need to find if any of the subjectVariables match the pattern's variables
-        // Actually, if we are in [name].html, subjectVariables['name'] is available.
-        // If the pattern is 'https://.../[name]', we can reconstruct the IRI.
-        let iri = pattern
-        let allVarsFound = true
-        for (const v of variables) {
-          if (subjectVariables[v]) {
-            iri = iri.replace(`[${v}]`, subjectVariables[v])
-          } else {
-            allVarsFound = false
-            break
-          }
+        if (bound) {
+          params.set(keyTerm, env.literal(bound))
         }
+      }
+    }
 
-        if (allVarsFound) {
-          params.set(keyTerm, env.literal(iri))
-        }
+    if (renderer.mainEntity) {
+      const mainEntity = fillTemplate(renderer.mainEntity, subjectVariables)
+      if (mainEntity) {
+        params.set(env.ns.schema.mainEntity, mainEntity.startsWith('http') ? env.namedNode(mainEntity) : env.kopflos.appNs(mainEntity))
       }
     }
 
