@@ -1,9 +1,5 @@
 import { consumeEnvironment, consumeFocusNode } from 'lit-rdf/mixins.js'
 import { html, LitElement } from 'lit'
-import '@openlayers-elements/core/ol-map.js'
-import '@openlayers-elements/maps/ol-layer-openstreetmap.js'
-import '@openlayers-elements/maps/ol-marker-icon.js'
-import '@openlayers-elements/core/ol-layer-vector.js'
 import { customElement } from 'lit/decorators.js'
 
 @customElement('schema-geo-map-button')
