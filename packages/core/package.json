@@ -56,10 +56,14 @@
     "sparql-http-client": "^3.0.0"
   },
   "devDependencies": {
+    "@rdfjs/data-model": "^2.1.1",
+    "@rdfjs/term-set": "^2.0.3",
+    "@tpluscode/rdf-ns-builders": "^5.0.0",
     "@types/chai-as-promised": "^8",
     "@types/sinon": "^17.0.3",
     "@types/sinon-chai": "^4",
     "@types/sparql-http-client": "^3.0.4",
+    "@zazuko/env": "^3.0.1",
     "chai": "^5",
     "chai-as-promised": "^8.0.0",
     "mocha-chai-rdf": "^0.1.2",

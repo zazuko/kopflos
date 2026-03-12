@@ -7,18 +7,13 @@ import { load } from 'cheerio'
 import Serializer from '@rdfjs/serializer-rdfjs'
 import * as esbuild from 'esbuild'
 import { setLanguages } from '@rdfjs-elements/lit-helpers'
-import type { Term } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
-import type { ExecuteConstruct } from 'sparqlc'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
-import TermMap from '@rdfjs/term-map'
-import { expand } from '@zazuko/prefixes'
 import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import SparqlProcessor from './SparqlProcessor.js'
-import PageUrlTransform from './PageUrlTransform.js'
-import { fillTemplate } from './pageParameters.js'
-import type { Page, QueryMap } from '@kopflos-labs/pages'
+import type { PageData } from './pageData.js'
+import { executeQueries } from './pageData.js'
+import type { Page } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
 
@@ -44,73 +39,19 @@ const serializer = new Serializer();
   includeJSBuiltIns: true,
 })
 
-type RendererData = NonNullable<Page['data']>
-type ParamMapEntry = [Term, Term | Term[]]
-
-async function executeQueries(renderer: Page, queries: QueryMap, { env, subjectVariables, query: queryParams }: HandlerArgs): Promise<RendererData> {
-  const data: RendererData = renderer.data || {}
+const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = {} }) => {
+  const { head, body } = page
+  const { env } = req
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
-  for (const [name, descriptor] of Object.entries(queries)) {
-    const query: ExecuteConstruct = typeof descriptor === 'function' ? descriptor : descriptor.query
-    const endpoint: string | undefined = typeof descriptor === 'object' ? descriptor.endpoint : undefined
-
-    const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
-
-    const params: TermMap<Term, Term | Term[]> = new TermMap<Term, Term | Term[]>([
-      ...Object.entries(subjectVariables).map<ParamMapEntry>(([key, value]) => [env.literal(key), env.literal(value)]),
-      ...Object.entries(queryParams).reduce((acc, [key, value]): ParamMapEntry[] => {
-        if (Array.isArray(value)) {
-          return [...acc, [env.literal(key), value.map(v => env.literal(v.toString()))]]
-        }
-        if (!value) {
-          return acc
-        }
-        return [...acc, [env.literal(key), env.literal(value.toString())]]
-      }, []),
-    ])
-
-    if (renderer.parameters) {
-      for (const [key, pattern] of Object.entries(renderer.parameters)) {
-        const keyTerm = expand(key) ? env.namedNode(expand(key)) : env.literal(key)
-
-        if (params.has(keyTerm)) continue
-
-        const bound = fillTemplate(pattern, subjectVariables)
-
-        if (bound) {
-          params.set(keyTerm, env.literal(bound))
-        }
-      }
-    }
-
-    if (renderer.mainEntity) {
-      const mainEntity = fillTemplate(renderer.mainEntity, subjectVariables)
-      if (mainEntity) {
-        params.set(env.ns.schema.mainEntity, mainEntity.startsWith('http') ? env.namedNode(mainEntity) : env.kopflos.appNs(mainEntity))
-      }
-    }
-
-    const result = await query(params, {
-      env,
-      client,
-      processors: [
-        new SparqlProcessor(env, pagePatterns),
-      ],
-    })
-    data[name] = env.clownface({
-      dataset: await env.dataset().import(result.pipe(new PageUrlTransform(pagePatterns, env))),
-    })
-  }
-  return data
-}
-
-const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = {} }) => {
-  const { head, body } = page
-  const queries: QueryMap = page.queries || {}
-
-  const data = await executeQueries(page, queries, req)
+  const data = await executeQueries({
+    ...page,
+    pagePatterns,
+    env,
+    subjectVariables: req.subjectVariables,
+    queryParams: req.query,
+  })
 
   setLanguages(...req.headers['accept-language'] || [])
 
@@ -162,7 +103,7 @@ function ensureCaseInsensitiveRegex(regex: RegExp | string) {
   return new RegExp(`^${regex}$`, 'i')
 }
 
-function prepareRenderer(data: RendererData, options: SsrOptions) {
+function prepareRenderer(data: PageData, options: SsrOptions) {
   const usedData: Set<string> = new Set()
 
   const allowConnectedCallback = (options.allowConnectedCallback || []).map(ensureCaseInsensitiveRegex)

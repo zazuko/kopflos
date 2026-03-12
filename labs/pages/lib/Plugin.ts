@@ -18,13 +18,7 @@ import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import pagesVitePlugin from './vitePlugin.js'
 import type { SsrOptions } from './ssr.js'
 import { toPattern } from './route.js'
-
-export interface QueryDescriptor {
-  query: ExecuteConstruct
-  endpoint?: string
-}
-
-export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
+import type { PageData, QueryDescriptor, QueryMap } from './pageData.js'
 
 export interface Page<TQueries extends QueryMap | undefined = undefined> {
   mainEntity?: string
@@ -32,7 +26,7 @@ export interface Page<TQueries extends QueryMap | undefined = undefined> {
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
   body: (args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => TemplateResult | Promise<TemplateResult>
   // TODO: combine queries and data
-  data?: Record<string, AnyPointer | DatasetCore>
+  data?: PageData
   queries?: TQueries
 }
 
