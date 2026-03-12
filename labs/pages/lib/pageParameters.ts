@@ -1,10 +1,5 @@
 export function fillTemplate(pattern: string, subjectVariables: Record<string, string>): string | null {
-  const variables: string[] = []
-  const regexStr = pattern.replace(/\[(\w+)]/g, (_, name) => {
-    variables.push(name)
-    return '(?<' + name + '>[^/]+)'
-  })
-  const regex = new RegExp(`^${regexStr}$`)
+  const variables = [...pattern.matchAll(/\[(\w+)]/g)].map(([, name]) => name)
 
   // We need to find if any of the subjectVariables match the pattern's variables
   // Actually, if we are in [name].html, subjectVariables['name'] is available.
