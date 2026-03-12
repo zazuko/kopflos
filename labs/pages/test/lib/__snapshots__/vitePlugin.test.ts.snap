@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should add DSD styles and scripts 1`] = `
+"<html><head>
+  <script type=\\"module\\" src=\\"/@vite/client\\"></script>
+    
+<style>
+    body[dsd-pending] {
+        display: none;
+    }
+</style></head><body dsd-pending>
+<script>
+    if (HTMLTemplateElement.prototype.hasOwnProperty('shadowRootMode')) {
+        // This browser has native declarative shadow DOM support, so we can
+        // allow painting immediately.
+        document.body.removeAttribute('dsd-pending')
+    }
+</script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=1.js\\"></script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=2.js\\"></script>
+                </body></html>"
+`;
+
+exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should not add hydrate script when deferHydration is false 1`] = `
+"<html><head>
+  <script type=\\"module\\" src=\\"/@vite/client\\"></script>
+    
+<style>
+    body[dsd-pending] {
+        display: none;
+    }
+</style></head><body dsd-pending>
+<script>
+    if (HTMLTemplateElement.prototype.hasOwnProperty('shadowRootMode')) {
+        // This browser has native declarative shadow DOM support, so we can
+        // allow painting immediately.
+        document.body.removeAttribute('dsd-pending')
+    }
+</script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=1.js\\"></script></body></html>"
+`;

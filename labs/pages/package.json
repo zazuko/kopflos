@@ -30,6 +30,8 @@
     "vite": ">=6.0.0"
   },
   "devDependencies": {
+    "@kopflos-cms/core": "^0.7.0",
+    "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/rdfjs__serializer-rdfjs": "^0.1.6",
     "@types/sparqljs": "^3.1.12",
     "@zazuko/env-node": "^3.0.0",

@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate resource shapes for pages 1`] = `
+"
+<https://kopflos.described.at/Pages> <urn:talos:action> <urn:talos:overwrite> .
+
+<https://kopflos.described.at/Pages#test-page.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"test-page.html$\\" ;
+	] ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"test-page.html.ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#property> [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/mainEntity> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"https://example.org//about\\" ;
+	] .
+
+<https://kopflos.described.at/Pages#relative-entity.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"relative-entity.html$\\" ;
+	] ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"relative-entity.html.ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#property> [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/mainEntity> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"about\\" ;
+	] .
+
+<https://kopflos.described.at/Pages#no-entity.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"no-entity.html$\\" ;
+	] ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"no-entity.html.ts\\"
+				) ;
+			]
+		) ;
+	] .
+
+"
+`;
