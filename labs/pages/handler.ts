@@ -7,8 +7,8 @@ import type { Page } from './lib/Plugin.js'
 export default function (this: Kopflos, modulePath: string): SubjectHandler {
   const { basePath, buildDir } = this.env.kopflos
   const Plugin = this.getPlugin('@kopflos-labs/pages')!
-  const templatePath = modulePath.replace(/.(ts|js)$/, '')
-  const serverPath = modulePath.replace(/.html.(ts|js)$/, '.$1')
+  const templatePath = modulePath.replace(/.(ts|js)$/, '.html')
+  const serverPath = modulePath.replace(/.(ts|js)$/, '.html.$1')
 
   return async (req) => {
     const subjectPath = new URL(req.subject.value).pathname

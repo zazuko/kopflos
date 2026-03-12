@@ -75,7 +75,7 @@ export default class extends VitePlugin implements PagesPlugin {
     super('@kopflos-labs/pages', [buildConfiguration])
     this.buildConfiguration = buildConfiguration
     this.path = path
-    this.pattern = '**/*.html.ts'
+    this.pattern = '**/*.ts'
     this.ssrOptions = finalSsrOptions
   }
 
@@ -112,7 +112,14 @@ export default class extends VitePlugin implements PagesPlugin {
 
     this.log.info(`Loading pages from ${cwd}/${this.pattern}`)
 
-    for await (const ssrModule of globIterate(this.pattern, { cwd })) {
+    for await (const ssrModule of globIterate(this.pattern, { cwd, ignore: ['**/*.client.ts', '**/*.html.ts'] })) {
+      const renderer: Page = (await import(/* @vite-ignore */ path.join(cwd, ssrModule))).default
+
+      if (!renderer || !('body' in renderer)) {
+        this.log.debug(`Skipping ${ssrModule} as it does not export a default page definition`)
+        continue
+      }
+
       const resourceShape = graph
         .namedNode(kl.Pages.value + '#' + encodeURIComponent(ssrModule))
 
@@ -138,8 +145,6 @@ export default class extends VitePlugin implements PagesPlugin {
             ])
         })
 
-      const renderer: Page = (await import(/* @vite-ignore */ path.join(cwd, ssrModule))).default
-
       let mainEntity = renderer.mainEntity
       if (mainEntity) {
         if (mainEntity.startsWith('/')) {
@@ -161,8 +166,8 @@ export default class extends VitePlugin implements PagesPlugin {
     await super.build(env, plugins)
 
     const cwd = path.resolve(env.kopflos.basePath, this.path)
-    const entryPoints = (await glob(this.pattern, { cwd, absolute: true })).reduce<string[]>((acc, file) => {
-      const ssrModuleDependencies = file.replace(/\.html\.(js|ts)$/, '.$1')
+    const entryPoints = (await glob(this.pattern, { cwd, absolute: true, ignore: ['**/*.client.ts', '**/*.html.ts'] })).reduce<string[]>((acc, file) => {
+      const ssrModuleDependencies = file.replace(/\.(js|ts)$/, '.html.$1')
 
       if (existsSync(ssrModuleDependencies)) {
         return [...acc, file, ssrModuleDependencies]

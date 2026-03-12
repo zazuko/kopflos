@@ -4,7 +4,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 "
 <https://kopflos.described.at/Pages> <urn:talos:action> <urn:talos:overwrite> .
 
-<https://kopflos.described.at/Pages#test-page.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+<https://kopflos.described.at/Pages#test-page.ts> a <https://kopflos.described.at/ResourceShape> ;
 	<https://kopflos.described.at/api> <https://example.org/> ;
 	<http://www.w3.org/ns/shacl#target> [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
@@ -18,7 +18,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
 				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
 				<https://code.described.at/arguments> (
-					\\"test-page.html.ts\\"
+					\\"test-page.ts\\"
 				) ;
 			]
 		) ;
@@ -28,7 +28,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 		<http://www.w3.org/ns/shacl#pattern> \\"https://example.org//about\\" ;
 	] .
 
-<https://kopflos.described.at/Pages#relative-entity.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+<https://kopflos.described.at/Pages#relative-entity.ts> a <https://kopflos.described.at/ResourceShape> ;
 	<https://kopflos.described.at/api> <https://example.org/> ;
 	<http://www.w3.org/ns/shacl#target> [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
@@ -42,7 +42,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
 				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
 				<https://code.described.at/arguments> (
-					\\"relative-entity.html.ts\\"
+					\\"relative-entity.ts\\"
 				) ;
 			]
 		) ;
@@ -52,7 +52,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 		<http://www.w3.org/ns/shacl#pattern> \\"about\\" ;
 	] .
 
-<https://kopflos.described.at/Pages#no-entity.html.ts> a <https://kopflos.described.at/ResourceShape> ;
+<https://kopflos.described.at/Pages#no-entity.ts> a <https://kopflos.described.at/ResourceShape> ;
 	<https://kopflos.described.at/api> <https://example.org/> ;
 	<http://www.w3.org/ns/shacl#target> [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
@@ -66,7 +66,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
 				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
 				<https://code.described.at/arguments> (
-					\\"no-entity.html.ts\\"
+					\\"no-entity.ts\\"
 				) ;
 			]
 		) ;

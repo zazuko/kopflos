@@ -10,7 +10,7 @@ export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
     transformIndexHtml: {
       order: 'pre',
       handler(template, { filename, originalUrl }) {
-        const depsModule = (originalUrl || filename).replace(/\.html$/, '.js')
+        const depsModule = (originalUrl || filename).replace(/\.html$/, '.html.js')
         const clientOnlyDepsModule = (originalUrl || filename).replace(/\.html$/, '.client.js')
 
         const depsModuleImport = getImport(depsModule)

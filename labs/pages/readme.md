@@ -48,12 +48,12 @@ export default {
 
 By default, pages are located in a `pages/` directory, relative to the config. For dynamic routes such as `plaque/[id]`, you can split the page into several files for better organization:
 
-- **`[id].html.ts`**: The main page definition, containing the template and data logic.
+- **`[id].ts`**: The main page definition, containing the template and data logic.
 - **`[id].html`**: The static HTML shell (meta tags, global styles, and basic body structure).
-- **`[id].ts`**: Server-side imports, such as custom elements required for SSR.
+- **`[id].html.ts`**: Server-side imports, such as custom elements required for SSR.
 - **`[id].client.ts`**: Client-side imports, including runtime scripts and interactive components.
 
-#### Example: `[id].html.ts`
+#### Example: `[id].ts`
 
 ```typescript
 import { html, definePage } from '@kopflos-labs/pages'

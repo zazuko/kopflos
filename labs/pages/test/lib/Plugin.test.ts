@@ -98,12 +98,15 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
 
       // then
       const clientHtml = resolve(buildDir, 'test/fixtures/pages/client/test-page.html')
-      const serverJs = resolve(buildDir, 'test/fixtures/pages/server/test-page.html.js')
+      const serverJs = resolve(buildDir, 'test/fixtures/pages/server/test-page.js')
       expect(existsSync(clientHtml)).to.be.true
       expect(existsSync(serverJs)).to.be.true
 
       const serverJsContent = await fs.readFile(serverJs, 'utf-8')
       expect(serverJsContent).to.contain('test-page')
+
+      const serverDepsJs = resolve(buildDir, 'test/fixtures/pages/server/test-page.html.js')
+      expect(existsSync(serverDepsJs)).to.be.true
 
       const [clientJs] = await glob('test/fixtures/pages/client/assets/test-page-*.js', { cwd: buildDir, absolute: true })
       const clientJsContent = await fs.readFile(clientJs, 'utf-8')

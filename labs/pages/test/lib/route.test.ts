@@ -4,15 +4,15 @@ import { toPattern } from '../../lib/route.js'
 describe('@kopflos-labs/pages/lib/route.js', function () {
   describe('toPattern', function () {
     it('should handle optional variable', function () {
-      expect(toPattern('[[id]].html')).to.equal('(?<id>[^/]+)?$')
+      expect(toPattern('[[id]].ts')).to.equal('(?<id>[^/]+)?.html$')
     })
 
     it('should handle required variable', function () {
-      expect(toPattern('[id].html')).to.equal('(?<id>[^/]+)$')
+      expect(toPattern('[id].ts')).to.equal('(?<id>[^/]+).html$')
     })
 
     it('should handle catch-all variable', function () {
-      expect(toPattern('[...slug].html')).to.equal('(?<slug>[/\\w]+)$')
+      expect(toPattern('[...slug].ts')).to.equal('(?<slug>[/\\w]+).html$')
     })
 
     it('should return original match if no known variable pattern matches (should not happen with regex)', function () {
