@@ -1,6 +1,8 @@
 import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
 import * as fs from 'node:fs/promises'
+import url from 'node:url'
+import { glob } from 'glob'
 import { expect, use } from 'chai'
 import type { Kopflos, KopflosEnvironment } from '@kopflos-cms/core'
 import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-extraneous-dependencies
@@ -9,6 +11,8 @@ import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import formatsPretty from '@rdfjs-elements/formats-pretty'
 import DefaultPlugin from '@kopflos-cms/vite'
 import PagesPlugin from '../../lib/Plugin.js'
+
+const buildDir = url.fileURLToPath(new URL('../dist', import.meta.url))
 
 describe('@kopflos-cms/pages/lib/Plugin.js', function () {
   let env: KopflosEnvironment
@@ -23,6 +27,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
       sparql: {
         default: 'https://example.org/sparql',
       },
+      buildDir,
     }, process.cwd())
 
     env.formats.import(formatsPretty)
@@ -78,12 +83,11 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
     this.timeout(20000)
 
     beforeEach(async function () {
-      await fs.rm('dist', { recursive: true, force: true })
+      await fs.rm(buildDir, { recursive: true, force: true })
     })
 
     it('should create build artifacts for pages', async function () {
       // given
-      await fs.writeFile('test/fixtures/pages/test-page.html', '<!DOCTYPE html><html><body><h1>Test Page</h1></body></html>')
       const plugin = new PagesPlugin({
         path: 'test/fixtures/pages',
       })
@@ -93,13 +97,17 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
       await plugin.build(env, [plugin, defaultPlugin])
 
       // then
-      const clientHtml = resolve(process.cwd(), 'dist/test/fixtures/pages/client/test-page.html')
-      const serverJs = resolve(process.cwd(), 'dist/test/fixtures/pages/server/test-page.html.js')
+      const clientHtml = resolve(buildDir, 'test/fixtures/pages/client/test-page.html')
+      const serverJs = resolve(buildDir, 'test/fixtures/pages/server/test-page.html.js')
       expect(existsSync(clientHtml)).to.be.true
       expect(existsSync(serverJs)).to.be.true
 
       const serverJsContent = await fs.readFile(serverJs, 'utf-8')
       expect(serverJsContent).to.contain('test-page')
+
+      const [clientJs] = await glob('test/fixtures/pages/client/assets/test-page-*.js', { cwd: buildDir, absolute: true })
+      const clientJsContent = await fs.readFile(clientJs, 'utf-8')
+      expect(clientJsContent).to.contain('console.log("test-page.client.ts")')
     })
   })
 })
