@@ -1,6 +1,6 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import type { DatasetCore } from '@rdfjs/types'
@@ -113,12 +113,14 @@ export default class extends VitePlugin implements PagesPlugin {
     this.log.info(`Loading pages from ${cwd}/${this.pattern}`)
 
     for await (const ssrModule of globIterate(this.pattern, { cwd, ignore: ['**/*.client.ts', '**/*.html.ts'] })) {
-      const renderer: Page = (await import(/* @vite-ignore */ path.join(cwd, ssrModule))).default
+      const pathAbsolute = path.join(cwd, ssrModule)
 
-      if (!renderer || !('body' in renderer)) {
-        this.log.debug(`Skipping ${ssrModule} as it does not export a default page definition`)
+      if (!readFileSync(pathAbsolute).toString().includes('definePage')) {
+        this.log.debug(`Skipping ${ssrModule} as it does not appear to be a page definition`)
         continue
       }
+
+      const renderer: Page = (await import(/* @vite-ignore */ pathAbsolute)).default
 
       const resourceShape = graph
         .namedNode(kl.Pages.value + '#' + encodeURIComponent(ssrModule))
