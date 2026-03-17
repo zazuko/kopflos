@@ -56,7 +56,7 @@ export default class extends VitePlugin implements PagesPlugin {
   public readonly ssrOptions: SsrOptions
   private readonly buildConfiguration: BuildConfiguration
 
-  constructor({ path = 'pages', ssrOptions = {} }: Options) {
+  constructor({ path = 'pages', ssrOptions = {} }: Options = {}) {
     const finalSsrOptions: SsrOptions = {
       deferHydration: true,
       ...ssrOptions,
