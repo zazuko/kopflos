@@ -17,6 +17,8 @@ describe('lib/env/SparqlClientFactory', function () {
 
         get kopflos() {
           return {
+            api: rdf.namedNode('http://example.com/api'),
+            appNs: rdf.namespace('http://example.com/app/'),
             config: {
               baseIri: 'http://example.com/',
               sparql: {
@@ -55,6 +57,8 @@ describe('lib/env/SparqlClientFactory', function () {
 
         get kopflos() {
           return {
+            api: rdf.namedNode('http://example.com/api'),
+            appNs: rdf.namespace('http://example.com/app/'),
             config: {
               baseIri: 'http://example.com/',
               sparql: {
@@ -105,6 +109,8 @@ describe('lib/env/SparqlClientFactory', function () {
 
         get kopflos() {
           return {
+            api: rdf.namedNode('http://example.com/api'),
+            appNs: rdf.namespace('http://example.com/app/'),
             config: {
               baseIri: 'http://example.com/',
               sparql: {
@@ -151,6 +157,8 @@ describe('lib/env/SparqlClientFactory', function () {
 
             get kopflos() {
               return {
+                api: rdf.namedNode('http://example.com/api'),
+                appNs: rdf.namespace('http://example.com/app/'),
                 variables: {},
                 config: {
                   baseIri: 'http://example.com/',

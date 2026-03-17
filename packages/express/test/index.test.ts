@@ -189,11 +189,5 @@ describe('@kopflos-cms/express', function () {
         .set('trust proxy', true)
         .use(middleware)
     })
-
-    it('throws an error when no API graphs are configured', async function () {
-      await request(app)
-        .get('/')
-        .expect(500, /No API graphs configured/)
-    })
   })
 })

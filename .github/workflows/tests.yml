@@ -33,6 +33,8 @@ jobs:
             path: labs/html-template
           - name: "@kopflos-labs/handlebars"
             path: labs/handlebars
+          - name: "@kopflos-labs/pages"
+            path: labs/pages
           - name: sparql-path-parser
             path: packages/sparql-path-parser
     steps:
@@ -82,7 +84,19 @@ jobs:
       - run: npm ci
       - run: docker compose up -d
         working-directory: example
-      - run: npm run -w example start &
+      - run: npm run -w example start 2>&1 | tee example.log &
+        env:
+          log_color: off
       - run: npx wait-on http://localhost:1429/plaque/newton-s-apple-tree-monash-university -t 30000
 
-      - run: npm run -w example test -- --debug --raw
+      - run: npm run -w example test -- --debug
+        env:
+          TMPDIR: ${{ runner.temp }}
+      - if: failure()
+        name: upload debug artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-debug
+          path: |
+            example.log
+            ${{ runner.temp }}/api-tuner*

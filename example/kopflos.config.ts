@@ -5,13 +5,13 @@ import ExpressMiddleware from '@kopflos-cms/express/middleware' // eslint-disabl
 import Vite from '@kopflos-cms/vite'
 import Hydra from '@kopflos-cms/hydra'
 import Shacl from '@kopflos-cms/shacl'
+import PluginPages from '@kopflos-labs/pages'
 
 const baseIri = process.env.API_BASE || 'http://localhost:1429'
 const dbUri = process.env.DB_URI || 'http://localhost:7878'
 
 export default <KopflosConfig>{
   baseIri,
-  apiGraphs: [baseIri + '/api'],
   sparql: {
     default: {
       endpointUrl: dbUri + '/query?union-default-graph',
@@ -33,10 +33,6 @@ export default <KopflosConfig>{
       ],
     }),
     new Vite({
-      build: {
-        root: 'ui',
-        entrypoints: ['*.html'],
-      },
       config: {
         server: {
           allowedHosts: ['read-the-plaque.lndo.site'],
@@ -47,5 +43,13 @@ export default <KopflosConfig>{
       apis: [baseIri + '/api'],
     }),
     new Shacl(),
+    new PluginPages({
+      ssrOptions: {
+        disallowConnectedCallback: [
+          /^sl-/,
+          /^ol-/,
+        ],
+      },
+    }),
   ],
 }

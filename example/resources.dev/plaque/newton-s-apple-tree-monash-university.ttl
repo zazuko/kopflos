@@ -6,7 +6,7 @@ PREFIX schema: <http://schema.org/>
   schema:name "Newton's Apple Tree Monash University" ;
   schema:image
     [
-      schema:url
+      schema:contentUrl
         <http://lh3.googleusercontent.com/9plKip3uL4bOocjMGJA1qX5lXfDpYpy5uNJgW5wf8NjMbzlgjggDtZwcJLoQbyzaIlEfZaF-aDtHRLMv36ZvcRkz5g7F5qiW0gQOA_-1_A>
     ] ;
   schema:contributor

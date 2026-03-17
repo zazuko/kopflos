@@ -1,6 +1,5 @@
-// Check if we require the template shadow root polyfill.
 (async () => {
-  if (!HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot')) { // eslint-disable-line no-prototype-builtins
+  if (!HTMLTemplateElement.prototype.hasOwnProperty('shadowRootMode')) { // eslint-disable-line no-prototype-builtins
     // Fetch the template shadow root polyfill.
     const { hydrateShadowRoots } = await import('@webcomponents/template-shadowroot/template-shadowroot.js')
 

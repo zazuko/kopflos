@@ -9,7 +9,10 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "plugins": [
+      { "name": "ts-plugin-sparqlc" }
+    ]
   },
   "exclude": [
     "packages/sparql-path-parser"

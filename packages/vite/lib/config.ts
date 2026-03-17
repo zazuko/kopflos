@@ -33,7 +33,7 @@ export async function prepareConfig({ appRoot, root, entrypoints, outDir, config
       config = resolve(appRoot, config)
     }
 
-    userConfig = (await import(config)).default
+    userConfig = (await import(/* @vite-ignore */ config)).default
   }
 
   return [defaultConfig, inputConfig, userConfig, buildConfig]

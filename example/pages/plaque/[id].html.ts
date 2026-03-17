@@ -1,0 +1,7 @@
+import 'lit-rdf'
+import 'lit-rdf/components/rdf-environment.js'
+import '../component/my-header.js'
+import '../component/schema-image.js'
+import '../component/plaque-button.js'
+import '../component/schema-geo-map.js'
+import '../component/schema-geo-map-button.js'
