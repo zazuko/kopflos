@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.1.1
+
+### Patch Changes
+
+- a945c57: Pack JS instead of TS
+- a945c57: Make the plugin parameter optional
+
 ## 0.1.0
 
 ### Minor Changes
