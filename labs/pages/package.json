@@ -6,8 +6,20 @@
     "access": "public"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
   },
+  "files": [
+    "CHANGELOG.md",
+    "queries",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "runtime/*.js",
+    "runtime/*.d.ts",
+    "*.js",
+    "*.d.ts"
+  ],
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.1",
     "@kopflos-cms/logger": "^0.1.0",
