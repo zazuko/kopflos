@@ -1,5 +1,16 @@
 # example
 
+## 0.0.25
+
+### Patch Changes
+
+- Updated dependencies [c9ff747]
+- Updated dependencies [5486bac]
+- Updated dependencies [0f66f30]
+- Updated dependencies [0b9e8af]
+  - @kopflos-cms/vite@0.3.5
+  - @kopflos-labs/pages@0.1.0
+
 ## 0.0.24
 
 ### Patch Changes
