@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.5
+
+### Patch Changes
+
+- c9ff747: `log` field is now protected so that impementing plugins can log more easily
+
 ## 0.3.4
 
 ### Patch Changes

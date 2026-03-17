@@ -1,5 +1,13 @@
 # @kopflos-cms/core
 
+## 0.7.1
+
+### Patch Changes
+
+- bb84cea: Allow plugins to add watch paths using `watchPaths` method
+- a458d9f: Added `appNs` `NamespaceBuilder` to the environment which creates named nodes relative to app base
+- bb84cea: Making `apiGraphs` optional in config. By default, a graph `${baseIri}/api` will be used. Additionally, plugins can provide addtional API graphs using `apiGraph` method
+
 ## 0.7.0
 
 ### Minor Changes
