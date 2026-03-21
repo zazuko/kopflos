@@ -11,8 +11,8 @@ import type { AnyPointer } from 'clownface'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
 import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import type { PageData } from './pageData.js'
-import { executeQueries } from './pageData.js'
+import type { PageData, QueryMap } from './pageData.js'
+import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
@@ -45,13 +45,21 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
-  const data = await executeQueries({
-    ...page,
-    pagePatterns,
-    env,
-    subjectVariables: req.subjectVariables,
-    queryParams: req.query,
+  const pendingQueries = Object.entries(page.queries as unknown as QueryMap).map(async ([key, query]) => {
+    const result = await executeQuery({
+      ...page,
+      query,
+      pagePatterns,
+      env,
+      subjectVariables: req.subjectVariables,
+      queryParams: req.query,
+    })
+
+    return [key, result] as const
   })
+
+  const results = await Promise.all(pendingQueries)
+  const data = Object.fromEntries(results)
 
   setLanguages(...req.headers['accept-language'] || [])
 

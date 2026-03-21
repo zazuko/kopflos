@@ -1,3 +1,4 @@
+import { finished } from 'node:stream/promises'
 import type { HandlerArgs } from '@kopflos-cms/core'
 import type { ExecuteConstruct } from 'sparqlc'
 import TermMap from '@rdfjs/term-map'
@@ -27,8 +28,7 @@ export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 type ParamMapEntry = [Term, Term | Term[]]
 
 interface Parameters {
-  data?: PageData
-  queries?: QueryMap
+  query: QueryDescriptor | ExecuteConstruct
   parameters?: Record<string, string>
   mainEntity?: string
   env: Environment<Required<DataFactory> | DatasetFactoryExt | TermSetFactory | SparqlClientFactory | KopflosFactory | NsBuildersFactory | ClownfaceFactory>
@@ -37,60 +37,65 @@ interface Parameters {
   pagePatterns: PagePatternsRow[]
 }
 
-export async function executeQueries({ data = {}, queries = {}, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<PageData> {
-  for (const [name, descriptor] of Object.entries(queries)) {
-    const query: ExecuteConstruct = typeof descriptor === 'function' ? descriptor : descriptor.query
-    const endpoint: string | undefined = typeof descriptor === 'object' ? descriptor.endpoint : undefined
+export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<AnyPointer> {
+  const construct: ExecuteConstruct = typeof query === 'function' ? query : query.query
+  const endpoint: string | undefined = typeof query === 'object' ? query.endpoint : undefined
 
-    const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
+  const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
 
-    const params: TermMap<Term, Term | Term[]> = new TermMap<Term, Term | Term[]>([
-      ...Object.entries(subjectVariables).map<ParamMapEntry>(([key, value]) => [env.literal(key), env.literal(value)]),
-      ...Object.entries(queryParams).reduce((acc, [key, value]): ParamMapEntry[] => {
-        if (Array.isArray(value)) {
-          return [...acc, [env.literal(key), value.map(v => env.literal(v.toString()))]]
-        }
-        if (!value) {
-          return acc
-        }
-        return [...acc, [env.literal(key), env.literal(value.toString())]]
-      }, []),
-    ])
+  const params: TermMap<Term, Term | Term[]> = new TermMap<Term, Term | Term[]>([
+    ...Object.entries(subjectVariables).map<ParamMapEntry>(([key, value]) => [env.literal(key), env.literal(value)]),
+    ...Object.entries(queryParams).reduce((acc, [key, value]): ParamMapEntry[] => {
+      if (Array.isArray(value)) {
+        return [...acc, [env.literal(key), value.map(v => env.literal(v.toString()))]]
+      }
+      if (!value) {
+        return acc
+      }
+      return [...acc, [env.literal(key), env.literal(value.toString())]]
+    }, []),
+  ])
 
-    if (parameters) {
-      for (const [key, pattern] of Object.entries(parameters)) {
-        const keyTerm = expand(key) ? env.namedNode(expand(key)) : env.literal(key)
+  if (parameters) {
+    for (const [key, pattern] of Object.entries(parameters)) {
+      const keyTerm = expand(key) ? env.namedNode(expand(key)) : env.literal(key)
 
-        if (params.has(keyTerm)) continue
+      if (params.has(keyTerm)) continue
 
-        const bound = fillTemplate(pattern, subjectVariables)
+      const bound = fillTemplate(pattern, subjectVariables)
 
-        if (bound) {
-          params.set(keyTerm, env.literal(bound))
-        }
+      if (bound) {
+        params.set(keyTerm, env.literal(bound))
       }
     }
-
-    if (mainEntity) {
-      const mainEntityFilled = fillTemplate(mainEntity, subjectVariables)
-      if (mainEntityFilled) {
-        const mainEntityNode = mainEntityFilled.startsWith('http')
-          ? env.namedNode(mainEntityFilled)
-          : env.kopflos.appNs(mainEntityFilled)
-        params.set(env.ns.schema.mainEntity, mainEntityNode)
-      }
-    }
-
-    const result = await query(params, {
-      env,
-      client,
-      processors: [
-        new SparqlProcessor(env, pagePatterns),
-      ],
-    })
-    data[name] = env.clownface({
-      dataset: await env.dataset().import(result.pipe(new PageUrlTransform(pagePatterns, env))),
-    })
   }
-  return data
+
+  if (mainEntity) {
+    const mainEntityFilled = fillTemplate(mainEntity, subjectVariables)
+    if (mainEntityFilled) {
+      const mainEntityNode = mainEntityFilled.startsWith('http')
+        ? env.namedNode(mainEntityFilled)
+        : env.kopflos.appNs(mainEntityFilled)
+      params.set(env.ns.schema.mainEntity, mainEntityNode)
+    }
+  }
+
+  const result = await construct(params, {
+    env,
+    client,
+    processors: [
+      new SparqlProcessor(env, pagePatterns),
+    ],
+  })
+  const transformed = result.pipe(new PageUrlTransform(pagePatterns, env))
+  result.on('error', (err) => transformed.emit('error', err))
+  const datasetPromise = env.dataset().import(transformed)
+  const [dataset] = await Promise.all([
+    datasetPromise,
+    finished(transformed),
+  ])
+
+  return env.clownface({
+    dataset,
+  })
 }
