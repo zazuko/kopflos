@@ -46,6 +46,7 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
   const pendingQueries = Object.entries(page.queries as unknown as QueryMap).map(async ([key, query]) => {
+    const start = performance.now()
     const result = await executeQuery({
       ...page,
       query,
@@ -54,6 +55,8 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
       subjectVariables: req.subjectVariables,
       queryParams: req.query,
     })
+    const end = performance.now()
+    log.info(`Page query ${key} took ${Math.round(end - start)}ms`)
 
     return [key, result] as const
   })
