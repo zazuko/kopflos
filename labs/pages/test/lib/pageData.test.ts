@@ -1,3 +1,4 @@
+import { PassThrough } from 'node:stream'
 import type { parse } from 'node:querystring'
 import parent, { Environment } from '@zazuko/env-node'
 import type { KopflosConfig } from '@kopflos-cms/core'
@@ -6,17 +7,15 @@ import { expect } from 'chai'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { Bindings as PagePatternsRow } from '../../queries/page-patterns.rq'
-import { executeQueries } from '../../lib/pageData.js'
+import { executeQuery } from '../../lib/pageData.js'
 
 type PagePatterns = PagePatternsRow[]
 
 describe('pageData', function () {
-  describe('executeQueries', function () {
+  describe('executeQuery', function () {
     it('executes a simple query against default endpoint', async function () {
       // given
-      const queries = {
-        example: sinon.stub().resolves(parent.dataset().toStream()),
-      }
+      const query = sinon.stub().resolves(parent.dataset().toStream())
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -26,8 +25,8 @@ describe('pageData', function () {
       const pagePatterns: PagePatterns = []
 
       // when
-      const data = await executeQueries({
-        queries,
+      const result = await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams,
@@ -35,19 +34,17 @@ describe('pageData', function () {
       })
 
       // then
-      expect(data).to.have.property('example')
-      expect(queries.example).to.have.been.calledOnceWith(sinon.match.any, sinon.match({
+      expect(result).to.be.ok
+      expect(query).to.have.been.calledOnceWith(sinon.match.any, sinon.match({
         client: env.sparql.default.stream,
       }))
     })
 
     it('executes a query against named endpoint', async function () {
       // given
-      const queries = {
-        example: {
-          query: sinon.stub().resolves(parent.dataset().toStream()),
-          endpoint: 'named',
-        },
+      const query = {
+        query: sinon.stub().resolves(parent.dataset().toStream()),
+        endpoint: 'named',
       }
       const env = new Environment([
         TestKopflosFactory,
@@ -58,8 +55,8 @@ describe('pageData', function () {
       const pagePatterns: PagePatterns = []
 
       // when
-      const data = await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams,
@@ -67,8 +64,7 @@ describe('pageData', function () {
       })
 
       // then
-      expect(data).to.have.property('example')
-      expect(queries.example.query).to.have.been.calledWith(sinon.match.any, sinon.match({
+      expect(query.query).to.have.been.calledWith(sinon.match.any, sinon.match({
         client: env.sparql.named.stream,
       }))
     })
@@ -76,7 +72,6 @@ describe('pageData', function () {
     it('passes array-valued query parameters', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -86,8 +81,8 @@ describe('pageData', function () {
       }
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables: {},
         queryParams,
@@ -105,7 +100,6 @@ describe('pageData', function () {
     it('processes parameters with templates', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -119,8 +113,8 @@ describe('pageData', function () {
       }
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams: {},
@@ -137,7 +131,6 @@ describe('pageData', function () {
     it('skips parameters if they are already in params', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -150,8 +143,8 @@ describe('pageData', function () {
       }
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams: {},
@@ -167,7 +160,6 @@ describe('pageData', function () {
     it('skips empty query parameters', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -180,8 +172,8 @@ describe('pageData', function () {
       } as unknown as ReturnType<typeof parse>
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables: {},
         queryParams,
@@ -199,7 +191,6 @@ describe('pageData', function () {
     it('handles mainEntity as IRI template', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -209,8 +200,8 @@ describe('pageData', function () {
       }
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams: {},
@@ -226,7 +217,6 @@ describe('pageData', function () {
     it('handles mainEntity as app namespace template', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
-      const queries = { example: query }
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -236,8 +226,8 @@ describe('pageData', function () {
       }
 
       // when
-      await executeQueries({
-        queries,
+      await executeQuery({
+        query,
         env,
         subjectVariables,
         queryParams: {},
@@ -248,6 +238,36 @@ describe('pageData', function () {
       // then
       const params = query.firstCall.args[0]
       expect(params.get(env.ns.schema.mainEntity)).to.deep.eq(parent.namedNode('http://example.org/app#my-page'))
+    })
+
+    it('rejects when underlying request fails', async function () {
+      // given
+      const stream = new PassThrough({ objectMode: true })
+      const query = sinon.stub().callsFake(async () => {
+        setImmediate(() => {
+          stream.emit('error', new Error('SPARQL Error'))
+        })
+        return stream
+      })
+      const env = new Environment([
+        TestKopflosFactory,
+        mockSparqlFactory(),
+      ], { parent })
+      const subjectVariables = {}
+      const queryParams = {}
+      const pagePatterns: PagePatterns = []
+
+      // when
+      const promise = executeQuery({
+        query,
+        env,
+        subjectVariables,
+        queryParams,
+        pagePatterns,
+      })
+
+      // then
+      await expect(promise).to.be.rejectedWith('SPARQL Error')
     })
   })
 })
