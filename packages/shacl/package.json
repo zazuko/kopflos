@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "chai": "^5.1.2",
-    "mocha-chai-rdf": "^0.1.6",
+    "mocha-chai-rdf": "^0.2",
     "sinon": "^18"
   },
   "mocha": {

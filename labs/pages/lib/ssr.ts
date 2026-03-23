@@ -24,10 +24,10 @@ export type SsrOptions = Parameters<typeof render>[1] & {
 
 interface SsrModule {
   (arg: {
-    kopflos: KopflosConfig
+    mode: KopflosConfig['mode']
     req: HandlerArgs
     html: string
-    options: SsrOptions
+    options?: SsrOptions
     page: Page
   }): Promise<string>
 }
@@ -39,7 +39,7 @@ const serializer = new Serializer();
   includeJSBuiltIns: true,
 })
 
-const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = {} }) => {
+const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} }) => {
   const { head, body } = page
   const { env } = req
 
@@ -91,7 +91,7 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
       }),
     ].join('\n')
 
-    if (kopflos.mode === 'production') {
+    if (mode === 'production') {
       script = (await esbuild.transform(script, {
         minify: true,
         target: 'esnext',

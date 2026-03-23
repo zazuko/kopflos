@@ -25,7 +25,7 @@
     "@kopflos-cms/core": "^0.7.0",
     "@zazuko/env-node": "^3",
     "chai": "^5.1.1",
-    "mocha-chai-rdf": "^0.1.4",
+    "mocha-chai-rdf": "^0.2",
     "tempy": "^3.1.0"
   },
   "mocha": {

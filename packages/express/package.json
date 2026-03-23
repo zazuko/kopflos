@@ -42,7 +42,7 @@
     "co-body": "^6.2.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
-    "mocha-chai-rdf": "^0.1.2",
+    "mocha-chai-rdf": "^0.2",
     "sinon": "^18.0.0",
     "supertest": "^7.1.4"
   },

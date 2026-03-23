@@ -36,7 +36,7 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
 
     const body = await render({
       page,
-      kopflos: this.env.kopflos.config,
+      mode: this.env.kopflos.config.mode,
       req,
       html,
       options: Plugin.ssrOptions,

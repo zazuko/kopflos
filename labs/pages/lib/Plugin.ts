@@ -20,7 +20,7 @@ import type { SsrOptions } from './ssr.js'
 import { toPattern } from './route.js'
 import type { PageData, QueryDescriptor, QueryMap } from './pageData.js'
 
-export interface Page<TQueries extends QueryMap | undefined = undefined> {
+export interface Page<TQueries extends QueryMap | undefined = Record<string, QueryDescriptor | ExecuteConstruct>> {
   mainEntity?: string
   parameters?: Record<string, string>
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
