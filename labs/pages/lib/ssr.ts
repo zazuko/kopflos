@@ -11,8 +11,8 @@ import type { AnyPointer } from 'clownface'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
 import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import type { PageData } from './pageData.js'
-import { executeQueries } from './pageData.js'
+import type { PageData, QueryMap } from './pageData.js'
+import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
 
 const log = createLogger('ssr')
@@ -24,10 +24,10 @@ export type SsrOptions = Parameters<typeof render>[1] & {
 
 interface SsrModule {
   (arg: {
-    kopflos: KopflosConfig
+    mode: KopflosConfig['mode']
     req: HandlerArgs
     html: string
-    options: SsrOptions
+    options?: SsrOptions
     page: Page
   }): Promise<string>
 }
@@ -39,19 +39,30 @@ const serializer = new Serializer();
   includeJSBuiltIns: true,
 })
 
-const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = {} }) => {
+const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} }) => {
   const { head, body } = page
   const { env } = req
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
-  const data = await executeQueries({
-    ...page,
-    pagePatterns,
-    env,
-    subjectVariables: req.subjectVariables,
-    queryParams: req.query,
+  const pendingQueries = Object.entries(page.queries as unknown as QueryMap).map(async ([key, query]) => {
+    const start = performance.now()
+    const result = await executeQuery({
+      ...page,
+      query,
+      pagePatterns,
+      env,
+      subjectVariables: req.subjectVariables,
+      queryParams: req.query,
+    })
+    const end = performance.now()
+    log.info(`Page query ${key} took ${Math.round(end - start)}ms`)
+
+    return [key, result] as const
   })
+
+  const results = await Promise.all(pendingQueries)
+  const data = Object.fromEntries(results)
 
   setLanguages(...req.headers['accept-language'] || [])
 
@@ -80,7 +91,7 @@ const ssr: SsrModule = async ({ kopflos, page, html, req, options: ssrOptions = 
       }),
     ].join('\n')
 
-    if (kopflos.mode === 'production') {
+    if (mode === 'production') {
       script = (await esbuild.transform(script, {
         minify: true,
         target: 'esnext',
