@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-labs/pages",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -27,7 +27,7 @@
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.1",
     "@kopflos-cms/logger": "^0.1.0",
-    "@kopflos-cms/vite": "^0.3.5",
+    "@kopflos-cms/vite": "^0.3.6",
     "@lit-labs/ssr": "^3.0.0",
     "@rdfjs/term-map": "^2.0.2",
     "@rdfjs/serializer-rdfjs": "^0.1.3",
