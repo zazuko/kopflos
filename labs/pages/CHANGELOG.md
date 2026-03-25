@@ -1,5 +1,14 @@
 # @kopflos-labs/pages
 
+## 0.1.2
+
+### Patch Changes
+
+- 6954423: Log page query times
+- b44df93: Trying to improve error handling of executing page queries
+- Updated dependencies [44313db]
+  - @kopflos-cms/vite@0.3.6
+
 ## 0.1.1
 
 ### Patch Changes
