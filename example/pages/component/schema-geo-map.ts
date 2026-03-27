@@ -1,10 +1,10 @@
 import { consumeEnvironment, consumeFocusNode } from 'lit-rdf/mixins.js'
-import { html, isServer, LitElement } from 'lit'
+import { html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
-
-if (!isServer) {
-  import('./maps.js')
-}
+import '@openlayers-elements/core/ol-map.js'
+import '@openlayers-elements/maps/ol-layer-openstreetmap.js'
+import '@openlayers-elements/maps/ol-marker-icon.js'
+import '@openlayers-elements/core/ol-layer-vector.js'
 
 @customElement('schema-geo-map')
 export default class extends consumeEnvironment(consumeFocusNode(LitElement)) {
