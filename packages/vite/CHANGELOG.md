@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.7
+
+### Patch Changes
+
+- 8123fad: Allow vite v7 and v6
+
 ## 0.3.6
 
 ### Patch Changes

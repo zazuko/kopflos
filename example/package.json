@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +17,7 @@
     "@kopflos-cms/express": "0.2.1",
     "@kopflos-cms/serve-file": "0.1.0",
     "@kopflos-cms/shacl": "0.3.1",
-    "@kopflos-cms/vite": "0.3.6",
+    "@kopflos-cms/vite": "0.3.7",
     "@kopflos-labs/handlebars": "0.1.1",
     "@kopflos-labs/lit": "0.1.1",
     "@kopflos-labs/pages": "0.1.2",

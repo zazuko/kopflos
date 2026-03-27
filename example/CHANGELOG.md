@@ -1,5 +1,12 @@
 # example
 
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies [8123fad]
+  - @kopflos-cms/vite@0.3.7
+
 ## 0.0.27
 
 ### Patch Changes
