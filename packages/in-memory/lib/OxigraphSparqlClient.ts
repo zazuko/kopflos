@@ -42,7 +42,7 @@ class OxigraphClient {
   }
 }
 
-class OxigraphStreamClient extends OxigraphClient implements StreamClient {
+export class OxigraphStreamClient extends OxigraphClient implements StreamClient {
   query: StreamClient['query'] = {
     ...this._query,
     construct: (query: string) => {
@@ -56,7 +56,7 @@ class OxigraphStreamClient extends OxigraphClient implements StreamClient {
   }
 }
 
-class OxigraphParsingClient extends OxigraphClient implements ParsingClient {
+export class OxigraphParsingClient extends OxigraphClient implements ParsingClient {
   query: ParsingClient['query'] = {
     ...this._query,
     construct: async (query: string): Promise<DatasetCore> => {
@@ -73,12 +73,5 @@ class OxigraphParsingClient extends OxigraphClient implements ParsingClient {
         return obj
       })
     },
-  }
-}
-
-export function createOxigraphClients(store: oxigraph.Store = new oxigraph.Store()) {
-  return {
-    stream: new OxigraphStreamClient(store),
-    parsed: new OxigraphParsingClient(store),
   }
 }
