@@ -1,10 +1,10 @@
 import { Readable } from 'node:stream'
 import { expect } from 'chai'
 import * as oxigraph from 'oxigraph'
-import { createOxigraphClients } from '../lib/OxigraphSparqlClient.js'
+import { createInMemoryClients } from '../index.js'
 
 describe('@kopflos-cms/in-memory', function () {
-  describe('createOxigraphClients', function () {
+  describe('createInMemoryClients', function () {
     let store: oxigraph.Store
 
     beforeEach(function () {
@@ -13,7 +13,7 @@ describe('@kopflos-cms/in-memory', function () {
 
     it('initializes clients', function () {
       // when
-      const clients = createOxigraphClients(store)
+      const clients = createInMemoryClients(store)
 
       // then
       expect(clients.stream).to.be.ok
@@ -22,7 +22,7 @@ describe('@kopflos-cms/in-memory', function () {
 
     it('can query the store via parsed client', async function () {
       // given
-      const clients = createOxigraphClients(store)
+      const clients = createInMemoryClients(store)
 
       // when
       const result = await clients.parsed.query.select('SELECT * WHERE { ?s ?p ?o }')
@@ -33,7 +33,7 @@ describe('@kopflos-cms/in-memory', function () {
 
     it('can query the store via stream client', async function () {
       // given
-      const clients = createOxigraphClients(store)
+      const clients = createInMemoryClients(store)
 
       // when
       const result = await clients.stream.query.select('SELECT * WHERE { ?s ?p ?o }')
@@ -45,7 +45,7 @@ describe('@kopflos-cms/in-memory', function () {
 
     it('can update the store', async function () {
       // given
-      const clients = createOxigraphClients(store)
+      const clients = createInMemoryClients(store)
       const updateQuery = 'INSERT DATA { <http://example.com/s> <http://example.com/p> <http://example.com/o> }'
 
       // when
@@ -59,7 +59,7 @@ describe('@kopflos-cms/in-memory', function () {
     describe('store', function () {
       it('can put triples into a graph', async function () {
         // given
-        const clients = createOxigraphClients(store)
+        const clients = createInMemoryClients(store)
         const quad = oxigraph.quad(
           oxigraph.namedNode('http://example.com/s'),
           oxigraph.namedNode('http://example.com/p'),
@@ -80,7 +80,7 @@ describe('@kopflos-cms/in-memory', function () {
 
       it('put replaces triples in a graph', async function () {
         // given
-        const clients = createOxigraphClients(store)
+        const clients = createInMemoryClients(store)
         const g = oxigraph.namedNode('http://example.com/g')
         store.add(oxigraph.quad(
           oxigraph.namedNode('http://example.com/old'),
