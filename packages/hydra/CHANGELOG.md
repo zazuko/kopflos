@@ -1,5 +1,11 @@
 # @kopflos-cms/hydra
 
+## 0.2.2
+
+### Patch Changes
+
+- c52a86f: Allow initialization of Hydra plugin without APIs
+
 ## 0.2.1
 
 ### Patch Changes
