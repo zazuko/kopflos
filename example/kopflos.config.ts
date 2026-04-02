@@ -1,23 +1,19 @@
 import * as url from 'node:url'
 import type { KopflosConfig } from '@kopflos-cms/core'
+import { createInMemoryClients } from '@kopflos-cms/in-memory'
 import DeployResources from '@kopflos-cms/plugin-deploy-resources'
-import ExpressMiddleware from '@kopflos-cms/express/middleware' // eslint-disable-line import/no-unresolved
+import ExpressMiddleware from '@kopflos-cms/express/middleware'
 import Vite from '@kopflos-cms/vite'
 import Hydra from '@kopflos-cms/hydra'
 import Shacl from '@kopflos-cms/shacl'
 import PluginPages from '@kopflos-labs/pages'
 
 const baseIri = process.env.API_BASE || 'http://localhost:1429'
-const dbUri = process.env.DB_URI || 'http://localhost:7878'
 
 export default <KopflosConfig>{
   baseIri,
   sparql: {
-    default: {
-      endpointUrl: dbUri + '/query?union-default-graph',
-      updateUrl: dbUri + '/update',
-      storeUrl: dbUri + '/store',
-    },
+    default: createInMemoryClients(),
     lindas: 'https://lindas.admin.ch/query',
   },
   watch: ['lib'],

@@ -1,0 +1,51 @@
+{
+  "name": "@kopflos-cms/in-memory",
+  "description": "In-memory oxigraph store for Kopflos",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts"
+  ],
+  "author": "Zazuko GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "packages/in-memory"
+  },
+  "dependencies": {
+    "@rdfjs/types": "^2",
+    "@zazuko/env-node": "^3",
+    "oxigraph": "^0.5.6",
+    "sparql-http-client": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/chai-as-promised": "^8",
+    "@types/sinon": "^17.0.3",
+    "@types/sinon-chai": "^4",
+    "@types/sparql-http-client": "^3.0.4",
+    "chai": "^5",
+    "chai-as-promised": "^8.0.0",
+    "mocha": "^10",
+    "mocha-chai-rdf": "^0.2",
+    "onetime": "^7.0.0",
+    "sinon": "^18.0.0",
+    "sinon-chai": "^4"
+  },
+  "mocha": {
+    "spec": "test/**/*.test.ts",
+    "extends": "../../package.json"
+  }
+}
