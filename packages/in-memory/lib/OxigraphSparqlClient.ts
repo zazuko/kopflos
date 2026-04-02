@@ -11,9 +11,13 @@ class OxigraphClient {
     this._store = store
   }
 
+  protected _executeQuery<T>(query: string) {
+    return this._store.query(query, { use_default_graph_as_union: true }) as T
+  }
+
   protected _query = {
     ask: async (query: string): Promise<boolean> => {
-      return this._store.query(query) as boolean
+      return this._executeQuery<boolean>(query)
     },
     update: async (query: string): Promise<void> => {
       this._store.update(query)
@@ -46,11 +50,11 @@ export class OxigraphStreamClient extends OxigraphClient implements StreamClient
   query: StreamClient['query'] = {
     ...this._query,
     construct: (query: string) => {
-      const results = this._store.query(query) as Quad[]
+      const results = this._executeQuery<Quad[]>(query)
       return Readable.from(results)
     },
     select: (query: string): Stream & Readable => {
-      const results = this._store.query(query) as Map<string, Term>[]
+      const results = this._executeQuery<Map<string, Term>[]>(query)
       return Readable.from(results)
     },
   }
@@ -60,11 +64,11 @@ export class OxigraphParsingClient extends OxigraphClient implements ParsingClie
   query: ParsingClient['query'] = {
     ...this._query,
     construct: async (query: string): Promise<DatasetCore> => {
-      const quads = this._store.query(query) as Quad[]
+      const quads = this._executeQuery<Quad[]>(query)
       return rdf.dataset(quads)
     },
     select: async (query: string): Promise<Record<string, Term>[]> => {
-      const results = this._store.query(query) as Map<string, Term>[]
+      const results = this._executeQuery<Map<string, Term>[]>(query)
       return results.map(binding => {
         const obj: Record<string, Term> = {}
         for (const [key, value] of binding) {

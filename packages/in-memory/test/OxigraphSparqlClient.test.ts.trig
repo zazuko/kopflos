@@ -1,0 +1,5 @@
+PREFIX ex: <http://example.com/>
+
+graph <ex:g> {
+  ex:s ex:p ex:o .
+}
