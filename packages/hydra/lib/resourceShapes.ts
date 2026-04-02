@@ -1,8 +1,8 @@
 import type { GraphPointer } from 'clownface'
 import type { Kopflos, KopflosEnvironment } from '@kopflos-cms/core'
-import type { Options } from '../index.js'
+import type { NamedNode } from '@rdfjs/types'
 
-export function createDefaultShapes(env: KopflosEnvironment, { apis }: Options) {
+export function createDefaultShapes(env: KopflosEnvironment, apis: Array<NamedNode | string>) {
   const { rdf, kopflos: kl, sh, hydra } = env.ns
 
   // create default collection shape

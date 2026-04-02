@@ -35,9 +35,7 @@ export default <KopflosConfig>{
         },
       },
     }),
-    new Hydra({
-      apis: [baseIri + '/api'],
-    }),
+    new Hydra(),
     new Shacl(),
     new PluginPages({
       ssrOptions: {
