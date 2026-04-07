@@ -1,0 +1,9 @@
+PREFIX schema: <http://schema.org/>
+PREFIX person: <http://localhost:1429/person/>
+
+person:wade {
+  person:wade a person:Person ;
+    schema:name "@wadekelly" ;
+    schema:url <https://twitter.com/wadekelly> ;
+  .
+}

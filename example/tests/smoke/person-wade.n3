@@ -1,0 +1,25 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX earl: <http://www.w3.org/ns/earl#>
+PREFIX tuner: <https://api-tuner.described.at/>
+PREFIX schema: <http://schema.org/>
+PREFIX string: <http://www.w3.org/2000/10/swap/string#>
+
+<#fetchWade>
+  a earl:TestCase ;
+  rdfs:label "Check person:wade is retrieved" ;
+.
+
+<#getWade>
+  a tuner:Request ;
+  tuner:method "GET" ;
+  tuner:url <person/wade> ;
+.
+
+{
+  <#getWade> tuner:response ?res .
+
+  ?res tuner:http_code 200 .
+  ?res tuner:body ( "@wadekelly" string:contains ) .
+} => {
+  <#fetchWade> earl:outcome earl:passed .
+} .

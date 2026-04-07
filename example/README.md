@@ -7,10 +7,10 @@ API inspired by [Read the Plaque](https://readtheplaque.com/).
 1. Start the database:
    ```bash
    docker compose up -d
-   ```   
-2. Start the server in development mode:
+   ```
+3. Start the server in development mode:
    ```bash
-   npx kopflos serve --mode development
+   npm start
    ```
 
 The API is running on http://localhost:1429

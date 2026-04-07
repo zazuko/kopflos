@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "kopflos build",
+    "prestart": "curl http://localhost:7878/store -H 'Content-Type: application/trig' -T people.trig",
     "start": "kopflos serve --mode development --trust-proxy",
     "deploy": "kopflos deploy",
-    "prestart:prod": "npm run build",
+    "prestart:prod": "npm run build && npm run prestart",
     "start:prod": "kopflos serve --trust-proxy",
     "test": "api-tuner tests/smoke/*.n3 --base-iri http://localhost:1429/"
   },

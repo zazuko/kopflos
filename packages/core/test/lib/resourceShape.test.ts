@@ -156,5 +156,24 @@ describe('lib/resourceShape', function () {
         expect(more).to.be.empty
       })
     })
+
+    context('when endpoint is specified', function () {
+      it('returns endpoint name', async function () {
+        // given
+        const kopflos = new Kopflos(options)
+
+        // when
+        const results = await defaultResourceShapeLookup(ex.bar, kopflos)
+
+        // then
+        expect(results[0]).to.deep.contain({
+          api: ex.api,
+          resourceShape: ex.barShape,
+          subject: ex.bar,
+          endpoint: rdf.literal('other'),
+        })
+        expect(results).to.have.length(1)
+      })
+    })
   })
 })

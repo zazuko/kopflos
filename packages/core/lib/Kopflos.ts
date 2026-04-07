@@ -193,7 +193,7 @@ export default class Impl implements Kopflos {
     if (isResponse(loader)) {
       return loader
     }
-    const coreRepresentation = loader(resourceShapeMatch.subject, this)
+    const coreRepresentation = loader(resourceShapeMatch, this)
     const handlerChain = await this.loadHandlerChain(req.method, resourceShapeMatch, coreRepresentation)
     if (isResponse(handlerChain)) {
       return handlerChain

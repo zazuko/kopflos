@@ -78,3 +78,14 @@ GRAPH <default-resource-shape-lookup/when-resource-is-matched-against-pattern> {
     kopflos:api ex:api ;
   .
 }
+
+GRAPH <default-resource-shape-lookup/when-endpoint-is-specified> {
+  ex:api a kopflos:Api .
+
+  ex:barShape
+    a kopflos:ResourceShape ;
+    sh:targetNode ex:bar ;
+    kopflos:api ex:api ;
+    kopflos:endpoint "other" ;
+  .
+}

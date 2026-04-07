@@ -3,24 +3,44 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kl: <https://kopflos.described.at/>
 
-SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object ?pattern {
+SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object ?pattern ?endpoint {
+  VALUES (?endpoint ?endpointUrl) {
+    ("lindas" <https://lindas.admin.ch/query>)
+  }
+
   {
-    VALUES ?subject { sh:this }
-    ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape .
     ?resourceShape
       a kl:ResourceShape ;
       kl:api ?api .
+    OPTIONAL { ?resourceShape kl:endpoint ?endpoint }
+    {
+      VALUES ?subject { sh:this }
+      ?subject ^sh:targetNode | (rdf:type / rdfs:subClassOf* / ^sh:targetClass) ?resourceShape .
+    } UNION {
+      SERVICE SILENT ?endpointUrl {
+        VALUES ?subject { sh:this }
+        ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape .
+      }
+    }
   } UNION {
-    VALUES ?object { sh:this }
-    ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape ;
-      ?property ?object .
     ?resourceShape
       a kl:ResourceShape ;
       sh:property/sh:path ?property ;
       kl:api ?api .
+    OPTIONAL { ?resourceShape kl:endpoint ?endpoint }
+    {
+      VALUES ?object { sh:this }
+      ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape ;
+        ?property ?object .
+    } UNION {
+      SERVICE SILENT ?endpointUrl {
+        VALUES ?object { sh:this }
+        ?subject ^sh:targetNode|(rdf:type/rdfs:subClassOf*/^sh:targetClass) ?resourceShape ;
+          ?property ?object .
+      }
+    }
   } UNION {
     # TODO: move patterned targets to a plugin
-    VALUES ?subject { sh:this }
     ?resourceShape
       a kl:ResourceShape ;
       kl:api ?api ;
@@ -29,7 +49,18 @@ SELECT DISTINCT ?api ?resourceShape ?subject ?property ?object ?pattern {
           a kl:PatternedTarget ;
           kl:regex ?pattern ;
         ] .
+    OPTIONAL { ?resourceShape kl:endpoint ?endpoint }
 
-    FILTER (regex(str(?subject), ?pattern, "i"))
+    {
+      VALUES ?subject { sh:this }
+      FILTER (regex(str(?subject), ?pattern, "i"))
+    } UNION {
+      SERVICE SILENT ?endpointUrl {
+        VALUES ?subject { sh:this }
+        FILTER (regex(str(?subject), ?pattern, "i"))
+      }
+    }
   }
+
+  FILTER(bound(?subject))
 }

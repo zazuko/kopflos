@@ -1,6 +1,6 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import type { NamedNode } from '@rdfjs/types'
+import type { Literal, NamedNode } from '@rdfjs/types'
 import type { Kopflos, KopflosResponse } from './Kopflos.js'
 import log from './log.js'
 
@@ -8,6 +8,7 @@ export interface ResourceShapeSubjectMatch {
   api: NamedNode
   resourceShape: NamedNode
   subject: NamedNode
+  endpoint?: Literal
 }
 
 export interface ResourceShapePatternMatch {
@@ -16,6 +17,7 @@ export interface ResourceShapePatternMatch {
   subject: NamedNode
   pattern: string
   subjectVariables: Map<string, string>
+  endpoint?: Literal
 }
 
 export interface ResourceShapeObjectMatch {
@@ -24,6 +26,7 @@ export interface ResourceShapeObjectMatch {
   subject: NamedNode
   property: NamedNode
   object: NamedNode
+  endpoint?: Literal
 }
 
 export type ResourceShapeMatch = ResourceShapeSubjectMatch | ResourceShapeObjectMatch | ResourceShapePatternMatch

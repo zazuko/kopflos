@@ -14,6 +14,7 @@ export default <KopflosConfig>{
   baseIri,
   sparql: {
     default: createInMemoryClients(),
+    people: 'http://localhost:7878/query?union-default-graph',
     lindas: 'https://lindas.admin.ch/query',
   },
   watch: ['lib'],
