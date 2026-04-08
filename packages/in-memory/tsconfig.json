@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "."
+  },
+  "files": [
+    "index.ts",
+    "lib/OxigraphSparqlClient.ts"
+  ]
+}

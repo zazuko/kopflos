@@ -1,4 +1,5 @@
 import { finished } from 'node:stream/promises'
+import type { Readable } from 'node:stream'
 import type { HandlerArgs } from '@kopflos-cms/core'
 import type { ExecuteConstruct } from 'sparqlc'
 import TermMap from '@rdfjs/term-map'
@@ -15,6 +16,10 @@ import type { Bindings as PagePatternsRow } from '../queries/page-patterns.rq'
 import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
 import { fillTemplate } from './pageParameters.js'
+
+declare module '@rdfjs/types' {
+  interface Stream extends Readable {}
+}
 
 export type PageData = Record<string, AnyPointer | DatasetCore>
 
