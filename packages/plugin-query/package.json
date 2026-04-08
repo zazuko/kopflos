@@ -6,7 +6,9 @@
   "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "tsc",
+    "prepack": "npm run build"
   },
   "mocha": {
     "spec": "test/**/*.test.ts",

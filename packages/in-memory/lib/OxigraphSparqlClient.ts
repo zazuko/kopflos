@@ -5,6 +5,10 @@ import type { DatasetCore, Quad, Stream, Term } from '@rdfjs/types'
 import rdf from '@zazuko/env-node'
 import * as oxigraph from 'oxigraph'
 
+declare module '@rdfjs/types' {
+  interface Stream extends AsyncIterable<Quad> {}
+}
+
 class OxigraphClient {
   protected _store: oxigraph.Store
   constructor(store: oxigraph.Store) {
