@@ -23,7 +23,7 @@
     "@types/debug": "^4.1.12",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20",
-    "@types/readable-stream": "^4.0.15",
+    "@types/readable-stream": "^4.0.23",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
     "anylogger-console": "^1.0.0",

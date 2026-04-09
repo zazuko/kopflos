@@ -59,7 +59,14 @@ export class OxigraphStreamClient extends OxigraphClient implements StreamClient
     },
     select: (query: string): Stream & Readable => {
       const results = this._executeQuery<Map<string, Term>[]>(query)
-      return Readable.from(results)
+      const bindings = results.map(binding => {
+        const obj: Record<string, Term> = {}
+        for (const [key, value] of binding) {
+          obj[key] = value
+        }
+        return obj
+      })
+      return Readable.from(bindings)
     },
   }
 }
