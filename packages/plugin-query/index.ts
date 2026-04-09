@@ -3,31 +3,13 @@ import express from 'express'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import type Kopflos from '@kopflos-cms/core'
 import { createProxyMiddleware } from 'http-proxy-middleware'
-import type { Term } from '@rdfjs/types'
-
-function serializeTerm(term: Term) {
-  if (term.termType === 'NamedNode') {
-    return { type: 'uri', value: term.value }
-  }
-  if (term.termType === 'BlankNode') {
-    return { type: 'bnode', value: term.value }
-  }
-  if (term.termType === 'Literal') {
-    return {
-      type: 'literal',
-      value: term.value,
-      datatype: term.datatype.value,
-      'xml:lang': term.language || undefined,
-    }
-  }
-  return { type: 'unknown', value: term.value }
-}
+import { getQueryType, handleAsk, handleConstruct, handleSelect } from './lib/handlers.js'
 
 export default class QueryPlugin implements KopflosPlugin {
   public readonly name = '@kopflos-cms/plugin-query'
 
   beforeMiddleware(router: Router, kopflos: Kopflos) {
-    const { sparql } = kopflos.env
+    const { sparql, formats } = kopflos.env
 
     router.get('/-/query', (req, res) => {
       const endpoints = Object.keys(sparql).map(name => ({
@@ -81,21 +63,18 @@ export default class QueryPlugin implements KopflosPlugin {
           }
 
           try {
-            const accept = req.headers.accept || 'application/sparql-results+json'
-            if (accept.includes('application/sparql-results+json') || accept.includes('application/json')) {
-              const results = await clients.parsed.query.select(query)
-              const bindings = results.map(binding => {
-                return Object.fromEntries(
-                  Object.entries(binding).map(([key, term]) => [key, serializeTerm(term)]),
-                )
-              })
-              res.json({
-                head: { vars: Object.keys(results[0] || {}) },
-                results: { bindings },
-              })
-            } else {
-              // TODO: handle other formats if needed
-              res.status(406).send('Not Acceptable')
+            const q = String(query)
+            const type = getQueryType(q)
+
+            switch (type) {
+              case 'SELECT':
+                return await handleSelect(q, clients, res)
+              case 'ASK':
+                return await handleAsk(q, clients, res)
+              case 'CONSTRUCT':
+                return await handleConstruct(q, clients, formats, req, res)
+              default:
+                res.status(400).send('Unsupported or unknown query form')
             }
           } catch (e: unknown) {
             next(e)
