@@ -5,7 +5,9 @@ import rdf from '@zazuko/env-node'
 import kopflos from '@kopflos-cms/express'
 import ParsingClient from 'sparql-http-client/ParsingClient.js'
 import StreamClient from 'sparql-http-client/StreamClient.js'
+import { createInMemoryClients } from '@kopflos-cms/in-memory'
 import QueryPlugin from '../index.js'
+import { getVariables } from '../lib/getQueryType.js'
 
 describe('@kopflos-cms/plugin-query', function () {
   let app: express.Express
@@ -97,5 +99,77 @@ describe('@kopflos-cms/plugin-query', function () {
     expect(response.body.head.vars).to.contain('s')
     expect(response.body.results.bindings[0].s.type).to.equal('literal')
     expect(response.body.results.bindings[0].s.value).to.equal('1')
+  })
+
+  describe('SelectResultsTransform bug reproduction', function () {
+    it('should include all variables in the header even if they are missing in the first result', async function () {
+      const inMemory = createInMemoryClients()
+
+      const { middleware } = await kopflos({
+        baseIri: 'http://example.org/',
+        sparql: {
+          default: inMemory,
+        },
+        plugins: [new QueryPlugin()],
+      })
+
+      const app = express().use(middleware)
+
+      // Query that has ?a and ?b. First row has ?b, second row has ?a and ?b.
+      const query = `
+        SELECT ?a ?b WHERE {
+          { BIND("1" as ?b) }
+          UNION
+          { BIND("2" as ?a) BIND("2" as ?b) }
+        }
+      `
+
+      const response = await request(app)
+        .post('/-/query/default')
+        .send({ query })
+        .set('accept', 'application/sparql-results+json')
+        .set('content-type', 'application/json')
+
+      expect(response.status).to.equal(200)
+      expect(response.body.head.vars).to.have.members(['a', 'b'])
+      expect(response.body.results.bindings).to.have.lengthOf(2)
+    })
+  })
+
+  describe('getVariables', function () {
+    it('returns all variables for SELECT *', function () {
+      const q = 'SELECT * WHERE { ?s ?p ?o . ?s <http://example.org/name> ?name }'
+      const variables = getVariables(q)
+
+      expect(variables).to.have.members(['s', 'p', 'o', 'name'])
+    })
+
+    it('returns variables from BIND and UNION', function () {
+      const q = 'SELECT * WHERE { { ?s ?p ?o } UNION { BIND("foo" as ?bar) } }'
+      const variables = getVariables(q)
+
+      expect(variables).to.have.members(['s', 'p', 'o', 'bar'])
+    })
+
+    it('returns variables from GRAPH and OPTIONAL', function () {
+      const q = 'SELECT * WHERE { GRAPH ?g { OPTIONAL { ?s ?p ?o } } }'
+      const variables = getVariables(q)
+
+      expect(variables).to.have.members(['g', 's', 'p', 'o'])
+    })
+
+    it('returns variables from VALUES', function () {
+      const q = 'SELECT * WHERE { VALUES ?v { 1 2 } }'
+      const variables = getVariables(q)
+
+      expect(variables).to.have.members(['v'])
+    })
+
+    it('returns only explicit variables for SELECT ?s', function () {
+      const q = 'SELECT ?s WHERE { ?s ?p ?o }'
+      const variables = getVariables(q)
+
+      expect(variables).to.deep.equal(['s'])
+    })
   })
 })
