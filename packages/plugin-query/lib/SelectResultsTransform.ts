@@ -6,13 +6,13 @@ import { serializeTerm } from './serializeTerm.js'
 export class SelectResultsTransform extends Transform {
   private _first = true
 
-  constructor() {
+  constructor(private readonly variables: string[]) {
     super({ objectMode: true })
   }
 
   _transform(chunk: Record<string, Term>, encoding: BufferEncoding, callback: TransformCallback) {
     if (this._first) {
-      this.push('{"head":{"vars":' + JSON.stringify(Object.keys(chunk)) + '},"results":{"bindings":[')
+      this.push('{"head":{"vars":' + JSON.stringify(this.variables) + '},"results":{"bindings":[')
       this._first = false
     } else {
       this.push(',')

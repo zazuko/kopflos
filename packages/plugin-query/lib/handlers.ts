@@ -5,7 +5,7 @@ import type { StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { KopflosEnvironment } from '@kopflos-cms/core'
 import accepts from 'accepts'
 import { SelectResultsTransform } from './SelectResultsTransform.js'
-import { getQueryType } from './getQueryType.js'
+import { getQueryType, getVariables } from './getQueryType.js'
 
 export interface SparqlClients {
   stream: StreamClient
@@ -16,7 +16,9 @@ type Formats = KopflosEnvironment['formats']
 
 export async function handleSelect(q: string, clients: SparqlClients, res: Response) {
   res.type('application/sparql-results+json')
-  clients.stream.query.select(q).pipe(new SelectResultsTransform()).pipe(res)
+  clients.stream.query.select(q)
+    .pipe(new SelectResultsTransform(getVariables(q)))
+    .pipe(res)
 }
 
 export async function handleAsk(q: string, clients: SparqlClients, res: Response) {
