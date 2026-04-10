@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/plugin-query",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "index.js",
   "module": "index.js",
