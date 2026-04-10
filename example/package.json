@@ -15,6 +15,7 @@
     "@kopflos-cms/hydra": "0.2.2",
     "@kopflos-cms/in-memory": "0.1.0",
     "@kopflos-cms/plugin-deploy-resources": "0.2.2",
+    "@kopflos-cms/plugin-query": "0.0.0",
     "@kopflos-cms/express": "0.2.1",
     "@kopflos-cms/serve-file": "0.1.0",
     "@kopflos-cms/shacl": "0.3.1",

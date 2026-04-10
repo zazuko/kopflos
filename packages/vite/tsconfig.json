@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "."
+  },
+  "files": [
+    "index.ts",
+    "template.ts",
+    "vite.config.ts",
+    "lib/config.ts"
+  ]
+}

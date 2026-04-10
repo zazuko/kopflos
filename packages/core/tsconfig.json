@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "."
+  },
+  "files": [
+    "index.ts",
+    "handlers.ts",
+    "ns.ts",
+    "resourceLoaders.ts"
+  ],
+  "include": [
+    "lib",
+    "plugin"
+  ]
+}
