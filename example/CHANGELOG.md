@@ -1,5 +1,12 @@
 # example
 
+## 0.0.31
+
+### Patch Changes
+
+- Updated dependencies [d6a897c]
+  - @kopflos-cms/plugin-query@0.1.0
+
 ## 0.0.30
 
 ### Patch Changes
