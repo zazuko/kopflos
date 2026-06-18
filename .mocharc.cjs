@@ -1,6 +1,6 @@
 module.exports = {
   extensions: [
-    'ts'
+    'ts',
   ],
-  require: ["tsx", require.resolve("./mocha-setup.js")]
+  require: ["tsx", require.resolve("./mocha-setup.js")],
 }

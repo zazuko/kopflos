@@ -1,7 +1,6 @@
 import express from 'express'
 import request from 'supertest'
 import { expect } from 'chai'
-import rdf from '@zazuko/env-node'
 import kopflos from '@kopflos-cms/express'
 import ParsingClient from 'sparql-http-client/ParsingClient.js'
 import StreamClient from 'sparql-http-client/StreamClient.js'
@@ -11,7 +10,6 @@ describe('@kopflos-cms/plugin-query', function () {
   let app: express.Express
 
   beforeEach(async function () {
-    const dataset = rdf.dataset()
     const sparql = {
       default: {
         parsed: new ParsingClient({ endpointUrl: 'http://example.org/sparql' }),
@@ -62,7 +60,7 @@ describe('@kopflos-cms/plugin-query', function () {
         .timeout(1000)
 
       expect(response.status).to.not.equal(404)
-    } catch (e) {
+    } catch {
       // ignore timeout/connection errors
     }
   })

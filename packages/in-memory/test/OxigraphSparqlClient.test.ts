@@ -57,7 +57,6 @@ describe('@kopflos-cms/in-memory', function () {
     it('queries named graphs via union default graph', async function () {
       // given
       const clients = createInMemoryClients(this.rdf.store)
-      const g = oxigraph.namedNode('http://example.com/g')
 
       // when
       const result = await clients.parsed.query.select('SELECT * WHERE { ?s ?p ?o }')

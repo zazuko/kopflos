@@ -2,7 +2,6 @@ import ConstraintComponent, {
   type Parameters,
   type PropertyShape,
 } from '@hydrofoil/shape-to-query/model/constraint/ConstraintComponent.js'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import { hydra } from '@tpluscode/rdf-ns-builders'
 import type { NamedNode, Term } from '@rdfjs/types'

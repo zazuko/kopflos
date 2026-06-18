@@ -4,7 +4,6 @@ import type { Handler, Kopflos } from '@kopflos-cms/core'
 import { log } from '@kopflos-cms/core'
 import { constructQuery } from '@hydrofoil/shape-to-query'
 import constraints from '@hydrofoil/shape-to-query/constraints.js'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import error from 'http-errors'
 import { ASK } from '@tpluscode/sparql-builder'

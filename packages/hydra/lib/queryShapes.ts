@@ -4,7 +4,6 @@ import type ClownfaceFactory from 'clownface/Factory.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import { s2q } from '@hydrofoil/shape-to-query'
 import { isGraphPointer } from 'is-graph-pointer'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import { log } from '@kopflos-cms/core'
 import type { DatasetCoreFactory } from '@rdfjs/types'

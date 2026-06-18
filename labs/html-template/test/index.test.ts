@@ -1,7 +1,7 @@
 import sinon from 'sinon'
 import { expect, use } from 'chai'
 import type { HandlerArgs } from '@kopflos-cms/core'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import rdf from '@zazuko/env-node'
 import type { AnyPointer } from 'clownface'
 import snapshots from 'mocha-chai-rdf/snapshots.js'

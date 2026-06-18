@@ -1,4 +1,4 @@
-function parametrised (foo, barbaz) {
+function parametrised(foo, barbaz) {
   return function () {
     return {
       status: 200,
