@@ -20,7 +20,7 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "http-proxy-middleware": "^3.0.3"
+    "http-proxy-middleware": "^3.0.7"
   },
   "devDependencies": {
     "@kopflos-cms/core": "file:../core",
