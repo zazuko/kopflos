@@ -41,7 +41,7 @@ export const getOpenStyles = async () => {
         adoptables.set(sheet, adoptable)
       }
       sheets.push(adoptable)
-    } catch (e) {
+    } catch {
       elements.push(sheet.ownerNode!.cloneNode(true) as unknown as Element)
     }
   }))

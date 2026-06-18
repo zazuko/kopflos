@@ -1,6 +1,6 @@
 import log from '@kopflos-cms/logger'
 import PluginDeployResources from '@kopflos-cms/plugin-deploy-resources'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import { loadConfig } from '../config.js'
 
 interface DeployArgs {

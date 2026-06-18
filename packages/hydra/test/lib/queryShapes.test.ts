@@ -4,7 +4,6 @@ import snapshots from 'mocha-chai-rdf/snapshots.js'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import type { DatasetCore } from '@rdfjs/types'
 import formatsPretty from '@rdfjs-elements/formats-pretty'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import { memberQueryShape, totalsQueryShape } from '../../lib/queryShapes.js'
 import { ex } from '../../../testing-helpers/ns.js'

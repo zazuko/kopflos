@@ -5,7 +5,7 @@ import url from 'node:url'
 import { glob } from 'glob'
 import { expect, use } from 'chai'
 import type { Kopflos, KopflosEnvironment } from '@kopflos-cms/core'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-extraneous-dependencies
+import { createEnv } from '@kopflos-cms/core/env.js'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
 import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import formatsPretty from '@rdfjs-elements/formats-pretty'

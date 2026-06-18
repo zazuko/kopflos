@@ -1,6 +1,6 @@
 import { dirname } from 'node:path'
 import log from '@kopflos-cms/logger'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import { loadConfig } from '../config.js'
 
 interface BuildArgs {

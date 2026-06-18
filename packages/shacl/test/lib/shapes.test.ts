@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
-// eslint-disable-next-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { loadShapesGraph } from '../../lib/shapes.js'

@@ -1,7 +1,7 @@
 import * as fs from 'node:fs'
 import { Readable } from 'node:stream'
 import type { Handler } from '@kopflos-cms/core'
-import mime from 'mime' // eslint-disable-line import/default
+import mime from 'mime'
 
 interface Options {
   path: string

@@ -2,10 +2,8 @@ import type { HandlerArgs, KopflosEnvironment, Plugins } from '@kopflos-cms/core
 import { expect } from 'chai'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import sinon from 'sinon'
-// eslint-disable-next-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js'
 import Kopflos from '@kopflos-cms/core'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import ShaclDecorator from '../../lib/decorator.js'
 import { ex } from '../../../testing-helpers/ns.js'

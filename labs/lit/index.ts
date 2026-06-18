@@ -6,8 +6,8 @@ import { collectResultSync } from '@lit-labs/ssr/lib/render-result.js'
 import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 
-export function ssr(...modules: string[]): Handler {
-  return async ({ env }, response) => {
+export function ssr(): Handler {
+  return async (_, response) => {
     if (!response) {
       throw new Error('No previous handler in chain')
     }
