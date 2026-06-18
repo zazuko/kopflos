@@ -35,7 +35,7 @@
     "@webcomponents/template-shadowroot": "^0.2.1",
     "@zazuko/prefixes": "^2.6.1",
     "cheerio": "^1.2.0",
-    "esbuild": ">=0.17.0",
+    "esbuild": ">=0.28.1",
     "glob": "11.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.1.1",
