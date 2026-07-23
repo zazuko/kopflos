@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.7.2
+
+### Patch Changes
+
+- 2bcb284: Ensure all files are compiled
+
 ## 0.7.1
 
 ### Patch Changes

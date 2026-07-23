@@ -1,5 +1,16 @@
 # example
 
+## 0.0.34
+
+### Patch Changes
+
+- Updated dependencies [2bcb284]
+- Updated dependencies [ebe312f]
+  - @kopflos-labs/handlebars@0.1.2
+  - @kopflos-cms/hydra@0.2.3
+  - @kopflos-cms/shacl@0.3.2
+  - kopflos@0.1.12
+
 ## 0.0.33
 
 ### Patch Changes

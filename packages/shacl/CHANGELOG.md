@@ -1,5 +1,13 @@
 # @kopflos-cms/shacl
 
+## 0.3.2
+
+### Patch Changes
+
+- 2bcb284: Ensure all files are compiled
+- Updated dependencies [2bcb284]
+  - @kopflos-cms/core@0.7.2
+
 ## 0.3.1
 
 ### Patch Changes
