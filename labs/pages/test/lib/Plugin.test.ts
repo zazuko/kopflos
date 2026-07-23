@@ -110,7 +110,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
 
       const [clientJs] = await glob('test/fixtures/pages/client/assets/test-page-*.js', { cwd: buildDir, absolute: true })
       const clientJsContent = await fs.readFile(clientJs, 'utf-8')
-      expect(clientJsContent).to.contain('console.log("test-page.client.ts")')
+      expect(clientJsContent).to.match(/console\.log\(['"`]test-page\.client\.ts['"`]\)/)
     })
   })
 })
