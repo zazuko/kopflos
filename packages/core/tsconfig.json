@@ -3,13 +3,13 @@
   "compilerOptions": {
     "outDir": "."
   },
-  "files": [
+  "exclude": [
+  ],
+  "include": [
     "index.ts",
     "handlers.ts",
     "ns.ts",
-    "resourceLoaders.ts"
-  ],
-  "include": [
+    "resourceLoaders.ts",
     "lib",
     "plugin"
   ]

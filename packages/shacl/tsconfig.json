@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "."
   },
-  "files": [
-    "index.ts"
+  "exclude": [
   ],
   "include": [
+    "index.ts",
     "lib"
   ]
 }
