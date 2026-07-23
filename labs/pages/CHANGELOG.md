@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.1.4
+
+### Patch Changes
+
+- f4f9e47: `runtime` directory was not included in the build
+
 ## 0.1.3
 
 ### Patch Changes
