@@ -138,7 +138,7 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
     }
   }
 
-  Renderer.renderOptions.push(element => {
+  LitElementRenderer.renderOptions.push(element => {
     const connectedCallbackAllowed = !options.allowConnectedCallback || allowConnectedCallback.some((regex) => regex.test(element.localName))
     const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some((regex) => regex.test(element.localName))
 

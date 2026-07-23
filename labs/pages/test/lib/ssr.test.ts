@@ -6,6 +6,7 @@ import { createServer } from 'vite'
 import { createEnv } from '@kopflos-cms/core/env.js'
 import { streamClient, parsingClient } from 'mocha-chai-rdf/sparql-clients.js'
 import { createEmpty } from 'mocha-chai-rdf/store.js'
+import { LitElementRenderer } from '@lit-labs/ssr/lib/lit-element-renderer.js';
 import ssr from '../../lib/ssr.js'
 import type { Page } from '../../lib/Plugin.js'
 
@@ -15,6 +16,10 @@ describe('ssr', function () {
   let vite: ViteDevServer
 
   beforeEach(createEmpty)
+
+  beforeEach(() => {
+    LitElementRenderer.renderOptions.splice(0)
+  })
 
   beforeEach(function () {
     env = createEnv({
