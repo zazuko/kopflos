@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.2.0
+
+### Minor Changes
+
+- 06fc9ca: Updated `@lit-labs/ssr` to v4.1
+
 ## 0.1.4
 
 ### Patch Changes
