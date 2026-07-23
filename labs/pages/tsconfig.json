@@ -3,13 +3,12 @@
   "compilerOptions": {
     "outDir": "."
   },
-  "files": [
+  "include": [
     "index.ts",
     "handler.ts",
-    "shadow.ts"
-  ],
-  "include": [
+    "shadow.ts",
     "lib",
     "runtime"
-  ]
+  ],
+  "exclude": []
 }
