@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.8
+
+### Patch Changes
+
+- 7da764f: Extend vite range to include v8
+
 ## 0.3.7
 
 ### Patch Changes
