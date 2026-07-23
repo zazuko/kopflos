@@ -146,11 +146,10 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
       return super.connectedCallback()
     }
 
-    * renderShadow(ri: RenderInfo) {
+    renderShadow(ri: RenderInfo) {
       const shadow = super.renderShadow(ri)
 
-      yield '<open-styles></open-styles>'
-      yield * shadow
+      return ['<open-styles></open-styles>', ...shadow || []]
     }
   }
 
