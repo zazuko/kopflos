@@ -147,6 +147,48 @@ describe('ssr', function () {
     expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: true')
   })
 
+  it('does not call connectedCallback when disabled', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
+
+    const template = '<html><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {
+        disallowConnectedCallback: ['test-element']
+      }
+    })
+
+    // then
+    expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: false')
+  })
+
+  it('does not call connectedCallback when not explicitly enabled', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
+
+    const template = '<html><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {
+        allowConnectedCallback: []
+      }
+    })
+
+    // then
+    expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: false')
+  })
+
   it('minifies script in production mode', async function () {
     // given
     const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-fooPage.js')).default

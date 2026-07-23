@@ -139,7 +139,7 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
   }
 
   Renderer.renderOptions.push(element => {
-    const connectedCallbackAllowed = allowConnectedCallback.length === 0 || allowConnectedCallback.some((regex) => regex.test(element.localName))
+    const connectedCallbackAllowed = !options.allowConnectedCallback || allowConnectedCallback.some((regex) => regex.test(element.localName))
     const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some((regex) => regex.test(element.localName))
 
     return {
