@@ -1,5 +1,13 @@
 # @kopflos-labs/pages
 
+## 0.1.3
+
+### Patch Changes
+
+- 7da764f: Extend vite range to include v8
+- Updated dependencies [7da764f]
+  - @kopflos-cms/vite@0.3.8
+
 ## 0.1.2
 
 ### Patch Changes
