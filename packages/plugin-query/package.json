@@ -37,7 +37,7 @@
     "tsx": "^4.19.3"
   },
   "peerDependencies": {
-    "@kopflos-cms/core": "^0.7.1",
+    "@kopflos-cms/core": "^0.7.2",
     "@kopflos-cms/express": "^0.2.1",
     "express": "^5"
   }
