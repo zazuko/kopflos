@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.2.1
+
+### Patch Changes
+
+- 7738d66: Using new method for controlling `connectedCallback` in SSR
+
 ## 0.2.0
 
 ### Minor Changes
