@@ -50,11 +50,12 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
         // when
         await new Plugin({
           paths: [],
+          cwd: import.meta.dirname
         }).onStart(env)
       })
 
-      it('does nothing', function () {
-        expect(this.rdf.dataset.match(null, null, null, ex())).to.have.property('size', 0)
+      it('uses default path', function () {
+        expect(this.rdf.dataset).to.have.property('size').gt(0)
       })
     })
 
@@ -75,7 +76,8 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
       beforeEach(async function () {
         // when
         await new Plugin({
-          paths: [url.fileURLToPath(new URL('resources', import.meta.url))],
+          paths: ['resources'],
+          cwd: import.meta.dirname
         }).onStart(env)
       })
 
