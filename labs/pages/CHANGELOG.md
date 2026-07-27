@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.2.2
+
+### Patch Changes
+
+- ab59491: Gracefully handle pages without `.html.ts` server module
+- ee7aea7: Fix exception thrown when page queries are not provided
+
 ## 0.2.1
 
 ### Patch Changes
