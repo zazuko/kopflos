@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises'
 import { resolve } from 'node:path'
-import type { Kopflos, SubjectHandler } from '@kopflos-cms/core'
+import type {Kopflos, SubjectHandler} from '@kopflos-cms/core';
+import { log} from '@kopflos-cms/core'
 import render from './lib/ssr.js'
 import type { Page } from './lib/Plugin.js'
 
@@ -21,7 +22,12 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
       const template = await fs.readFile(templatePathAbsolute).then(buf => buf.toString())
       html = await viteDevServer.transformIndexHtml(subjectPath, template, templatePathAbsolute)
       const pageModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, modulePath))
-      await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, serverPath))
+      const serverModulePath = resolve(basePath, Plugin.path, serverPath)
+      await fs.access(serverModulePath)
+        .then(() => viteDevServer.ssrLoadModule(serverModulePath))
+        .catch(() => {
+          log.debug(`Server module not found: ${serverModulePath}`)
+        })
       page = pageModule.default
     } else {
       const outDir = resolve(basePath, buildDir, Plugin.path)
@@ -30,7 +36,12 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
 
       html = await fs.readFile(resolve(clientDir, templatePath)).then(buf => buf.toString())
       const pageModule = await import(resolve(serverDir, modulePath).replace('.ts', '.js'))
-      await import(resolve(serverDir, serverPath).replace('.ts', '.js'))
+      const serverModulePath = resolve(serverDir, serverPath).replace('.ts', '.js')
+      await fs.access(serverModulePath)
+        .catch(() => {
+          log.debug(`Server module not found: ${serverModulePath}`)
+        })
+      await import(serverModulePath)
       page = pageModule.default
     }
 
