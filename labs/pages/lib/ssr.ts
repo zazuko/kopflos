@@ -11,7 +11,7 @@ import type { AnyPointer } from 'clownface'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
 import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import type { PageData, QueryMap } from './pageData.js'
+import type { PageData } from './pageData.js'
 import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
 
@@ -45,7 +45,7 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
-  const pendingQueries = Object.entries(page.queries as unknown as QueryMap).map(async ([key, query]) => {
+  const pendingQueries = Object.entries(page.queries || {}).map(async ([key, query]) => {
     const start = performance.now()
     const result = await executeQuery({
       ...page,
