@@ -1,5 +1,15 @@
 # example
 
+## 0.0.37
+
+### Patch Changes
+
+- Updated dependencies [8e6cf13]
+- Updated dependencies [ab59491]
+- Updated dependencies [ee7aea7]
+  - @kopflos-cms/plugin-deploy-resources@0.2.3
+  - @kopflos-labs/pages@0.2.2
+
 ## 0.0.36
 
 ### Patch Changes
