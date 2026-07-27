@@ -5,11 +5,13 @@ import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
 import { createLogger } from '@kopflos-cms/logger'
 import * as chokidar from 'chokidar'
 import type { DatasetCore, Stream } from '@rdfjs/types'
+import { resolve } from 'node:path'
 
 interface Options {
   enabled?: boolean
   paths?: string[]
   watch?: boolean
+  cwd?: string
 }
 
 interface DeployResourcesPlugin extends KopflosPlugin {
@@ -33,13 +35,20 @@ export default class implements DeployResourcesPlugin {
   public readonly paths: string[]
   private readonly enabled: boolean
   private readonly watch: boolean
+  private readonly cwd: string
 
   public readonly name = '@kopflos-cms/plugin-deploy-resources'
 
-  constructor({ paths = [], enabled = true, watch = true }: Options = {}) {
+  private get pathsEffective() {
+    return (this.paths.length ? this.paths : ['resources'])
+      .map(path => resolve(this.cwd, path))
+  }
+
+  constructor({ paths = [], enabled = true, watch = true, cwd = process.cwd() }: Options = {}) {
     this.paths = paths
     this.enabled = enabled
     this.watch = watch
+    this.cwd = cwd
   }
 
   onStart(instance: Kopflos) {
@@ -49,11 +58,10 @@ export default class implements DeployResourcesPlugin {
     }
 
     if (!this.paths.length) {
-      log.info('No resource paths specified. Skipping deployment')
-      return
+      log.info('No resource paths specified. Using default path')
     }
 
-    log.info(`Auto deploy enabled. Deploying from: ${this.paths}`)
+    log.info(`Auto deploy enabled. Deploying from: ${this.pathsEffective}`)
 
     if (this.watch && instance.env.kopflos.config.watch) {
       const redeploy = async (changedFile: string) => {
@@ -63,7 +71,7 @@ export default class implements DeployResourcesPlugin {
         await instance.loadApiGraphs()
       }
 
-      const watcher = chokidar.watch(this.paths, { ignoreInitial: true })
+      const watcher = chokidar.watch(this.pathsEffective, { ignoreInitial: true })
         .on('change', redeploy)
         .on('add', redeploy)
         .on('unlink', redeploy)
@@ -88,7 +96,7 @@ export default class implements DeployResourcesPlugin {
       } else {
         return previous.import(resources)
       }
-    }, fromDirectories(this.paths, env.kopflos.config.baseIri))
+    }, fromDirectories(this.pathsEffective, env.kopflos.config.baseIri))
 
     await bootstrap({
       dataset,
