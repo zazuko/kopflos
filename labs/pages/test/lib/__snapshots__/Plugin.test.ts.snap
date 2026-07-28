@@ -72,5 +72,45 @@ exports[`@kopflos-cms/pages/lib/Plugin.js deployedResources should generate reso
 		) ;
 	] .
 
+<https://kopflos.described.at/Pages#index.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"$\\" ;
+	] ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"index.ts\\"
+				) ;
+			]
+		) ;
+	] .
+
+<https://kopflos.described.at/Pages#child%2Findex.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"child/$\\" ;
+	] ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"child/index.ts\\"
+				) ;
+			]
+		) ;
+	] .
+
 "
 `;

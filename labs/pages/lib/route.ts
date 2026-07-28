@@ -12,5 +12,7 @@ export function toPattern(file: string): string {
       return `(?<${catchAllVar}>[/\\w]+)`
     }
     return match
-  }).replace(/\.\w+$/, '.html$')
+  })
+    .replace(/\.\w+$/, '.html$')
+    .replace(/index\.html\$$/, '$')
 }
