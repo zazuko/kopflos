@@ -1,7 +1,8 @@
-export function toPattern(file: string): string {
-  const pattern = /\[\[(?<optionalVar>\w+)]]|\[(?<requiredVar>\w+)]|\[\.\.\.(?<catchAllVar>\w+)]/g
+const groupRegex = /\[\[(?<optionalVar>\w+)]]|\[(?<requiredVar>\w+)]|\[\.\.\.(?<catchAllVar>\w+)]/g
+const indexHtmlPattern = /(?<leadingSlash>\/)?index\.html\$$/
 
-  return file.replaceAll(pattern, (match, optionalVar, requiredVar, catchAllVar) => {
+export function toPatterns(file: string): string[] {
+  const pattern = file.replaceAll(groupRegex, (match, optionalVar, requiredVar, catchAllVar) => {
     if (optionalVar) {
       return `(?<${optionalVar}>[^/]+)?`
     }
@@ -14,5 +15,12 @@ export function toPattern(file: string): string {
     return match
   })
     .replace(/\.\w+$/, '.html$')
-    .replace(/index\.html\$$/, '$')
+
+  const matches = pattern.match(indexHtmlPattern)
+
+  if (matches) {
+      return [pattern, pattern.replace(indexHtmlPattern, '$')]
+  }
+
+  return [pattern]
 }

@@ -1,18 +1,18 @@
 import { expect } from 'chai'
-import { toPattern } from '../../lib/route.js'
+import { toPatterns } from '../../lib/route.js'
 
 describe('@kopflos-labs/pages/lib/route.js', function () {
-  describe('toPattern', function () {
+  describe('toPatterns', function () {
     it('should handle optional variable', function () {
-      expect(toPattern('[[id]].ts')).to.equal('(?<id>[^/]+)?.html$')
+      expect(toPatterns('[[id]].ts').shift()).to.equal('(?<id>[^/]+)?.html$')
     })
 
     it('should handle required variable', function () {
-      expect(toPattern('[id].ts')).to.equal('(?<id>[^/]+).html$')
+      expect(toPatterns('[id].ts').shift()).to.equal('(?<id>[^/]+).html$')
     })
 
     it('should handle catch-all variable', function () {
-      expect(toPattern('[...slug].ts')).to.equal('(?<slug>[/\\w]+).html$')
+      expect(toPatterns('[...slug].ts').shift()).to.equal('(?<slug>[/\\w]+).html$')
     })
 
     it('should return original match if no known variable pattern matches (should not happen with regex)', function () {
