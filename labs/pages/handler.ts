@@ -38,10 +38,10 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
       const pageModule = await import(resolve(serverDir, modulePath).replace('.ts', '.js'))
       const serverModulePath = resolve(serverDir, serverPath).replace('.ts', '.js')
       await fs.access(serverModulePath)
+        .then(() => import(serverModulePath))
         .catch(() => {
           log.debug(`Server module not found: ${serverModulePath}`)
         })
-      await import(serverModulePath)
       page = pageModule.default
     }
 
