@@ -17,7 +17,7 @@ import esbuildSparqlLoaderPlugin from 'esbuild-plugin-sparql'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import pagesVitePlugin from './vitePlugin.js'
 import type { SsrOptions } from './ssr.js'
-import { toPattern } from './route.js'
+import { toPatterns } from './route.js'
 import type { PageData, QueryDescriptor, QueryMap } from './pageData.js'
 
 export interface Page<TQueries extends QueryMap | undefined = Record<string, QueryDescriptor | ExecuteConstruct>> {
@@ -98,6 +98,7 @@ export default class extends VitePlugin implements PagesPlugin {
     const { rdf, sh, code, schema } = env.ns
     const kl = env.namespace(env.ns.kl().value)
     const talos = env.namespace('urn:talos:')
+    const baseUrl = env.kopflos.appNs().value
 
     const cwd = path.resolve(env.kopflos.basePath, this.path)
 
@@ -130,11 +131,6 @@ export default class extends VitePlugin implements PagesPlugin {
       resourceShape
         .addOut(rdf.type, kl.ResourceShape)
         .addOut(kl.api, env.kopflos.api)
-        .addOut(sh.target, target => {
-          target
-            .addOut(rdf.type, kl.PatternedTarget)
-            .addOut(kl.regex, toPattern(ssrModule))
-        })
         .addOut(kl.handler, handler => {
           handler
             .addOut(rdf.type, kl.Handler)
@@ -147,6 +143,15 @@ export default class extends VitePlugin implements PagesPlugin {
             ])
         })
 
+      const baseWithSlash = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
+      toPatterns(ssrModule).forEach(pattern => {
+        resourceShape.addOut(sh.target, target => {
+          target
+            .addOut(rdf.type, kl.PatternedTarget)
+            .addOut(kl.regex, '^' + baseWithSlash + pattern)
+        })
+      })
+
       let mainEntity = renderer.mainEntity
       if (mainEntity) {
         if (mainEntity.startsWith('/')) {
@@ -156,7 +161,10 @@ export default class extends VitePlugin implements PagesPlugin {
           .addOut(sh.property, property => {
             property
               .addOut(sh.path, schema.mainEntity)
-              .addOut(sh.pattern, toPattern(mainEntity!))
+
+            toPatterns(mainEntity!).forEach(pattern => {
+              property .addOut(sh.pattern, pattern)
+            })
           })
       }
     }
