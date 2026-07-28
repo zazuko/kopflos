@@ -1,5 +1,14 @@
 # @kopflos-labs/pages
 
+## 0.2.3
+
+### Patch Changes
+
+- fb8e73f: When there is no `*.html` file, use an empty layout
+- 1945750: Production mode would throw if the server module was not found.
+- 022a35d: Page `index.ts` generates a default page handler
+- c16c507: Generated patterns include base URL to avoid ambiguous matches
+
 ## 0.2.2
 
 ### Patch Changes
