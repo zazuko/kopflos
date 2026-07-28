@@ -5,6 +5,11 @@ import { log} from '@kopflos-cms/core'
 import render from './lib/ssr.js'
 import type { Page } from './lib/Plugin.js'
 
+const fallbackHtml = `<!DOCTYPE html>
+<html lang="en">
+<body></body>
+</html>`
+
 export default function (this: Kopflos, modulePath: string): SubjectHandler {
   const { basePath, buildDir } = this.env.kopflos
   const Plugin = this.getPlugin('@kopflos-labs/pages')!
@@ -19,7 +24,9 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
     if (this.env.kopflos.config.mode === 'development') {
       const viteDevServer = await Plugin.getDevServer(this)
       const templatePathAbsolute = resolve(basePath, Plugin.path, templatePath)
-      const template = await fs.readFile(templatePathAbsolute).then(buf => buf.toString())
+      const template = await fs.readFile(templatePathAbsolute)
+        .then(buf => buf.toString())
+        .catch(() => fallbackHtml)
       html = await viteDevServer.transformIndexHtml(subjectPath, template, templatePathAbsolute)
       const pageModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, modulePath))
       const serverModulePath = resolve(basePath, Plugin.path, serverPath)
@@ -34,7 +41,9 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
       const clientDir = resolve(outDir, 'client')
       const serverDir = resolve(outDir, 'server')
 
-      html = await fs.readFile(resolve(clientDir, templatePath)).then(buf => buf.toString())
+      html = await fs.readFile(resolve(clientDir, templatePath))
+        .then(buf => buf.toString())
+        .catch(() => fallbackHtml)
       const pageModule = await import(resolve(serverDir, modulePath).replace('.ts', '.js'))
       const serverModulePath = resolve(serverDir, serverPath).replace('.ts', '.js')
       await fs.access(serverModulePath)
