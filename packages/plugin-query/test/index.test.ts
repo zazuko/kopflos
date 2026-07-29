@@ -60,7 +60,8 @@ describe('@kopflos-cms/plugin-query', function () {
         .timeout(1000)
 
       expect(response.status).to.not.equal(404)
-    } catch {
+    }
+    catch {
       // ignore timeout/connection errors
     }
   })

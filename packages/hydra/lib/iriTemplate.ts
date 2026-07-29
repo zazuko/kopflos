@@ -34,7 +34,7 @@ export function fromQuery(rdf: Environment<DataFactory | ClownfaceFactory>, quer
   const templateParams = rdf.clownface().blankNode()
   const variablePropertyMap = new Map()
 
-  template.out(hydra.mapping).forEach(mapping => {
+  template.out(hydra.mapping).forEach((mapping) => {
     const variable = mapping.out(hydra.variable).value
     const property = mapping.out(hydra.property).term
 
@@ -62,7 +62,8 @@ export function applyTemplate(resource: GraphPointer, expanded: string) {
     for (const [param, value] of searchParams) {
       url.searchParams.set(param, value)
     }
-  } else {
+  }
+  else {
     url = new URL(expanded, url)
   }
 

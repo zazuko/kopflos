@@ -106,7 +106,7 @@ describe('pageData', function () {
       ], { parent })
       const parameters = {
         'schema:about': 'http://example.org/[slug]',
-        custom: '[slug]-suffix',
+        'custom': '[slug]-suffix',
       }
       const subjectVariables = {
         slug: 'my-page',

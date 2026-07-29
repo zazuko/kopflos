@@ -12,7 +12,8 @@ export function tryParse<E extends Error | number = Error | number>(pointer: Mul
 
   try {
     return parseInt(pointer.value, 10)
-  } catch {
+  }
+  catch {
     throw err || new Error('Expected a literal')
   }
 }

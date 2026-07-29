@@ -18,7 +18,8 @@ export default async function (args: BuildArgs) {
   const buildActions = plugins.map(Plugin => Plugin.build?.(env, plugins))
   if (buildActions.length === 0) {
     return log.warn('No plugins with build actions found')
-  } else {
+  }
+  else {
     await Promise.all(buildActions)
   }
 }

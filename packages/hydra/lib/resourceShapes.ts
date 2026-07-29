@@ -38,11 +38,11 @@ export async function createHandlers({ env, dataset }: Kopflos) {
 
   function addMissingHandler(shape: GraphPointer, method: 'get' | 'post', configure?: (handler: GraphPointer) => void) {
     if (!hasHandler(env, shape, method)) {
-      apiTriples.node(shape.term).addOut(kl.handler, handler => {
+      apiTriples.node(shape.term).addOut(kl.handler, (handler) => {
         handler
           .addOut(rdf.type, kl.Handler)
           .addOut(kl.method, method.toUpperCase())
-          .addOut(code.implementedBy, impl => {
+          .addOut(code.implementedBy, (impl) => {
             impl
               .addOut(rdf.type, code.EcmaScriptModule)
               .addOut(code.link, env.namedNode(getHandlerPath(method)))
@@ -56,8 +56,8 @@ export async function createHandlers({ env, dataset }: Kopflos) {
   for (const shape of [...defaultShapes, ...userShapes]) {
     addMissingHandler(shape, 'get')
     addMissingHandler(shape, 'post', (handler: GraphPointer) => {
-      handler.addOut(sh.shapesGraph, loader => {
-        loader.addOut(env.ns.code.implementedBy, impl => {
+      handler.addOut(sh.shapesGraph, (loader) => {
+        loader.addOut(env.ns.code.implementedBy, (impl) => {
           impl
             .addOut(rdf.type, code.EcmaScriptModule)
             .addOut(code.link, env.namedNode(shapesGraphLoaderPath))

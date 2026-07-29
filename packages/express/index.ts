@@ -22,7 +22,7 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export default async (config: KopflosConfig, basePath = process.cwd()): Promise<{ middleware: RequestHandler; instance: Kopflos }> => {
+export default async (config: KopflosConfig, basePath = process.cwd()): Promise<{ middleware: RequestHandler, instance: Kopflos }> => {
   const kopflos = new Kopflos(config, {
     basePath,
   })
@@ -45,7 +45,7 @@ export default async (config: KopflosConfig, basePath = process.cwd()): Promise<
     })
     .use(rdfHandler({
       factory,
-      baseIriFromRequest: (req) => req.iri,
+      baseIriFromRequest: req => req.iri,
     }))
     .use(async (req, res, next) => {
       const result = await kopflos.handleRequest({
@@ -68,10 +68,10 @@ export default async (config: KopflosConfig, basePath = process.cwd()): Promise<
         .with(P.string, body => res.send(body))
         .with(P.nullish, () => res.end())
         .with(P.instanceOf(Error), error => next(error))
-        .with({ size: P.number }, (dataset) => res.dataset(dataset))
+        .with({ size: P.number }, dataset => res.dataset(dataset))
         .with({ terms: P.array() }, ({ dataset }) => res.dataset(dataset))
         .with({ read: P.any }, stream => res.quadStream(stream))
-        .otherwise((stream) => res.send(stream))
+        .otherwise(stream => res.send(stream))
     })
 
   await Promise.all(kopflos.plugins.map(plugin => plugin.afterMiddleware?.(router, kopflos)))

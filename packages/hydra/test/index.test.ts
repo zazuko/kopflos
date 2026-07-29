@@ -11,7 +11,7 @@ const ex = $rdf.namespace(baseIri + '/')
 describe('@kopflos-cms/hydra', function () {
   beforeEach(createEmpty)
 
-  it("onStart uses the API from kopflos instance when there are no 'apis' in the options", async function () {
+  it('onStart uses the API from kopflos instance when there are no \'apis\' in the options', async function () {
     // given
     const clients = inMemoryClients(this.rdf)
     const kopflos = new Kopflos({

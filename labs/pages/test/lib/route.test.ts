@@ -23,12 +23,12 @@ describe('@kopflos-labs/pages/lib/route.js', function () {
     describe('index.html', function () {
       it('should match index.html', function () {
         expect(toPatterns('index.ts')).to.deep.equal([
-          'index.html$', '/?$'
+          'index.html$', '/?$',
         ])
       })
       it('should match nested index.html', function () {
         expect(toPatterns('foo/bar/index.ts')).to.deep.equal([
-          'foo/bar/index.html$', 'foo/bar/?$'
+          'foo/bar/index.html$', 'foo/bar/?$',
         ])
       })
     })

@@ -67,7 +67,7 @@ describe('@kopflos-cms/hydra/lib/validation.js', function () {
 
         // then
         const imports = [...shapesGraph.match(null, env.ns.owl.imports)]
-        expect(imports.map((m) => m.object)).to.deep.contain.all.members([
+        expect(imports.map(m => m.object)).to.deep.contain.all.members([
           ex.fooShapes,
           ex.barShapes,
         ])

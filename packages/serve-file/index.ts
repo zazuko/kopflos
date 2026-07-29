@@ -16,7 +16,8 @@ export default (arg: string | Options): Handler => () => {
   if (typeof arg === 'string') {
     path = arg
     stream = false
-  } else {
+  }
+  else {
     ({ path, stream = true, contentType } = arg)
   }
 
