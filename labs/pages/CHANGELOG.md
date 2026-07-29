@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.2.4
+
+### Patch Changes
+
+- 27e0170: Improve handling of nested `index.html` requests and index page with trailing `/`
+
 ## 0.2.3
 
 ### Patch Changes
