@@ -29,11 +29,13 @@ export async function loadShapesGraph(args: HandlerArgs): Promise<DatasetCore> {
           const userArgs = await loadArguments(ptr, env.load.options)
 
           env.dataset.addAll(dataset, await loader(args, ...userArgs))
-        } catch (e) {
+        }
+        catch (e) {
           log.error('Failed to load shapes graph', e)
           throw e
         }
-      } else {
+      }
+      else {
         throw new Error('Bad shapes graph loader implementation')
       }
     })

@@ -17,11 +17,12 @@ declare module '@kopflos-cms/core' {
   }
 }
 
-export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: KopflosConfig; filepath: string }> {
+export async function loadConfig({ path, root }: LoadConfig): Promise<{ config: KopflosConfig, filepath: string }> {
   let ccResult: CosmiconfigResult
   if (path) {
     ccResult = await explorer.load(path)
-  } else {
+  }
+  else {
     ccResult = await explorer.search(root)
   }
 

@@ -45,7 +45,7 @@ export default class implements ShaclPlugin {
       .addOut(env.ns.code.link, env.namedNode(decoratorModule))
 
     apis
-      .addOut(env.ns.kl.decorator, decorator => {
+      .addOut(env.ns.kl.decorator, (decorator) => {
         decorator.addOut(env.ns.code.implementedBy, impl)
       })
 

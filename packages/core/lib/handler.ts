@@ -75,7 +75,7 @@ export const loadHandlers: HandlerLookup = ({ resourceShape, ...rest }: Resource
   const impl = handler.out(env.ns.code.implementedBy)
   if (impl.isList()) {
     const pointers = [...impl.list()]
-    const implementation = pointers.map(chainedHandler => {
+    const implementation = pointers.map((chainedHandler) => {
       logCode(chainedHandler, 'handler')
       return createHandler(chainedHandler)
     }).filter(Boolean) as Array<Promise<Handler>>
@@ -112,11 +112,12 @@ function createHandlerFactory(instance: Kopflos, variables: Map<string, unknown>
     let promise: Promise<HandlerFactory>
     if (typeof factory === 'function') {
       promise = Promise.resolve(factory)
-    } else {
+    }
+    else {
       promise = factory
     }
 
-    return promise.then(async factory => {
+    return promise.then(async (factory) => {
       if (isGraphPointer(impl) && isGraphPointer(impl.out(env.ns.code.arguments))) {
         const args = await loadArguments(impl, {
           variables,
@@ -138,9 +139,9 @@ function matchingMethod(env: KopflosEnvironment, requestMethod: HttpMethod): Par
   return (path: GraphPointer, _, pointers) => {
     const handlerMethods = path.out(env.ns.kopflos.method).values.map(v => v.toUpperCase())
 
-    return handlerMethods.some(handlerMethod => {
-      return handlerMethod === requestMethod ||
-        (handlerMethod === 'GET' && requestMethod === 'HEAD' && !headHandlerExists(pointers))
+    return handlerMethods.some((handlerMethod) => {
+      return handlerMethod === requestMethod
+        || (handlerMethod === 'GET' && requestMethod === 'HEAD' && !headHandlerExists(pointers))
     })
   }
 }

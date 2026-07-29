@@ -73,7 +73,7 @@ export class OxigraphParsingClient extends OxigraphClient implements ParsingClie
     },
     select: async (query: string): Promise<Record<string, Term>[]> => {
       const results = this._executeQuery<Map<string, Term>[]>(query)
-      return results.map(binding => {
+      return results.map((binding) => {
         const obj: Record<string, Term> = {}
         for (const [key, value] of binding) {
           obj[key] = value

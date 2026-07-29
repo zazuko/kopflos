@@ -634,7 +634,7 @@ describe('lib/Kopflos', function () {
               headers: {},
               body: {} as Body,
               query: {},
-            }) as unknown as { status: number; body: Stream }
+            }) as unknown as { status: number, body: Stream }
 
             // then
             expect(response).to.have.property('status', 200)

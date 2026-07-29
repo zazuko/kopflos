@@ -18,7 +18,7 @@ const cssFromImportRule = async (rule: CSSImportRule): Promise<string | CSSRule>
   link.rel = 'stylesheet'
   link.crossOrigin = ''
   document.head.append(link)
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     link.addEventListener('load', (e) => {
       const target = e.target as HTMLLinkElement
       const rules = target.sheet?.cssRules
@@ -41,14 +41,15 @@ export const getOpenStyles = async () => {
         adoptables.set(sheet, adoptable)
       }
       sheets.push(adoptable)
-    } catch {
+    }
+    catch {
       elements.push(sheet.ownerNode!.cloneNode(true) as unknown as Element)
     }
   }))
   return { sheets, elements }
 }
 
-export const whenDOMReady = new Promise(resolve => {
+export const whenDOMReady = new Promise((resolve) => {
   const checkReady = (event?: Event) => {
     if (document.readyState === 'complete' || event?.type === 'DOMContentLoaded') {
       document.removeEventListener('DOMContentLoaded', checkReady)

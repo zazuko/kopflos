@@ -9,7 +9,8 @@ export function fillTemplate(pattern: string, subjectVariables: Record<string, s
   for (const v of variables) {
     if (subjectVariables[v]) {
       iri = iri.replace(`[${v}]`, subjectVariables[v])
-    } else {
+    }
+    else {
       allVarsFound = false
       break
     }

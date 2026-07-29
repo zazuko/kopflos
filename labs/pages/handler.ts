@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises'
 import { resolve } from 'node:path'
-import type {Kopflos, SubjectHandler} from '@kopflos-cms/core';
-import { log} from '@kopflos-cms/core'
+import type { Kopflos, SubjectHandler } from '@kopflos-cms/core'
+import { log } from '@kopflos-cms/core'
 import render from './lib/ssr.js'
 import type { Page } from './lib/Plugin.js'
 
@@ -41,7 +41,8 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
           log.debug(`Server module not found: ${serverModulePath}`)
         })
       page = pageModule.default
-    } else {
+    }
+    else {
       const outDir = resolve(basePath, buildDir, Plugin.path)
       const clientDir = resolve(outDir, 'client')
       const serverDir = resolve(outDir, 'server')

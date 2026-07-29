@@ -93,7 +93,8 @@ export default class implements DeployResourcesPlugin {
       if ('size' in resources) {
         previous.addAll(resources)
         return previous
-      } else {
+      }
+      else {
         return previous.import(resources)
       }
     }, fromDirectories(this.pathsEffective, env.kopflos.config.baseIri))

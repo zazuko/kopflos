@@ -131,7 +131,7 @@ export default class extends VitePlugin implements PagesPlugin {
       resourceShape
         .addOut(rdf.type, kl.ResourceShape)
         .addOut(kl.api, env.kopflos.api)
-        .addOut(kl.handler, handler => {
+        .addOut(kl.handler, (handler) => {
           handler
             .addOut(rdf.type, kl.Handler)
             .addOut(kl.method, 'GET')
@@ -144,8 +144,8 @@ export default class extends VitePlugin implements PagesPlugin {
         })
 
       const baseWithSlash = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
-      toPatterns(ssrModule).forEach(pattern => {
-        resourceShape.addOut(sh.target, target => {
+      toPatterns(ssrModule).forEach((pattern) => {
+        resourceShape.addOut(sh.target, (target) => {
           target
             .addOut(rdf.type, kl.PatternedTarget)
             .addOut(kl.regex, '^' + baseWithSlash + pattern)
@@ -158,12 +158,12 @@ export default class extends VitePlugin implements PagesPlugin {
           mainEntity = env.kopflos.appNs(mainEntity).value
         }
         resourceShape
-          .addOut(sh.property, property => {
+          .addOut(sh.property, (property) => {
             property
               .addOut(sh.path, schema.mainEntity)
 
-            toPatterns(mainEntity!).forEach(pattern => {
-              property .addOut(sh.pattern, pattern)
+            toPatterns(mainEntity!).forEach((pattern) => {
+              property.addOut(sh.pattern, pattern)
             })
           })
       }

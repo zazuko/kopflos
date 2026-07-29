@@ -146,7 +146,8 @@ export function post(): Handler {
         collection: subject,
         member: newMember,
       })
-    } catch (e) {
+    }
+    catch (e) {
       log.error(e)
     }
 

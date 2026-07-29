@@ -50,7 +50,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
         // when
         await new Plugin({
           paths: [],
-          cwd: import.meta.dirname
+          cwd: import.meta.dirname,
         }).onStart(env)
       })
 
@@ -77,7 +77,7 @@ describe('@kopflos-cms/plugin-deploy-resources', function () {
         // when
         await new Plugin({
           paths: ['resources'],
-          cwd: import.meta.dirname
+          cwd: import.meta.dirname,
         }).onStart(env)
       })
 
