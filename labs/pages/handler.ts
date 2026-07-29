@@ -17,7 +17,7 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
   const serverPath = modulePath.replace(/.(ts|js)$/, '.html.$1')
 
   return async (req) => {
-    const subjectPath = new URL(req.subject.value).pathname
+    let subjectPath = new URL(req.subject.value).pathname
 
     let html: string
     let page: Page
@@ -27,6 +27,11 @@ export default function (this: Kopflos, modulePath: string): SubjectHandler {
       const template = await fs.readFile(templatePathAbsolute)
         .then(buf => buf.toString())
         .catch(() => fallbackHtml)
+
+      if (templatePathAbsolute.endsWith('index.html')) {
+        subjectPath = subjectPath.replace(/\/?$/, '/index.html')
+      }
+
       html = await viteDevServer.transformIndexHtml(subjectPath, template, templatePathAbsolute)
       const pageModule = await viteDevServer.ssrLoadModule(resolve(basePath, Plugin.path, modulePath))
       const serverModulePath = resolve(basePath, Plugin.path, serverPath)

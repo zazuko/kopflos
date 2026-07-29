@@ -19,7 +19,10 @@ export function toPatterns(file: string): string[] {
   const matches = pattern.match(indexHtmlPattern)
 
   if (matches) {
-      return [pattern, pattern.replace(indexHtmlPattern, '$')]
+    const withoutIndex = pattern === 'index.html$'
+    ? pattern.replace(indexHtmlPattern, '$')
+      :pattern.replace(indexHtmlPattern, '/?$')
+    return [pattern, withoutIndex]
   }
 
   return [pattern]
