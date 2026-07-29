@@ -1,5 +1,12 @@
 # example
 
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies [27e0170]
+  - @kopflos-labs/pages@0.2.4
+
 ## 0.0.38
 
 ### Patch Changes
