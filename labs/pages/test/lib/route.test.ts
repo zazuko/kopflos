@@ -19,5 +19,18 @@ describe('@kopflos-labs/pages/lib/route.js', function () {
       // This is to hit the final return match in replaceAll if somehow regex matches but none of groups are set
       // though with current regex it's impossible.
     })
+
+    describe('index.html', function () {
+      it('should match index.html', function () {
+        expect(toPatterns('index.ts')).to.deep.equal([
+          'index.html$', '/?$'
+        ])
+      })
+      it('should match nested index.html', function () {
+        expect(toPatterns('foo/bar/index.ts')).to.deep.equal([
+          'foo/bar/index.html$', 'foo/bar/?$'
+        ])
+      })
+    })
   })
 })

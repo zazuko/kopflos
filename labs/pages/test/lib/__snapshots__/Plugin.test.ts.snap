@@ -115,7 +115,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base with slash deployedResources shou
 		<https://kopflos.described.at/regex> \\"^https://example.org/child/index.html$\\" ;
 	], [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
-		<https://kopflos.described.at/regex> \\"^https://example.org/child$\\" ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/child/?$\\" ;
 	] .
 
 "
@@ -236,7 +236,7 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base without slash deployedResources s
 		<https://kopflos.described.at/regex> \\"^https://example.org/child/index.html$\\" ;
 	], [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
-		<https://kopflos.described.at/regex> \\"^https://example.org/child$\\" ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/child/?$\\" ;
 	] .
 
 "
