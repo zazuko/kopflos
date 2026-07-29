@@ -138,9 +138,9 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
     }
   }
 
-  LitElementRenderer.renderOptions.push(element => {
-    const connectedCallbackAllowed = !options.allowConnectedCallback || allowConnectedCallback.some((regex) => regex.test(element.localName))
-    const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some((regex) => regex.test(element.localName))
+  LitElementRenderer.renderOptions.push((element) => {
+    const connectedCallbackAllowed = !options.allowConnectedCallback || allowConnectedCallback.some(regex => regex.test(element.localName))
+    const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some(regex => regex.test(element.localName))
 
     return {
       connectedCallback: connectedCallbackAllowed && !connectedCallbackDisallowed,

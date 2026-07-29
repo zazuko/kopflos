@@ -1,13 +1,13 @@
-import {resolve} from 'node:path'
-import {existsSync} from 'node:fs'
+import { resolve } from 'node:path'
+import { existsSync } from 'node:fs'
 import * as fs from 'node:fs/promises'
 import url from 'node:url'
-import {glob} from 'glob'
-import {expect, use} from 'chai'
-import type {Kopflos, KopflosEnvironment} from '@kopflos-cms/core'
-import {createEnv} from '@kopflos-cms/core/env.js'
+import { glob } from 'glob'
+import { expect, use } from 'chai'
+import type { Kopflos, KopflosEnvironment } from '@kopflos-cms/core'
+import { createEnv } from '@kopflos-cms/core/env.js'
 import snapshots from 'mocha-chai-rdf/snapshots.js'
-import type {Dataset} from '@zazuko/env/lib/DatasetExt.js'
+import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import formatsPretty from '@rdfjs-elements/formats-pretty'
 import DefaultPlugin from '@kopflos-cms/vite'
 import PagesPlugin from '../../lib/Plugin.js'
@@ -23,7 +23,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
 
   ;[
     ['https://example.org/', 'base with slash'],
-    ['https://example.org', 'base without slash']
+    ['https://example.org', 'base without slash'],
   ].map(([baseIri, title]) => {
     describe(title, () => {
       beforeEach(function () {
@@ -65,7 +65,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
           const dataset = await plugin.deployedResources(env) as Dataset
 
           // then
-          expect(await dataset.serialize({format: 'text/turtle'})).toMatchSnapshot()
+          expect(await dataset.serialize({ format: 'text/turtle' })).toMatchSnapshot()
         })
       })
 
@@ -88,7 +88,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
         this.timeout(20000)
 
         beforeEach(async function () {
-          await fs.rm(buildDir, {recursive: true, force: true})
+          await fs.rm(buildDir, { recursive: true, force: true })
         })
 
         it('should create build artifacts for pages', async function () {
@@ -115,7 +115,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
 
           const [clientJs] = await glob('test/fixtures/pages/client/assets/test-page-*.js', {
             cwd: buildDir,
-            absolute: true
+            absolute: true,
           })
           const clientJsContent = await fs.readFile(clientJs, 'utf-8')
           expect(clientJsContent).to.match(/console\.log\(['"`]test-page\.client\.ts['"`]\)/)

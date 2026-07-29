@@ -93,7 +93,7 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
     ],
   })
   const transformed = result.pipe(new PageUrlTransform(pagePatterns, env))
-  result.on('error', (err) => transformed.emit('error', err))
+  result.on('error', err => transformed.emit('error', err))
   const datasetPromise = env.dataset().import(transformed)
   const [dataset] = await Promise.all([
     datasetPromise,

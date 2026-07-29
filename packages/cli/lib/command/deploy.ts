@@ -15,7 +15,7 @@ export default async function (args: DeployArgs) {
   const autoDeployPluginConfig = config.plugins?.find(plugin => plugin instanceof PluginDeployResources)
 
   if (!autoDeployPluginConfig) {
-    log.error("'@kopflos-cms/plugin-deploy-resources' not found in plugin configuration")
+    log.error('\'@kopflos-cms/plugin-deploy-resources\' not found in plugin configuration')
     return process.exit(1)
   }
 

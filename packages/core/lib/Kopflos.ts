@@ -61,7 +61,7 @@ export interface ResultEnvelope {
 export type KopflosResponse = ResultBody | ResultEnvelope
 
 export interface KopflosPlugin {
-  /* eslint-disable no-use-before-define */
+
   readonly name?: string
   onStart?(instance: Kopflos): Promise<void> | void
   onReady?(instance: Kopflos): Promise<void> | void
@@ -79,7 +79,7 @@ export interface Kopflos<D extends DatasetCore = Dataset> {
   get dataset(): D
   get env(): KopflosEnvironment
   get apis(): MultiPointer<Term, D>
-  // eslint-disable-next-line no-use-before-define
+
   get plugins(): ReadonlyArray<KopflosPlugin>
   get start(): () => Promise<void>
   getPlugin<N extends keyof Plugins>(name: N): Plugins[N] | undefined
@@ -254,7 +254,7 @@ export default class Impl implements Kopflos {
     }
 
     const allDecorators = this.decorators.get(api.term)!
-    const decorators = await Promise.all(allDecorators.map(async decorator => {
+    const decorators = await Promise.all(allDecorators.map(async (decorator) => {
       let isApplicable = true
       if (decorator.applicable) {
         isApplicable = await decorator.applicable(args)
@@ -273,7 +273,8 @@ export default class Impl implements Kopflos {
     let result: KopflosResponse
     try {
       result = await this.getResponse(req)
-    } catch (cause: Error | unknown) {
+    }
+    catch (cause: Error | unknown) {
       const error = cause instanceof Error
         ? cause
         : typeof cause === 'string'
@@ -408,7 +409,7 @@ export default class Impl implements Kopflos {
       this.dataset.add(quad)
     }
 
-    const apiTriples = this.plugins.map(async plugin => {
+    const apiTriples = this.plugins.map(async (plugin) => {
       if (!plugin.apiTriples) {
         return
       }
@@ -431,6 +432,8 @@ export default class Impl implements Kopflos {
   }
 
   async stop() {
-    await Promise.all(this.plugins.map(async plugin => { plugin.onStop?.(this) }))
+    await Promise.all(this.plugins.map(async (plugin) => {
+      plugin.onStop?.(this)
+    }))
   }
 }

@@ -14,9 +14,9 @@ function serializeTerm(term: Term) {
   }
   if (term.termType === 'Literal') {
     return {
-      type: 'literal',
-      value: term.value,
-      datatype: term.datatype.value,
+      'type': 'literal',
+      'value': term.value,
+      'datatype': term.datatype.value,
       'xml:lang': term.language || undefined,
     }
   }
@@ -73,7 +73,8 @@ export default class QueryPlugin implements KopflosPlugin {
             [`^/-/query/${name}`]: '',
           },
         }))
-      } else {
+      }
+      else {
         router.all(`/-/query/${name}`, express.json(), express.urlencoded({ extended: true }), async (req, res, next) => {
           const query = req.query.query || req.body.query
           if (!query) {
@@ -84,7 +85,7 @@ export default class QueryPlugin implements KopflosPlugin {
             const accept = req.headers.accept || 'application/sparql-results+json'
             if (accept.includes('application/sparql-results+json') || accept.includes('application/json')) {
               const results = await clients.parsed.query.select(query)
-              const bindings = results.map(binding => {
+              const bindings = results.map((binding) => {
                 return Object.fromEntries(
                   Object.entries(binding).map(([key, term]) => [key, serializeTerm(term)]),
                 )
@@ -93,11 +94,13 @@ export default class QueryPlugin implements KopflosPlugin {
                 head: { vars: Object.keys(results[0] || {}) },
                 results: { bindings },
               })
-            } else {
+            }
+            else {
               // TODO: handle other formats if needed
               res.status(406).send('Not Acceptable')
             }
-          } catch (e: unknown) {
+          }
+          catch (e: unknown) {
             next(e)
           }
         })

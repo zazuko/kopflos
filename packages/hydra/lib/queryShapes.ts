@@ -46,7 +46,8 @@ export function memberQueryShape({ env, collection: original, limit, offset }: M
     let next = addFilterShape
     if (isGraphPointer(orderBy)) {
       next = addOrder(orderBy)
-    } else if (limit || offset) {
+    }
+    else if (limit || offset) {
       log.warn('LIMIT/OFFSET without order by')
     }
 
@@ -74,9 +75,9 @@ export function memberQueryShape({ env, collection: original, limit, offset }: M
   }
 
   shape
-    .addOut(sh.target, target => {
+    .addOut(sh.target, (target) => {
       target.addOut(rdf.type, s2q.NodeExpressionTarget)
-        .addOut(sh.expression, expression => {
+        .addOut(sh.expression, (expression) => {
           expression.addOut(sh.distinct, addLimit(limit))
         })
     })
@@ -89,15 +90,15 @@ export function memberQueryShape({ env, collection: original, limit, offset }: M
     memberShape = collection.blankNode()
   }
   memberShape
-    .addOut(sh.rule, rule => {
+    .addOut(sh.rule, (rule) => {
       rule
         .addOut(rdf.type, sh.TripleRule)
         .addOut(sh.predicate, hydra.member)
         .addOut(sh.subject, collection.term)
         .addOut(sh.object, sh.this)
     })
-  collection.out(hydra.memberAssertion).forEach(memberAssertion => {
-    memberShape.addOut(sh.rule, rule => {
+  collection.out(hydra.memberAssertion).forEach((memberAssertion) => {
+    memberShape.addOut(sh.rule, (rule) => {
       rule
         .addOut(rdf.type, sh.TripleRule)
         .addOut(sh.subject, memberAssertion.out(hydra.subject).term || sh.this)
@@ -129,15 +130,15 @@ export function totalsQueryShape({ env, collection: original }: TotalsQueryShape
   return collection
     .blankNode()
     .addOut(rdf.type, sh.NodeShape)
-    .addOut(sh.rule, rule => {
+    .addOut(sh.rule, (rule) => {
       rule
         .addOut(rdf.type, sh.TripleRule)
         .addOut(sh.subject, collection)
         .addOut(sh.predicate, hydra.totalItems)
-        .addOut(sh.object, expr => {
+        .addOut(sh.object, (expr) => {
           expr
-            .addOut(sh.count, count => {
-              count.addOut(sh.distinct, distinct => {
+            .addOut(sh.count, (count) => {
+              count.addOut(sh.distinct, (distinct) => {
                 distinct.addOut(sh.filterShape, filterShape)
               })
             })

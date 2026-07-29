@@ -1,5 +1,5 @@
 import { expect, use } from 'chai'
-import type {InlineConfig, ViteDevServer} from 'vite'
+import type { InlineConfig, ViteDevServer } from 'vite'
 import { createServer } from 'vite'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import pagesTransform from '../../lib/vitePlugin.js'

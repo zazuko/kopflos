@@ -11,10 +11,10 @@ export const bar: RequestDecorator = {
 
 export const personOnly: RequestDecorator = {
   run: (_, next) => next(),
-  applicable: (req) => rdf.ns.schema.Person.equals(req.resourceShape.out(rdf.ns.sh.targetClass).term),
+  applicable: req => rdf.ns.schema.Person.equals(req.resourceShape.out(rdf.ns.sh.targetClass).term),
 }
 
 export const organizationOnly: RequestDecorator = {
   run: (_, next) => next(),
-  applicable: (req) => rdf.ns.schema.Organization.equals(req.resourceShape.out(rdf.ns.sh.targetClass).term),
+  applicable: req => rdf.ns.schema.Organization.equals(req.resourceShape.out(rdf.ns.sh.targetClass).term),
 }
