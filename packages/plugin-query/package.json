@@ -20,7 +20,10 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "http-proxy-middleware": "^3.0.7"
+    "@rdfjs-elements/formats-pretty": "^0.6.9",
+    "http-proxy-middleware": "^3.0.7",
+    "negotiator": "^1.0.0",
+    "sparqljs": "^3.7.3"
   },
   "devDependencies": {
     "@kopflos-cms/core": "file:../core",
@@ -29,6 +32,8 @@
     "@types/chai": "^5.2.3",
     "@types/express": "^5",
     "@types/mocha": "^10.0.7",
+    "@types/negotiator": "^0.6.4",
+    "@types/rdfjs__formats-common": "^3.1.5",
     "@types/sparql-http-client": "^3.1.0",
     "@types/supertest": "^6.0.2",
     "@zazuko/env-node": "^3.0.0",

@@ -3,25 +3,11 @@ import express from 'express'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import type Kopflos from '@kopflos-cms/core'
 import { createProxyMiddleware } from 'http-proxy-middleware'
-import type { Term } from '@rdfjs/types'
-
-function serializeTerm(term: Term) {
-  if (term.termType === 'NamedNode') {
-    return { type: 'uri', value: term.value }
-  }
-  if (term.termType === 'BlankNode') {
-    return { type: 'bnode', value: term.value }
-  }
-  if (term.termType === 'Literal') {
-    return {
-      'type': 'literal',
-      'value': term.value,
-      'datatype': term.datatype.value,
-      'xml:lang': term.language || undefined,
-    }
-  }
-  return { type: 'unknown', value: term.value }
-}
+import yasgui from './handlers/yasgui.js'
+import select from './handlers/select.js'
+import construct from './handlers/construct.js'
+import ask from './handlers/ask.js'
+import { Parser } from 'sparqljs'
 
 export default class QueryPlugin implements KopflosPlugin {
   public readonly name = '@kopflos-cms/plugin-query'
@@ -29,39 +15,7 @@ export default class QueryPlugin implements KopflosPlugin {
   beforeMiddleware(router: Router, kopflos: Kopflos) {
     const { sparql } = kopflos.env
 
-    router.get('/-/query', (req, res) => {
-      const endpoints = Object.keys(sparql).map(name => ({
-        name,
-        endpoint: `${req.baseUrl}/-/query/${name}`,
-      }))
-
-      const html = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Kopflos Query</title>
-    <link href="https://unpkg.com/@zazuko/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://unpkg.com/@zazuko/yasgui/build/yasgui.min.js"></script>
-    <style>
-      body { margin: 0; }
-    </style>
-  </head>
-  <body>
-    <div id="yasgui"></div>
-    <script>
-      const endpoints = ${JSON.stringify(endpoints)};
-      const yasgui = new Yasgui(document.getElementById("yasgui"), {
-        endpointCatalogueOptions: {
-          getData: () => endpoints,
-          keys: [],
-        },
-      });
-    </script>
-  </body>
-</html>`
-      res.send(html)
-    })
+    router.get('/-/query', yasgui(sparql))
 
     for (const [name, clients] of Object.entries(sparql)) {
       const target = clients.parsed.endpointUrl
@@ -81,27 +35,26 @@ export default class QueryPlugin implements KopflosPlugin {
             return res.status(400).send('Missing query')
           }
 
-          try {
-            const accept = req.headers.accept || 'application/sparql-results+json'
-            if (accept.includes('application/sparql-results+json') || accept.includes('application/json')) {
-              const results = await clients.parsed.query.select(query)
-              const bindings = results.map((binding) => {
-                return Object.fromEntries(
-                  Object.entries(binding).map(([key, term]) => [key, serializeTerm(term)]),
-                )
-              })
-              res.json({
-                head: { vars: Object.keys(results[0] || {}) },
-                results: { bindings },
-              })
-            }
-            else {
-              // TODO: handle other formats if needed
-              res.status(406).send('Not Acceptable')
-            }
+          const parser = new Parser({
+            factory: kopflos.env,
+          })
+          const parsed = parser.parse(query)
+
+          if (parsed.type === 'update') {
+            return res.status(403).send('Updates are not allowed')
           }
-          catch (e: unknown) {
-            next(e)
+
+          const { queryType } = parsed
+          switch (queryType) {
+            case 'SELECT':
+              return select(clients.stream, query)(req, res, next)
+            case 'CONSTRUCT':
+            case 'DESCRIBE':
+              return construct(clients.stream, query)(req, res, next)
+            case 'ASK':
+              return ask(clients.parsed, query)(req, res, next)
+            default:
+              return res.status(400).send(`Unrecognised query type ${queryType}`)
           }
         })
       }
