@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.2.5
+
+### Patch Changes
+
+- 53ff270: Makes it possible to loadquery dynamically so that `base` can be passed to import attributes
+
 ## 0.2.4
 
 ### Patch Changes
