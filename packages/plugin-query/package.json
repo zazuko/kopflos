@@ -22,7 +22,9 @@
   "files": [
     "README.md",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "handlers/*.js",
+    "handlers/*.d.ts"
   ],
   "dependencies": {
     "@rdfjs-elements/formats-pretty": "^0.6.9",
