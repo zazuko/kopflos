@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-query
 
+## 0.1.2
+
+### Patch Changes
+
+- 1bd68f5: `handlers` modules missing from package
+
 ## 0.1.1
 
 ### Patch Changes
