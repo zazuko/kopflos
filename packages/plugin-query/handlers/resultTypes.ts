@@ -1,4 +1,4 @@
-import pretty from '@rdfjs/formats-common'
+import pretty from '@rdfjs-elements/formats-pretty'
 
 export const selectTypes = [
   'application/json',
