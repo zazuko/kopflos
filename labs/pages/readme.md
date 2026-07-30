@@ -128,7 +128,114 @@ Queries defined in the `queries` object of `definePage` are executed, and the re
 
 ---
 
-### 5. Navigating the Graph with `lit-rdf`
+### 5. Configuring `queries`
+
+The `queries` option of `definePage` lets you declare one or more data sources that will be executed server‑side and exposed to your page via the `data` argument.
+
+Each entry under `queries` supports multiple forms:
+
+- Direct function (default export of a `.rq` file compiled by `sparqlc`)
+- Object with `query`
+- Object with `load` (lazy/dynamic import)
+- Optional `endpoint` to target a named SPARQL client instead of the default
+
+#### Supported forms
+
+```ts
+import { definePage, html } from '@kopflos-labs/pages'
+import plaqueQuery from './plaque.rq' // ExecuteConstruct
+
+export default definePage({
+  // 1) Direct function
+  queries: {
+    plaque: plaqueQuery,
+
+    // 2) Explicit object with `query`
+    plaqueExplicit: { query: plaqueQuery },
+
+    // 3) Select a named endpoint (must exist in env.sparql)
+    plaqueOnNamed: { query: plaqueQuery, endpoint: 'analytics' },
+
+    // 4) Lazy load (dynamic import)
+    lazyPlaque: {
+      endpoint: 'readonly',
+      load: async ({ base }) => {
+        // `base` equals your app namespace IRI
+        // required when query uses local relative URI references
+        return import('./plaque.rq', { with: { base } })
+      },
+    },
+  },
+
+  body() {
+    return html`...`
+  },
+})
+```
+
+When using `endpoint`, the query runs against `env.sparql[endpoint].stream`. If omitted, the default client `env.sparql.default.stream` is used.
+
+#### Parameter binding into queries
+
+All queries receive a parameter map that is available to `sparqlc:param(...)` inside your `.rq` files. Parameters are populated from several sources, merged in the following order (later items do not overwrite earlier ones):
+
+1) Route variables from the page path
+- Example route: `pages/plaque/[id].ts` ⇒ `id` is available
+- Bound as literal values under their plain names: `sparqlc:param("id")`
+
+2) URL query string parameters (HTTP GET)
+- Arrays are supported and bound as multiple literal values
+- Empty values are skipped, but the string `'0'` is kept
+- Example: `?tags=foo&tags=bar&empty=&zero=0` ⇒
+  - `sparqlc:param("tags")` → `("foo", "bar")`
+  - `sparqlc:param("zero")` → `"0"`
+
+3) `parameters` map in the page definition (template expansion)
+- You can provide additional parameters that are only set if not already present from (1) or (2)
+- Keys may be plain strings or CURIEs (e.g., `schema:about`). CURIEs are expanded using known prefixes
+- Values support simple template substitution with the page variables, using `[var]`
+
+```ts
+export default definePage({
+  // Bind the page's mainEntity and add custom parameters
+  parameters: {
+    'schema:about': 'http://example.org/[slug]', // CURIE key, absolute IRI value
+    'custom': '[slug]-suffix',                    // plain key, string value
+  },
+  queries: { details: plaqueQuery },
+})
+```
+
+In your query you can then read:
+
+```sparql
+BIND(sparqlc:param(schema:about) AS ?about)
+BIND(sparqlc:param("custom") AS ?suffix)
+```
+
+4) `mainEntity` convenience binding
+- `mainEntity` can be a template string too, using `[var]`
+- If it starts with `http`, it is used as an absolute IRI
+- Otherwise it is resolved against your app namespace (`env.kopflos.appNs`), so `'[slug]'` becomes `<app#[slug]>`
+- The resulting node is bound under `schema:mainEntity`, so you can access it as `sparqlc:param(schema:mainEntity)`
+
+```ts
+export default definePage({
+  // Absolute IRI with template
+  mainEntity: 'http://example.org/[slug]',
+  // or relative to the app namespace
+  // mainEntity: '[slug]',
+  queries: { details: plaqueQuery },
+})
+```
+
+Summary of precedence when setting a parameter key:
+- If a key is already present from route variables or query string, `parameters` will not overwrite it
+- `mainEntity` always sets `schema:mainEntity` (after template expansion)
+
+---
+
+### 6. Navigating the Graph with `lit-rdf`
 
 The `@kopflos-labs/pages` plugin leverages `lit-rdf` to provide a declarative way of binding RDF data to web components.
 

@@ -23,8 +23,15 @@ declare module '@rdfjs/types' {
 
 export type PageData = Record<string, AnyPointer | DatasetCore>
 
-export interface QueryDescriptor {
+interface DynamicImport {
+  ({ base }: { base: string }): Promise<{ default: ExecuteConstruct }>
+}
+
+export type QueryDescriptor = {
   query: ExecuteConstruct
+  endpoint?: string
+} | {
+  load: DynamicImport
   endpoint?: string
 }
 
@@ -43,7 +50,11 @@ interface Parameters {
 }
 
 export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<AnyPointer> {
-  const construct: ExecuteConstruct = typeof query === 'function' ? query : query.query
+  const construct = typeof query === 'function'
+    ? query
+    : 'query' in query
+      ? query.query
+      : (await query.load({ base: env.kopflos.appNs().value })).default
   const endpoint: string | undefined = typeof query === 'object' ? query.endpoint : undefined
 
   const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
