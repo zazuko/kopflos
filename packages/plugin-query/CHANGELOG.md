@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-query
 
+## 0.1.1
+
+### Patch Changes
+
+- cd87f85: Handle `ASK` and `CONSTRUCT/DESCRIBE` queries
+
 ## 0.1.0
 
 ### Minor Changes
