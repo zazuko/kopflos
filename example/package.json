@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "@kopflos-cms/hydra": "0.2.3",
     "@kopflos-cms/in-memory": "0.1.0",
     "@kopflos-cms/plugin-deploy-resources": "0.2.3",
-    "@kopflos-cms/plugin-query": "0.1.0",
+    "@kopflos-cms/plugin-query": "0.1.1",
     "@kopflos-cms/express": "0.2.1",
     "@kopflos-cms/serve-file": "0.1.0",
     "@kopflos-cms/shacl": "0.3.2",
