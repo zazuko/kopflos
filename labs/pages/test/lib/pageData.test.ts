@@ -69,6 +69,37 @@ describe('pageData', function () {
       }))
     })
 
+    it('executes a query loaded dynamically', async function () {
+      // given
+      const loaded = sinon.stub().resolves(parent.dataset().toStream())
+      const query = {
+        load: sinon.stub().resolves({ default: loaded }),
+        endpoint: 'named',
+      }
+      const env = new Environment([
+        TestKopflosFactory,
+        mockSparqlFactory('named'),
+      ], { parent })
+      const subjectVariables = {}
+      const queryParams = {}
+      const pagePatterns: PagePatterns = []
+
+      // when
+      await executeQuery({
+        query,
+        env,
+        subjectVariables,
+        queryParams,
+        pagePatterns,
+      })
+
+      // then
+      expect(query.load).to.have.been.calledWith({ base: 'http://example.org/app#' })
+      expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
+        client: env.sparql.named.stream,
+      }))
+    })
+
     it('passes array-valued query parameters', async function () {
       // given
       const query = sinon.stub().resolves(parent.dataset().toStream())
