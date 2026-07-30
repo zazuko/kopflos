@@ -10,6 +10,11 @@
     "build": "tsc",
     "prepack": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zazuko/kopflos.git",
+    "directory": "packages/plugin-query"
+  },
   "mocha": {
     "spec": "test/**/*.test.ts",
     "extends": "../../package.json"
