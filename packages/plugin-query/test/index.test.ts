@@ -66,7 +66,7 @@ describe('@kopflos-cms/plugin-query', function () {
     }
   })
 
-  it('handles in-memory endpoints directly', async function () {
+  it('runs select queries in in-memory endpoint', async function () {
     const { createInMemoryClients } = await import('@kopflos-cms/in-memory')
     const inMemory = createInMemoryClients()
 
@@ -96,5 +96,61 @@ describe('@kopflos-cms/plugin-query', function () {
     expect(response.body.head.vars).to.contain('s')
     expect(response.body.results.bindings[0].s.type).to.equal('literal')
     expect(response.body.results.bindings[0].s.value).to.equal('1')
+  })
+
+  it('runs construct queries in in-memory endpoint', async function () {
+    const { createInMemoryClients } = await import('@kopflos-cms/in-memory')
+    const inMemory = createInMemoryClients()
+
+    const { middleware } = await kopflos({
+      baseIri: 'http://example.org/',
+      sparql: {
+        default: {
+          parsed: new ParsingClient({ endpointUrl: 'http://example.org/sparql' }),
+          stream: new StreamClient({ endpointUrl: 'http://example.org/sparql' }),
+        },
+        internal: inMemory,
+      },
+      plugins: [new QueryPlugin()],
+    })
+
+    const internalApp = express()
+      .use(middleware)
+
+    await request(internalApp)
+      .post('/-/query/internal')
+      .send('query=CONSTRUCT WHERE { ?s ?p ?o }')
+      .set('accept', 'text/turtle')
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .expect(200)
+      .expect('content-type', /text\/turtle/)
+  })
+
+  it('runs ask queries in in-memory endpoint', async function () {
+    const { createInMemoryClients } = await import('@kopflos-cms/in-memory')
+    const inMemory = createInMemoryClients()
+
+    const { middleware } = await kopflos({
+      baseIri: 'http://example.org/',
+      sparql: {
+        default: {
+          parsed: new ParsingClient({ endpointUrl: 'http://example.org/sparql' }),
+          stream: new StreamClient({ endpointUrl: 'http://example.org/sparql' }),
+        },
+        internal: inMemory,
+      },
+      plugins: [new QueryPlugin()],
+    })
+
+    const internalApp = express()
+      .use(middleware)
+
+    await request(internalApp)
+      .post('/-/query/internal')
+      .send('query=ASK { ?s ?p ?o }')
+      .set('accept', 'application/sparql-results+json')
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .expect(200)
+      .expect('content-type', 'application/sparql-results+json; charset=utf-8')
   })
 })
