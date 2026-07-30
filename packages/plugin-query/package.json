@@ -33,7 +33,6 @@
     "@types/express": "^5",
     "@types/mocha": "^10.0.7",
     "@types/negotiator": "^0.6.4",
-    "@types/rdfjs__formats-common": "^3.1.5",
     "@types/sparql-http-client": "^3.1.0",
     "@types/supertest": "^6.0.2",
     "@zazuko/env-node": "^3.0.0",
