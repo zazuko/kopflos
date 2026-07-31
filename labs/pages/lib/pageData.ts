@@ -28,34 +28,35 @@ interface DynamicImport {
 }
 
 export type QueryDescriptor = {
-  query: ExecuteConstruct
+  query: ExecuteConstruct | URL
   endpoint?: string
 } | {
   load: DynamicImport
   endpoint?: string
 }
 
-export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
+export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct | URL>
 
 type ParamMapEntry = [Term, Term | Term[]]
 
+interface ImportQuery {
+  (url: URL, base: string): Promise<ExecuteConstruct>
+}
+
 interface Parameters {
-  query: QueryDescriptor | ExecuteConstruct
+  query: QueryDescriptor | ExecuteConstruct | URL
   parameters?: Record<string, string>
   mainEntity?: string
   env: Environment<Required<DataFactory> | DatasetFactoryExt | TermSetFactory | SparqlClientFactory | KopflosFactory | NsBuildersFactory | ClownfaceFactory>
   subjectVariables: HandlerArgs['subjectVariables']
   queryParams: HandlerArgs['query']
   pagePatterns: PagePatternsRow[]
+  importQuery: ImportQuery
 }
 
-export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<AnyPointer> {
-  const construct = typeof query === 'function'
-    ? query
-    : 'query' in query
-      ? query.query
-      : (await query.load({ base: env.kopflos.appNs().value })).default
-  const endpoint: string | undefined = typeof query === 'object' ? query.endpoint : undefined
+export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns, importQuery }: Parameters): Promise<AnyPointer> {
+  const construct = await getQueryExecutor(query, env.kopflos.appNs().value, importQuery)
+  const endpoint: string | undefined = typeof query === 'object' && 'endpoint' in query ? query.endpoint : undefined
 
   const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
 
@@ -114,4 +115,24 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
   return env.clownface({
     dataset,
   })
+}
+
+async function getQueryExecutor(arg: QueryDescriptor | ExecuteConstruct | URL, base: string, importQuery: ImportQuery): Promise<ExecuteConstruct> {
+  if (typeof arg === 'function') {
+    return arg
+  }
+
+  if ('query' in arg) {
+    if (typeof arg.query === 'function') {
+      return arg.query
+    }
+
+    return importQuery(arg.query, base)
+  }
+
+  if ('load' in arg) {
+    return (await arg.load({ base })).default
+  }
+
+  return importQuery(arg, base)
 }

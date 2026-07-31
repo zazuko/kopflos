@@ -159,12 +159,14 @@ export default definePage({
     // 4) Lazy load (dynamic import)
     lazyPlaque: {
       endpoint: 'readonly',
-      load: async ({ base }) => {
-        // `base` equals your app namespace IRI
-        // required when query uses local relative URI references
-        return import('./plaque.rq', { with: { base } })
+      load: async () => {
+        return import('./plaque.rq')
       },
     },
+    
+    // 5) lazy load (declarative)
+    //    also allowed as object with `query/endpoint` properties
+    lazyPlaqueDeclarative: new URL('./plaque.rq', import.meta.url),
   },
 
   body() {
@@ -172,6 +174,10 @@ export default definePage({
   },
 })
 ```
+
+Note: import attributes cannot be used in `load` function untile vite supports them. 
+See [discussion](https://github.com/vitejs/vite/discussions/18534). To resolve realtive URL references
+against the API base, pass the query path as URL as shown in the last example.
 
 When using `endpoint`, the query runs against `env.sparql[endpoint].stream`. If omitted, the default client `env.sparql.default.stream` is used.
 
