@@ -137,7 +137,7 @@ Each entry under `queries` supports multiple forms:
 - Direct function (default export of a `.rq` file compiled by `sparqlc`)
 - Object with `query` execute function (imported statically)
 - Object with `query` as string (imported dynamically)
-  - this method is necessary when query uses relative URI references which will be resolved agains API base URL 
+  - this method is necessary when the query uses relative URI references which will be resolved against API base URL 
 - Object with `load` (lazy/dynamic import)
 - Optional `endpoint` to target a named SPARQL client instead of the default
 
