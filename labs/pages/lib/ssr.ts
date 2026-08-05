@@ -54,8 +54,8 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
       env,
       subjectVariables: req.subjectVariables,
       queryParams: req.query,
-      importQuery(query, base) {
-        return import(query.toString(), { with: { base } })
+      async importQuery(query, base) {
+        return (await import(query.toString(), { with: { base } })).default
       },
     })
     const end = performance.now()
