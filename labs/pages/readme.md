@@ -135,7 +135,9 @@ The `queries` option of `definePage` lets you declare one or more data sources t
 Each entry under `queries` supports multiple forms:
 
 - Direct function (default export of a `.rq` file compiled by `sparqlc`)
-- Object with `query`
+- Object with `query` execute function (imported statically)
+- Object with `query` as string (imported dynamically)
+  - this method is necessary when query uses relative URI references which will be resolved agains API base URL 
 - Object with `load` (lazy/dynamic import)
 - Optional `endpoint` to target a named SPARQL client instead of the default
 
@@ -156,12 +158,16 @@ export default definePage({
     // 3) Select a named endpoint (must exist in env.sparql)
     plaqueOnNamed: { query: plaqueQuery, endpoint: 'analytics' },
 
-    // 4) Lazy load (dynamic import)
+    // 5) Lazy load (declarative dynamic import)
+    plaqueRelative: {
+      query: './plaque.rq',
+      importMeta: import.meta,
+    },
+
+    // 5) Lazy load (imperative dynamic import)
     lazyPlaque: {
       endpoint: 'readonly',
-      load: async () => {
-        return import('./plaque.rq')
-      },
+      load: () => import('./plaque.rq'),
     },
     
     // 5) lazy load (declarative)

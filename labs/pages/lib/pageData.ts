@@ -28,23 +28,27 @@ interface DynamicImport {
 }
 
 export type QueryDescriptor = {
-  query: ExecuteConstruct | URL
+  query: ExecuteConstruct
+  endpoint?: string
+} | {
+  query: string
+  importMeta: ImportMeta
   endpoint?: string
 } | {
   load: DynamicImport
   endpoint?: string
 }
 
-export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct | URL>
+export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 
 type ParamMapEntry = [Term, Term | Term[]]
 
 interface ImportQuery {
-  (url: URL, base: string): Promise<ExecuteConstruct>
+  (url: string, base: string): Promise<ExecuteConstruct>
 }
 
 interface Parameters {
-  query: QueryDescriptor | ExecuteConstruct | URL
+  query: QueryDescriptor | ExecuteConstruct
   parameters?: Record<string, string>
   mainEntity?: string
   env: Environment<Required<DataFactory> | DatasetFactoryExt | TermSetFactory | SparqlClientFactory | KopflosFactory | NsBuildersFactory | ClownfaceFactory>
@@ -117,22 +121,18 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
   })
 }
 
-async function getQueryExecutor(arg: QueryDescriptor | ExecuteConstruct | URL, base: string, importQuery: ImportQuery): Promise<ExecuteConstruct> {
+async function getQueryExecutor(arg: QueryDescriptor | ExecuteConstruct, base: string, importQuery: ImportQuery): Promise<ExecuteConstruct> {
   if (typeof arg === 'function') {
     return arg
   }
 
+  if ('importMeta' in arg) {
+    return importQuery(new URL(arg.query, arg.importMeta.url).toString(), base)
+  }
+
   if ('query' in arg) {
-    if (typeof arg.query === 'function') {
-      return arg.query
-    }
-
-    return importQuery(arg.query, base)
+    return arg.query
   }
 
-  if ('load' in arg) {
-    return (await arg.load({ base })).default
-  }
-
-  return importQuery(arg, base)
+  return (await arg.load({ base })).default
 }

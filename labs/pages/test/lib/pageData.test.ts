@@ -112,12 +112,13 @@ describe('pageData', function () {
       }))
     })
 
-    it('executes a query loaded dynamically by module id', async function () {
+    it('executes a query loaded dynamically by relative module id', async function () {
       // given
       const loaded = sinon.stub().resolves(parent.dataset().toStream())
       importQuery.resolves(loaded)
       const query = {
-        query: new URL('foobar.rq', import.meta.url),
+        query: 'foobar.rq',
+        importMeta: import.meta,
         endpoint: 'named',
       }
       const env = new Environment([
@@ -140,7 +141,7 @@ describe('pageData', function () {
 
       // then
       expect(importQuery).to.have.been.calledWith(
-        sinon.match((url: URL) => url.href.endsWith('foobar.rq')),
+        sinon.match((url: string) => url.endsWith('foobar.rq')),
         'http://example.org/app#',
       )
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
