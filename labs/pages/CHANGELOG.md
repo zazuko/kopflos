@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.2.6
+
+### Patch Changes
+
+- a729303: Adds a way to declare page queries using module reference (avoids Vite inability to handle import attributes)
+- a729303: Adds the possibility to load queries using relative module id
+
 ## 0.2.5
 
 ### Patch Changes
