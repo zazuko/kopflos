@@ -2,20 +2,29 @@ import { PassThrough } from 'node:stream'
 import type { parse } from 'node:querystring'
 import parent, { Environment } from '@zazuko/env-node'
 import type { KopflosConfig } from '@kopflos-cms/core'
+import type { SinonStub } from 'sinon'
 import sinon from 'sinon'
 import { expect } from 'chai'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { Bindings as PagePatternsRow } from '../../queries/page-patterns.rq'
 import { executeQuery } from '../../lib/pageData.js'
+import type { ExecuteConstruct } from 'sparqlc'
 
 type PagePatterns = PagePatternsRow[]
 
 describe('pageData', function () {
   describe('executeQuery', function () {
+    let query: ExecuteConstruct
+    let importQuery: SinonStub
+
+    beforeEach(function () {
+      importQuery = sinon.stub()
+    })
+
     it('executes a simple query against default endpoint', async function () {
       // given
-      const query = sinon.stub().resolves(parent.dataset().toStream())
+      query = sinon.stub().resolves(parent.dataset().toStream())
       const env = new Environment([
         TestKopflosFactory,
         mockSparqlFactory(),
@@ -31,6 +40,7 @@ describe('pageData', function () {
         subjectVariables,
         queryParams,
         pagePatterns,
+        importQuery,
       })
 
       // then
@@ -61,6 +71,7 @@ describe('pageData', function () {
         subjectVariables,
         queryParams,
         pagePatterns,
+        importQuery,
       })
 
       // then
@@ -91,10 +102,48 @@ describe('pageData', function () {
         subjectVariables,
         queryParams,
         pagePatterns,
+        importQuery,
       })
 
       // then
       expect(query.load).to.have.been.calledWith({ base: 'http://example.org/app#' })
+      expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
+        client: env.sparql.named.stream,
+      }))
+    })
+
+    it('executes a query loaded dynamically by relative module id', async function () {
+      // given
+      const loaded = sinon.stub().resolves(parent.dataset().toStream())
+      importQuery.resolves(loaded)
+      const query = {
+        query: 'foobar.rq',
+        importMeta: import.meta,
+        endpoint: 'named',
+      }
+      const env = new Environment([
+        TestKopflosFactory,
+        mockSparqlFactory('named'),
+      ], { parent })
+      const subjectVariables = {}
+      const queryParams = {}
+      const pagePatterns: PagePatterns = []
+
+      // when
+      await executeQuery({
+        query,
+        env,
+        subjectVariables,
+        queryParams,
+        pagePatterns,
+        importQuery,
+      })
+
+      // then
+      expect(importQuery).to.have.been.calledWith(
+        sinon.match((url: string) => url.endsWith('foobar.rq')),
+        'http://example.org/app#',
+      )
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
         client: env.sparql.named.stream,
       }))
@@ -118,6 +167,7 @@ describe('pageData', function () {
         subjectVariables: {},
         queryParams,
         pagePatterns: [],
+        importQuery,
       })
 
       // then
@@ -151,6 +201,7 @@ describe('pageData', function () {
         queryParams: {},
         pagePatterns: [],
         parameters,
+        importQuery,
       })
 
       // then
@@ -181,6 +232,7 @@ describe('pageData', function () {
         queryParams: {},
         pagePatterns: [],
         parameters,
+        importQuery,
       })
 
       // then
@@ -209,6 +261,7 @@ describe('pageData', function () {
         subjectVariables: {},
         queryParams,
         pagePatterns: [],
+        importQuery,
       })
 
       // then
@@ -238,6 +291,7 @@ describe('pageData', function () {
         queryParams: {},
         pagePatterns: [],
         mainEntity: 'http://example.org/[slug]',
+        importQuery,
       })
 
       // then
@@ -264,6 +318,7 @@ describe('pageData', function () {
         queryParams: {},
         pagePatterns: [],
         mainEntity: '[slug]',
+        importQuery,
       })
 
       // then
@@ -295,6 +350,7 @@ describe('pageData', function () {
         subjectVariables,
         queryParams,
         pagePatterns,
+        importQuery,
       })
 
       // then

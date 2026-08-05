@@ -31,6 +31,10 @@ export type QueryDescriptor = {
   query: ExecuteConstruct
   endpoint?: string
 } | {
+  query: string
+  importMeta: ImportMeta
+  endpoint?: string
+} | {
   load: DynamicImport
   endpoint?: string
 }
@@ -38,6 +42,10 @@ export type QueryDescriptor = {
 export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 
 type ParamMapEntry = [Term, Term | Term[]]
+
+interface ImportQuery {
+  (url: string, base: string): Promise<ExecuteConstruct>
+}
 
 interface Parameters {
   query: QueryDescriptor | ExecuteConstruct
@@ -47,15 +55,12 @@ interface Parameters {
   subjectVariables: HandlerArgs['subjectVariables']
   queryParams: HandlerArgs['query']
   pagePatterns: PagePatternsRow[]
+  importQuery: ImportQuery
 }
 
-export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<AnyPointer> {
-  const construct = typeof query === 'function'
-    ? query
-    : 'query' in query
-      ? query.query
-      : (await query.load({ base: env.kopflos.appNs().value })).default
-  const endpoint: string | undefined = typeof query === 'object' ? query.endpoint : undefined
+export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns, importQuery }: Parameters): Promise<AnyPointer> {
+  const construct = await getQueryExecutor(query, env.kopflos.appNs().value, importQuery)
+  const endpoint: string | undefined = typeof query === 'object' && 'endpoint' in query ? query.endpoint : undefined
 
   const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
 
@@ -114,4 +119,20 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
   return env.clownface({
     dataset,
   })
+}
+
+async function getQueryExecutor(arg: QueryDescriptor | ExecuteConstruct, base: string, importQuery: ImportQuery): Promise<ExecuteConstruct> {
+  if (typeof arg === 'function') {
+    return arg
+  }
+
+  if ('importMeta' in arg) {
+    return importQuery(new URL(arg.query, arg.importMeta.url).toString(), base)
+  }
+
+  if ('query' in arg) {
+    return arg.query
+  }
+
+  return (await arg.load({ base })).default
 }
