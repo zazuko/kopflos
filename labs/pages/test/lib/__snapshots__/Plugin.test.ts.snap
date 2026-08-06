@@ -28,6 +28,26 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base with slash deployedResources shou
 		<http://www.w3.org/ns/shacl#pattern> \\"https://example.org//about\\" ;
 	] .
 
+<https://kopflos.described.at/Pages#ssr-relativeModulePage.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"ssr-relativeModulePage.ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/ssr-relativeModulePage.html$\\" ;
+	] .
+
 <https://kopflos.described.at/Pages#relative-entity.ts> a <https://kopflos.described.at/ResourceShape> ;
 	<https://kopflos.described.at/api> <https://example.org/> ;
 	<https://kopflos.described.at/handler> [
@@ -147,6 +167,26 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base without slash deployedResources s
 	<http://www.w3.org/ns/shacl#property> [
 		<http://www.w3.org/ns/shacl#path> <http://schema.org/mainEntity> ;
 		<http://www.w3.org/ns/shacl#pattern> \\"https://example.org/about\\" ;
+	] .
+
+<https://kopflos.described.at/Pages#ssr-relativeModulePage.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org> ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"ssr-relativeModulePage.ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/ssr-relativeModulePage.html$\\" ;
 	] .
 
 <https://kopflos.described.at/Pages#relative-entity.ts> a <https://kopflos.described.at/ResourceShape> ;

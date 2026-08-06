@@ -134,6 +134,25 @@ describe('ssr', function () {
     expect(result).to.contain('Bar')
   })
 
+  it('injects data imported dynamically', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-relativeModulePage.js')).default
+    const template = '<html><head></head><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {},
+    })
+
+    // then
+    expect(result).to.contain('window.graphs.foo =')
+    expect(result).to.contain('Bar')
+  })
+
   it('calls connectedCallback by default', async function () {
     // given
     const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
