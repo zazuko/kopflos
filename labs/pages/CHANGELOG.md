@@ -1,5 +1,13 @@
 # @kopflos-labs/pages
 
+## 0.2.7
+
+### Patch Changes
+
+- a251f96: In SSR, the query module was returned instead of default export
+- 6cf4221: Removed `html` re-exported from `lit` because it would cause vite bundle error
+- 89e4bf2: Exception would be thrown if page used a data not present in `queries` map
+
 ## 0.2.6
 
 ### Patch Changes
