@@ -1,5 +1,6 @@
-import { html, definePage } from '@kopflos-labs/pages'
+import { definePage } from '@kopflos-labs/pages'
 import plaque from './plaque.rq'
+import { html } from 'lit'
 
 export default definePage({
   mainEntity: '/plaque/[id]',
