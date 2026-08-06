@@ -14,6 +14,7 @@ import selectPagePatterns from '../queries/page-patterns.rq'
 import type { PageData } from './pageData.js'
 import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
+import type { DatasetCore } from '@rdfjs/types'
 
 const log = createLogger('ssr')
 
@@ -89,7 +90,14 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
       'window.graphs = window.graphs || {};',
       ...[...usedData].map((name) => {
         const datasetOrPointer = data[name]
-        const dataset = 'terms' in datasetOrPointer ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
+        let dataset: DatasetCore
+        if (datasetOrPointer) {
+          dataset = 'terms' in datasetOrPointer ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
+        }
+        else {
+          log.warn(`Page data not found for key ${name}`)
+          dataset = env.dataset()
+        }
         return serializer.transform(dataset).replace('export default', `window.graphs.${name} =`)
       }),
     ].join('\n')

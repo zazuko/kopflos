@@ -153,6 +153,24 @@ describe('ssr', function () {
     expect(result).to.contain('Bar')
   })
 
+  it('does not fail on missing data', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-missingData.js')).default
+    const template = '<html><head></head><body></body></html>'
+
+    // when
+    const promise = ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {},
+    })
+
+    // then
+    await expect(promise).to.be.fulfilled
+  })
+
   it('calls connectedCallback by default', async function () {
     // given
     const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
