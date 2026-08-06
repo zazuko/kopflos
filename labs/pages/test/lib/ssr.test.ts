@@ -134,7 +134,7 @@ describe('ssr', function () {
     expect(result).to.contain('Bar')
   })
 
-  it('injects data imported dyamically', async function () {
+  it('injects data imported dynamically', async function () {
     // given
     const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-relativeModulePage.js')).default
     const template = '<html><head></head><body></body></html>'
