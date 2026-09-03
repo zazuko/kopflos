@@ -43,7 +43,7 @@
     "@types/sparql-http-client": "^3.1.0",
     "@types/supertest": "^6.0.2",
     "@zazuko/env-node": "^3.0.0",
-    "mocha": "^10.7.0",
+    "mocha": "^12.0.0",
     "supertest": "^7.0.0",
     "tsx": "^4.19.3"
   },
