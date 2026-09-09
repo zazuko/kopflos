@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.2.8
+
+### Patch Changes
+
+- 7d070b7: Improve performance of `open-styles`
+
 ## 0.2.7
 
 ### Patch Changes

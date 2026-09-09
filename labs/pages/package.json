@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-labs/pages",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -51,7 +51,7 @@
     "vite": "6 - 8"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.7.1",
+    "@kopflos-cms/core": "^0.7.3",
     "@open-wc/testing": "^5.0.0",
     "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/rdfjs__serializer-rdfjs": "^0.1.6",
