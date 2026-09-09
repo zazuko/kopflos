@@ -1,5 +1,11 @@
 # @kopflos-cms/core
 
+## 0.7.3
+
+### Patch Changes
+
+- 2d33e52: Fixes extracting subject variables since the pattern is not absolute
+
 ## 0.7.2
 
 ### Patch Changes
