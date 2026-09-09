@@ -2,3 +2,4 @@ ignore:
   - example
   - packages/sparql-path-parser/src/grammar
   - "**/test/**"
+  - "**/web-test-runner.config.*"

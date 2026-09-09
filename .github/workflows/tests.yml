@@ -52,6 +52,29 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.package.name }}
 
+  browser-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [ "lts/-1", "lts/-2", "lts/*" ]
+        package:
+          - name: "@kopflos-labs/pages"
+            path: labs/pages
+    steps:
+      - uses: actions/checkout@v7
+      - uses: fabasoad/setup-prolog-action@v1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: npm run -w ${{ matrix.package.name }} test:browser
+      - name: Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: "@kopflos-labs/pages"
+
   lint:
     runs-on: ubuntu-latest
     steps:
