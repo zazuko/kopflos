@@ -92,7 +92,7 @@ export const getOpenStyles = () => {
 
 export const whenDOMReady = new Promise((resolve) => {
   const checkReady = (event?: Event) => {
-    if (document.readyState === 'complete' || event?.type === 'DOMContentLoaded') {
+    if (document.readyState !== 'loading' || event?.type === 'DOMContentLoaded') {
       document.removeEventListener('DOMContentLoaded', checkReady)
       document.removeEventListener('readystatechange', checkReady)
       resolve(true)
