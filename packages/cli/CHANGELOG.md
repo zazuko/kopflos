@@ -1,5 +1,19 @@
 # kopflos
 
+## 0.1.12
+
+### Patch Changes
+
+- ebe312f: Missing `serve` CLI command module
+- Updated dependencies [2bcb284]
+  - @kopflos-cms/core@0.7.2
+
+## 0.1.11
+
+### Patch Changes
+
+- 64266cb: Improve the resolution of relative plugin paths when they are not `.js`
+
 ## 0.1.10
 
 ### Patch Changes

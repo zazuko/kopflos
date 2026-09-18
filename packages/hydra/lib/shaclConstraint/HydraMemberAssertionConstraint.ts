@@ -2,7 +2,6 @@ import ConstraintComponent, {
   type Parameters,
   type PropertyShape,
 } from '@hydrofoil/shape-to-query/model/constraint/ConstraintComponent.js'
-// eslint-disable-next-line import/no-unresolved
 import { kl } from '@kopflos-cms/core/ns.js'
 import { hydra } from '@tpluscode/rdf-ns-builders'
 import type { NamedNode, Term } from '@rdfjs/types'
@@ -27,7 +26,7 @@ export class HydraMemberAssertionConstraint extends ConstraintComponent {
     super(kl['hydra#MemberAssertionConstraintComponent'])
   }
 
-  static * fromShape(shape: PropertyShape) {
+  static* fromShape(shape: PropertyShape) {
     const memberAssertions = shape.get(hydra.memberAssertion) || []
 
     for (const value of memberAssertions) {
@@ -47,9 +46,9 @@ export class HydraMemberAssertionConstraint extends ConstraintComponent {
   }
 
   static isValid(arg: MemberAssertion | Record<'subject' | 'property' | 'object', Term | undefined>): arg is MemberAssertion {
-    return (arg.subject === undefined && arg.property?.termType === 'NamedNode' && arg.object?.termType === 'NamedNode') ||
-      (arg.subject?.termType === 'NamedNode' && arg.property === undefined && arg.object?.termType === 'NamedNode') ||
-      (arg.subject?.termType === 'NamedNode' && arg.property?.termType === 'NamedNode' && arg.object === undefined)
+    return (arg.subject === undefined && arg.property?.termType === 'NamedNode' && arg.object?.termType === 'NamedNode')
+      || (arg.subject?.termType === 'NamedNode' && arg.property === undefined && arg.object?.termType === 'NamedNode')
+      || (arg.subject?.termType === 'NamedNode' && arg.property?.termType === 'NamedNode' && arg.object === undefined)
   }
 
   buildPropertyShapePatterns({ focusNode }: Parameters): BgpPattern[] {

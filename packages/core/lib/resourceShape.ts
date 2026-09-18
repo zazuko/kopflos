@@ -42,8 +42,7 @@ export default async (iri: NamedNode, instance: Kopflos) => {
 
   bindings.forEach((binding) => {
     if (binding.pattern) {
-      const subjectPath = binding.subject.value.substring(instance.env.kopflos.config.baseIri.length)
-      const subjectVariables = extractVariables(subjectPath, binding.pattern.value)
+      const subjectVariables = extractVariables(binding.subject.value, binding.pattern.value)
       log.debug('Subject variables:', subjectVariables)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       binding.subjectVariables = subjectVariables as any
@@ -53,8 +52,8 @@ export default async (iri: NamedNode, instance: Kopflos) => {
   return bindings as unknown as ResourceShapeMatch[]
 }
 
-function extractVariables(subjectPath: string, pattern: string): Map<string, string> {
+function extractVariables(subject: string, pattern: string): Map<string, string> {
   const regex = new RegExp(pattern)
-  const matchResult = regex.exec(subjectPath)
+  const matchResult = regex.exec(subject)
   return new Map(Object.entries(matchResult?.groups || {}))
 }

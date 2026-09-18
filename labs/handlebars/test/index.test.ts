@@ -15,7 +15,7 @@ describe('@kopflos-labs/handlebars', function () {
     },
   })
 
-  it("allows to use 'value' property of pointer", function () {
+  it('allows to use \'value\' property of pointer', function () {
     const result = process('{{ pointer.value }}', {
       pointer: this.rdf.graph.namedNode('http://example.org/article'),
     }, env)

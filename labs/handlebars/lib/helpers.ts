@@ -13,7 +13,8 @@ export const valueof = (baseIRI: string) => {
         propertyPath = parse(property, { baseIRI })
         cache.set(property, propertyPath)
       }
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       return (error as Error).message
     }
 

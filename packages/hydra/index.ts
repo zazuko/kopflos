@@ -11,12 +11,12 @@ import limitOffsetStrategy from './lib/partialCollection/limitOffsetStrategy.js'
 import pageIndexStrategy from './lib/partialCollection/pageIndexStrategy.js'
 
 type ExtendingTerms = 'hydra#memberShape'
-| 'hydra#memberCreateShape'
-| 'hydra#memberQueryShape'
-| 'hydra#MemberAssertionConstraintComponent'
-| 'hydra'
-| 'hydra#DefaultCollectionShape'
-| 'hydra#memberUriTemplate'
+  | 'hydra#memberCreateShape'
+  | 'hydra#memberQueryShape'
+  | 'hydra#MemberAssertionConstraintComponent'
+  | 'hydra'
+  | 'hydra#DefaultCollectionShape'
+  | 'hydra#memberUriTemplate'
 
 declare module '@kopflos-cms/core/ns.js' {
   interface KopflosTerms extends Record<ExtendingTerms, never> {
@@ -54,12 +54,16 @@ export default class implements HydraPlugin {
   private env: DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment> | undefined
   readonly partialCollectionStrategies: PartialCollectionStrategy[]
 
-  constructor(private readonly options: Options) {
+  constructor(private readonly options?: Options) {
     this.partialCollectionStrategies = [
-      ...this.options.partialCollectionStrategies ?? [],
+      ...this.options?.partialCollectionStrategies ?? [],
       limitOffsetStrategy,
       pageIndexStrategy,
     ]
+  }
+
+  private getApis(instance: Kopflos): Array<NamedNode | string> {
+    return this.options?.apis ?? [instance.env.kopflos.api]
   }
 
   createHydraEnv(instance: Kopflos): DerivedEnvironment<Environment<RdfineFactory | HydraFactory>, KopflosEnvironment> {
@@ -75,7 +79,7 @@ export default class implements HydraPlugin {
 
     const { kopflos: kl } = env.ns
 
-    const dataset = createDefaultShapes(env, this.options)
+    const dataset = createDefaultShapes(env, this.getApis(instance))
 
     await env.sparql.default.stream.store.put(dataset.toStream(), {
       graph: kl.hydra,

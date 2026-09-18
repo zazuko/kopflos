@@ -44,7 +44,8 @@ describe('kopflos/lib/command/serve', function () {
         process.on('message', (message) => {
           if (message === 'restart') {
             done()
-          } else {
+          }
+          else {
             done(new Error(`Unexpected message: ${message}`))
           }
         })
@@ -84,7 +85,8 @@ describe('kopflos/lib/command/serve', function () {
         process.on('message', (message) => {
           if (message === 'restart') {
             done()
-          } else {
+          }
+          else {
             done(new Error(`Unexpected message: ${message}`))
           }
         })
@@ -114,13 +116,14 @@ describe('kopflos/lib/command/serve', function () {
 
   function runTest(args: ServeArgs, action: (done: Mocha.Done) => void): Mocha.Func {
     return function (done) {
-      process.once('message', payload => {
+      process.once('message', (payload) => {
         if (payload === 'ready') {
           action(() => {
             done()
             process.kill()
           })
-        } else {
+        }
+        else {
           done(new Error(`Unexpected message: ${payload}`))
         }
       })

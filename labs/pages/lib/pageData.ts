@@ -1,4 +1,5 @@
 import { finished } from 'node:stream/promises'
+import type { Readable } from 'node:stream'
 import type { HandlerArgs } from '@kopflos-cms/core'
 import type { ExecuteConstruct } from 'sparqlc'
 import TermMap from '@rdfjs/term-map'
@@ -16,16 +17,35 @@ import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
 import { fillTemplate } from './pageParameters.js'
 
+declare module '@rdfjs/types' {
+  interface Stream extends Readable {}
+}
+
 export type PageData = Record<string, AnyPointer | DatasetCore>
 
-export interface QueryDescriptor {
+interface DynamicImport {
+  ({ base }: { base: string }): Promise<{ default: ExecuteConstruct }>
+}
+
+export type QueryDescriptor = {
   query: ExecuteConstruct
+  endpoint?: string
+} | {
+  query: string
+  importMeta: ImportMeta
+  endpoint?: string
+} | {
+  load: DynamicImport
   endpoint?: string
 }
 
 export type QueryMap = Record<string, QueryDescriptor | ExecuteConstruct>
 
 type ParamMapEntry = [Term, Term | Term[]]
+
+interface ImportQuery {
+  (url: string, base: string): Promise<ExecuteConstruct>
+}
 
 interface Parameters {
   query: QueryDescriptor | ExecuteConstruct
@@ -35,11 +55,12 @@ interface Parameters {
   subjectVariables: HandlerArgs['subjectVariables']
   queryParams: HandlerArgs['query']
   pagePatterns: PagePatternsRow[]
+  importQuery: ImportQuery
 }
 
-export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns }: Parameters): Promise<AnyPointer> {
-  const construct: ExecuteConstruct = typeof query === 'function' ? query : query.query
-  const endpoint: string | undefined = typeof query === 'object' ? query.endpoint : undefined
+export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns, importQuery }: Parameters): Promise<AnyPointer> {
+  const construct = await getQueryExecutor(query, env.kopflos.appNs().value, importQuery)
+  const endpoint: string | undefined = typeof query === 'object' && 'endpoint' in query ? query.endpoint : undefined
 
   const client = endpoint ? env.sparql[endpoint].stream : env.sparql.default.stream
 
@@ -88,7 +109,7 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
     ],
   })
   const transformed = result.pipe(new PageUrlTransform(pagePatterns, env))
-  result.on('error', (err) => transformed.emit('error', err))
+  result.on('error', err => transformed.emit('error', err))
   const datasetPromise = env.dataset().import(transformed)
   const [dataset] = await Promise.all([
     datasetPromise,
@@ -98,4 +119,20 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
   return env.clownface({
     dataset,
   })
+}
+
+async function getQueryExecutor(arg: QueryDescriptor | ExecuteConstruct, base: string, importQuery: ImportQuery): Promise<ExecuteConstruct> {
+  if (typeof arg === 'function') {
+    return arg
+  }
+
+  if ('importMeta' in arg) {
+    return importQuery(new URL(arg.query, arg.importMeta.url).toString(), base)
+  }
+
+  if ('query' in arg) {
+    return arg.query
+  }
+
+  return (await arg.load({ base })).default
 }

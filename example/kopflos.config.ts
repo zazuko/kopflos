@@ -7,6 +7,7 @@ import Vite from '@kopflos-cms/vite'
 import Hydra from '@kopflos-cms/hydra'
 import Shacl from '@kopflos-cms/shacl'
 import PluginPages from '@kopflos-labs/pages'
+import QueryPlugin from '@kopflos-cms/plugin-query'
 
 const baseIri = process.env.API_BASE || 'http://localhost:1429'
 
@@ -35,9 +36,7 @@ export default <KopflosConfig>{
         },
       },
     }),
-    new Hydra({
-      apis: [baseIri + '/api'],
-    }),
+    new Hydra(),
     new Shacl(),
     new PluginPages({
       ssrOptions: {
@@ -47,5 +46,6 @@ export default <KopflosConfig>{
         ],
       },
     }),
+    new QueryPlugin(),
   ],
 }

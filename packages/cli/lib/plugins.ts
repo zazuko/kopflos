@@ -1,8 +1,7 @@
-import module from 'node:module'
+import { pathToFileURL } from 'node:url'
+import { resolve as resolvePath } from 'node:path'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import { createLogger } from '@kopflos-cms/logger'
-
-const require = module.createRequire(import.meta.url)
 
 type KopflosPluginConstructor = new (options: unknown) => KopflosPlugin
 
@@ -25,7 +24,7 @@ export async function loadPlugins(root: string, plugins: Record<string, unknown>
 
     // if module is relative, resolve it relative to the root of the project
     if (module.startsWith('.')) {
-      module = require.resolve(module, { paths: [root] })
+      module = pathToFileURL(resolvePath(root, module)).href
     }
 
     const Plugin: KopflosPluginConstructor = (await import(module))[exportName]

@@ -1,6 +1,6 @@
 import log from '@kopflos-cms/logger'
 import PluginDeployResources from '@kopflos-cms/plugin-deploy-resources'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import { loadConfig } from '../config.js'
 
 interface DeployArgs {
@@ -15,7 +15,7 @@ export default async function (args: DeployArgs) {
   const autoDeployPluginConfig = config.plugins?.find(plugin => plugin instanceof PluginDeployResources)
 
   if (!autoDeployPluginConfig) {
-    log.error("'@kopflos-cms/plugin-deploy-resources' not found in plugin configuration")
+    log.error('\'@kopflos-cms/plugin-deploy-resources\' not found in plugin configuration')
     return process.exit(1)
   }
 

@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import type { HandlerArgs, KopflosEnvironment } from '@kopflos-cms/core'
-// eslint-disable-next-line import/no-unresolved
 import { createEnv } from '@kopflos-cms/core/env.js'
 import { createStore } from 'mocha-chai-rdf/store.js'
 import { shapesGraphLoader } from '../../lib/validation.js'
@@ -68,7 +67,7 @@ describe('@kopflos-cms/hydra/lib/validation.js', function () {
 
         // then
         const imports = [...shapesGraph.match(null, env.ns.owl.imports)]
-        expect(imports.map((m) => m.object)).to.deep.contain.all.members([
+        expect(imports.map(m => m.object)).to.deep.contain.all.members([
           ex.fooShapes,
           ex.barShapes,
         ])

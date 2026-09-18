@@ -20,15 +20,17 @@ export function replaceTemplates($: CheerioAPI, env: KopflosEnvironment, evaluat
       if (attr['target-class']) {
         const classIri = toNamedNode(attr['target-class'])
         pointers = graph.any().has(env.ns.rdf.type, classIri)
-      } else if (attr.property) {
+      }
+      else if (attr.property) {
         const property = toNamedNode(attr.property)
         pointers = graph.out(property)
-      } else {
+      }
+      else {
         log.warn('Unrecognized template', attr)
         return
       }
 
-      pointers.forEach(pointer => {
+      pointers.forEach((pointer) => {
         doReplace(pointer, $template.find('* > template'), level + 1)
       })
       $template.replaceWith(pointers.map(pointer => evaluateTemplate($template.html()!, { pointer }, env)).join(''))

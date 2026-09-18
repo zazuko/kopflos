@@ -27,7 +27,8 @@ async function run({
   if (_mode !== 'development' && _mode !== 'production') {
     log.warn('Invalid mode, defaulting to "production"')
     mode = 'production'
-  } else {
+  }
+  else {
     mode = _mode
   }
 

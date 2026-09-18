@@ -11,9 +11,10 @@ import type { AnyPointer } from 'clownface'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
 import { createLogger } from '@kopflos-cms/logger'
 import selectPagePatterns from '../queries/page-patterns.rq'
-import type { PageData, QueryMap } from './pageData.js'
+import type { PageData } from './pageData.js'
 import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
+import type { DatasetCore } from '@rdfjs/types'
 
 const log = createLogger('ssr')
 
@@ -45,7 +46,7 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
 
   const pagePatterns = await selectPagePatterns({ env, client: env.sparql.default.parsed })
 
-  const pendingQueries = Object.entries(page.queries as unknown as QueryMap).map(async ([key, query]) => {
+  const pendingQueries = Object.entries(page.queries || {}).map(async ([key, query]) => {
     const start = performance.now()
     const result = await executeQuery({
       ...page,
@@ -54,6 +55,9 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
       env,
       subjectVariables: req.subjectVariables,
       queryParams: req.query,
+      async importQuery(query, base) {
+        return (await import(query.toString(), { with: { base } })).default
+      },
     })
     const end = performance.now()
     log.info(`Page query ${key} took ${Math.round(end - start)}ms`)
@@ -86,7 +90,14 @@ const ssr: SsrModule = async ({ mode, page, html, req, options: ssrOptions = {} 
       'window.graphs = window.graphs || {};',
       ...[...usedData].map((name) => {
         const datasetOrPointer = data[name]
-        const dataset = 'terms' in datasetOrPointer ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
+        let dataset: DatasetCore
+        if (datasetOrPointer) {
+          dataset = 'terms' in datasetOrPointer ? (datasetOrPointer as AnyPointer).dataset : datasetOrPointer
+        }
+        else {
+          log.warn(`Page data not found for key ${name}`)
+          dataset = env.dataset()
+        }
         return serializer.transform(dataset).replace('export default', `window.graphs.${name} =`)
       }),
     ].join('\n')
@@ -128,31 +139,24 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
         this.setProperty('graph', data[value])
       }
 
-      const connectedCallbackAllowed = allowConnectedCallback.length === 0 || allowConnectedCallback.some((regex) => regex.test(this.element.tagName))
-      const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some((regex) => regex.test(this.element.tagName))
-
-      if (connectedCallbackAllowed && !connectedCallbackDisallowed) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.element.enableUpdating = function () { }
-          this.element.connectedCallback()
-        } catch (e: unknown) {
-          log.warn(`Error in connectedCallback for element ${this.element.tagName}`)
-          log.debug(e)
-        }
-      }
-
       return super.connectedCallback()
     }
 
-    * renderShadow(ri: RenderInfo) {
+    renderShadow(ri: RenderInfo) {
       const shadow = super.renderShadow(ri)
 
-      yield '<open-styles></open-styles>'
-      yield * shadow
+      return ['<open-styles></open-styles>', ...shadow || []]
     }
   }
+
+  LitElementRenderer.renderOptions.push((element) => {
+    const connectedCallbackAllowed = !options.allowConnectedCallback || allowConnectedCallback.some(regex => regex.test(element.localName))
+    const connectedCallbackDisallowed = disallowConnectedCallback.length > 0 && disallowConnectedCallback.some(regex => regex.test(element.localName))
+
+    return {
+      connectedCallback: connectedCallbackAllowed && !connectedCallbackDisallowed,
+    }
+  })
 
   return {
     Renderer,

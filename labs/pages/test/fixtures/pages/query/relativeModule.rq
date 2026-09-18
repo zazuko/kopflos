@@ -1,0 +1,6 @@
+PREFIX schema: <http://schema.org/>
+PREFIX ex: <http://example.org/>
+
+CONSTRUCT {
+  ex:foo schema:title "Bar"
+} WHERE {}

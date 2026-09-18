@@ -30,7 +30,7 @@ export interface DecoratorLookup {
 export const loadDecorators = async function ({ api, env }: DecoratorLookupArgs) {
   const decorators = api.out(kl.decorator)
 
-  const loaded = await Promise.all(decorators.map(async decorator => {
+  const loaded = await Promise.all(decorators.map(async (decorator) => {
     const implNode = decorator.out(env.ns.code.implementedBy)
     const impl = await env.load<RequestDecoratorConstructor>(implNode)
     if (!impl) {

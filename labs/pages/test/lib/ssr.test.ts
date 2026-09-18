@@ -6,6 +6,7 @@ import { createServer } from 'vite'
 import { createEnv } from '@kopflos-cms/core/env.js'
 import { streamClient, parsingClient } from 'mocha-chai-rdf/sparql-clients.js'
 import { createEmpty } from 'mocha-chai-rdf/store.js'
+import { LitElementRenderer } from '@lit-labs/ssr/lib/lit-element-renderer.js'
 import ssr from '../../lib/ssr.js'
 import type { Page } from '../../lib/Plugin.js'
 
@@ -15,6 +16,10 @@ describe('ssr', function () {
   let vite: ViteDevServer
 
   beforeEach(createEmpty)
+
+  beforeEach(() => {
+    LitElementRenderer.renderOptions.splice(0)
+  })
 
   beforeEach(function () {
     env = createEnv({
@@ -129,6 +134,43 @@ describe('ssr', function () {
     expect(result).to.contain('Bar')
   })
 
+  it('injects data imported dynamically', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-relativeModulePage.js')).default
+    const template = '<html><head></head><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {},
+    })
+
+    // then
+    expect(result).to.contain('window.graphs.foo =')
+    expect(result).to.contain('Bar')
+  })
+
+  it('does not fail on missing data', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-missingData.js')).default
+    const template = '<html><head></head><body></body></html>'
+
+    // when
+    const promise = ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {},
+    })
+
+    // then
+    await expect(promise).to.be.fulfilled
+  })
+
   it('calls connectedCallback by default', async function () {
     // given
     const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
@@ -145,6 +187,48 @@ describe('ssr', function () {
 
     // then
     expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: true')
+  })
+
+  it('does not call connectedCallback when disabled', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
+
+    const template = '<html><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {
+        disallowConnectedCallback: ['test-element'],
+      },
+    })
+
+    // then
+    expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: false')
+  })
+
+  it('does not call connectedCallback when not explicitly enabled', async function () {
+    // given
+    const page = (await vite.ssrLoadModule('../fixtures/pages/ssr-connectedCallback.js')).default
+
+    const template = '<html><body></body></html>'
+
+    // when
+    const result = await ssr({
+      mode: 'development',
+      page,
+      html: template,
+      req,
+      options: {
+        allowConnectedCallback: [],
+      },
+    })
+
+    // then
+    expect(result.replace(/<!--[\s\S]*?-->/g, '')).to.contain('Connected: false')
   })
 
   it('minifies script in production mode', async function () {

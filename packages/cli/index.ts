@@ -30,7 +30,8 @@ program.command('serve')
         if (message === 'restart') {
           proc.kill()
           serve()
-        } else {
+        }
+        else {
           log.error(`Unknown message: ${message}`)
         }
       })

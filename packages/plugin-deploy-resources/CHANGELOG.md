@@ -1,5 +1,11 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.2.3
+
+### Patch Changes
+
+- 8e6cf13: `paths` option is not required and uses `['resources']` by default
+
 ## 0.2.2
 
 ### Patch Changes

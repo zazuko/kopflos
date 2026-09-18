@@ -107,7 +107,7 @@ export function prepareMember(env: Environment<NsBuildersFactory | DataFactory |
         object.equals(newMember.term) ? memberId : object))
 
   collection.out(env.ns.hydra.memberAssertion)
-    .forEach(assertion => {
+    .forEach((assertion) => {
       let memberUsed = false
       let subject = assertion.out(env.ns.hydra.subject).term
       if (!subject) {

@@ -119,7 +119,8 @@ export default class DefaultPlugin extends VitePlugin {
     if (!Array.isArray(build)) {
       super('@kopflos-cms/vite', [build])
       this.buildConfiguration = build
-    } else {
+    }
+    else {
       super('@kopflos-cms/vite', build)
       if (build.length === 1) {
         this.buildConfiguration = build[0]

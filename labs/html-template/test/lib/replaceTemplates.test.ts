@@ -1,6 +1,6 @@
 /// <reference types="chai-html" />
 import { createStore } from 'mocha-chai-rdf/store.js'
-import { createEnv } from '@kopflos-cms/core/env.js' // eslint-disable-line import/no-unresolved
+import { createEnv } from '@kopflos-cms/core/env.js'
 import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import type { AnyPointer, GraphPointer } from 'clownface'
@@ -81,7 +81,7 @@ http://example.org/Foo
     return $
   }
 
-  function printValue(template: string, { pointer }: {pointer: GraphPointer}) {
+  function printValue(template: string, { pointer }: { pointer: GraphPointer }) {
     return template.replaceAll('_VALUE_', pointer.value)
   }
 })

@@ -19,7 +19,7 @@ export const shapesGraphLoader: ShapesGraphLoader = ({ env, subject }: HandlerAr
     .blankNode()
     .addOut(rdf.type, sh.NodeShape)
     .addOut(sh.targetNode, subject)
-    .addOut(sh.property, prop => {
+    .addOut(sh.property, (prop) => {
       prop
         .addOut(sh.path, hydra.member)
         .addOut(sh.maxCount, 1)
@@ -48,7 +48,7 @@ function copySubgraph(env: KopflosEnvironment, source: MultiPointer, destination
   })
 
   source.toArray()
-    .forEach(ptr => {
+    .forEach((ptr) => {
       traverser.forEach(ptr, ({ quad }) => {
         destination.add(quad)
       })

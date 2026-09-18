@@ -29,7 +29,8 @@ export default function bindTemplate<A extends unknown[] = unknown[]>(evaluateTe
       const templateData = fetchData(...args)(context)
       if ('then' in templateData || 'size' in templateData) {
         dataset = await templateData
-      } else {
+      }
+      else {
         dataset = await context.env.dataset().import(templateData)
       }
     }

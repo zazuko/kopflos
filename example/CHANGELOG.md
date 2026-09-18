@@ -1,5 +1,143 @@
 # example
 
+## 0.0.45
+
+### Patch Changes
+
+- Updated dependencies [7d070b7]
+  - @kopflos-labs/pages@0.2.8
+
+## 0.0.44
+
+### Patch Changes
+
+- Updated dependencies [a251f96]
+- Updated dependencies [6cf4221]
+- Updated dependencies [89e4bf2]
+  - @kopflos-labs/pages@0.2.7
+
+## 0.0.43
+
+### Patch Changes
+
+- Updated dependencies [a729303]
+- Updated dependencies [a729303]
+  - @kopflos-labs/pages@0.2.6
+
+## 0.0.42
+
+### Patch Changes
+
+- Updated dependencies [53ff270]
+  - @kopflos-labs/pages@0.2.5
+
+## 0.0.41
+
+### Patch Changes
+
+- Updated dependencies [1bd68f5]
+  - @kopflos-cms/plugin-query@0.1.2
+
+## 0.0.40
+
+### Patch Changes
+
+- Updated dependencies [cd87f85]
+  - @kopflos-cms/plugin-query@0.1.1
+
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies [27e0170]
+  - @kopflos-labs/pages@0.2.4
+
+## 0.0.38
+
+### Patch Changes
+
+- Updated dependencies [fb8e73f]
+- Updated dependencies [1945750]
+- Updated dependencies [022a35d]
+- Updated dependencies [c16c507]
+  - @kopflos-labs/pages@0.2.3
+
+## 0.0.37
+
+### Patch Changes
+
+- Updated dependencies [8e6cf13]
+- Updated dependencies [ab59491]
+- Updated dependencies [ee7aea7]
+  - @kopflos-cms/plugin-deploy-resources@0.2.3
+  - @kopflos-labs/pages@0.2.2
+
+## 0.0.36
+
+### Patch Changes
+
+- Updated dependencies [7738d66]
+  - @kopflos-labs/pages@0.2.1
+
+## 0.0.35
+
+### Patch Changes
+
+- Updated dependencies [06fc9ca]
+  - @kopflos-labs/pages@0.2.0
+  - @kopflos-labs/lit@0.2.0
+
+## 0.0.34
+
+### Patch Changes
+
+- Updated dependencies [2bcb284]
+- Updated dependencies [ebe312f]
+  - @kopflos-labs/handlebars@0.1.2
+  - @kopflos-cms/hydra@0.2.3
+  - @kopflos-cms/shacl@0.3.2
+  - kopflos@0.1.12
+
+## 0.0.33
+
+### Patch Changes
+
+- Updated dependencies [f4f9e47]
+  - @kopflos-labs/pages@0.1.4
+
+## 0.0.32
+
+### Patch Changes
+
+- Updated dependencies [64266cb]
+  - kopflos@0.1.11
+
+## 0.0.31
+
+### Patch Changes
+
+- Updated dependencies [d6a897c]
+- Updated dependencies [2775e9d]
+- Updated dependencies [7da764f]
+  - @kopflos-cms/plugin-query@0.1.0
+  - @kopflos-cms/vite@0.3.8
+  - @kopflos-labs/pages@0.1.3
+
+## 0.0.30
+
+### Patch Changes
+
+- Updated dependencies [c52a86f]
+  - @kopflos-cms/hydra@0.2.2
+
+## 0.0.29
+
+### Patch Changes
+
+- 9c2e96d: Created `@kopflos-cms/in-memory` package to easily deploy a kopflos API from filesystem resources
+- Updated dependencies [9c2e96d]
+  - @kopflos-cms/in-memory@0.1.0
+
 ## 0.0.28
 
 ### Patch Changes

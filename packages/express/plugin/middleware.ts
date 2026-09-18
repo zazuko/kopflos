@@ -22,13 +22,14 @@ export default class implements KopflosPlugin {
   declare afterMiddleware: (host: Router) => Promise<void>
 
   private async use(middlewares: Array<Middleware>, host: Router) {
-    const promises = middlewares.map(async middleware => {
+    const promises = middlewares.map(async (middleware) => {
       let module: string
       let options: unknown | undefined
 
       if (typeof middleware === 'string') {
         module = middleware
-      } else {
+      }
+      else {
         [module, options] = middleware
       }
       log.debug('Loading middleware', module)

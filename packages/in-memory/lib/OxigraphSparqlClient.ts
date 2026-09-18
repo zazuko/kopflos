@@ -5,6 +5,10 @@ import type { DatasetCore, Quad, Stream, Term } from '@rdfjs/types'
 import rdf from '@zazuko/env-node'
 import * as oxigraph from 'oxigraph'
 
+declare module '@rdfjs/types' {
+  interface Stream extends AsyncIterable<Quad> {}
+}
+
 class OxigraphClient {
   protected _store: oxigraph.Store
   constructor(store: oxigraph.Store) {
@@ -69,7 +73,7 @@ export class OxigraphParsingClient extends OxigraphClient implements ParsingClie
     },
     select: async (query: string): Promise<Record<string, Term>[]> => {
       const results = this._executeQuery<Map<string, Term>[]>(query)
-      return results.map(binding => {
+      return results.map((binding) => {
         const obj: Record<string, Term> = {}
         for (const [key, value] of binding) {
           obj[key] = value

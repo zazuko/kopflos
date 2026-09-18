@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/vite",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "type": "module",
   "main": "index.js",
   "author": "Zazuko GmbH",
@@ -31,13 +31,13 @@
     "express": "^5.2.0",
     "glob": "^13.0.5",
     "onetime": "^7.0.0",
-    "vite": "6-7"
+    "vite": "6 - 8"
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.7.1",
     "@zazuko/env-node": "^3.0.0",
     "@types/glob": "^8.1.0",
-    "chai": "^5.1.1"
+    "chai": "^6"
   },
   "mocha": {
     "spec": "test/**/*.test.ts",
