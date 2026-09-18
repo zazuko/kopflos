@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-x/no-extraneous-dependencies */
 import { esbuildPlugin } from '@web/dev-server-esbuild'
 import { chromeLauncher } from '@web/test-runner'
 

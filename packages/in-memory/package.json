@@ -37,7 +37,7 @@
     "@types/sinon-chai": "^4",
     "@types/sparql-http-client": "^3.0.4",
     "chai": "^6",
-    "chai-as-promised": "^8.0.0",
+    "chai-as-promised": "^8.0.2",
     "mocha-chai-rdf": "^0.2",
     "onetime": "^7.0.0",
     "sinon": "^18.0.0",

@@ -32,8 +32,12 @@ export const transform = function (this: Kopflos, path: string): SubjectHandler 
       }
     }
 
+    if (!vitePlugin) {
+      return response
+    }
+
     log.debug('Compiling page template')
-    const template = await fs.readFile(resolve(env.kopflos.basePath, vitePlugin!.buildConfiguration!.root, path))
+    const template = await fs.readFile(resolve(env.kopflos.basePath, vitePlugin.buildConfiguration!.root, path))
     return {
       ...response,
       body: await prepareDevTemplate(subject, template.toString()),
