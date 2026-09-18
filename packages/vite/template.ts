@@ -33,7 +33,7 @@ export const transform = function (this: Kopflos, path: string): SubjectHandler 
     }
 
     if (!vitePlugin) {
-      return response
+      throw new Error('Vite plugin not found. Did you forget to add it to the config?')
     }
 
     log.debug('Compiling page template')
