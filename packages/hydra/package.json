@@ -44,7 +44,7 @@
     "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/http-errors": "^2.0.4",
     "@zazuko/env-node": "^3",
-    "chai": "^5.1.2",
+    "chai": "^6",
     "mocha-chai-rdf": "^0.2"
   },
   "mocha": {

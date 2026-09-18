@@ -23,7 +23,7 @@
     "rdf-validate-shacl": "^0.6.1"
   },
   "devDependencies": {
-    "chai": "^5.1.2",
+    "chai": "^6",
     "mocha-chai-rdf": "^0.2",
     "sinon": "^18"
   },

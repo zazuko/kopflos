@@ -59,7 +59,7 @@
     "@web/dev-server-esbuild": "^2.0.0",
     "@web/test-runner": "^1.0.0",
     "@zazuko/env-node": "^3.0.0",
-    "chai": "^5",
+    "chai": "^6",
     "lit": "^3.3.2",
     "mocha-chai-jest-snapshot": "^1.1.7",
     "mocha-chai-rdf": "^0.2",
