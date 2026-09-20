@@ -7,5 +7,5 @@ import chaiHtml from 'chai-html'
 
 chai.use(rdfPlugin)
 chai.use(sinonChai)
-chai.use(chaiAsPromised)
 chai.use(chaiHtml)
+chai.use(chaiAsPromised)

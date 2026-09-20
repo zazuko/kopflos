@@ -37,7 +37,7 @@
     "@kopflos-cms/core": "^0.7.1",
     "@zazuko/env-node": "^3.0.0",
     "@types/glob": "^8.1.0",
-    "chai": "^5.1.1"
+    "chai": "^6"
   },
   "mocha": {
     "spec": "test/**/*.test.ts",

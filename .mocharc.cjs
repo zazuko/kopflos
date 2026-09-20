@@ -1,6 +1,10 @@
 module.exports = {
-  extensions: [
+  'extension': [
     'ts',
   ],
-  require: ['tsx', require.resolve('./mocha-setup.js')],
+  'node-option': [
+    'import=tsx',
+    'no-experimental-require-module',
+  ],
+  'require': [require.resolve('./mocha-setup.js')],
 }

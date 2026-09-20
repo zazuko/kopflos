@@ -19,20 +19,21 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
     "@eslint/compat": "^2.1.0",
-    "@eslint/js": "^9",
-    "@tpluscode/eslint-config": "^2",
-    "@types/chai": "^5",
+    "@eslint/js": "^10",
+    "@tpluscode/eslint-config": "^3.0.1",
+    "@tpluscode/rdf-ns-builders": "^5.1",
+    "@types/chai": "^5.2.3",
     "@types/debug": "^4.1.12",
-    "@types/mocha": "^10.0.7",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20",
     "@types/readable-stream": "^4.0.15",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "anylogger-console": "^1.0.0",
     "c8": "^10.1.2",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-import-resolver-typescript": "^4.4.5",
-    "mocha": "^10.7.0",
+    "mocha": "^12",
     "ts-plugin-sparqlc": "^0.1.1",
     "tsx": "^4.23.1",
     "typescript": "^5.5.4"
@@ -53,5 +54,8 @@
     "*.{js,ts}": [
       "eslint --fix --quiet"
     ]
+  },
+  "allowScripts": {
+    "eslint-plugin-rdf@3.1.0": true
   }
 }

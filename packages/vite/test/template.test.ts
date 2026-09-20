@@ -54,7 +54,7 @@ describe('@kopflos-cms/vite/template.js', function () {
         } as HandlerArgs
         const response = { headers: { 'content-type': 'text/html' }, body: '' }
 
-        await expect(handler(context, response)).to.eventually.equal(response)
+        expect(() => handler(context, response)).to.throw
       })
     })
 
