@@ -177,3 +177,34 @@ export class OpenStyles extends HTMLElement {
 }
 
 customElements.define('open-styles', OpenStyles)
+
+export function enableGlobalOpenStyles() {
+  const originalAttachShadow = Element.prototype.attachShadow
+
+  Element.prototype.attachShadow = function (init) {
+    const shadowRoot = originalAttachShadow.call(this, init)
+
+    if (init.mode === 'open') {
+      getOpenStyles().then(({ sheets, elements }) => {
+        // Adopt constructable stylesheets
+        if (sheets.length > 0) {
+          const existing = new Set(shadowRoot.adoptedStyleSheets)
+          const toAdd = sheets.filter(s => !existing.has(s))
+          if (toAdd.length > 0) {
+            shadowRoot.adoptedStyleSheets = [...shadowRoot.adoptedStyleSheets, ...toAdd]
+          }
+        }
+
+        // Prepend fallback link/style elements if present
+        for (const el of elements) {
+          const href = el.getAttribute?.('href')
+          if (!href || !shadowRoot.querySelector(`[href="${href}"]`)) {
+            shadowRoot.prepend(el.cloneNode(true))
+          }
+        }
+      })
+    }
+
+    return shadowRoot
+  }
+}

@@ -4,6 +4,9 @@ import { parseDocument } from 'htmlparser2'
 import { load } from 'cheerio'
 import type { SsrOptions } from './ssr.js'
 
+const globalOpenStylesScript = `import { enableGlobalOpenStyles } from '@kopflos-labs/pages/runtime/open-styles.js'
+enableGlobalOpenStyles()`
+
 export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
   return {
     name: 'pages-transform',
@@ -24,6 +27,7 @@ export default ({ deferHydration = true }: SsrOptions = {}): Plugin => {
         display: none;
     }
 </style>`)
+          .prepend(`<script type="module">${globalOpenStylesScript}</script>`)
         const body = $('body')
 
         body
