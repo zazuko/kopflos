@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.3.0
+
+### Minor Changes
+
+- 22930ee: Expect `lit-rdf` newer than `0.3.2` which introduced the `rdf-graph` element and changed data binding semantics.
+
 ## 0.2.8
 
 ### Patch Changes
