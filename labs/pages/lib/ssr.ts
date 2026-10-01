@@ -135,8 +135,14 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
     connectedCallback(): void {
       if (this.element?.hasAttribute('data-graph')) {
         const value = this.element.getAttribute('data-graph')!
+
+        if (!data[value]) {
+          log.warn(`No data found for key "${value}"`)
+          return
+        }
+
         usedData.add(value)
-        this.setProperty('value', 'dataset' in data[value] ? data[value].dataset : data[value])
+        this.setProperty('value', data[value] && 'dataset' in data[value] ? data[value].dataset : data[value])
       }
 
       return super.connectedCallback()
