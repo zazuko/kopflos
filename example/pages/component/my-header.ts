@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import { consumeFocusNode } from 'lit-rdf/mixins.js'
+import { FocusNode } from 'lit-rdf/controllers.js'
 
 @customElement('my-header')
-export class MyHeader extends consumeFocusNode(LitElement) {
+export class MyHeader extends LitElement {
   public static get styles() {
     return css`
       h1 {
@@ -12,7 +12,14 @@ export class MyHeader extends consumeFocusNode(LitElement) {
     `
   }
 
+  focusNode: FocusNode
+
+  constructor() {
+    super()
+    this.focusNode = new FocusNode(this)
+  }
+
   render() {
-    return html`<h1>${this.focusNode?.value}</h1>`
+    return html`<h1>${this.focusNode.pointer?.value}</h1>`
   }
 }

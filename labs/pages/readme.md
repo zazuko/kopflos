@@ -249,12 +249,13 @@ Summary of precedence when setting a parameter key:
 
 ### 6. Navigating the Graph with `lit-rdf`
 
-The `@kopflos-labs/pages` plugin leverages `lit-rdf` to provide a declarative way of binding RDF data to web components.
+It is recommended to use `lit-rdf` with  `@kopflos-labs/pages` to provide a declaratively bind RDF data to web components.
 
 #### Declarative Components
 
 - **`<rdf-environment>`**: Injects the RDF environment (including namespaces and utilities) into the component tree.
-- **`<data-graph>`**: Binds the results of a SPARQL query to the DOM tree.
+- **`<rdf-graph>`**: Binds the results of a SPARQL query to the DOM tree.
+- **`<rdf-dataset>`**: Collects graphs into `rdf-graph` elements as an RDF/JS Dataset and exposes to its children.
 - **`<target-node>`**: Focuses on a specific node within the current graph (usually the main resource).
 - **`<traverse-graph>`**: Shifts the "focus node" by following a property path (e.g., `schema:address/schema:addressLocality`).
 
@@ -262,22 +263,53 @@ For full documentation, visit the [lit-rdf](https://npm.im/lit-rdf) package.
 
 #### Creating Data-Bound Components
 
-To create custom components that consume the RDF graph, use the `consumeEnvironment` and `consumeFocusNode` mixins from `lit-rdf/mixins.js`.
+To create a page which consumes and navigates graph data, use the `lit-rdf` as shown below in the page `body`.
+The `data-graph` attribute specifies the name of the graph to bind to the component. It must match the
+entries of the `queries` object introduced above.
+
+```html
+<rdf-environment>
+  <rdf-dataset>
+    <rdf-graph data-graph="person">
+    </rdf-graph>
+    <rdf-graph data-graph="project">
+    </rdf-graph>
+    
+    <target-node target-class="schema:Person">
+      <my-header></my-header>
+      
+      <my-content></my-content>
+    </target-node>
+  </rdf-dataset>
+</rdf-environment>
+```
+
+To remove boilerplate, `<rdf-environment>` and `<rdf-dataset>` would typically be used in a root component
+which defined the overall page structure. Prefer composition to inheritance.
+
+To create custom components that consume the RDF graph, use the `FocusNode` controller from `lit-rdf/controllers.js`.
 
 ```typescript
-import { consumeEnvironment, consumeFocusNode } from 'lit-rdf/mixins.js'
+import { FocusNode } from 'lit-rdf/controllers.js'
 import { html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
 @customElement('my-header')
-export default class extends consumeEnvironment(consumeFocusNode(LitElement)) {
+export default class extends LitElement {
+  declare focusNode: FocusNode
+
+  constructor() {
+    super()
+    this.focusNode = new FocusNode()
+  }
+
   render() {
     // this.focusNode is automatically updated by parent <traverse-graph> or <target-node>
-    const name = this.focusNode?.value
+    const name = this.focusNode.pointer?.value
     
     return html`<h1>${name}</h1>`
   }
 }
 ```
 
-In your component, `this.focusNode` is a [`clownface` pointer](https://npm.im/clownface). You can use methods like `.out()`, `.in()`, and `.has()` to navigate further or extract values.
+In your component, `this.focusNode.pointer` is a [`clownface` pointer](https://npm.im/clownface). You can use methods like `.out()`, `.in()`, and `.has()` to navigate further or extract values.

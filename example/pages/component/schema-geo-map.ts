@@ -1,19 +1,28 @@
-import { consumeEnvironment, consumeFocusNode } from 'lit-rdf/mixins.js'
 import { html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import '@openlayers-elements/core/ol-map.js'
 import '@openlayers-elements/maps/ol-layer-openstreetmap.js'
 import '@openlayers-elements/maps/ol-marker-icon.js'
 import '@openlayers-elements/core/ol-layer-vector.js'
+import { Environment, FocusNode } from 'lit-rdf/controllers.js'
 
 @customElement('schema-geo-map')
-export default class extends consumeEnvironment(consumeFocusNode(LitElement)) {
+export default class extends LitElement {
+  declare focusNode: FocusNode
+  declare rdf: Environment
+
+  constructor() {
+    super()
+    this.focusNode = new FocusNode(this)
+    this.rdf = new Environment(this)
+  }
+
   get latitude() {
-    return this.focusNode?.out(this.rdf.ns.schema.latitude).value
+    return this.focusNode.pointer?.out(this.rdf.value.ns.schema.latitude).value
   }
 
   get longitude() {
-    return this.focusNode?.out(this.rdf.ns.schema.longitude).value
+    return this.focusNode.pointer?.out(this.rdf.value.ns.schema.longitude).value
   }
 
   render() {

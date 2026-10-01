@@ -48,7 +48,13 @@
     "vite-plugin-sparql": "^0.1.0"
   },
   "peerDependencies": {
-    "vite": "6 - 8"
+    "vite": "6 - 8",
+    "lit-rdf": ">=0.3.2"
+  },
+  "peerDependenciesMeta": {
+    "lit-rdf": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@kopflos-cms/core": "^0.7.3",

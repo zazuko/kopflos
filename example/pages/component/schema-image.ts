@@ -1,9 +1,9 @@
-import { consumeEnvironment, consumeFocusNode } from 'lit-rdf/mixins.js'
 import { css, html, LitElement, nothing } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { Environment, FocusNode } from 'lit-rdf/controllers.js'
 
 @customElement('schema-image')
-export class SchemaImage extends consumeFocusNode(consumeEnvironment(LitElement)) {
+export class SchemaImage extends LitElement {
   static styles = css`
       :host {
         display: flex;
@@ -20,8 +20,17 @@ export class SchemaImage extends consumeFocusNode(consumeEnvironment(LitElement)
   @property({ type: String })
   public alt?: string
 
+  declare focusNode: FocusNode
+  declare rdf: Environment
+
+  constructor() {
+    super()
+    this.focusNode = new FocusNode(this)
+    this.rdf = new Environment(this)
+  }
+
   protected render(): unknown {
-    const src = this.focusNode?.out(this.rdf.ns.schema.contentUrl).value
+    const src = this.focusNode.pointer?.out(this.rdf.value.ns.schema.contentUrl).value
     if (!src) {
       return nothing
     }

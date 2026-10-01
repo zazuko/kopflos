@@ -136,7 +136,7 @@ function prepareRenderer(data: PageData, options: SsrOptions) {
       if (this.element?.hasAttribute('data-graph')) {
         const value = this.element.getAttribute('data-graph')!
         usedData.add(value)
-        this.setProperty('graph', data[value])
+        this.setProperty('value', 'dataset' in data[value] ? data[value].dataset : data[value])
       }
 
       return super.connectedCallback()

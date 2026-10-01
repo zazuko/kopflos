@@ -17,7 +17,9 @@ export default definePage({
   body({ env }) {
     return html`
       <rdf-environment>
-        <data-graph data-graph="plaque">
+        <rdf-dataset>
+          <rdf-graph data-graph="plaque">
+          </rdf-graph>
           <target-node target-class="${env.kopflos.appNs('/api/schema/Plaque').value}">
             <header>
               <traverse-graph property-path="schema:name">
@@ -52,7 +54,7 @@ export default definePage({
               </traverse-graph>
             </main>
           </target-node>
-        </data-graph>
+        </rdf-dataset>
       </rdf-environment>`
   },
 })
