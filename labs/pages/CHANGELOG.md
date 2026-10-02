@@ -1,5 +1,11 @@
 # @kopflos-labs/pages
 
+## 0.3.2
+
+### Patch Changes
+
+- 518ec34: Fixes the rewrite of `kopflos:Pages` service clause which caused no matches for `schema:mainEntityOfPage` pattern
+
 ## 0.3.1
 
 ### Patch Changes
