@@ -2,11 +2,9 @@
 
 exports[`@kopflos-labs/pages/lib/SparqlProcessor should rewrite SERVICE <https://kopflos.described.at/Pages> 1`] = `
 "SELECT * WHERE {
-  {
-    VALUES (?resourcePattern ?pagePattern) {
-      (\\"^http://example.org/resource/(?<id>.+)$\\" \\"http://example.org/page/(?<id>.+)\\")
-    }
-    BIND(IF(REGEX(STR(?resource), ?resourcePattern), ?pagePattern, 1  / 0 ) AS ?page)
+  VALUES (?resourcePattern ?pagePattern) {
+    (\\"^http://example.org/resource/(?<id>.+)$\\" \\"http://example.org/page/(?<id>.+)\\")
   }
+  BIND(IF(REGEX(STR(?resource), ?resourcePattern), ?pagePattern, 1  / 0 ) AS ?page)
 }"
 `;

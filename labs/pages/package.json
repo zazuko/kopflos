@@ -27,7 +27,7 @@
     "url": "https://github.com/zazuko/kopflos"
   },
   "dependencies": {
-    "@hydrofoil/sparql-processor": "^0.2.1",
+    "@hydrofoil/sparql-processor": "^0.2.3",
     "@kopflos-cms/logger": "^0.1.0",
     "@kopflos-cms/vite": "^0.3.8",
     "@lit-labs/ssr": "^4.1.0",
