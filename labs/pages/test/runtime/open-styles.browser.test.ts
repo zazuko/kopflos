@@ -1,5 +1,5 @@
 import { expect, fixture } from '@open-wc/testing'
-import { getOpenStyles, whenDOMReady, OpenStyles } from '../../runtime/open-styles.js'
+import { getOpenStyles, whenDOMReady, OpenStyles, enableGlobalOpenStyles } from '../../runtime/open-styles.js'
 
 describe('open-styles element', () => {
   let styleEl: HTMLStyleElement
@@ -420,5 +420,168 @@ describe('open-styles element', () => {
     await new Promise(resolve => setTimeout(resolve, 50))
 
     expect(el.shadowRoot!.adoptedStyleSheets.length).to.equal(sheets.length)
+  })
+})
+
+describe('enableGlobalOpenStyles', () => {
+  let styleEl: HTMLStyleElement
+  let originalAttachShadow: typeof Element.prototype.attachShadow
+
+  beforeEach(async () => {
+    originalAttachShadow = Element.prototype.attachShadow
+
+    styleEl = document.createElement('style')
+    styleEl.textContent = `
+      .global-styled {
+        color: rgb(0, 128, 0);
+        font-size: 24px;
+      }
+    `
+    document.head.appendChild(styleEl)
+    await new Promise(resolve => setTimeout(resolve, 30))
+  })
+
+  afterEach(() => {
+    Element.prototype.attachShadow = originalAttachShadow
+    styleEl.remove()
+  })
+
+  it('preserves synchronous return of ShadowRoot instance', () => {
+    enableGlobalOpenStyles()
+
+    const el = document.createElement('div')
+    const shadow = el.attachShadow({ mode: 'open' })
+
+    expect(shadow).to.be.instanceOf(ShadowRoot)
+    expect(shadow.mode).to.equal('open')
+  })
+
+  it('automatically adopts document stylesheets on open shadow roots', async () => {
+    enableGlobalOpenStyles()
+
+    const host = document.createElement('div')
+    const shadow = host.attachShadow({ mode: 'open' })
+    shadow.innerHTML = '<span class="global-styled">Dynamic Content</span>'
+    document.body.appendChild(host)
+
+    try {
+      const { sheets } = await getOpenStyles()
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      expect(shadow.adoptedStyleSheets.length).to.be.greaterThan(0)
+      for (const sheet of sheets) {
+        expect(shadow.adoptedStyleSheets).to.include(sheet)
+      }
+
+      const span = shadow.querySelector('.global-styled')!
+      expect(window.getComputedStyle(span).color).to.equal('rgb(0, 128, 0)')
+    }
+    finally {
+      host.remove()
+    }
+  })
+
+  it('ignores closed shadow roots without throwing errors', async () => {
+    enableGlobalOpenStyles()
+
+    const host = document.createElement('div')
+    let closedShadow: ShadowRoot | null = null
+
+    expect(() => {
+      closedShadow = host.attachShadow({ mode: 'closed' })
+    }).not.to.throw()
+
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(closedShadow).to.be.instanceOf(ShadowRoot)
+  })
+
+  it('does not duplicate stylesheets if already present in adoptedStyleSheets', async () => {
+    const { sheets } = await getOpenStyles()
+    enableGlobalOpenStyles()
+
+    const host = document.createElement('div')
+    const shadow = host.attachShadow({ mode: 'open' })
+
+    shadow.adoptedStyleSheets = [...sheets]
+    const initialCount = shadow.adoptedStyleSheets.length
+
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    expect(shadow.adoptedStyleSheets.length).to.equal(initialCount)
+  })
+
+  it('prepends fallback link elements without duplicate insertion', async () => {
+    const fallbackLink = document.createElement('link')
+    fallbackLink.rel = 'stylesheet'
+    const blob = new Blob(['.fallback-global { color: rgb(30, 30, 30); }'], { type: 'text/css' })
+    const blobUrl = URL.createObjectURL(blob)
+    fallbackLink.href = blobUrl
+    document.head.appendChild(fallbackLink)
+
+    await new Promise((resolve) => {
+      fallbackLink.addEventListener('load', resolve, { once: true })
+      fallbackLink.addEventListener('error', resolve, { once: true })
+    })
+
+    const sheet = fallbackLink.sheet!
+    Object.defineProperty(sheet, 'cssRules', {
+      get() {
+        throw new DOMException('Cannot access rules', 'SecurityError')
+      },
+      configurable: true,
+    })
+
+    await new Promise(resolve => setTimeout(resolve, 30))
+
+    try {
+      enableGlobalOpenStyles()
+
+      const host = document.createElement('div')
+      const shadow = host.attachShadow({ mode: 'open' })
+
+      // Pre-seed an existing link element with the same href to verify deduplication
+      const existingLink = document.createElement('link')
+      existingLink.rel = 'stylesheet'
+      existingLink.href = blobUrl
+      shadow.appendChild(existingLink)
+
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      const links = shadow.querySelectorAll(`link[href="${blobUrl}"]`)
+      expect(links.length).to.equal(1)
+
+      // Test a fresh shadow root where the fallback link gets prepended
+      const host2 = document.createElement('div')
+      const shadow2 = host2.attachShadow({ mode: 'open' })
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      const links2 = shadow2.querySelectorAll(`link[href="${blobUrl}"]`)
+      expect(links2.length).to.equal(1)
+    }
+    finally {
+      fallbackLink.remove()
+      URL.revokeObjectURL(blobUrl)
+    }
+  })
+
+  it('integrates cleanly with custom elements defined later', async () => {
+    enableGlobalOpenStyles()
+
+    const tag = `dynamic-widget-${Date.now()}`
+    class DynamicWidget extends HTMLElement {
+      connectedCallback() {
+        if (!this.shadowRoot) {
+          const shadow = this.attachShadow({ mode: 'open' })
+          shadow.innerHTML = '<p class="global-styled">Widget text</p>'
+        }
+      }
+    }
+    customElements.define(tag, DynamicWidget)
+
+    const el = await fixture<DynamicWidget>(`<${tag}></${tag}>`)
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    const p = el.shadowRoot!.querySelector('p')!
+    expect(window.getComputedStyle(p).color).to.equal('rgb(0, 128, 0)')
   })
 })

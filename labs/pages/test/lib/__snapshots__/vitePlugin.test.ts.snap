@@ -3,7 +3,7 @@
 exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should add DSD styles and scripts 1`] = `
 "<html><head>
   <script type=\\"module\\" src=\\"/@vite/client\\"></script>
-    
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>    
 <style>
     body[dsd-pending] {
         display: none;
@@ -16,16 +16,16 @@ exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should add DSD
         document.body.removeAttribute('dsd-pending')
     }
 </script>
-<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>
 <script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=1.js\\"></script>
 <script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=2.js\\"></script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=3.js\\"></script>
                 </body></html>"
 `;
 
 exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should not add hydrate script when deferHydration is false 1`] = `
 "<html><head>
   <script type=\\"module\\" src=\\"/@vite/client\\"></script>
-    
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>    
 <style>
     body[dsd-pending] {
         display: none;
@@ -38,6 +38,6 @@ exports[`@kopflos-labs/pages/lib/vitePlugin.js transformIndexHtml should not add
         document.body.removeAttribute('dsd-pending')
     }
 </script>
-<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=0.js\\"></script>
-<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=1.js\\"></script></body></html>"
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=1.js\\"></script>
+<script type=\\"module\\" src=\\"/@id/__x00__/test.html?html-proxy&index=2.js\\"></script></body></html>"
 `;
