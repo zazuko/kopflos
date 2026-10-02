@@ -23,7 +23,7 @@ export default class extends Transform {
         const pagePatternValue: string = pagePattern.value
         const pageUrl = pagePatternValue.replace(new RegExp(groupRegex, 'g'), (_, groupName) => {
           return groups?.[groupName] ?? ''
-        }).replace(/\$$/, '')
+        }).replace(/\$$/, '').replace(/^\^/, '')
 
         if (pageUrl) {
           return callback(undefined, this.env.quad(chunk.subject, chunk.predicate, this.env.namedNode(pageUrl)))

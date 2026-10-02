@@ -13,7 +13,7 @@ export default class extends Processor<E> {
     super(factory)
   }
 
-  processService(service: sparqljs.ServicePattern): sparqljs.Pattern {
+  processService(service: sparqljs.ServicePattern) {
     if (service.name.value === 'https://kopflos.described.at/Pages') {
       const resourceVariable = service.patterns
         .find(p => p.type === 'bgp')
@@ -25,46 +25,43 @@ export default class extends Processor<E> {
         throw new Error('No mainEntity variable found in service pattern')
       }
 
-      return <sparqljs.GroupPattern>{
-        type: 'group',
-        patterns: [
-          <sparqljs.ValuesPattern>{
-            type: 'values',
-            values: this.pages.map(({ resourcePattern, pagePattern }) => ({
-              '?resourcePattern': resourcePattern,
-              '?pagePattern': pagePattern,
-            })),
+      return [
+        <sparqljs.ValuesPattern>{
+          type: 'values',
+          values: this.pages.map(({ resourcePattern, pagePattern }) => ({
+            '?resourcePattern': resourcePattern,
+            '?pagePattern': pagePattern,
+          })),
+        },
+        <sparqljs.BindPattern>{
+          type: 'bind',
+          variable: this.factory.variable('page'),
+          expression: {
+            type: 'operation',
+            operator: 'if',
+            args: [
+              {
+                type: 'operation',
+                operator: 'regex',
+                args: [
+                  {
+                    type: 'operation',
+                    operator: 'str',
+                    args: [resourceVariable],
+                  },
+                  this.factory.variable('resourcePattern'),
+                ],
+              },
+              this.factory.variable('pagePattern'),
+              {
+                type: 'operation',
+                operator: '/',
+                args: [toRdf(1), toRdf(0)],
+              },
+            ],
           },
-          <sparqljs.BindPattern>{
-            type: 'bind',
-            variable: this.factory.variable('page'),
-            expression: {
-              type: 'operation',
-              operator: 'if',
-              args: [
-                {
-                  type: 'operation',
-                  operator: 'regex',
-                  args: [
-                    {
-                      type: 'operation',
-                      operator: 'str',
-                      args: [resourceVariable],
-                    },
-                    this.factory.variable('resourcePattern'),
-                  ],
-                },
-                this.factory.variable('pagePattern'),
-                {
-                  type: 'operation',
-                  operator: '/',
-                  args: [toRdf(1), toRdf(0)],
-                },
-              ],
-            },
-          },
-        ],
-      }
+        },
+      ]
     }
 
     return super.processService(service)
