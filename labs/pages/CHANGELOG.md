@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.3.1
+
+### Patch Changes
+
+- d33807d: Exception would be thrown if page data does not actually contain an entry for a given `]data-graph]`
+- d5bef88: Inject a page script to ensure that `<open-styles>` are injected into shadow roots
+
 ## 0.3.0
 
 ### Minor Changes
