@@ -8,6 +8,7 @@ export default {
   concurrency: 1,
   coverage: true,
   coverageConfig: {
+    reporters: ['text', 'lcov'],
     include: [
       'runtime/**/*.ts',
     ],
