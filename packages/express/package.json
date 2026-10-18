@@ -40,7 +40,7 @@
     "@types/supertest": "^6.0.2",
     "chai": "^6",
     "co-body": "^6.2.0",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "mocha-chai-rdf": "^0.2",
     "sinon": "^18.0.0",
