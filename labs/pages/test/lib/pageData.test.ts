@@ -7,9 +7,9 @@ import sinon from 'sinon'
 import { expect } from 'chai'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
+import type { ExecuteConstruct } from 'sparqlc'
 import type { Bindings as PagePatternsRow } from '../../queries/page-patterns.rq'
 import { executeQuery } from '../../lib/pageData.js'
-import type { ExecuteConstruct } from 'sparqlc'
 
 type PagePatterns = PagePatternsRow[]
 

@@ -1,10 +1,10 @@
 import { expect } from '@open-wc/testing'
 import '../../runtime/open-styles.js'
 
-describe('open-styles performance', () => {
+describe('open-styles performance', function () {
   let styleEl: HTMLStyleElement
 
-  before(() => {
+  before(function () {
     styleEl = document.createElement('style')
     styleEl.textContent = `
       .perf-box {
@@ -19,7 +19,7 @@ describe('open-styles performance', () => {
     document.head.appendChild(styleEl)
   })
 
-  after(() => {
+  after(function () {
     styleEl.remove()
   })
 

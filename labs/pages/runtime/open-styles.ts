@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const createAdoptableSheet = async (rules: CSSRuleList) => {
   const adoptableSheet = new CSSStyleSheet()
   const css = await cssFromRules(rules)
@@ -202,7 +203,9 @@ export function enableGlobalOpenStyles() {
             shadowRoot.prepend(el.cloneNode(true))
           }
         }
-      })
+
+        return
+      }).catch(console.error.bind(console))
     }
 
     return shadowRoot

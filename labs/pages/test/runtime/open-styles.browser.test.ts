@@ -1,10 +1,10 @@
 import { expect, fixture } from '@open-wc/testing'
 import { getOpenStyles, whenDOMReady, OpenStyles, enableGlobalOpenStyles } from '../../runtime/open-styles.js'
 
-describe('open-styles element', () => {
+describe('open-styles element', function () {
   let styleEl: HTMLStyleElement
 
-  beforeEach(() => {
+  beforeEach(function () {
     styleEl = document.createElement('style')
     styleEl.textContent = `
       .test-target {
@@ -18,15 +18,15 @@ describe('open-styles element', () => {
     document.head.appendChild(styleEl)
   })
 
-  afterEach(() => {
+  afterEach(function () {
     styleEl.remove()
   })
 
-  it('defines custom element', () => {
+  it('defines custom element', function () {
     expect(customElements.get('open-styles')).to.not.be.undefined
   })
 
-  it('adopts document stylesheets into a shadow root', async () => {
+  it('adopts document stylesheets into a shadow root', async function () {
     class TestShadowEl extends HTMLElement {
       constructor() {
         super()
@@ -56,7 +56,7 @@ describe('open-styles element', () => {
     expect(el.shadowRoot!.querySelector('open-styles')).to.be.null
   })
 
-  it('adopts constructable document.adoptedStyleSheets into shadow root', async () => {
+  it('adopts constructable document.adoptedStyleSheets into shadow root', async function () {
     const sheet = new CSSStyleSheet()
     sheet.replaceSync('.adopted-target { font-weight: 700; }')
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet]
@@ -86,7 +86,7 @@ describe('open-styles element', () => {
     expect(el.shadowRoot!.adoptedStyleSheets).to.include(sheet)
   })
 
-  it('does not duplicate existing adoptedStyleSheets', async () => {
+  it('does not duplicate existing adoptedStyleSheets', async function () {
     const existingSheet = new CSSStyleSheet()
     existingSheet.replaceSync('.existing { color: rgb(0, 0, 255); }')
 
@@ -115,7 +115,7 @@ describe('open-styles element', () => {
     expect(sheets.filter(s => s === existingSheet).length).to.equal(1)
   })
 
-  it('ignores elements connected outside a DocumentFragment/shadowRoot', async () => {
+  it('ignores elements connected outside a DocumentFragment/shadowRoot', async function () {
     const directEl = document.createElement('open-styles')
     document.body.appendChild(directEl)
     await new Promise(resolve => setTimeout(resolve, 30))
@@ -125,7 +125,7 @@ describe('open-styles element', () => {
     directEl.remove()
   })
 
-  it('waits for undefined host custom element before applying styles', async () => {
+  it('waits for undefined host custom element before applying styles', async function () {
     const futureTag = `future-host-${Date.now()}`
     const container = await fixture(`
       <div>
@@ -158,7 +158,7 @@ describe('open-styles element', () => {
     expect(shadow.querySelector('open-styles')).to.be.null
   })
 
-  it('invalidates cached styles when new style tags are dynamically added', async () => {
+  it('invalidates cached styles when new style tags are dynamically added', async function () {
     const { sheets: initialSheets } = await getOpenStyles()
     const initialCount = initialSheets.length
 
@@ -175,12 +175,12 @@ describe('open-styles element', () => {
     dynamicStyle.remove()
   })
 
-  it('exposes whenDOMReady promise', async () => {
+  it('exposes whenDOMReady promise', async function () {
     const isReady = await whenDOMReady
     expect(isReady).to.be.true
   })
 
-  it('resolves and adopts rules from @import rules in stylesheets', async () => {
+  it('resolves and adopts rules from @import rules in stylesheets', async function () {
     const importedCss = '.imported-rule { color: rgb(0, 128, 255); }'
     const blob = new Blob([importedCss], { type: 'text/css' })
     const blobUrl = URL.createObjectURL(blob)
@@ -218,7 +218,7 @@ describe('open-styles element', () => {
     URL.revokeObjectURL(blobUrl)
   })
 
-  it('handles failed @import rules gracefully', async () => {
+  it('handles failed @import rules gracefully', async function () {
     const badBlob = new Blob([''], { type: 'text/css' })
     const badBlobUrl = URL.createObjectURL(badBlob)
     URL.revokeObjectURL(badBlobUrl)
@@ -255,7 +255,7 @@ describe('open-styles element', () => {
     badImportStyleEl.remove()
   })
 
-  it('falls back to inserting DOM element clone when stylesheet cssRules is inaccessible', async () => {
+  it('falls back to inserting DOM element clone when stylesheet cssRules is inaccessible', async function () {
     const fallbackLink = document.createElement('link')
     fallbackLink.rel = 'stylesheet'
     const blob = new Blob(['.fallback-text { color: rgb(100, 200, 50); }'], { type: 'text/css' })
@@ -305,7 +305,7 @@ describe('open-styles element', () => {
     URL.revokeObjectURL(blobUrl)
   })
 
-  it('does not insert duplicate fallback link elements if already present in shadow root', async () => {
+  it('does not insert duplicate fallback link elements if already present in shadow root', async function () {
     const fallbackLink = document.createElement('link')
     fallbackLink.rel = 'stylesheet'
     const blob = new Blob(['.existing-fallback { color: rgb(50, 50, 50); }'], { type: 'text/css' })
@@ -356,7 +356,7 @@ describe('open-styles element', () => {
     URL.revokeObjectURL(blobUrl)
   })
 
-  it('invalidates cache when a link[rel=stylesheet] element is dynamically added, but not for other elements', async () => {
+  it('invalidates cache when a link[rel=stylesheet] element is dynamically added, but not for other elements', async function () {
     const { sheets: beforeSheets } = await getOpenStyles()
     const beforeCount = beforeSheets.length
 
@@ -386,7 +386,7 @@ describe('open-styles element', () => {
     URL.revokeObjectURL(url)
   })
 
-  it('returns early when applyStyles is called on an element not in a DocumentFragment', async () => {
+  it('returns early when applyStyles is called on an element not in a DocumentFragment', async function () {
     const directEl = new OpenStyles()
     document.body.appendChild(directEl)
     await directEl.applyStyles()
@@ -394,7 +394,7 @@ describe('open-styles element', () => {
     directEl.remove()
   })
 
-  it('appends only new stylesheets when some are already adopted in shadow root', async () => {
+  it('appends only new stylesheets when some are already adopted in shadow root', async function () {
     const { sheets } = await getOpenStyles()
     expect(sheets.length).to.be.greaterThan(0)
 
@@ -423,11 +423,11 @@ describe('open-styles element', () => {
   })
 })
 
-describe('enableGlobalOpenStyles', () => {
+describe('enableGlobalOpenStyles', function () {
   let styleEl: HTMLStyleElement
   let originalAttachShadow: typeof Element.prototype.attachShadow
 
-  beforeEach(async () => {
+  beforeEach(async function () {
     originalAttachShadow = Element.prototype.attachShadow
 
     styleEl = document.createElement('style')
@@ -441,12 +441,12 @@ describe('enableGlobalOpenStyles', () => {
     await new Promise(resolve => setTimeout(resolve, 30))
   })
 
-  afterEach(() => {
+  afterEach(function () {
     Element.prototype.attachShadow = originalAttachShadow
     styleEl.remove()
   })
 
-  it('preserves synchronous return of ShadowRoot instance', () => {
+  it('preserves synchronous return of ShadowRoot instance', function () {
     enableGlobalOpenStyles()
 
     const el = document.createElement('div')
@@ -456,7 +456,7 @@ describe('enableGlobalOpenStyles', () => {
     expect(shadow.mode).to.equal('open')
   })
 
-  it('automatically adopts document stylesheets on open shadow roots', async () => {
+  it('automatically adopts document stylesheets on open shadow roots', async function () {
     enableGlobalOpenStyles()
 
     const host = document.createElement('div')
@@ -481,7 +481,7 @@ describe('enableGlobalOpenStyles', () => {
     }
   })
 
-  it('ignores closed shadow roots without throwing errors', async () => {
+  it('ignores closed shadow roots without throwing errors', async function () {
     enableGlobalOpenStyles()
 
     const host = document.createElement('div')
@@ -495,7 +495,7 @@ describe('enableGlobalOpenStyles', () => {
     expect(closedShadow).to.be.instanceOf(ShadowRoot)
   })
 
-  it('does not duplicate stylesheets if already present in adoptedStyleSheets', async () => {
+  it('does not duplicate stylesheets if already present in adoptedStyleSheets', async function () {
     const { sheets } = await getOpenStyles()
     enableGlobalOpenStyles()
 
@@ -510,7 +510,7 @@ describe('enableGlobalOpenStyles', () => {
     expect(shadow.adoptedStyleSheets.length).to.equal(initialCount)
   })
 
-  it('prepends fallback link elements without duplicate insertion', async () => {
+  it('prepends fallback link elements without duplicate insertion', async function () {
     const fallbackLink = document.createElement('link')
     fallbackLink.rel = 'stylesheet'
     const blob = new Blob(['.fallback-global { color: rgb(30, 30, 30); }'], { type: 'text/css' })
@@ -564,7 +564,7 @@ describe('enableGlobalOpenStyles', () => {
     }
   })
 
-  it('integrates cleanly with custom elements defined later', async () => {
+  it('integrates cleanly with custom elements defined later', async function () {
     enableGlobalOpenStyles()
 
     const tag = `dynamic-widget-${Date.now()}`

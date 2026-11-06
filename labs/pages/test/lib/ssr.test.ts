@@ -17,7 +17,7 @@ describe('ssr', function () {
 
   beforeEach(createEmpty)
 
-  beforeEach(() => {
+  beforeEach(function () {
     LitElementRenderer.renderOptions.splice(0)
   })
 

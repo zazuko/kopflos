@@ -95,6 +95,7 @@ describe('@kopflos-labs/pages/lib/route.js', function () {
           'index.html$', '$',
         ])
       })
+
       it('should match nested index.html', function () {
         expect(toPatterns('foo/bar/index.ts')).to.deep.equal([
           'foo/bar/index.html$', 'foo/bar/?$',

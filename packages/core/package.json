@@ -75,5 +75,8 @@
   "mocha": {
     "spec": "test/**/*.test.ts",
     "extends": "../../package.json"
+  },
+  "engines": {
+    "node": ">=21"
   }
 }

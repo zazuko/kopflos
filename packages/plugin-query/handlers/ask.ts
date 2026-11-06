@@ -1,7 +1,7 @@
 import type { ParsingClient } from 'sparql-http-client/ParsingClient.js'
 import type { RequestHandler } from 'express'
-import { selectTypes } from './resultTypes.js'
 import Negotiator from 'negotiator'
+import { selectTypes } from './resultTypes.js'
 
 export default function (client: ParsingClient, query: string): RequestHandler {
   return async (req, res) => {

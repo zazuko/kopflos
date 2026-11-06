@@ -1,6 +1,6 @@
-import { schema } from '@tpluscode/rdf-ns-builders'
-import { definePage } from '../../../index.js'
+import rdf from '@zazuko/env-node'
 import { html } from 'lit'
+import { definePage } from '../../../index.js'
 
 export default definePage({
   constraints: {
@@ -13,11 +13,11 @@ export default definePage({
   shape: {
     property: [
       {
-        path: schema.mainEntity,
+        path: rdf.ns.schema.mainEntity,
         pattern: '[prefix][term]',
       },
       {
-        path: schema.about,
+        path: rdf.ns.schema.about,
         pattern: '[prefix]',
       },
     ],
