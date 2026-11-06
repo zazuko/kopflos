@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@kopflos-cms/hydra/lib/validation.js shapesGraphLoader collection has hydra#createMemberCreateShape copies it to output shapes 1`] = `
 "_:c14n0 <http://www.w3.org/ns/shacl#node> _:c14n3 .
