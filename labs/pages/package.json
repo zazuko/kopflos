@@ -40,7 +40,7 @@
     "esbuild": ">=0.17.0",
     "esbuild-node-externals": "^1.23.1",
     "esbuild-plugin-sparql": "^0.1.0",
-    "glob": "11.1.0",
+    "glob": "^14.0.4",
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.1.1",
