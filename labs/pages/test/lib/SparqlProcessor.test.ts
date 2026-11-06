@@ -1,6 +1,6 @@
 import { expect, use } from 'chai'
 import env from '@zazuko/env-node'
-import type { ServicePattern, GroupPattern } from 'sparqljs'
+import type { ServicePattern, GroupPattern, Pattern, ValuesPattern } from 'sparqljs'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
 import { Generator, Wildcard } from 'sparqljs'
 import SparqlProcessor from '../../lib/SparqlProcessor.js'
@@ -157,5 +157,87 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
     expect(query).to.contain('http://example.org/vocab/(?<prefix>.+)')
     expect(query).to.not.contain('http://example.org/resource/(?<id>.+)')
     expect(query).to.contain('AS ?aboutPage')
+  })
+
+  it('should match pages with schema:mainEntity when query requests schema:mainEntityOfPage', function () {
+    // given
+    const mainEntityPages: Bindings[] = [
+      {
+        pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
+        resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
+        path: env.ns.schema.mainEntity,
+      },
+    ]
+    const processor = new SparqlProcessor(env, mainEntityPages)
+    const service: ServicePattern = {
+      type: 'service',
+      name: env.namedNode('https://kopflos.described.at/Pages'),
+      patterns: [
+        {
+          type: 'bgp',
+          triples: [
+            {
+              subject: env.variable('resource'),
+              predicate: env.ns.schema.mainEntityOfPage,
+              object: env.variable('page'),
+            },
+          ],
+        },
+      ],
+      silent: false,
+    }
+
+    // when
+    const result = processor.processService(service) as GroupPattern
+
+    // then
+    const query = new Generator().stringify({
+      type: 'query',
+      queryType: 'SELECT',
+      variables: [new Wildcard()],
+      where: [result],
+      prefixes: {},
+    })
+    expect(query).to.contain('http://example.org/resource/(?<id>.+)')
+    expect(query).to.contain('http://example.org/page/(?<id>.+)')
+  })
+
+  it('should isolate internal pattern variables across multiple triples in SERVICE block', function () {
+    // given
+    const processor = new SparqlProcessor(env, pages)
+    const service: ServicePattern = {
+      type: 'service',
+      name: env.namedNode('https://kopflos.described.at/Pages'),
+      patterns: [
+        {
+          type: 'bgp',
+          triples: [
+            {
+              subject: env.variable('res1'),
+              predicate: env.ns.schema.mainEntityOfPage,
+              object: env.variable('page1'),
+            },
+            {
+              subject: env.variable('res2'),
+              predicate: env.ns.schema.mainEntityOfPage,
+              object: env.variable('page2'),
+            },
+          ],
+        },
+      ],
+      silent: false,
+    }
+
+    // when
+    const result = processor.processService(service) as Pattern[]
+
+    // then
+    const valuesPatterns = result.filter((p): p is ValuesPattern => p.type === 'values')
+    expect(valuesPatterns).to.have.length(2)
+    const firstVars = Object.keys(valuesPatterns[0].values[0])
+    const secondVars = Object.keys(valuesPatterns[1].values[0])
+    expect(firstVars).to.deep.equal(['?resourcePattern_res1', '?pagePattern_res1'])
+    expect(secondVars).to.deep.equal(['?resourcePattern_res2', '?pagePattern_res2'])
+    expect(firstVars.some(v => secondVars.includes(v))).to.be.false
   })
 })

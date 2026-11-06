@@ -39,18 +39,21 @@ export default class extends Processor<E> {
       if (!page.path) {
         return true
       }
-      if (predicate.equals(this.factory.ns.schema.mainEntityOfPage)) {
-        return page.path.equals(this.factory.ns.schema.mainEntityOfPage)
+      if (predicate.equals(this.factory.ns.schema.mainEntityOfPage) || predicate.equals(this.factory.ns.schema.mainEntity)) {
+        return page.path.equals(this.factory.ns.schema.mainEntityOfPage) || page.path.equals(this.factory.ns.schema.mainEntity)
       }
       return page.path.equals(predicate)
     })
+
+    const resourcePatternVar = this.factory.variable(`resourcePattern_${resourceVariable.value}`)
+    const pagePatternVar = this.factory.variable(`pagePattern_${resourceVariable.value}`)
 
     return [
       <sparqljs.ValuesPattern>{
         type: 'values',
         values: matchingPages.map(({ resourcePattern, pagePattern }) => ({
-          '?resourcePattern': resourcePattern,
-          '?pagePattern': pagePattern,
+          [`?${resourcePatternVar.value}`]: resourcePattern,
+          [`?${pagePatternVar.value}`]: pagePattern,
         })),
       },
       <sparqljs.BindPattern>{
@@ -69,10 +72,10 @@ export default class extends Processor<E> {
                   operator: 'str',
                   args: [resourceVariable],
                 },
-                this.factory.variable('resourcePattern'),
+                resourcePatternVar,
               ],
             },
-            this.factory.variable('pagePattern'),
+            pagePatternVar,
             {
               type: 'operation',
               operator: '/',
