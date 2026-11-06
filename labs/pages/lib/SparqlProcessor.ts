@@ -1,10 +1,11 @@
 import Processor from '@hydrofoil/sparql-processor'
 import type * as sparqljs from 'sparqljs'
-import type { DataFactory, Variable } from '@rdfjs/types'
+import type { DataFactory, Term, Variable } from '@rdfjs/types'
 import { toRdf } from 'rdf-literal'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import type { Bindings } from '../queries/page-patterns.rq'
+import { logger } from './logger.js'
 
 type E = Environment<NsBuildersFactory | Required<DataFactory>>
 
@@ -15,55 +16,71 @@ export default class extends Processor<E> {
 
   processService(service: sparqljs.ServicePattern) {
     if (service.name.value === 'https://kopflos.described.at/Pages') {
-      const resourceVariable = service.patterns
-        .find(p => p.type === 'bgp')
-        ?.triples
-        .find(t => t.subject.termType === 'Variable' && 'termType' in t.predicate && this.factory.ns.schema.mainEntityOfPage.equals(t.predicate))
-        ?.subject as Variable
+      const patterns = service.patterns
+        .filter(p => p.type === 'bgp')
+        .flatMap(p => p.triples.flatMap(triple => this.toPagePatterns(triple)))
 
-      if (!resourceVariable) {
-        throw new Error('No mainEntity variable found in service pattern')
+      if (!patterns.length) {
+        logger.warn('No supported triples patterns found in `SERVICE kopflos:Pages`')
       }
 
-      return [
-        <sparqljs.ValuesPattern>{
-          type: 'values',
-          values: this.pages.map(({ resourcePattern, pagePattern }) => ({
-            '?resourcePattern': resourcePattern,
-            '?pagePattern': pagePattern,
-          })),
-        },
-        <sparqljs.BindPattern>{
-          type: 'bind',
-          variable: this.factory.variable('page'),
-          expression: {
-            type: 'operation',
-            operator: 'if',
-            args: [
-              {
-                type: 'operation',
-                operator: 'regex',
-                args: [
-                  {
-                    type: 'operation',
-                    operator: 'str',
-                    args: [resourceVariable],
-                  },
-                  this.factory.variable('resourcePattern'),
-                ],
-              },
-              this.factory.variable('pagePattern'),
-              {
-                type: 'operation',
-                operator: '/',
-                args: [toRdf(1), toRdf(0)],
-              },
-            ],
-          },
-        },
-      ]
+      return patterns
     }
 
     return super.processService(service)
+  }
+
+  toPagePatterns(triple: sparqljs.Triple): sparqljs.Pattern | sparqljs.Pattern[] {
+    const resourceVariable = triple.subject as Variable
+    const pageVariable = triple.object.termType === 'Variable' ? triple.object as Variable : this.factory.variable('page')
+    const predicate = triple.predicate as Term
+
+    const matchingPages = this.pages.filter((page) => {
+      if (!page.path) {
+        return true
+      }
+      if (predicate.equals(this.factory.ns.schema.mainEntityOfPage)) {
+        return page.path.equals(this.factory.ns.schema.mainEntityOfPage)
+      }
+      return page.path.equals(predicate)
+    })
+
+    return [
+      <sparqljs.ValuesPattern>{
+        type: 'values',
+        values: matchingPages.map(({ resourcePattern, pagePattern }) => ({
+          '?resourcePattern': resourcePattern,
+          '?pagePattern': pagePattern,
+        })),
+      },
+      <sparqljs.BindPattern>{
+        type: 'bind',
+        variable: pageVariable,
+        expression: {
+          type: 'operation',
+          operator: 'if',
+          args: [
+            {
+              type: 'operation',
+              operator: 'regex',
+              args: [
+                {
+                  type: 'operation',
+                  operator: 'str',
+                  args: [resourceVariable],
+                },
+                this.factory.variable('resourcePattern'),
+              ],
+            },
+            this.factory.variable('pagePattern'),
+            {
+              type: 'operation',
+              operator: '/',
+              args: [toRdf(1), toRdf(0)],
+            },
+          ],
+        },
+      },
+    ]
   }
 }

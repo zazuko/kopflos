@@ -11,11 +11,13 @@ import type { Dataset } from '@zazuko/env/lib/DatasetExt.js'
 import formatsPretty from '@rdfjs-elements/formats-pretty'
 import DefaultPlugin from '@kopflos-cms/vite'
 import PagesPlugin from '../../lib/Plugin.js'
+import type { NamespaceBuilder } from '@rdfjs/namespace'
 
 const buildDir = url.fileURLToPath(new URL('../dist', import.meta.url))
 
 describe('@kopflos-cms/pages/lib/Plugin.js', function () {
   let env: KopflosEnvironment
+  let kl: NamespaceBuilder
 
   before(function () {
     use(snapshots)
@@ -35,6 +37,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
           buildDir,
         }, process.cwd())
 
+        kl = env.namespace(env.ns.kl().value)
         env.formats.import(formatsPretty)
       })
 
@@ -59,6 +62,19 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
           // given
           const plugin = new PagesPlugin({
             path: 'test/fixtures/pages',
+          })
+
+          // when
+          const dataset = await plugin.deployedResources(env) as Dataset
+
+          // then
+          expect(await dataset.serialize({ format: 'text/turtle' })).toMatchSnapshot()
+        })
+
+        it('should generate single resource shape with constraints and multiple properties', async function () {
+          // given
+          const plugin = new PagesPlugin({
+            path: 'test/fixtures/pages-constraints',
           })
 
           // when

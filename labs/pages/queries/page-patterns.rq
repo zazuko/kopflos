@@ -1,18 +1,16 @@
-PREFIX schema: <http://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX kopflos: <https://kopflos.described.at/>
 
-SELECT ?resourcePattern ?pagePattern
+SELECT ?path ?resourcePattern ?pagePattern
 FROM kopflos:Pages
 WHERE {
     ?shape a kopflos:ResourceShape ;
-        sh:property
-            [
-                sh:path schema:mainEntity ;
-                sh:pattern ?resourcePattern
-            ] ;
+        sh:property [
+            sh:path ?path ;
+            sh:pattern ?resourcePattern ;
+        ] ;
         sh:target [
             a kopflos:PatternedTarget ;
             kopflos:regex ?pagePattern ;
-        ];
+        ] .
 }

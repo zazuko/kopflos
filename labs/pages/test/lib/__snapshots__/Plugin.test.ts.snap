@@ -161,6 +161,40 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base with slash deployedResources shou
 "
 `;
 
+exports[`@kopflos-cms/pages/lib/Plugin.js base with slash deployedResources should generate single resource shape with constraints and multiple properties 1`] = `
+"
+<https://kopflos.described.at/Pages> <urn:talos:action> <urn:talos:overwrite> .
+
+<https://kopflos.described.at/Pages#%5Bprefix%5D%3A%5Bterm%5D.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org/> ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"[prefix]:[term].ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/(?<prefix>schema|foaf):(?<term>[a-zA-Z0-9_-]+).html$\\" ;
+	] ;
+	<http://www.w3.org/ns/shacl#property> [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/mainEntity> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"(?<prefix>http://schema\\\\\\\\.org/|http://xmlns\\\\\\\\.com/foaf/0\\\\\\\\.1/)(?<term>[a-zA-Z0-9_-]+)\\" ;
+	], [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/about> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"(?<prefix>http://schema\\\\\\\\.org/|http://xmlns\\\\\\\\.com/foaf/0\\\\\\\\.1/)\\" ;
+	] .
+
+"
+`;
+
 exports[`@kopflos-cms/pages/lib/Plugin.js base without slash deployedResources should generate resource shapes for pages 1`] = `
 "
 <https://kopflos.described.at/Pages> <urn:talos:action> <urn:talos:overwrite> .
@@ -317,6 +351,40 @@ exports[`@kopflos-cms/pages/lib/Plugin.js base without slash deployedResources s
 	], [
 		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
 		<https://kopflos.described.at/regex> \\"^https://example.org/child/?$\\" ;
+	] .
+
+"
+`;
+
+exports[`@kopflos-cms/pages/lib/Plugin.js base without slash deployedResources should generate single resource shape with constraints and multiple properties 1`] = `
+"
+<https://kopflos.described.at/Pages> <urn:talos:action> <urn:talos:overwrite> .
+
+<https://kopflos.described.at/Pages#%5Bprefix%5D%3A%5Bterm%5D.ts> a <https://kopflos.described.at/ResourceShape> ;
+	<https://kopflos.described.at/api> <https://example.org> ;
+	<https://kopflos.described.at/handler> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/Handler> ;
+		<https://kopflos.described.at/method> \\"GET\\" ;
+		<https://code.described.at/implementedBy> (
+			[
+				<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://code.described.at/EcmaScriptModule> ;
+				<https://code.described.at/link> <node:@kopflos-labs/pages/handler.js#default> ;
+				<https://code.described.at/arguments> (
+					\\"[prefix]:[term].ts\\"
+				) ;
+			]
+		) ;
+	] ;
+	<http://www.w3.org/ns/shacl#target> [
+		<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/PatternedTarget> ;
+		<https://kopflos.described.at/regex> \\"^https://example.org/(?<prefix>schema|foaf):(?<term>[a-zA-Z0-9_-]+).html$\\" ;
+	] ;
+	<http://www.w3.org/ns/shacl#property> [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/mainEntity> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"(?<prefix>http://schema\\\\\\\\.org/|http://xmlns\\\\\\\\.com/foaf/0\\\\\\\\.1/)(?<term>[a-zA-Z0-9_-]+)\\" ;
+	], [
+		<http://www.w3.org/ns/shacl#path> <http://schema.org/about> ;
+		<http://www.w3.org/ns/shacl#pattern> \\"(?<prefix>http://schema\\\\\\\\.org/|http://xmlns\\\\\\\\.com/foaf/0\\\\\\\\.1/)\\" ;
 	] .
 
 "

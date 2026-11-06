@@ -143,9 +143,17 @@ Create a file `pages/plaque/[id].ts`:
 
 ```typescript
 import { html, definePage } from '@kopflos-labs/pages'
+import { schema } from '@tpluscode/rdf-ns-builders'
 
 export default definePage({
-  mainEntity: '/plaque/[id]',
+  shape: {
+    property: [
+      {
+        path: schema.mainEntity,
+        pattern: '/plaque/[id]',
+      },
+    ],
+  },
   
   // A simple SPARQL query to fetch the plaque's data
   queries: {

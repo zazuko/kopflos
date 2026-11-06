@@ -3,7 +3,7 @@ import type { Readable } from 'node:stream'
 import type { HandlerArgs } from '@kopflos-cms/core'
 import type { ExecuteConstruct } from 'sparqlc'
 import TermMap from '@rdfjs/term-map'
-import type { DataFactory, DatasetCore, Term } from '@rdfjs/types'
+import type { DataFactory, DatasetCore, NamedNode, Term } from '@rdfjs/types'
 import { expand } from '@zazuko/prefixes'
 import type { AnyPointer } from 'clownface'
 import type { Environment } from '@rdfjs/environment/Environment.js'
@@ -13,9 +13,11 @@ import type ClownfaceFactory from 'clownface/Factory.js'
 import type { DatasetFactoryExt } from '@zazuko/env/lib/DatasetFactoryExt.js'
 import type { KopflosFactory, SparqlClientFactory } from '@kopflos-cms/core/env.js'
 import type { Bindings as PagePatternsRow } from '../queries/page-patterns.rq'
+import type { Shape } from './Plugin.js'
 import SparqlProcessor from './SparqlProcessor.js'
 import PageUrlTransform from './PageUrlTransform.js'
 import { fillTemplate } from './pageParameters.js'
+import type { Constraints } from './constraints.js'
 
 declare module '@rdfjs/types' {
   interface Stream extends Readable {}
@@ -50,7 +52,9 @@ interface ImportQuery {
 interface Parameters {
   query: QueryDescriptor | ExecuteConstruct
   parameters?: Record<string, string>
-  mainEntity?: string
+  mainEntity?: string | string[] | (() => string) | (() => string[])
+  shape?: Shape
+  constraints?: Constraints
   env: Environment<Required<DataFactory> | DatasetFactoryExt | TermSetFactory | SparqlClientFactory | KopflosFactory | NsBuildersFactory | ClownfaceFactory>
   subjectVariables: HandlerArgs['subjectVariables']
   queryParams: HandlerArgs['query']
@@ -58,7 +62,7 @@ interface Parameters {
   importQuery: ImportQuery
 }
 
-export async function executeQuery({ query, parameters, mainEntity, env, subjectVariables, queryParams, pagePatterns, importQuery }: Parameters): Promise<AnyPointer> {
+export async function executeQuery({ query, parameters, mainEntity, shape, constraints, env, subjectVariables, queryParams, pagePatterns, importQuery }: Parameters): Promise<AnyPointer> {
   const construct = await getQueryExecutor(query, env.kopflos.appNs().value, importQuery)
   const endpoint: string | undefined = typeof query === 'object' && 'endpoint' in query ? query.endpoint : undefined
 
@@ -77,6 +81,18 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
     }, []),
   ])
 
+  const resolvedVariables: Record<string, string> = { ...subjectVariables }
+  if (constraints) {
+    for (const [key, value] of Object.entries(subjectVariables)) {
+      const constraint = constraints[key]
+      if (typeof constraint === 'object' && !Array.isArray(constraint) && !(constraint instanceof RegExp) && constraint !== null) {
+        if (value in constraint) {
+          resolvedVariables[key] = (constraint as Record<string, string>)[value]
+        }
+      }
+    }
+  }
+
   if (parameters) {
     for (const [key, pattern] of Object.entries(parameters)) {
       const keyTerm = expand(key) ? env.namedNode(expand(key)) : env.literal(key)
@@ -91,13 +107,38 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
     }
   }
 
-  if (mainEntity) {
-    const mainEntityFilled = fillTemplate(mainEntity, subjectVariables)
-    if (mainEntityFilled) {
-      const mainEntityNode = mainEntityFilled.startsWith('http')
-        ? env.namedNode(mainEntityFilled)
-        : env.kopflos.appNs(mainEntityFilled)
-      params.set(env.ns.schema.mainEntity, mainEntityNode)
+  let shapeToUse = shape
+  if (!shapeToUse && mainEntity) {
+    const mainEntityFn = mainEntity as (() => string | string[])
+    const mainEntityValue = typeof mainEntity === 'function' ? mainEntityFn() : mainEntity
+    shapeToUse = {
+      property: (Array.isArray(mainEntityValue) ? mainEntityValue : [mainEntityValue]).map(pattern => ({
+        path: env.ns.schema.mainEntity,
+        pattern: typeof pattern === 'function' ? (pattern as () => string)() : pattern,
+      })),
+    }
+  }
+
+  if (shapeToUse?.property) {
+    for (const prop of shapeToUse.property) {
+      const propPattern = typeof prop.pattern === 'function' ? prop.pattern() : prop.pattern
+      const filled = fillTemplate(propPattern, resolvedVariables)
+      if (filled) {
+        const node = (filled.startsWith('http:') || filled.startsWith('https:') || filled.startsWith('urn:'))
+          ? env.namedNode(filled)
+          : env.kopflos.appNs(filled)
+
+        let pathNode: NamedNode
+        if (typeof prop.path === 'string') {
+          const expanded = expand(prop.path)
+          pathNode = expanded ? env.namedNode(expanded) : env.namedNode(prop.path)
+        }
+        else {
+          pathNode = prop.path as NamedNode
+        }
+
+        params.set(pathNode, node)
+      }
     }
   }
 
@@ -108,7 +149,7 @@ export async function executeQuery({ query, parameters, mainEntity, env, subject
       new SparqlProcessor(env, pagePatterns),
     ],
   })
-  const transformed = result.pipe(new PageUrlTransform(pagePatterns, env))
+  const transformed = result.pipe(new PageUrlTransform(pagePatterns, env, constraints))
   result.on('error', err => transformed.emit('error', err))
   const datasetPromise = env.dataset().import(transformed)
   const [dataset] = await Promise.all([

@@ -11,6 +11,7 @@ use(jestSnapshotPlugin())
 describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
   const pages: Bindings[] = [
     {
+      path: env.ns.schema.mainEntityOfPage,
       pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
       resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
     },
@@ -69,7 +70,7 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
     expect(query).toMatchSnapshot()
   })
 
-  it('should throw when resource variable is not found', function () {
+  it('should return empty group when resource variable is not found', function () {
     // given
     const processor = new SparqlProcessor(env, pages)
     const service: ServicePattern = {
@@ -85,10 +86,13 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
     }
 
     // when
-    expect(() => processor.processService(service)).to.throw('No mainEntity variable found in service pattern')
+    const result = processor.processService(service)
+
+    // then
+    expect(result).to.be.empty
   })
 
-  it('should throw when service pattern has no BGP', function () {
+  it('should return empty group when service pattern has no BGP', function () {
     // given
     const processor = new SparqlProcessor(env, pages)
     const service: ServicePattern = {
@@ -99,6 +103,59 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
     }
 
     // when
-    expect(() => processor.processService(service)).to.throw('No mainEntity variable found in service pattern')
+    const result = processor.processService(service)
+
+    // then
+    expect(result).to.be.empty
+  })
+
+  it('should rewrite SERVICE <https://kopflos.described.at/Pages> with matching property path for schema.about', function () {
+    // given
+    const multiPages: Bindings[] = [
+      {
+        pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
+        resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
+        path: env.ns.schema.mainEntity,
+      },
+      {
+        pagePattern: env.literal('http://example.org/about/(?<prefix>.+)'),
+        resourcePattern: env.literal('^http://example.org/vocab/(?<prefix>.+)$'),
+        path: env.ns.schema.about,
+      },
+    ]
+    const processor = new SparqlProcessor(env, multiPages)
+    const resourceVar = env.variable('resource')
+    const service: ServicePattern = {
+      type: 'service',
+      name: env.namedNode('https://kopflos.described.at/Pages'),
+      patterns: [
+        {
+          type: 'bgp',
+          triples: [
+            {
+              subject: resourceVar,
+              predicate: env.ns.schema.about,
+              object: env.variable('aboutPage'),
+            },
+          ],
+        },
+      ],
+      silent: false,
+    }
+
+    // when
+    const result = processor.processService(service) as GroupPattern
+
+    // then
+    const query = new Generator().stringify({
+      type: 'query',
+      queryType: 'SELECT',
+      variables: [new Wildcard()],
+      where: [result],
+      prefixes: {},
+    })
+    expect(query).to.contain('http://example.org/vocab/(?<prefix>.+)')
+    expect(query).to.not.contain('http://example.org/resource/(?<id>.+)')
+    expect(query).to.contain('AS ?aboutPage')
   })
 })
