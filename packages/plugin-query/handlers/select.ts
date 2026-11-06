@@ -1,8 +1,8 @@
+import { Transform } from 'node:stream'
+import type { TransformCallback } from 'node:stream'
 import type { RequestHandler } from 'express'
 import Negotiator from 'negotiator'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
-import { Transform } from 'node:stream'
-import type { TransformCallback } from 'stream'
 import type { Term } from '@rdfjs/types'
 import { selectTypes } from './resultTypes.js'
 

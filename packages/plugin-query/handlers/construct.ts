@@ -1,7 +1,7 @@
+import type { Readable } from 'node:stream'
 import type { RequestHandler } from 'express'
 import Negotiator from 'negotiator'
 import pretty from '@rdfjs-elements/formats-pretty'
-import type { Readable } from 'node:stream'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
 import { graphTypes } from './resultTypes.js'
 

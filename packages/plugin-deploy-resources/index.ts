@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import type { Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
 import { bootstrap } from '@hydrofoil/talos-core/bootstrap.js'
 import { fromDirectories } from '@hydrofoil/talos-core'
@@ -5,7 +6,6 @@ import { ResourcePerGraphStore } from '@hydrofoil/resource-store'
 import { createLogger } from '@kopflos-cms/logger'
 import * as chokidar from 'chokidar'
 import type { DatasetCore, Stream } from '@rdfjs/types'
-import { resolve } from 'node:path'
 
 interface Options {
   enabled?: boolean
