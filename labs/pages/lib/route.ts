@@ -18,6 +18,9 @@ export function toPatterns(file: string, constraints?: Constraints, type: 'route
     let inner: string | undefined
 
     if (constraint instanceof RegExp) {
+      if (constraint.flags.length > 0) {
+        throw new Error(`RegExp constraint for "${varName}" contains flags (${constraint.flags}). Use explicit character classes (e.g. [a-zA-Z]) instead.`)
+      }
       const source = constraint.source.replace(/^\^/, '').replace(/\$$/, '')
       inner = `(?<${varName}>${source})`
     }
