@@ -23,8 +23,17 @@ describe('@kopflos-labs/pages/lib/constraints.js', function () {
       it('should return false when value does not match RegExp', function () {
         expect(validateConstraints(constraints, { term: 'invalid/term!' })).to.be.false
       })
-    })
 
+      it('should return true on consecutive calls when RegExp has stateful flags (/g or /y)', function () {
+        const globalConstraints = { term: /^[a-z]+$/g }
+        expect(validateConstraints(globalConstraints, { term: 'foo' })).to.be.true
+        expect(validateConstraints(globalConstraints, { term: 'foo' })).to.be.true
+
+        const stickyConstraints = { term: /^[a-z]+$/y }
+        expect(validateConstraints(stickyConstraints, { term: 'bar' })).to.be.true
+        expect(validateConstraints(stickyConstraints, { term: 'bar' })).to.be.true
+      })
+    })
 
     describe('Array constraint', function () {
       const constraints = { lang: ['en', 'de', 'fr'] }
@@ -43,7 +52,6 @@ describe('@kopflos-labs/pages/lib/constraints.js', function () {
         expect(validateConstraints(constraints, { lang: 'es' })).to.be.false
       })
     })
-
 
     describe('Dictionary / Object constraint', function () {
       const constraints = {

@@ -10,6 +10,7 @@ export function validateConstraints(constraints: Constraints, subjectVariables: 
     const val = subjectVariables[varName]
     if (val !== undefined) {
       if (constraint instanceof RegExp) {
+        constraint.lastIndex = 0
         if (!constraint.test(val)) return false
       }
       else if (Array.isArray(constraint)) {
