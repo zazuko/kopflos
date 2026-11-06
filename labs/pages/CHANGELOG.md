@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.3.3
+
+### Patch Changes
+
+- 12771b1: Generalised `mainEntity` as SHAPE-like `shapes` page option
+- 12771b1: Added `constraints` page option
+
 ## 0.3.2
 
 ### Patch Changes
