@@ -17,6 +17,7 @@ describe('labs/pages/queries/page-patterns.rq', function () {
 
     // then
     expect(results).to.have.length(1)
+    expect(results[0].path).to.deep.equal(env.ns.schema.mainEntity)
     expect(results[0].resourcePattern).to.equal(env.literal('^http://example.org/resource/(?<id>.+)$'))
     expect(results[0].pagePattern).to.equal(env.literal('http://example.org/page/(?<id>.+)'))
   })

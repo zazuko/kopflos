@@ -67,6 +67,19 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
           // then
           expect(await dataset.serialize({ format: 'text/turtle' })).toMatchSnapshot()
         })
+
+        it('should generate single resource shape with constraints and multiple properties', async function () {
+          // given
+          const plugin = new PagesPlugin({
+            path: 'test/fixtures/pages-constraints',
+          })
+
+          // when
+          const dataset = await plugin.deployedResources(env) as Dataset
+
+          // then
+          expect(await dataset.serialize({ format: 'text/turtle' })).toMatchSnapshot()
+        })
       })
 
       describe('watchPaths', function () {

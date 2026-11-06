@@ -326,6 +326,57 @@ describe('pageData', function () {
       expect(params.get(env.ns.schema.mainEntity)).to.deep.eq(parent.namedNode('http://example.org/app#my-page'))
     })
 
+    it('handles shape with multiple properties and dictionary constraints', async function () {
+      // given
+      const query = sinon.stub().resolves(parent.dataset().toStream())
+      const env = new Environment([
+        TestKopflosFactory,
+        mockSparqlFactory(),
+      ], { parent })
+      const subjectVariables = {
+        prefix: 'schema',
+        term: 'Person',
+      }
+      const constraints = {
+        prefix: {
+          schema: 'http://schema.org/',
+          foaf: 'http://xmlns.com/foaf/0.1/',
+        },
+        term: /^[a-zA-Z0-9_-]+$/,
+      }
+      const shape = {
+        property: [
+          {
+            path: env.ns.schema.mainEntity,
+            pattern: '[prefix][term]',
+          },
+          {
+            path: env.ns.schema.about,
+            pattern: '[prefix]',
+          },
+        ],
+      }
+
+      // when
+      await executeQuery({
+        query,
+        env,
+        subjectVariables,
+        queryParams: {},
+        pagePatterns: [],
+        shape,
+        constraints,
+        importQuery,
+      })
+
+      // then
+      const params = query.firstCall.args[0]
+      expect(params.get(env.ns.schema.mainEntity)).to.deep.eq(parent.namedNode('http://schema.org/Person'))
+      expect(params.get(env.ns.schema.about)).to.deep.eq(parent.namedNode('http://schema.org/'))
+      expect(params.get(parent.literal('prefix'))).to.deep.eq(parent.literal('schema'))
+      expect(params.get(parent.literal('term'))).to.deep.eq(parent.literal('Person'))
+    })
+
     it('rejects when underlying request fails', async function () {
       // given
       const stream = new PassThrough({ objectMode: true })

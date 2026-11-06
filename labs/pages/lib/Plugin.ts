@@ -3,7 +3,8 @@ import * as fs from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { HandlerArgs, Kopflos, KopflosEnvironment, KopflosPlugin } from '@kopflos-cms/core'
-import type { DatasetCore } from '@rdfjs/types'
+import type { DatasetCore, NamedNode, Term } from '@rdfjs/types'
+import { expand } from '@zazuko/prefixes'
 import { globIterate, glob } from 'glob'
 import type { AnyPointer } from 'clownface'
 import type { TemplateResult } from 'lit'
@@ -17,10 +18,24 @@ import esbuildSparqlLoaderPlugin from 'esbuild-plugin-sparql'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import pagesVitePlugin from './vitePlugin.js'
 import type { SsrOptions } from './ssr.js'
+import type { Constraints, Constraint } from './constraints.js'
 import { toPatterns } from './route.js'
 import type { PageData, QueryDescriptor, QueryMap } from './pageData.js'
 
+export type { Constraint, Constraints }
+
+export interface PropertyShape {
+  path: NamedNode | Term | string
+  pattern: string | (() => string)
+}
+
+export interface Shape {
+  property: PropertyShape[]
+}
+
 export interface Page<TQueries extends QueryMap | undefined = Record<string, QueryDescriptor | ExecuteConstruct>> {
+  constraints?: Constraints
+  shape?: Shape
   mainEntity?: string
   parameters?: Record<string, string>
   head?: string | ((args: HandlerArgs & { data: Record<keyof TQueries, AnyPointer> }) => string | Promise<string>)
@@ -144,7 +159,7 @@ export default class extends VitePlugin implements PagesPlugin {
         })
 
       const baseWithSlash = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
-      toPatterns(ssrModule).forEach((pattern) => {
+      toPatterns(ssrModule, renderer.constraints, 'route').forEach((pattern) => {
         resourceShape.addOut(sh.target, (target) => {
           target
             .addOut(rdf.type, kl.PatternedTarget)
@@ -152,20 +167,39 @@ export default class extends VitePlugin implements PagesPlugin {
         })
       })
 
-      let mainEntity = renderer.mainEntity
-      if (mainEntity) {
-        if (mainEntity.startsWith('/')) {
-          mainEntity = env.kopflos.appNs(mainEntity).value
+      let shape = renderer.shape
+      if (!shape && renderer.mainEntity) {
+        shape = {
+          property: [{
+            path: schema.mainEntity,
+            pattern: renderer.mainEntity,
+          }],
         }
-        resourceShape
-          .addOut(sh.property, (property) => {
-            property
-              .addOut(sh.path, schema.mainEntity)
+      }
 
-            toPatterns(mainEntity!).forEach((pattern) => {
+      if (shape?.property) {
+        for (const prop of shape.property) {
+          let propPattern = typeof prop.pattern === 'function' ? prop.pattern() : prop.pattern
+          if (propPattern.startsWith('/')) {
+            propPattern = env.kopflos.appNs(propPattern).value
+          }
+          let pathNode: NamedNode
+          if (typeof prop.path === 'string') {
+            const expanded = expand(prop.path)
+            pathNode = expanded ? env.namedNode(expanded) : env.namedNode(prop.path)
+          }
+          else {
+            pathNode = prop.path as NamedNode
+          }
+
+          resourceShape.addOut(sh.property, (property) => {
+            property.addOut(sh.path, pathNode)
+
+            toPatterns(propPattern, renderer.constraints, 'resource').forEach((pattern) => {
               property.addOut(sh.pattern, pattern)
             })
           })
+        }
       }
     }
 

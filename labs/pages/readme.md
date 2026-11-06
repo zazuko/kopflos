@@ -57,11 +57,24 @@ By default, pages are located in a `pages/` directory, relative to the config. F
 
 ```typescript
 import { html, definePage } from '@kopflos-labs/pages'
+import { schema } from '@tpluscode/rdf-ns-builders'
 import plaqueQuery from './plaque.rq'
 
 export default definePage({
-  // The IRI of the main entity for this page
-  mainEntity: '/plaque/[id]',
+  // Define SHACL property shapes linking resources to this page
+  shape: {
+    property: [
+      {
+        path: schema.mainEntity,
+        pattern: '/plaque/[id]',
+      },
+    ],
+  },
+
+  // Route variable constraints
+  constraints: {
+    id: /^[a-zA-Z0-9_-]+$/,
+  },
   
   // Data sources: query results will be available in the 'data' object
   queries: {
@@ -100,7 +113,91 @@ export default definePage({
 
 ---
 
-### 4. Loading Data with SPARQL (`*.rq` files)
+### 4. Page Shapes and Route Constraints
+
+Pages in `@kopflos-labs/pages` can define SHACL-like property shapes and route variable constraints to declaratively map RDF resources to pages and validate incoming URLs.
+
+#### Defining `shape`
+
+The `shape` property declares how RDF resources relate to this page:
+
+```typescript
+import { definePage } from '@kopflos-labs/pages'
+import { schema } from '@tpluscode/rdf-ns-builders'
+
+export default definePage({
+  shape: {
+    property: [
+      {
+        path: schema.mainEntity,
+        pattern: '/plaque/[id]',
+      },
+      {
+        path: schema.about,
+        pattern: '/about/[category]',
+      },
+    ],
+  },
+  // ...
+})
+```
+
+- **`path`**: The RDF property (e.g. `schema.mainEntity`, `schema.about`, or any custom predicate).
+- **`pattern`**: A URI template using route variables (e.g. `/plaque/[id]` or `[prefix][term]`). Absolute URIs (starting with `http`) are used directly; relative patterns are resolved against the app namespace (`env.kopflos.appNs`).
+- **Backward compatibility**: You can still provide `mainEntity: '/plaque/[id]'` as a shorthand, which is normalized to `shape: { property: [{ path: schema.mainEntity, pattern: '/plaque/[id]' }] }`.
+
+#### Defining `constraints`
+
+Route parameters can be validated and transformed using the `constraints` object:
+
+```typescript
+import { definePage } from '@kopflos-labs/pages'
+import { schema } from '@tpluscode/rdf-ns-builders'
+import { prefixes } from '@zazuko/vocabularies'
+
+export default definePage({
+  constraints: {
+    // 1. Dictionary mapping (Record<string, string>)
+    // Bi-directional mapping: URL token 'schema' <-> URI 'http://schema.org/'
+    prefix: prefixes,
+
+    // 2. Regular Expression (RegExp)
+    // Validates route parameter format
+    term: /^[a-zA-Z0-9_-]+$/,
+
+    // 3. Allowed Value List (string[] or readonly string[])
+    // Restricts the variable to an exact set of values
+    lang: ['en', 'de', 'fr'],
+  },
+  shape: {
+    property: [
+      {
+        path: schema.mainEntity,
+        pattern: '[prefix][term]',
+      },
+    ],
+  },
+})
+```
+
+##### Supported Constraint Types:
+1. **Dictionary (`Record<string, string>`)**:
+   - Route URL pattern matches dictionary keys (e.g. `schema`, `foaf`).
+   - Resource URI pattern matches dictionary values (e.g. `http://schema.org/`, `http://xmlns.com/foaf/0.1/`).
+   - Enables bi-directional translation: incoming URLs map key to namespace URI, and outgoing SPARQL/stream results map namespace URI back to route key.
+2. **Regular Expression (`RegExp`)**:
+   - Matches route parameter values against the regex pattern.
+   - Compiled into capture groups in route and resource regular expressions.
+3. **Array (`string[]` / `readonly string[]`)**:
+   - Matches route parameter values against the allowed list of string values.
+
+#### Early Route Validation & 404
+
+When handling an incoming request, the server extracts `subjectVariables` and validates them against `constraints`. If any variable fails validation (e.g. an unknown prefix or an invalid term format), the handler immediately returns `404 Not Found` without loading SSR modules or running SPARQL queries.
+
+---
+
+### 5. Loading Data with SPARQL (`*.rq` files)
 
 You can maintain your SPARQL queries in separate `.rq` files. These queries are automatically parameterized. Use the `sparqlc:param` function to bind URL parameters (like `id`) or the `mainEntity` IRI.
 
@@ -128,7 +225,7 @@ Queries defined in the `queries` object of `definePage` are executed, and the re
 
 ---
 
-### 5. Configuring `queries`
+### 6. Configuring `queries`
 
 The `queries` option of `definePage` lets you declare one or more data sources that will be executed server‑side and exposed to your page via the `data` argument.
 
@@ -158,7 +255,7 @@ export default definePage({
     // 3) Select a named endpoint (must exist in env.sparql)
     plaqueOnNamed: { query: plaqueQuery, endpoint: 'analytics' },
 
-    // 5) Lazy load (declarative dynamic import)
+    // 4) Lazy load (declarative dynamic import)
     plaqueRelative: {
       query: './plaque.rq',
       importMeta: import.meta,
@@ -170,7 +267,7 @@ export default definePage({
       load: () => import('./plaque.rq'),
     },
     
-    // 5) lazy load (declarative)
+    // 6) Lazy load (declarative)
     //    also allowed as object with `query/endpoint` properties
     lazyPlaqueDeclarative: new URL('./plaque.rq', import.meta.url),
   },
@@ -181,8 +278,8 @@ export default definePage({
 })
 ```
 
-Note: import attributes cannot be used in `load` function untile vite supports them. 
-See [discussion](https://github.com/vitejs/vite/discussions/18534). To resolve realtive URL references
+Note: import attributes cannot be used in `load` function until vite supports them. 
+See [discussion](https://github.com/vitejs/vite/discussions/18534). To resolve relative URL references
 against the API base, pass the query path as URL as shown in the last example.
 
 When using `endpoint`, the query runs against `env.sparql[endpoint].stream`. If omitted, the default client `env.sparql.default.stream` is used.
@@ -194,6 +291,7 @@ All queries receive a parameter map that is available to `sparqlc:param(...)` in
 1) Route variables from the page path
 - Example route: `pages/plaque/[id].ts` ⇒ `id` is available
 - Bound as literal values under their plain names: `sparqlc:param("id")`
+- If a route variable has a dictionary constraint (e.g. `prefix: { schema: 'http://schema.org/' }`), the resolved mapped URI is also populated for shape pattern evaluation.
 
 2) URL query string parameters (HTTP GET)
 - Arrays are supported and bound as multiple literal values
@@ -225,29 +323,48 @@ BIND(sparqlc:param(schema:about) AS ?about)
 BIND(sparqlc:param("custom") AS ?suffix)
 ```
 
-4) `mainEntity` convenience binding
-- `mainEntity` can be a template string too, using `[var]`
-- If it starts with `http`, it is used as an absolute IRI
-- Otherwise it is resolved against your app namespace (`env.kopflos.appNs`), so `'[slug]'` becomes `<app#[slug]>`
-- The resulting node is bound under `schema:mainEntity`, so you can access it as `sparqlc:param(schema:mainEntity)`
-
-```ts
-export default definePage({
-  // Absolute IRI with template
-  mainEntity: 'http://example.org/[slug]',
-  // or relative to the app namespace
-  // mainEntity: '[slug]',
-  queries: { details: plaqueQuery },
-})
-```
+4) `shape.property` bindings (and `mainEntity`)
+- For each property declared in `shape.property`, the template pattern is evaluated with resolved variables and bound under its predicate path (e.g. `schema.mainEntity`, `schema.about`).
+- If using the `mainEntity` shorthand property, it binds `schema:mainEntity`.
+- In your query, you can access these bindings via `sparqlc:param(schema:mainEntity)`, `sparqlc:param(schema:about)`, etc.
 
 Summary of precedence when setting a parameter key:
 - If a key is already present from route variables or query string, `parameters` will not overwrite it
-- `mainEntity` always sets `schema:mainEntity` (after template expansion)
+- `shape.property` and `mainEntity` bindings are populated after route/query parameters.
 
 ---
 
-### 6. Navigating the Graph with `lit-rdf`
+### 7. Resource-to-Page Routing with `SERVICE kopflos:Pages`
+
+`@kopflos-labs/pages` maintains a graph of page resource shapes (`kopflos:Pages`). You can link RDF resources to their corresponding HTML page URLs inside SPARQL queries using `SERVICE kopflos:Pages`:
+
+```sparql
+PREFIX schema: <http://schema.org/>
+PREFIX kopflos: <https://kopflos.described.at/>
+
+CONSTRUCT {
+  ?resource schema:mainEntityOfPage ?pageUrl ;
+            ?p ?o .
+}
+WHERE {
+  ?resource ?p ?o .
+
+  SERVICE kopflos:Pages {
+    ?resource schema:mainEntityOfPage ?pageUrl .
+  }
+}
+```
+
+#### How it Works:
+1. **Multi-Property Resolution**: When querying `SERVICE kopflos:Pages`, the processor resolves triples matching property shapes defined across your pages:
+   - `?resource schema:mainEntityOfPage ?page` matches pages where `shape.property` defines `schema:mainEntity`.
+   - Direct predicate queries like `?resource schema:about ?page` match pages where `shape.property` defines `schema:about`.
+2. **Regex & Constraints Matching**: SPARQL pattern matching evaluates resource URIs against the compiled SHACL property patterns.
+3. **Stream URL Materialization**: During query stream execution (`PageUrlTransform`), capture groups from the resource URI are extracted and reverse-mapped through dictionary constraints (e.g. mapping `http://schema.org/` back to prefix `schema`) to materialize the exact page URL (e.g. `/schema:Person.html`).
+
+---
+
+### 8. Navigating the Graph with `lit-rdf`
 
 It is recommended to use `lit-rdf` with  `@kopflos-labs/pages` to provide a declaratively bind RDF data to web components.
 

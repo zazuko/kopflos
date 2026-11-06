@@ -1,9 +1,18 @@
 import { definePage } from '@kopflos-labs/pages'
+import { schema } from '@tpluscode/rdf-ns-builders'
 import plaque from './plaque.rq'
 import { html } from 'lit'
 
 export default definePage({
-  mainEntity: '/plaque/[id]',
+  // same as mainEntity: '/plaque/[id]',
+  shape: {
+    property: [
+      {
+        path: schema.mainEntity,
+        pattern: '/plaque/[id]',
+      },
+    ],
+  },
   queries: {
     plaque,
   },
