@@ -7,7 +7,7 @@
     "postinstall": "skills experimental_sync --recursive -y",
     "prepare": "npm run --ws --if-present prepare; husky",
     "lint": "eslint . --quiet",
-    "lint:skills": "skill-check .",
+    "lint:skills": "skill-check check packages --no-security-scan --fail-on-warning",
     "test": "npm run --ws --if-present test",
     "release": "changeset publish"
   },

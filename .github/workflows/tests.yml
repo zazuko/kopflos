@@ -90,12 +90,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: fabasoad/setup-prolog-action@v1
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - run: npm ci
-      - run: npm run lint:skills
+      - run: npm run lint:skills -- --format github
 
   build:
     runs-on: ubuntu-latest
