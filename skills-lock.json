@@ -47,7 +47,7 @@
       "source": "lit-rdf",
       "sourceType": "node_modules",
       "skillPath": "skills/lit-rdf/SKILL.md",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "computedHash": "dcbac7247ab14edb5cab93f1de8f08cdd73702b4d6062ed69e8bfebb7669dc8f"
     },
     "skill-check": {

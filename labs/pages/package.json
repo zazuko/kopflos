@@ -68,7 +68,7 @@
     "@zazuko/env-node": "^3.0.0",
     "chai": "^6",
     "lit": "^3.3.2",
-    "lit-rdf": "^0.3.4",
+    "lit-rdf": "^0.3.5",
     "mocha-chai-jest-snapshot": "^1.1.7",
     "mocha-chai-rdf": "^0.2",
     "sinon": "^18.0.1",
