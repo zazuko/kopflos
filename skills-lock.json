@@ -34,7 +34,7 @@
       "sourceType": "node_modules",
       "skillPath": "skills/kopflos-pages/SKILL.md",
       "version": "0.3.2",
-      "computedHash": "31d3a1ab027fd4df2cef57c72f26e8a8123794134ca68866a5ccd7c4345651bd"
+      "computedHash": "e2c2e156a8ea5da0a422a9f08aebf5a2c82c451e754c2f5654f4b67e0caa3b55"
     },
     "kopflos-resources": {
       "source": "@kopflos-cms/core",
