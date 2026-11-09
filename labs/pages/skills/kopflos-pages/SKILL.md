@@ -26,6 +26,8 @@ export default definePage({
 
 Import `html` from `lit` (or `lit-html`); Pages exports `definePage` and page types, not `html`.
 
+In page module templates, use only attribute bindings (for example, `value=${value}`), never property bindings (`.value=${value}`). Property bindings are not recreated on the client after SSR and cause hydration mismatches.
+
 Routes use HTML suffixes: `pages/person/[id].ts` serves `/person/<id>.html`; `pages/index.ts` serves `/index.html` and `/`. Nested `index.ts` pages also match the directory URL. `[id]`, `[[id]]`, and `[...path]` declare required, optional, and catch-all variables. Do not assume extensionless routes for other filenames. The default catch-all accepts slashes and word characters; add constraints if other characters are needed.
 
 Use these companion files when needed:
