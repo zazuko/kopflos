@@ -4,15 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "skills experimental_sync --recursive -y",
     "prepare": "npm run --ws --if-present prepare; husky",
     "lint": "eslint . --quiet",
+    "lint:skills": "skill-check .",
     "test": "npm run --ws --if-present test",
     "release": "changeset publish"
   },
   "author": "Zazuko GmbH",
   "license": "MIT",
   "dependencies": {
-    "@zazuko/env-node": "^3",
+    "@zazuko/env-node": "^3.1.2",
     "husky": "^9.1.6",
     "lint-staged": "^16.4.0"
   },
@@ -34,6 +36,8 @@
     "eslint": "^10",
     "eslint-import-resolver-typescript": "^4.4.5",
     "mocha": "^12",
+    "skills": "^1.7.6",
+    "skill-check": "^1.2.0",
     "ts-plugin-sparqlc": "^0.1.1",
     "tsx": "^4.23.1",
     "typescript": "^5.5.4"

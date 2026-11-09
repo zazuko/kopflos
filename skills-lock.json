@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "skills": {
+    "env": {
+      "source": "@zazuko/env",
+      "sourceType": "node_modules",
+      "skillPath": "skills/env/SKILL.md",
+      "version": "3.0.6",
+      "computedHash": "c203b696dfce7d28078d70f9540d9ed46f56066bb8c94bfef9d0e74b119d46d1"
+    },
+    "env-node": {
+      "source": "@zazuko/env-node",
+      "sourceType": "node_modules",
+      "skillPath": "skills/env-node/SKILL.md",
+      "version": "3.1.3",
+      "computedHash": "72a236a5d8d081220793eed7062c5189359bfbeda9c14ec63082a02aa2af13f1"
+    },
+    "kopflos-app": {
+      "source": "kopflos",
+      "sourceType": "node_modules",
+      "skillPath": "skills/kopflos-app/SKILL.md",
+      "version": "0.1.12",
+      "computedHash": "9e6a0d44ac150c1529d1ae58f21439e7b677f26497d5906ad5c4523bc3d454c7"
+    },
+    "kopflos-deploy-resources": {
+      "source": "@kopflos-cms/plugin-deploy-resources",
+      "sourceType": "node_modules",
+      "skillPath": "skills/kopflos-deploy-resources/SKILL.md",
+      "version": "0.2.3",
+      "computedHash": "678c172cbb2c91292ea82c4eed3953854a03f6924a2de05b7d250b3df71c46c3"
+    },
+    "kopflos-pages": {
+      "source": "@kopflos-labs/pages",
+      "sourceType": "node_modules",
+      "skillPath": "skills/kopflos-pages/SKILL.md",
+      "version": "0.3.2",
+      "computedHash": "31d3a1ab027fd4df2cef57c72f26e8a8123794134ca68866a5ccd7c4345651bd"
+    },
+    "kopflos-resources": {
+      "source": "@kopflos-cms/core",
+      "sourceType": "node_modules",
+      "skillPath": "skills/kopflos-resources/SKILL.md",
+      "version": "0.7.3",
+      "computedHash": "a791a1ab12bcf7199170e6a936a6fd5cd648cfd81dae1bbfd90a9cabf25a4c6d"
+    },
+    "lit-rdf": {
+      "source": "lit-rdf",
+      "sourceType": "node_modules",
+      "skillPath": "skills/lit-rdf/SKILL.md",
+      "version": "0.3.4",
+      "computedHash": "dcbac7247ab14edb5cab93f1de8f08cdd73702b4d6062ed69e8bfebb7669dc8f"
+    },
+    "skill-check": {
+      "source": "skill-check",
+      "sourceType": "node_modules",
+      "skillPath": "skills/skill-check/SKILL.md",
+      "version": "1.2.0",
+      "computedHash": "b24a4253a6066d6672b94ece2e77e39a797430a810e0afc75121fd2544e153a5"
+    }
+  }
+}

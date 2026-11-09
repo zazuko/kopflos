@@ -39,9 +39,9 @@ jobs:
           - name: sparql-path-parser
             path: packages/sparql-path-parser
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
@@ -78,20 +78,31 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - run: npm ci
       - run: npm run lint
 
+  skill-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: fabasoad/setup-prolog-action@v1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - run: npm ci
+      - run: npm run lint:skills
+
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - run: npm ci
@@ -100,9 +111,9 @@ jobs:
   smoke-test-example:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: fabasoad/setup-prolog-action@v1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - run: npm ci
@@ -118,7 +129,7 @@ jobs:
           TMPDIR: ${{ runner.temp }}
       - if: failure()
         name: upload debug artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: smoke-test-debug
           path: |

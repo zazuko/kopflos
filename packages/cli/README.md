@@ -2,6 +2,10 @@
 
 Command line interface for Kopflos.
 
+## AI skill
+
+The package includes [kopflos-app](skills/kopflos-app/SKILL.md), an agent skill for configuring and running applications and defining RDF APIs. It is shipped in `node_modules/kopflos/skills/kopflos-app`; point your agent at its `SKILL.md` or copy the folder into your agent's skills directory.
+
 ## Usage
 
 ### serve
