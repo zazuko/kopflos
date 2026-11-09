@@ -1,9 +1,8 @@
 import eslint from 'eslint/config'
 import { fileURLToPath } from 'node:url'
 import tpluscode from '@tpluscode/eslint-config'
-import { includeIgnoreFile } from "@eslint/compat";
 
-const { defineConfig, globalIgnores } = eslint
+const { defineConfig, globalIgnores, includeIgnoreFile } = eslint
 
 const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url))
 
