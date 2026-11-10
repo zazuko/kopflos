@@ -39,7 +39,7 @@ export default class extends Processor<E> {
       if (!page.path) {
         return true
       }
-      if (predicate.equals(this.factory.ns.schema.mainEntityOfPage) || predicate.equals(this.factory.ns.schema.mainEntity)) {
+      if (this.factory.ns.schema.mainEntityOfPage.equals(predicate) || this.factory.ns.schema.mainEntity.equals(predicate)) {
         return page.path.equals(this.factory.ns.schema.mainEntityOfPage) || page.path.equals(this.factory.ns.schema.mainEntity)
       }
       return page.path.equals(predicate)

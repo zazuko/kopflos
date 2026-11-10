@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import env from '@zazuko/env-node'
 import type { ServicePattern, GroupPattern, Pattern, ValuesPattern } from 'sparqljs'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import { Generator, Wildcard } from 'sparqljs'
+import { Generator, Parser, Wildcard } from 'sparqljs'
 import SparqlProcessor from '../../lib/SparqlProcessor.js'
 import type { Bindings } from '../../queries/page-patterns.rq'
 
@@ -16,6 +16,25 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
       resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
     },
   ]
+
+  it('rewrites compiled SERVICE triples whose terms have no equals method', function () {
+    const processor = new SparqlProcessor(env, pages)
+    const query = new Parser().parse(`
+      CONSTRUCT { ?resource <http://schema.org/mainEntityOfPage> ?page }
+      WHERE {
+        SERVICE <https://kopflos.described.at/Pages> {
+          ?resource <http://schema.org/mainEntityOfPage> ?page
+        }
+      }
+    `)
+    const compiled = JSON.parse(JSON.stringify(query))
+    const service: ServicePattern = compiled.where[0]
+
+    const result = processor.processService(service) as Pattern[]
+    const values = result.find((p): p is ValuesPattern => p.type === 'values')
+    expect(values?.values).to.have.length(1)
+    expect(values?.values[0]['?pagePattern_resource']).to.equal(pages[0].pagePattern)
+  })
 
   it('should ignore SERVICE clauses with other names', function () {
     // given
