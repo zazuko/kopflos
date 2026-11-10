@@ -2,6 +2,10 @@
 
 Quick-start guide for the `@kopflos-labs/pages` package, a data-driven page builder for Kopflos using Lit and RDF.
 
+## AI skill
+
+The package includes [kopflos-pages](skills/kopflos-pages/SKILL.md), an agent skill for authoring pages, SPARQL data, and Lit SSR components. It is shipped in `node_modules/@kopflos-labs/pages/skills/kopflos-pages`; point your agent at its `SKILL.md` or copy the folder into your agent's skills directory.
+
 ---
 
 ### 1. Installation

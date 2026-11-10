@@ -14,6 +14,7 @@
   },
   "files": [
     "CHANGELOG.md",
+    "skills",
     "queries",
     "lib/*.js",
     "lib/*.d.ts",
@@ -40,13 +41,13 @@
     "cheerio": "^1.2.0",
     "esbuild": ">=0.17.0",
     "esbuild-node-externals": "^1.23.1",
-    "esbuild-plugin-sparql": "^0.1.0",
+    "esbuild-plugin-sparql": "^0.2.2",
     "glob": "^14.0.4",
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.1.1",
     "rdf-literal": "^2.0.0",
-    "vite-plugin-sparql": "^0.1.0"
+    "vite-plugin-sparql": "^0.2.2"
   },
   "peerDependencies": {
     "vite": "6 - 8",
@@ -67,6 +68,7 @@
     "@zazuko/env-node": "^3.0.0",
     "chai": "^6",
     "lit": "^3.3.2",
+    "lit-rdf": "^0.3.5",
     "mocha-chai-jest-snapshot": "^1.1.7",
     "mocha-chai-rdf": "^0.2",
     "sinon": "^18.0.1",

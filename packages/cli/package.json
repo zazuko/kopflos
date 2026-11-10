@@ -7,6 +7,7 @@
   },
   "files": [
     "CHANGELOG.md",
+    "skills",
     "bin",
     "lib/**/*.js",
     "lib/**/*.d.ts",
