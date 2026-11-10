@@ -15,33 +15,12 @@
       "version": "3.1.3",
       "computedHash": "72a236a5d8d081220793eed7062c5189359bfbeda9c14ec63082a02aa2af13f1"
     },
-    "kopflos-app": {
-      "source": "kopflos",
+    "esbuild-plugin-sparql": {
+      "source": "esbuild-plugin-sparql",
       "sourceType": "node_modules",
-      "skillPath": "skills/kopflos-app/SKILL.md",
-      "version": "0.1.12",
-      "computedHash": "9e6a0d44ac150c1529d1ae58f21439e7b677f26497d5906ad5c4523bc3d454c7"
-    },
-    "kopflos-deploy-resources": {
-      "source": "@kopflos-cms/plugin-deploy-resources",
-      "sourceType": "node_modules",
-      "skillPath": "skills/kopflos-deploy-resources/SKILL.md",
-      "version": "0.2.3",
-      "computedHash": "678c172cbb2c91292ea82c4eed3953854a03f6924a2de05b7d250b3df71c46c3"
-    },
-    "kopflos-pages": {
-      "source": "@kopflos-labs/pages",
-      "sourceType": "node_modules",
-      "skillPath": "skills/kopflos-pages/SKILL.md",
-      "version": "0.3.2",
-      "computedHash": "e2c2e156a8ea5da0a422a9f08aebf5a2c82c451e754c2f5654f4b67e0caa3b55"
-    },
-    "kopflos-resources": {
-      "source": "@kopflos-cms/core",
-      "sourceType": "node_modules",
-      "skillPath": "skills/kopflos-resources/SKILL.md",
-      "version": "0.7.3",
-      "computedHash": "a791a1ab12bcf7199170e6a936a6fd5cd648cfd81dae1bbfd90a9cabf25a4c6d"
+      "skillPath": "skills/esbuild-plugin-sparql/SKILL.md",
+      "version": "0.2.2",
+      "computedHash": "6a9f8e4e702623b7479e177c940384853e221906c84be52b0d3c60fea4bb5bd7"
     },
     "lit-rdf": {
       "source": "lit-rdf",
@@ -56,6 +35,20 @@
       "skillPath": "skills/skill-check/SKILL.md",
       "version": "1.2.0",
       "computedHash": "b24a4253a6066d6672b94ece2e77e39a797430a810e0afc75121fd2544e153a5"
+    },
+    "ts-plugin-sparqlc": {
+      "source": "ts-plugin-sparqlc",
+      "sourceType": "node_modules",
+      "skillPath": "skills/ts-plugin-sparqlc/SKILL.md",
+      "version": "0.1.6",
+      "computedHash": "334596d5ef78a8f4447f4d9eeda9cb9f53d6126ebcffe8dde3215a78fad81974"
+    },
+    "vite-plugin-sparql": {
+      "source": "vite-plugin-sparql",
+      "sourceType": "node_modules",
+      "skillPath": "skills/vite-plugin-sparql/SKILL.md",
+      "version": "0.2.2",
+      "computedHash": "af5db92b47f974f0ae1239dbafa1c95aab094f472edba4b1f69810385ebe6022"
     }
   }
 }

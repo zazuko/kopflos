@@ -45,6 +45,12 @@ Vite injects imports for companion modules and hydration support into the HTML s
 
 Read [references/queries-and-links.md](references/queries-and-links.md) for SPARQL descriptors, parameter binding, and links from RDF resources to HTML pages.
 
+### TypeScript query imports
+
+For TypeScript projects importing `.rq` or `.ru` files, install `ts-plugin-sparqlc` and `sparqlc`, and follow the `ts-plugin-sparqlc` skill for query-specific type inference. For Node.js runtime loading, use `node-loader-sparql` and follow its skill when available; Pages already registers this loader through its entrypoint.
+
+### Page data
+
 - `body(args)` returns a Lit template, synchronously or asynchronously. `args` contains Kopflos handler arguments plus `data`, whose query entries are Clownface pointers.
 - `head` is a string or a function returning a string, optionally asynchronously. It is inserted as HTML; escape untrusted values before interpolation.
 - `shape.property` maps RDF predicates to resource IRI patterns. `mainEntity: '/person/[id]'` is shorthand for a `schema:mainEntity` property shape. This describes the resource represented by the page, independently of the page file's route.

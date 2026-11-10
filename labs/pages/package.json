@@ -40,13 +40,13 @@
     "cheerio": "^1.2.0",
     "esbuild": ">=0.17.0",
     "esbuild-node-externals": "^1.23.1",
-    "esbuild-plugin-sparql": "^0.1.0",
+    "esbuild-plugin-sparql": "^0.2.2",
     "glob": "11.1.0",
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.1.1",
     "rdf-literal": "^2.0.0",
-    "vite-plugin-sparql": "^0.1.0"
+    "vite-plugin-sparql": "^0.2.2"
   },
   "peerDependencies": {
     "vite": "6 - 8",
