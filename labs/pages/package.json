@@ -45,7 +45,7 @@
     "glob": "^14.0.4",
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
-    "node-loader-sparql": "^0.1.1",
+    "node-loader-sparql": "^0.2.3",
     "rdf-literal": "^2.0.0",
     "vite-plugin-sparql": "^0.2.2"
   },

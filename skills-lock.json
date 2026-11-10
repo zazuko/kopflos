@@ -29,6 +29,13 @@
       "version": "0.3.5",
       "computedHash": "dcbac7247ab14edb5cab93f1de8f08cdd73702b4d6062ed69e8bfebb7669dc8f"
     },
+    "node-loader-sparql": {
+      "source": "node-loader-sparql",
+      "sourceType": "node_modules",
+      "skillPath": "skills/node-loader-sparql/SKILL.md",
+      "version": "0.2.3",
+      "computedHash": "d96941c82ebfc2d4714ea026685e182c4700813e514c063f6e35a649cc0d7314"
+    },
     "skill-check": {
       "source": "skill-check",
       "sourceType": "node_modules",
