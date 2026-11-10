@@ -45,6 +45,8 @@ Vite injects imports for companion modules and hydration support into the HTML s
 
 Read [references/queries-and-links.md](references/queries-and-links.md) for SPARQL descriptors, parameter binding, and links from RDF resources to HTML pages.
 
+For resource-to-page links, use `BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)` with both IRI arguments required. Call it within `BIND` in `WHERE`, then use the resulting IRI elsewhere in the query. `SERVICE kopflos:Pages` is deprecated; migrate existing queries to explicit function calls. The reference covers relationship selection, unmatched or ambiguous routes, and migration details.
+
 ### TypeScript query imports
 
 For TypeScript projects importing `.rq` or `.ru` files, install `ts-plugin-sparqlc` and `sparqlc`, and follow the `ts-plugin-sparqlc` skill for query-specific type inference. For Node.js runtime loading, use `node-loader-sparql` and follow its skill when available; Pages already registers this loader through its entrypoint and supplies its SPARQL bundler integrations. Generated query executors import `sparqlc/*` from the query module location. npm hoisting can make a transitive `sparqlc` installation work, as it does in some existing applications; declare it directly for reliable runtime and type resolution under other dependency layouts. Do not diagnose a missing loader solely from the absence of a direct dependency entry; check the actual resolution and error.

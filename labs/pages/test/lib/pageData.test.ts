@@ -46,7 +46,7 @@ describe('pageData', function () {
       // then
       expect(result).to.be.ok
       expect(query).to.have.been.calledOnceWith(sinon.match.any, sinon.match({
-        client: env.sparql.default.stream,
+        client: sinon.match(env.sparql.default.stream),
       }))
     })
 
@@ -76,7 +76,7 @@ describe('pageData', function () {
 
       // then
       expect(query.query).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match(env.sparql.named.stream),
       }))
     })
 
@@ -108,7 +108,7 @@ describe('pageData', function () {
       // then
       expect(query.load).to.have.been.calledWith({ base: 'http://example.org/app#' })
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match(env.sparql.named.stream),
       }))
     })
 
@@ -145,7 +145,7 @@ describe('pageData', function () {
         'http://example.org/app#',
       )
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match(env.sparql.named.stream),
       }))
     })
 
