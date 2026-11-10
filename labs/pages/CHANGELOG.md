@@ -1,5 +1,12 @@
 # @kopflos-labs/pages
 
+## 0.3.4
+
+### Patch Changes
+
+- 03ac1bb: Update `node-loader-sparql` to 0.2.3
+- bc1c0e0: Handle serialized RDF terms in SERVICE kopflos:Pages queries compiled by sparqlc.
+
 ## 0.3.3
 
 ### Patch Changes
