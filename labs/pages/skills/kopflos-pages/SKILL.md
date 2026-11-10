@@ -47,7 +47,7 @@ Read [references/queries-and-links.md](references/queries-and-links.md) for SPAR
 
 ### TypeScript query imports
 
-For TypeScript projects importing `.rq` or `.ru` files, install `ts-plugin-sparqlc` and `sparqlc`, and follow the `ts-plugin-sparqlc` skill for query-specific type inference. For Node.js runtime loading, use `node-loader-sparql` and follow its skill when available; Pages already registers this loader through its entrypoint.
+For TypeScript projects importing `.rq` or `.ru` files, install `ts-plugin-sparqlc` and `sparqlc`, and follow the `ts-plugin-sparqlc` skill for query-specific type inference. For Node.js runtime loading, use `node-loader-sparql` and follow its skill when available; Pages already registers this loader through its entrypoint and supplies its SPARQL bundler integrations. Generated query executors import `sparqlc/*` from the query module location. npm hoisting can make a transitive `sparqlc` installation work, as it does in some existing applications; declare it directly for reliable runtime and type resolution under other dependency layouts. Do not diagnose a missing loader solely from the absence of a direct dependency entry; check the actual resolution and error.
 
 ### Page data
 
@@ -58,10 +58,18 @@ For TypeScript projects importing `.rq` or `.ru` files, install `ts-plugin-sparq
 
 For optional `lit-rdf` integration, register its components in `.html.ts` and bind query results with `<rdf-graph data-graph="person">` inside `<rdf-environment>` / `<rdf-dataset>`. Match `data-graph` exactly to a `queries` key. Use `<target-node>` and `<traverse-graph>` to focus the graph for child components. Pages serializes graphs consumed by components with `data-graph` for browser hydration; a server-side `data` lookup alone does not expose the graph to the client.
 
+## Global styles in shadow roots
+
+Pages makes document styles available inside open shadow roots. Its SSR renderer inserts `<open-styles>` into rendered component shadows; the browser helper adopts document stylesheets there after DOM readiness. The HTML transform also enables adoption for open shadow roots created later. This allows a global stylesheet such as Web Awesome's `webawesome.css` to supply utility classes inside custom Lit components without importing that stylesheet into every component.
+
+This is Pages integration behavior, not normal shadow-DOM CSS inheritance. Component-local styles still apply, inherited custom properties still cross host boundaries, and closed roots are not opened by this helper. Adoption runs in the browser, so verify the initial SSR paint and the hydrated page when changing global CSS. Styles are cached; adding a stylesheet invalidates the cache for subsequent adoption but does not automatically refresh every existing root. Read SSR markup and browser styles before diagnosing an absent utility class as a missing component import.
+
 ## SSR and verification
 
 Pages defers hydration by default. For components that cannot run `connectedCallback` during SSR, configure `ssrOptions.disallowConnectedCallback` with tag names or regexes. An `allowConnectedCallback` list, when present, permits only matching components; a deny match still takes precedence. An empty allow list permits none.
 
 Run `kopflos serve --mode development` through the application's existing script and verify the actual `.html` route, invalid route values, rendered data, and client interaction. Run `kopflos build` before checking production mode; output defaults to `dist/pages/client` and `dist/pages/server` (subject to `buildDir` and plugin `path`).
+
+A successful Pages/Vite build verifies bundling, not TypeScript semantic correctness. Run the application's type-check command separately. Plain `tsc` does not load language-service plugins; use the SPARQL compiler workflow described by `ts-plugin-sparqlc` when query-specific command-line types are required. Distinguish application errors from dependency declaration errors instead of adding broad fallback declarations to hide them.
 
 If a page is missing, check discovery, generated routing graph deployment, and the HTML route suffix. If HTML has no data, check query bindings and endpoint selection. If SSR works but client interaction fails, check companion imports and browser errors. If only production fails, check build output and the HTML shell entrypoint.
