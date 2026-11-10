@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@kopflos-cms/plugin-deploy-resources onStart enabled applies base 1`] = `
 "<http://example.org/bar> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Bar> <http://example.org/bar> .
@@ -31,4 +31,5 @@ exports[`@kopflos-cms/plugin-deploy-resources watch enabled redeploys when file 
 
 exports[`@kopflos-cms/plugin-deploy-resources watch enabled redeploys when file is created 1`] = `
 "<http://example.org/baz> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Baz> <http://example.org/baz> .
-"`;
+"
+`;

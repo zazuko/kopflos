@@ -38,6 +38,7 @@ describe('@kopflos-cms/hydra/lib/validation.js', function () {
         expect(shapesGraph).canonical.toMatchSnapshot()
       })
     })
+
     context('collection has hydra#createMemberCreateShape', function () {
       it('copies it to output shapes', async function () {
         // given

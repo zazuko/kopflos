@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`loadApi loadGraphs fetches combined graph contents (string names) 1`] = `
 "<http://example.org/PersonShape> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://kopflos.described.at/ResourceShape> .

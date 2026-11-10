@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.3",
+    "@kopflos-cms/core": "^0.7.3",
     "@kopflos-cms/logger": "^0.1.0",
     "@kopflos-cms/vite": "^0.3.8",
     "@lit-labs/ssr": "^4.1.0",
@@ -41,7 +42,7 @@
     "esbuild": ">=0.17.0",
     "esbuild-node-externals": "^1.23.1",
     "esbuild-plugin-sparql": "^0.2.2",
-    "glob": "11.1.0",
+    "glob": "^14.0.4",
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.1.1",
@@ -58,7 +59,6 @@
     }
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.7.3",
     "@open-wc/testing": "^5.0.0",
     "@rdfjs-elements/formats-pretty": "^0.6.8",
     "@types/rdfjs__serializer-rdfjs": "^0.1.6",

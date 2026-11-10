@@ -26,6 +26,7 @@
     "@openlayers-elements/core": "^0.5.1",
     "@openlayers-elements/maps": "^0.5.0",
     "@shoelace-style/shoelace": "^2.17.1",
+    "@tpluscode/rdf-ns-builders": "^7.0.0",
     "@webcomponents/template-shadowroot": "^0.2.1",
     "compression": "^1.8.2",
     "cors": "^2.8.5",

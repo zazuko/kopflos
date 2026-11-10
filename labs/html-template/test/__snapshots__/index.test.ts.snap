@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@kopflos-labs/html-template fetches data as stream 1`] = `
 "_:c14n0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Foo> .

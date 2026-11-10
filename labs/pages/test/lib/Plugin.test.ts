@@ -25,7 +25,7 @@ describe('@kopflos-cms/pages/lib/Plugin.js', function () {
     ['https://example.org/', 'base with slash'],
     ['https://example.org', 'base without slash'],
   ].map(([baseIri, title]) => {
-    describe(title, () => {
+    describe(title, function () {
       beforeEach(function () {
         env = createEnv({
           baseIri,

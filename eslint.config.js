@@ -1,8 +1,6 @@
-import eslint from 'eslint/config'
+import { defineConfig, globalIgnores, includeIgnoreFile } from 'eslint/config'
 import { fileURLToPath } from 'node:url'
 import tpluscode from '@tpluscode/eslint-config'
-
-const { defineConfig, globalIgnores, includeIgnoreFile } = eslint
 
 const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url))
 
@@ -14,5 +12,10 @@ export default defineConfig([
       parserOptions: {
         project: './tsconfig.json',
       },
+    },
+  }, {
+    files: ['**/*.test.ts'],
+    rules: {
+      'n/no-unsupported-features/node-builtins': 'off',
     },
   }])

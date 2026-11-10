@@ -1,6 +1,6 @@
-import log from '@kopflos-cms/logger'
 import PluginDeployResources from '@kopflos-cms/plugin-deploy-resources'
 import { createEnv } from '@kopflos-cms/core/env.js'
+import { CommanderError } from 'commander'
 import { loadConfig } from '../config.js'
 
 interface DeployArgs {
@@ -15,13 +15,11 @@ export default async function (args: DeployArgs) {
   const autoDeployPluginConfig = config.plugins?.find(plugin => plugin instanceof PluginDeployResources)
 
   if (!autoDeployPluginConfig) {
-    log.error('\'@kopflos-cms/plugin-deploy-resources\' not found in plugin configuration')
-    return process.exit(1)
+    throw new CommanderError(1, 'PLUGIN_MISSING', "'@kopflos-cms/plugin-deploy-resources' not found in plugin configuration")
   }
 
   if (!autoDeployPluginConfig.paths?.length) {
-    log.warn('No resource paths specified. Nothing to deploy')
-    return process.exit(1)
+    throw new CommanderError(1, 'NO_PATHS_SPECIFIED', 'No resource paths specified. Nothing to deploy')
   }
 
   return autoDeployPluginConfig.deploy(createEnv(config), config.plugins || [])

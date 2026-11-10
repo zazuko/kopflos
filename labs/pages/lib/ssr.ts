@@ -9,12 +9,12 @@ import * as esbuild from 'esbuild'
 import { setLanguages } from '@rdfjs-elements/lit-helpers'
 import type { AnyPointer } from 'clownface'
 import type { HandlerArgs, KopflosConfig } from '@kopflos-cms/core'
-import { createLogger } from './logger.js'
+import type { DatasetCore } from '@rdfjs/types'
 import selectPagePatterns from '../queries/page-patterns.rq'
+import { createLogger } from './logger.js'
 import type { PageData } from './pageData.js'
 import { executeQuery } from './pageData.js'
 import type { Page } from '@kopflos-labs/pages'
-import type { DatasetCore } from '@rdfjs/types'
 
 const log = createLogger('ssr')
 

@@ -3,11 +3,11 @@ import express from 'express'
 import type { KopflosPlugin } from '@kopflos-cms/core'
 import type Kopflos from '@kopflos-cms/core'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import { Parser } from 'sparqljs'
 import yasgui from './handlers/yasgui.js'
 import select from './handlers/select.js'
 import construct from './handlers/construct.js'
 import ask from './handlers/ask.js'
-import { Parser } from 'sparqljs'
 
 export default class QueryPlugin implements KopflosPlugin {
   public readonly name = '@kopflos-cms/plugin-query'

@@ -37,5 +37,8 @@
     "url": "https://github.com/zazuko/kopflos",
     "type": "git",
     "directory": "packages/plugin-deploy-resources"
+  },
+  "engines": {
+    "node": ">=24 || ^22.17"
   }
 }

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@kopflos-cms/hydra/lib/queryShapes.js memberQueryShape multiple member assertions produces constraint for each 1`] = `
 "@prefix sh: <http://www.w3.org/ns/shacl#> .
