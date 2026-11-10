@@ -32,7 +32,7 @@ WHERE {
 }
 ```
 
-Adjust the graph pattern to the application's actual storage. Declarative `queries` entries return RDF graphs via CONSTRUCT, rather than SELECT result rows. Use `sparqlc:param(...)` bindings instead of concatenating request input into query text.
+Adjust the graph pattern to the application's actual storage. Declarative `queries` entries accept graph-producing CONSTRUCT and DESCRIBE executors, rather than SELECT result rows. DESCRIBE returns a graph too, but its description semantics depend on the selected SPARQL store; use CONSTRUCT when the exact returned triples must be controlled. Use `sparqlc:param(...)` bindings instead of concatenating request input into query text.
 
 ## Query descriptors
 

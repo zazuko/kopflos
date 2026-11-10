@@ -71,6 +71,14 @@ Development enables watching by default. `--watch` and `--no-watch` override tha
 
 `npx kopflos deploy` deploys resources using the configured deploy-resources plugin and requires an explicit, nonempty `paths` list. Serving with that plugin also deploys on startup by default. Deployment writes to the configured default store; select a local/disposable store for validation unless deployment to another store is part of the request.
 
+## Custom plugin data loading
+
+Implement `KopflosPlugin` from `@kopflos-cms/core` and add the instance to the configuration. Core runs the plugins' `onStart(instance)` hooks concurrently and waits for that phase before the CLI opens the HTTP listener. It invokes `onReady(instance)` after the listener opens; those hooks also run concurrently. Array order is not a dependency barrier within either phase. Load request-critical data in an awaited startup path; an asynchronous `onReady` import can leave a window where requests arrive before its data is available. A successful listen message alone does not prove the import finished.
+
+For bootstrap-managed data, use `deployedResources(env)` as described by the deploy-resources skill. A plugin can instead write directly through `instance.env.sparql.default.stream.store.put(quadStream, { graph })`. These writes are independent of file deployment and its overwrite policies. Keep the metadata subject IRI, its storage graph IRI, and a vocabulary namespace graph explicit: a metadata subject stored under another graph is not an own-graph representation of that subject. Use `kl:DescribeLoader`, an appropriate custom loader, or aligned local resource subjects when exposing it through an API.
+
+Decide how partial imports affect readiness. Catching and logging each failed write while resolving the hook permits startup with incomplete data; rejecting a startup hook reports a failed startup. Verify expected graphs and representative query results, not just process exit status. Direct store writes do not themselves reload core's cached API definitions; call `instance.loadApiGraphs()` when changing routing graphs after they have been loaded.
+
 ## Define RDF endpoints
 
 Read [references/rdf-api.md](references/rdf-api.md) when adding resource shapes, handlers, or diagnosing routing. Kopflos selects handlers from RDF API definitions rather than an Express route table.
