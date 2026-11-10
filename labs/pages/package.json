@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-labs/pages",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -29,9 +29,9 @@
   },
   "dependencies": {
     "@hydrofoil/sparql-processor": "^0.2.3",
-    "@kopflos-cms/core": "^0.7.3",
+    "@kopflos-cms/core": "^0.8.0",
     "@kopflos-cms/logger": "^0.1.0",
-    "@kopflos-cms/vite": "^0.3.8",
+    "@kopflos-cms/vite": "^0.3.9",
     "@lit-labs/ssr": "^4.1.0",
     "@rdfjs-elements/lit-helpers": "^0.3.13",
     "@rdfjs/serializer-rdfjs": "^0.1.3",

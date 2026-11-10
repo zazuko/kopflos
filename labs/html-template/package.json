@@ -19,7 +19,7 @@
     "htmlparser2": "^10"
   },
   "devDependencies": {
-    "@kopflos-cms/core": "^0.7.2",
+    "@kopflos-cms/core": "^0.8.0",
     "@types/chai-html": "^3.0.0",
     "@types/sinon": "^17.0.3",
     "@zazuko/env-node": "^3",

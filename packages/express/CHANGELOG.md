@@ -1,5 +1,13 @@
 # @kopflos-cms/express
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [62fb52c]
+- Updated dependencies [feed750]
+  - @kopflos-cms/core@0.8.0
+
 ## 0.2.1
 
 ### Patch Changes

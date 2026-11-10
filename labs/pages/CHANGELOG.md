@@ -1,5 +1,19 @@
 # @kopflos-labs/pages
 
+## 0.3.3
+
+### Patch Changes
+
+- feed750: Ship an AI agent skill for authoring RDF-backed Pages with SPARQL data and Lit SSR.
+- 12771b1: Generalised `mainEntity` as SHAPE-like `shapes` page option
+- 12771b1: Added `constraints` page option
+- 36254aa: Updated glob to v14
+- Updated dependencies [62fb52c]
+- Updated dependencies [feed750]
+- Updated dependencies [36254aa]
+  - @kopflos-cms/core@0.8.0
+  - @kopflos-cms/vite@0.3.9
+
 ## 0.3.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @kopflos-cms/plugin-deploy-resources
 
+## 0.3.0
+
+### Minor Changes
+
+- 62fb52c: Explicitly set the package to require node 24 or 22.17 (and newer)
+
+### Patch Changes
+
+- feed750: Ship an AI agent skill for configuring resource deployment, graph layout, and watching.
+
 ## 0.2.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @kopflos-cms/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 62fb52c: Explicitly set package to require node 21 or newer
+
+### Patch Changes
+
+- feed750: Ship an AI agent skill for defining RDF resources, API shapes, loaders, and handlers, including remote SPARQL endpoint configuration and dataset visibility.
+
 ## 0.7.3
 
 ### Patch Changes

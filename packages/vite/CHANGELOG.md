@@ -1,5 +1,11 @@
 # @kopflos-cms/vite
 
+## 0.3.9
+
+### Patch Changes
+
+- 36254aa: Updated glob to v14
+
 ## 0.3.8
 
 ### Patch Changes
