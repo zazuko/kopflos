@@ -1,5 +1,11 @@
 # @kopflos-cms/serve-file
 
+## 0.2.0
+
+### Minor Changes
+
+- 62fb52c: Explicitly set the package to require node 24 or 22.17 (and newer)
+
 ## 0.1.0
 
 ### Minor Changes

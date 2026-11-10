@@ -1,6 +1,6 @@
 {
   "name": "@kopflos-cms/plugin-query",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "type": "module",
   "main": "index.js",
   "module": "index.js",
@@ -48,8 +48,8 @@
     "tsx": "^4.19.3"
   },
   "peerDependencies": {
-    "@kopflos-cms/core": "^0.7.3",
-    "@kopflos-cms/express": "^0.2.1",
+    "@kopflos-cms/core": "^0.8.0",
+    "@kopflos-cms/express": "^0.2.2",
     "express": "^5"
   }
 }

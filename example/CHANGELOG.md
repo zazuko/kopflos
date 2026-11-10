@@ -1,5 +1,26 @@
 # example
 
+## 0.0.49
+
+### Patch Changes
+
+- Updated dependencies [feed750]
+- Updated dependencies [62fb52c]
+- Updated dependencies [feed750]
+- Updated dependencies [feed750]
+- Updated dependencies [12771b1]
+- Updated dependencies [12771b1]
+- Updated dependencies [36254aa]
+  - @kopflos-labs/pages@0.3.3
+  - @kopflos-cms/plugin-deploy-resources@0.3.0
+  - @kopflos-cms/serve-file@0.2.0
+  - kopflos@0.1.13
+  - @kopflos-cms/vite@0.3.9
+  - @kopflos-cms/express@0.2.2
+  - @kopflos-cms/hydra@0.2.4
+  - @kopflos-cms/plugin-query@1.0.0
+  - @kopflos-cms/shacl@0.3.3
+
 ## 0.0.48
 
 ### Patch Changes

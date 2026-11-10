@@ -1,5 +1,14 @@
 # @kopflos-cms/plugin-query
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [62fb52c]
+- Updated dependencies [feed750]
+  - @kopflos-cms/core@0.8.0
+  - @kopflos-cms/express@0.2.2
+
 ## 0.1.2
 
 ### Patch Changes

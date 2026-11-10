@@ -1,5 +1,18 @@
 # kopflos
 
+## 0.1.13
+
+### Patch Changes
+
+- feed750: Ship an AI agent skill for configuring, running, and building Kopflos applications, including remote SPARQL endpoints.
+- Updated dependencies [62fb52c]
+- Updated dependencies [62fb52c]
+- Updated dependencies [feed750]
+- Updated dependencies [feed750]
+  - @kopflos-cms/plugin-deploy-resources@0.3.0
+  - @kopflos-cms/core@0.8.0
+  - @kopflos-cms/express@0.2.2
+
 ## 0.1.12
 
 ### Patch Changes
