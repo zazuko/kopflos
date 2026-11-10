@@ -1,4 +1,3 @@
-/* eslint-disable promise/catch-or-return, promise/always-return */
 import { fork } from 'node:child_process'
 import * as fs from 'node:fs'
 import url from 'node:url'
