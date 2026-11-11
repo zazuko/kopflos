@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
+<title>Kopflos Pages · benchmark report</title>
+<style>
+:root{--ink:#252b31;--muted:#62686e;--paper:#f5f3ed;--line:#deded6;--legacy:#267975;--new:#7451c8;--good:#1f6b57;--cost:#a44e25;--card:#fff;--round:18px;color-scheme:light}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,select{font:inherit}button,select,a{touch-action:manipulation}button,select{border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);padding:9px 13px}button{cursor:pointer}button:hover{border-color:var(--new)}button:focus-visible,select:focus-visible{outline:3px solid #bba8e9;outline-offset:3px}button[aria-pressed=true]{background:var(--ink);color:white;border-color:var(--ink)}main{max-width:1150px;margin:auto;padding:38px 34px 64px}.masthead{display:flex;gap:16px;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.mark{display:flex;align-items:center;gap:9px}.mark:before{content:"";width:15px;height:15px;background:var(--new);border-radius:4px;transform:rotate(-8deg)}.offline{color:var(--muted);font-size:11px;letter-spacing:.08em}.offline:before{content:"●";color:var(--good);margin-right:7px}.hero{padding:52px 0 30px}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--new);margin:0 0 14px}h1{font-size:clamp(33px,4.6vw,57px);line-height:1.12;letter-spacing:-.045em;margin:0 0 20px;max-width:900px;font-weight:650}h1 span{color:var(--muted)}.lede{max-width:760px;font-size:18px;color:var(--muted);margin:0}.badges{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.badge{font-size:12px;border:1px solid var(--line);border-radius:30px;padding:5px 11px;color:var(--muted);background:#fff8}.highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:15px 0 40px}.highlight{border-top:2px solid var(--line);padding:18px 0 10px}.highlight strong{display:block;font-size:36px;line-height:1.1;letter-spacing:-.04em;font-weight:650}.highlight p{margin:8px 0 0;font-size:13px;color:var(--muted);max-width:260px}.section-top{display:flex;align-items:start;justify-content:space-between;gap:20px;margin:0 0 20px}.section-number{font-size:12px;color:var(--muted);margin:0 0 4px;letter-spacing:.1em}h2{margin:0;font-size:25px;line-height:1.3;letter-spacing:-.025em}h3{margin:0;font-size:17px;line-height:1.35}.legend{display:flex;gap:18px;font-size:13px;flex-wrap:wrap}.legend span{display:flex;align-items:center;gap:7px}.swatch{width:10px;height:10px;border-radius:3px;background:var(--legacy)}.swatch.new{background:var(--new)}.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--round);overflow:hidden}.toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:15px;padding:20px 23px;border-bottom:1px solid #eeede8}.field{display:flex;flex-direction:column;gap:5px}.field label,.field>span{font-size:11px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.scale{display:flex;gap:4px}.actions{margin-left:auto}.plot{padding:8px 12px 0}.plot svg{width:100%;height:auto;display:block}.plot-narrow{display:none}.chart-note{font-size:13px;color:var(--muted);padding:0 24px 19px;margin:0;max-width:960px}.chart-note strong{color:var(--ink);font-weight:600}.table-wrap{overflow:auto;border-top:1px solid #eeede8}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:13px 24px;text-align:right;border-bottom:1px solid #eeede8;font-variant-numeric:tabular-nums}th:first-child,td:first-child{text-align:left}thead{color:var(--muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}tr:last-child td{border-bottom:0}.legacy-text{color:var(--legacy)}.new-text{color:var(--new)}.benefit{color:var(--good)}.cost{color:var(--cost)}.section{margin-top:44px}.diagram-controls{font-size:13px;max-width:290px}.diagram-controls select{max-width:100%}.flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.flow-card{padding:24px;border-top:4px solid var(--legacy)}.flow-card.modern{border-top-color:var(--new)}.version{font-size:11px;letter-spacing:.1em;font-weight:700;text-transform:uppercase;color:var(--legacy);margin-bottom:8px}.modern .version{color:var(--new)}.flow-card>p{font-size:13px;color:var(--muted);min-height:42px;margin:10px 0 21px}.zone{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fafaf7}.zone.local{background:#f6f3fc;border-color:#ded4f0}.zone-title{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;color:var(--muted)}.zone-title strong{letter-spacing:0;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink)}.steps{display:flex;flex-direction:column;gap:7px}.step{font-size:13px;background:white;border:1px solid #e5e4de;border-radius:7px;padding:9px 11px}.step code{font-size:12px}.step small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.down{text-align:center;color:#979da1;line-height:1;font-size:19px}.wire{position:relative;text-align:center;margin:13px 0;color:var(--muted);font-size:11px}.wire:before{content:"↓";display:block;font-size:24px;line-height:1.1;color:var(--legacy)}.modern .wire:before{color:var(--new)}.flow-foot{display:flex;justify-content:space-between;gap:15px;margin-top:18px;border-top:1px solid #eeede8;padding-top:14px;font-size:12px;color:var(--muted)}.flow-foot strong{display:block;font-size:19px;line-height:1.3;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}.caption{font-size:13px;color:var(--muted);margin:16px 0 0}.callouts{display:grid;grid-template-columns:1fr 1fr;gap:18px}.callout{padding:22px}.callout p{margin:9px 0 0;font-size:14px;color:var(--muted)}.callout code{font-size:12px;background:var(--paper);padding:2px 5px;border-radius:4px}details{border:1px solid var(--line);border-radius:12px;padding:16px 22px;margin-top:28px;background:#fff7}summary{cursor:pointer;font-size:14px;font-weight:600}.method{display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:13px;color:var(--muted);margin-top:18px}.method h3{font-size:13px;color:var(--ink)}.method p{margin:6px 0}.method code{font-size:11px;overflow-wrap:anywhere}footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:15px;margin-top:32px;font-size:12px;color:var(--muted)}footer button{font-size:12px}noscript{display:block;padding:20px;background:#fff8cc}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:650px){main{padding:24px 18px 40px}.hero{padding-top:35px}.lede{font-size:16px}.offline{font-size:9px}.highlights{gap:12px;margin-bottom:28px}.highlight strong{font-size:27px}.highlight p{font-size:11px}.section-top{flex-direction:column;gap:13px}.toolbar{padding:15px;gap:12px}.toolbar select{width:100%;max-width:100%}.toolbar .field:first-child{width:100%}.actions{margin-left:auto}.plot-wide{display:none}.plot-narrow{display:block}.plot{padding:3px 0 0}.chart-note{padding:0 17px 16px;font-size:12px}th,td{padding:12px;font-size:12px}th:first-child,td:first-child{min-width:130px}.flow-grid,.callouts,.method{grid-template-columns:1fr}.flow-card{padding:19px}.diagram-controls{max-width:100%;width:100%}.diagram-controls select{width:100%}h2{font-size:23px}.flow-card>p{min-height:0}}
+@media print{body{background:#fff}main{max-width:none;padding:0}.toolbar,.diagram-controls,footer button{display:none}.hero{padding-top:20px}.panel,details{break-inside:avoid}.plot-wide{display:block!important}.plot-narrow{display:none!important}.section{margin-top:25px}.flow-grid{grid-template-columns:1fr 1fr}.highlights{margin-bottom:20px}h1{font-size:36px}.chart-note{font-size:11px}details .method{display:grid}footer{margin-top:20px}}
+</style>
+</head>
+<body>
+<main>
+<header class="masthead"><span class="mark">Kopflos / Pages</span><span class="offline">Self-contained · opens offline</span></header>
+<section class="hero">
+<p class="eyebrow">Benchmark field notes · 11 November 2026</p>
+<h1>Faster as routes grow.<br><span>A larger runtime footprint.</span></h1>
+<p class="lede">Comparing the historical <code>SERVICE</code> + quad transform with local Comunica <code>kopflos:pageUrl</code> evaluation. Same data, same final RDF graph, different placement of work.</p>
+<div class="badges"><span class="badge">Oxigraph 0.4.7</span><span class="badge">Node 24 · Apple M1</span><span class="badge">3 process trials × 3 warm samples</span><span class="badge">Single-request concurrency</span></div>
+</section>
+<section class="highlights" aria-label="Main findings">
+<div class="highlight"><strong id="headline-speed">18.2×</strong><p>faster warm requests with 1,000 resources and 20 candidate routes</p></div>
+<div class="highlight"><strong id="headline-heap">+29.9 MiB</strong><p>retained application heap in that workload, after explicit GC</p></div>
+<div class="highlight"><strong id="headline-cold">1.29 s</strong><p>first request on the small workload, versus 103 ms previously</p></div>
+</section>
+<section aria-labelledby="compare-heading">
+<div class="section-top"><div><p class="section-number">01 / Measurements</p><h2 id="compare-heading">Compare the tradeoffs</h2></div><div class="legend" aria-label="Chart legend"><span><i class="swatch"></i>Legacy SERVICE</span><span><i class="swatch new"></i>New pageUrl</span></div></div>
+<div class="panel">
+<div class="toolbar">
+<div class="field"><label for="metric">Metric</label><select id="metric"><option value="warmMs">Warmed request latency</option><option value="coldMs">First request latency</option><option value="afterGcHeapMiB">Retained application heap</option><option value="sampledPeakHeapMiB">Sampled peak application heap</option><option value="sampledPeakRssMiB">Sampled peak application RSS</option><option value="appCpuMs">Application CPU time</option><option value="endpointCpuMs">Endpoint CPU time</option><option value="responseKiB">Uncompressed response size</option></select></div>
+<div class="field"><span id="scale-label">Scale</span><div class="scale" role="group" aria-labelledby="scale-label"><button type="button" data-scale-button="linear" aria-pressed="true">Linear</button><button type="button" data-scale-button="log" aria-pressed="false">Log</button></div></div>
+<div class="actions"><button id="save-svg" type="button">Save chart ↗</button></div>
+</div>
+<noscript>JavaScript is disabled. The default latency chart remains visible; enable JavaScript to switch metrics and view the numeric comparison.</noscript>
+<div id="plots"><!-- EMBEDDED_PLOTS --></div>
+<p class="chart-note" id="metric-note">Nine measured requests per implementation and workload, across three fresh application processes. Whiskers show the observed 10th–90th percentile range, not a confidence interval.</p>
+<div class="table-wrap"><table><caption class="sr-only" id="table-caption">Median warmed request latency by workload</caption><thead><tr><th scope="col">Resources / routes / properties</th><th scope="col">Legacy</th><th scope="col">New</th><th scope="col">Change</th></tr></thead><tbody id="comparison"></tbody></table></div>
+</div>
+</section>
+<section class="section" aria-labelledby="flow-heading">
+<div class="section-top"><div><p class="section-number">02 / Execution paths</p><h2 id="flow-heading">Where the work happens</h2></div><div class="field diagram-controls"><label for="workload">Example workload</label><select id="workload"><option value="small">100 resources · 1 route · 4 properties</option><option value="single-route">1,000 resources · 1 route · 4 properties</option><option value="many-routes" selected>1,000 resources · 20 routes · 4 properties</option><option value="wide-resources">500 resources · 20 routes · 16 properties</option></select></div></div>
+<div class="flow-grid">
+<article class="panel flow-card"><div class="version">Before / Legacy</div><h3>SERVICE + PageUrlTransform</h3><p>The endpoint chooses a matching pattern; the application turns that pattern into the final page IRI.</p>
+<div class="zone"><div class="zone-title">Oxigraph endpoint <strong id="old-endpoint">7,135 ms CPU</strong></div><div class="steps"><div class="step">Match resource data</div><div class="down">↓</div><div class="step"><code>VALUES × candidate route patterns</code><small>REGEX evaluation for each candidate</small></div><div class="down">↓</div><div class="step"><code>CONSTRUCT</code><small>Objects still contain page-pattern literals; Oxigraph deduplicates graph triples.</small></div></div></div>
+<div class="wire"><strong id="old-bytes">538 KiB</strong> · RDF / N-Triples</div>
+<div class="zone local"><div class="zone-title">Node application <strong id="old-app">309 ms CPU</strong></div><div class="steps"><div class="step">Parse quad stream → <code>PageUrlTransform</code><small>Find route, capture groups, replace pattern with a page IRI.</small></div><div class="down">↓</div><div class="step">Materialize final RDF dataset</div></div></div>
+<div class="flow-foot"><span>End-to-end median<strong id="old-latency">8,166 ms</strong></span><span>Retained heap<strong id="old-heap">45.1 MiB</strong></span></div>
+</article>
+<article class="panel flow-card modern"><div class="version">After / Current</div><h3>Local Comunica pageUrl</h3><p>The endpoint returns data bindings. Page IRIs become available during local query evaluation.</p>
+<div class="zone"><div class="zone-title">Oxigraph endpoint <strong id="new-endpoint">9.6 ms CPU</strong></div><div class="steps"><div class="step">Match resource data</div><div class="down">↓</div><div class="step"><code>SELECT</code> solution bindings<small>No endpoint-side route candidate expansion or page URL function.</small></div></div></div>
+<div class="wire"><strong id="new-bytes">916 KiB</strong> · SPARQL results / JSON</div>
+<div class="zone local"><div class="zone-title">Node application <strong id="new-app">591 ms CPU</strong></div><div class="steps"><div class="step">Comunica <code>BIND(kopflos:pageUrl(...))</code><small>Compile routes per query, match resources, produce page IRIs.</small></div><div class="down">↓</div><div class="step">Local <code>CONSTRUCT</code> → RDF dataset<small>The initialized Comunica engine is reused across requests.</small></div></div></div>
+<div class="flow-foot"><span>End-to-end median<strong id="new-latency">449 ms</strong></span><span>Retained heap<strong id="new-heap">75.0 MiB</strong></span></div>
+</article>
+</div>
+<p class="caption">CPU time and elapsed latency are different measurements. Application and endpoint run in separate processes; their CPU times need not add up to the elapsed request time. Both paths issue one SPARQL query per request in these fixtures.</p>
+</section>
+<section class="section" aria-labelledby="interpretation-heading"><p class="section-number">03 / Interpretation</p><h2 id="interpretation-heading">What these measurements support</h2><div class="callouts" style="margin-top:18px"><article class="panel callout"><h3>Better scaling with route count</h3><p>With 20 candidate routes, the new path is about 18–21× faster in these fixtures. With one route, the measured latency ranges overlap. Local evaluation also makes the page IRI usable before <code>CONSTRUCT</code>.</p></article><article class="panel callout"><h3>Budget for the runtime</h3><p>Comunica adds about 30 MiB of retained Node heap here, and peak RSS rises too. Its first-use import and initialization cost is visible on small queries. Oxigraph’s deduplicated legacy graph also transfers fewer bytes than the new JSON bindings.</p></article></div></section>
+<details><summary>Methodology, scope, and reproducibility</summary><div class="method"><div><h3>Measurement design</h3><p>Native Oxigraph 0.4.7 through an in-memory Python HTTP endpoint, in a separate process from the Node application. Three fresh application processes per implementation and workload; one warm-up and three timed requests per process. Variant order alternates. Every output’s quad count and sorted-term SHA-256 are checked against the expected graph.</p><p>Warmed bars show medians. Latency whiskers show observed p10–p90, not statistical confidence intervals. Each resource has the stated property count plus <code>rdf:type</code> and matches exactly one page.</p></div><div><h3>Included and excluded</h3><p>Includes rewriting, route compilation, HTTP query execution, parsing, URL resolution, and final dataset materialization. Excludes routing-graph loading, fixture construction, HTML rendering, explicit GC, and correctness hashing.</p><p>Localhost, no compression or artificial latency, one concurrent request. Memory samples belong to the application process. Shared-host synthetic results are not production latency estimates. Queries that join endpoint data using a resolved page IRI can have additional requests; those are not measured here.</p></div><div><h3>Version references</h3><p>Legacy source: <code id="baseline-ref"></code><br>Current source: <code id="current-ref"></code></p><p>Run the repository’s <code>labs/pages/benchmark/run.mjs</code> with <code>--endpoint oxigraph</code> and a Python environment containing <code>pyoxigraph==0.4.7</code>. Regenerate this page with <code>render-report.py</code> and Matplotlib.</p></div><div><h3>A portable report</h3><p>All data, charts, styles, and scripts are embedded. There are no network requests, CDN dependencies, or external fonts. Charts are Matplotlib SVGs; save the currently selected chart to edit or share it separately.</p><p id="environment"></p></div></div></details>
+<footer><span>Measured 11 November 2026 · Native Oxigraph results</span><div><button id="save-data" type="button">Download raw data</button> <button id="print" type="button">Print / PDF</button></div></footer>
+<p class="sr-only" id="status" aria-live="polite"></p>
+</main>
+<script id="benchmark-data" type="application/json">/* EMBEDDED_DATA */</script>
+<script>
+'use strict';
+const {report,metrics}=JSON.parse(document.getElementById('benchmark-data').textContent);
+const rows=report.summary;
+let metric='warmMs',scale='linear';
+const format=(value,unit)=>`${new Intl.NumberFormat('en',{maximumFractionDigits:unit==='MiB'||value<10?1:0}).format(value)} ${unit}`;
+const selectedPlot=()=>document.querySelector(`.plot[data-metric="${metric}"][data-scale="${scale}"]`);
+function render(){
+ const definition=metrics[metric];
+ document.getElementById('metric').value=metric;
+ document.querySelectorAll('.plot').forEach(plot=>plot.hidden=plot.dataset.metric!==metric||plot.dataset.scale!==scale);
+ document.querySelectorAll('[data-scale-button]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scaleButton===scale)));
+ document.getElementById('metric-note').textContent=definition.note+(scale==='log'?' Logarithmic view uses dots so no zero-based bar length is implied.':'');
+ document.getElementById('table-caption').textContent=definition.label+' by workload';
+ document.getElementById('comparison').innerHTML=rows.map(row=>{
+  const old=row.legacy[metric],modern=row.modern[metric],change=(modern/old-1)*100;
+  return `<tr><th scope="row">${row.resources.toLocaleString('en')} / ${row.routes} / ${row.properties}</th><td class="legacy-text">${format(old,definition.unit)}</td><td class="new-text">${format(modern,definition.unit)}</td><td class="${change<0?'benefit':'cost'}">${change>=0?'+':''}${change.toFixed(1)}%</td></tr>`;
+ }).join('');
+ document.getElementById('status').textContent=definition.label+', '+scale+' scale';
+ document.querySelector('main').dataset.metric=metric;
+ history.replaceState(null,'',`#metric=${metric}&scale=${scale}`);
+}
+function diagram(){
+ const row=rows.find(row=>row.name===document.getElementById('workload').value);
+ for(const [prefix,kind] of [['old','legacy'],['new','modern']]){
+  for(const [id,key,unit] of [['endpoint','endpointCpuMs','ms CPU'],['app','appCpuMs','ms CPU'],['bytes','responseKiB','KiB'],['latency','warmMs','ms'],['heap','afterGcHeapMiB','MiB']]){
+   document.getElementById(`${prefix}-${id}`).textContent=format(row[kind][key],unit);
+  }
+ }
+}
+function download(text,type,name){const url=URL.createObjectURL(new Blob([text],{type}));const link=document.createElement('a');link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+document.getElementById('metric').addEventListener('change',event=>{metric=event.target.value;render()});
+document.querySelectorAll('[data-scale-button]').forEach(button=>button.addEventListener('click',()=>{scale=button.dataset.scaleButton;render()}));
+document.getElementById('workload').addEventListener('change',diagram);
+document.getElementById('save-data').addEventListener('click',()=>download(JSON.stringify(report,null,2),'application/json','kopflos-pages-benchmark.json'));
+document.getElementById('save-svg').addEventListener('click',()=>{
+ const plot=selectedPlot(),view=matchMedia('(max-width:650px)').matches?'.plot-narrow':'.plot-wide';
+ const svg=plot.querySelector(view+' svg');
+ download(new XMLSerializer().serializeToString(svg),'image/svg+xml',`kopflos-pages-${metric}-${scale}.svg`);
+});
+document.getElementById('print').addEventListener('click',()=>window.print());
+const hash=new URLSearchParams(location.hash.slice(1));
+if(metrics[hash.get('metric')])metric=hash.get('metric');
+if(['linear','log'].includes(hash.get('scale')))scale=hash.get('scale');
+const example=rows.find(row=>row.name==='many-routes'),small=rows.find(row=>row.name==='small');
+document.getElementById('headline-speed').textContent=example.speedup.toFixed(1)+'×';
+document.getElementById('headline-heap').textContent='+'+format(example.modern.afterGcHeapMiB-example.legacy.afterGcHeapMiB,'MiB');
+document.getElementById('headline-cold').textContent=(small.modern.coldMs/1000).toFixed(2)+' s';
+document.getElementById('baseline-ref').textContent=report.baselineRef;
+document.getElementById('current-ref').textContent=report.currentRef;
+document.getElementById('environment').textContent=`${report.environment.cpu} · ${report.environment.totalMemoryGiB} GiB RAM · ${report.environment.platform}/${report.environment.arch} · Node ${report.environment.node}.`;
+render();diagram();
+</script>
+</body>
+</html>

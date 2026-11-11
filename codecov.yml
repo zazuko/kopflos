@@ -1,5 +1,6 @@
 ignore:
   - example
   - packages/sparql-path-parser/src/grammar
+  - labs/pages/benchmark
   - "**/test/**"
   - "**/web-test-runner.config.*"
