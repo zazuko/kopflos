@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import Processor from '@hydrofoil/sparql-processor'
 import type * as sparqljs from 'sparqljs'
 import type { DataFactory } from '@rdfjs/types'
@@ -6,6 +5,7 @@ import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'
 import { pageUrlFunction } from './pageUrl.js'
 import { logger } from './logger.js'
+import BindExpressionProcessor, { isPageUrlCall } from './BindExpressionProcessor.js'
 
 type E = Environment<NsBuildersFactory | Required<DataFactory>>
 
@@ -13,35 +13,26 @@ export default class SparqlProcessor extends Processor<E> {
   // Select local Comunica evaluation only for queries containing pageUrl.
   // Queries without it continue through the configured endpoint client.
   public usesPageUrl = false
-  private pendingBindings?: sparqljs.BindPattern[]
 
-  processPattern(pattern: sparqljs.Pattern): sparqljs.Pattern | sparqljs.Pattern[] {
-    const parent = this.pendingBindings
-    this.pendingBindings = pattern.type === 'bind' || pattern.type === 'service' ? [] : undefined
-    try {
-      const processed = super.processPattern(pattern)
-      return [...(this.pendingBindings || []), ...(Array.isArray(processed) ? processed : [processed])]
-    }
-    finally {
-      this.pendingBindings = parent
-    }
+  processPatterns(patterns: sparqljs.Pattern[]): sparqljs.Pattern[] {
+    return patterns.flatMap((pattern) => {
+      if (pattern.type === 'bind') {
+        return this.pageUrlBindings(pattern)
+      }
+      return this.processPattern(pattern)
+    })
+  }
+
+  private pageUrlBindings(bind: sparqljs.BindPattern): sparqljs.BindPattern[] {
+    const processor = new BindExpressionProcessor(this.factory, this.processPatterns.bind(this))
+    const expression = processor.processExpression(bind.expression)
+    this.usesPageUrl ||= processor.bindings.length > 0
+    return [...processor.bindings, { ...bind, expression }]
   }
 
   processFunctionCall(call: sparqljs.FunctionCallExpression): sparqljs.Expression {
-    if (typeof call.function !== 'string' && call.function.value === pageUrlFunction) {
-      if (call.args.length !== 2) {
-        throw new Error('kopflos:pageUrl requires two arguments: resource and relationship')
-      }
-      if (!this.pendingBindings) {
-        throw new Error('Use kopflos:pageUrl in a BIND within WHERE')
-      }
-      this.usesPageUrl = true
-      const expression = super.processFunctionCall(call)
-      const variable = this.factory.variable(`__kopflos_pageUrl_${randomUUID().replaceAll('-', '')}`)
-      // Keep the extension as a separate BIND: Comunica 4 does not detect
-      // nested extension functions reliably when deciding endpoint pushdown.
-      this.pendingBindings.push({ type: 'bind', expression, variable })
-      return { type: 'operation', operator: 'iri', args: [variable] }
+    if (isPageUrlCall(call)) {
+      throw new Error('Use kopflos:pageUrl within a BIND expression in WHERE')
     }
     return super.processFunctionCall(call)
   }
@@ -58,19 +49,16 @@ export default class SparqlProcessor extends Processor<E> {
       logger.warn('SERVICE kopflos:Pages is deprecated. Use BIND(kopflos:pageUrl(?resource, relationship) AS ?page) instead. The SERVICE syntax will be removed in a future breaking release (https://github.com/zazuko/kopflos/issues/378).')
       const patterns = service.patterns
         .filter(p => p.type === 'bgp')
-        .flatMap(p => p.triples.map((triple): sparqljs.BindPattern => {
+        .flatMap(p => p.triples.flatMap((triple) => {
           if (triple.object.termType !== 'Variable' || 'pathType' in triple.predicate || (triple.subject.termType !== 'Variable' && triple.subject.termType !== 'NamedNode')) {
             throw new Error('Deprecated SERVICE kopflos:Pages requires a variable object and a simple relationship')
           }
-          return {
-            type: 'bind',
-            variable: triple.object,
-            expression: this.processFunctionCall({
-              type: 'functionCall',
-              function: this.factory.namedNode(pageUrlFunction),
-              args: [triple.subject, triple.predicate],
-            }),
+          const call: sparqljs.FunctionCallExpression = {
+            type: 'functionCall',
+            function: this.factory.namedNode(pageUrlFunction),
+            args: [triple.subject, triple.predicate],
           }
+          return this.pageUrlBindings({ type: 'bind', variable: triple.object, expression: call })
         }))
       if (!patterns.length) {
         logger.warn('No supported triple patterns found in SERVICE kopflos:Pages')

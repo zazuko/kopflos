@@ -356,13 +356,13 @@ WHERE {
 }
 ```
 
-Call the function in a `BIND` within `WHERE`, then use the bound variable in filters, projections, and templates.
+Call `kopflos:pageUrl` within a `BIND` expression in `WHERE`. Nested and sibling calls are supported, including `BIND(CONCAT(STR(kopflos:pageUrl(?resource, schema:about)), "#details") AS ?url)`. Calls may also use the result of another `pageUrl` call. Intermediate bindings stay within the originating BIND scope. Use the resulting variables in further expressions, filters, projections, and templates; direct calls outside BIND remain unsupported.
 
 Both arguments are required and must evaluate to IRIs: the resource and the relationship declared in the destination page's property shape. `schema:mainEntityOfPage` also matches shapes declaring `schema:mainEntity`; custom relationships such as `schema:about` match their corresponding property shapes.
 
 Pages evaluates the function locally with Comunica, using the configured query endpoint for RDF data. It matches resource patterns, extracts named capture groups, and reverse-maps dictionary alternatives to generate the destination page IRI. The IRI is available during query evaluation, including in filters and any position in the CONSTRUCT template. This is a Pages extension, not a function installed on your remote SPARQL endpoint.
 
-No match, invalid argument types, or multiple distinct matching URLs cause an expression error: `BIND` leaves the destination variable unbound and retains the other bindings. Add `FILTER(BOUND(?pageUrl))` if a matching page is required. Duplicate rules producing the same URL are accepted. Calls with other than two arguments are rejected before execution.
+No match, invalid argument types, or multiple distinct matching URLs cause an expression error: `BIND` leaves the destination variable unbound and retains the other bindings. Add `FILTER(BOUND(?pageUrl))` if a matching page is required. Duplicate rules producing the same URL are accepted. Calls with missing or extra arguments also cause an expression error, leaving the BIND variable unbound.
 
 `SERVICE kopflos:Pages { }` is deprecated and rewritten as `BIND` statements. This syntax will be removed in a future breaking release; watch [the removal issue](https://github.com/zazuko/kopflos/issues/378).
 

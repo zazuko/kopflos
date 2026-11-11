@@ -62,7 +62,7 @@ This lets the loader receive the application base. A bare `new URL(...)` is not 
 
 ## Resource-to-page links
 
-Use `kopflos:pageUrl(resource, relationship)` in page queries. Both arguments are required IRIs: the resource to link to and the relationship defined by the destination page's property shape. Bind the resource first, then call the function in a `BIND` within `WHERE`. Use the resulting variable in filters, projections, and CONSTRUCT templates; direct calls in FILTER or SELECT expressions are currently rejected. For a page with a `schema:mainEntity` shape:
+Use `kopflos:pageUrl(resource, relationship)` in page queries. Both arguments are required IRIs: the resource to link to and the relationship defined by the destination page's property shape. Bind the resource first, then call the function within a `BIND` expression in `WHERE`. Nested and sibling calls are supported, for example `BIND(CONCAT(STR(kopflos:pageUrl(?resource, schema:about)), "#details") AS ?url)`. A pageUrl result may also be an argument to another pageUrl call. Extracted intermediate bindings remain in the originating BIND scope. Use the resulting variables in filters, projections, and CONSTRUCT templates; direct function calls in FILTER or SELECT expressions remain unsupported. For a page with a `schema:mainEntity` shape:
 
 ```sparql
 PREFIX schema: <http://schema.org/>
@@ -81,7 +81,7 @@ Pages evaluates this extension locally with Comunica against the configured quer
 
 `schema:mainEntity` and `schema:mainEntityOfPage` share resolution. Other relationships select their corresponding destination property shapes; for example, use `kopflos:pageUrl(?resource, schema:about)` for a page whose shape declares `schema:about`. Choose the relationship from the destination shape, independently of the predicate used to emit the resulting link.
 
-No match, invalid argument types, or multiple distinct matching URLs leave the BIND variable unbound while retaining other resource data. Duplicate rules producing the same URL are accepted. Use `FILTER(BOUND(?page))` after the BIND when a link is required. To retain resources without page links, leave the variable unbound and let CONSTRUCT omit only triples that require it. Wrong argument counts are rejected before execution.
+No match, invalid argument types, or multiple distinct matching URLs leave the BIND variable unbound while retaining other resource data. Duplicate rules producing the same URL are accepted. Use `FILTER(BOUND(?page))` after the BIND when a link is required. To retain resources without page links, leave the variable unbound and let CONSTRUCT omit only triples that require it. Wrong argument counts also cause an expression error, leaving the BIND variable unbound.
 
 ### Migrate legacy SERVICE queries
 

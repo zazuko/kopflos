@@ -45,7 +45,7 @@ Vite injects imports for companion modules and hydration support into the HTML s
 
 Read [references/queries-and-links.md](references/queries-and-links.md) for SPARQL descriptors, parameter binding, and links from RDF resources to HTML pages.
 
-For resource-to-page links, use `BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)` with both IRI arguments required. Call it within `BIND` in `WHERE`, then use the resulting IRI elsewhere in the query. `SERVICE kopflos:Pages` is deprecated; migrate existing queries to explicit function calls. The reference covers relationship selection, unmatched or ambiguous routes, and migration details.
+For resource-to-page links, use `BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)` with both IRI arguments required. Call the function within a `BIND` expression in `WHERE`; nested and sibling calls inside `STR`, `CONCAT`, `IF`, and other expressions are supported. Use the resulting variables elsewhere in the query; direct function calls outside BIND remain unsupported. `SERVICE kopflos:Pages` is deprecated; migrate existing queries to explicit function calls. The reference covers relationship selection, unmatched or ambiguous routes, and migration details.
 
 ### TypeScript query imports
 

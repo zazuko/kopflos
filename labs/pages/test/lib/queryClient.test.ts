@@ -6,6 +6,7 @@ import env from '@zazuko/env-node'
 import { QueryEngine } from '@comunica/query-sparql'
 import StreamClient from 'sparql-http-client/StreamClient.js'
 import { Generator, Parser } from 'sparqljs'
+import type { ValuesPattern } from 'sparqljs'
 import { createPageUrlExtension } from '../../lib/pageUrl.js'
 import { queryClient } from '../../lib/queryClient.js'
 import SparqlProcessor from '../../lib/SparqlProcessor.js'
@@ -19,20 +20,32 @@ const patterns = [{
   resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
 }]
 
+interface PhysicalPlanNode {
+  logical: string
+  physical?: string
+  children?: PhysicalPlanNode[]
+}
+
+function planNodes(node: PhysicalPlanNode): PhysicalPlanNode[] {
+  return [node, ...(node.children || []).flatMap(planNodes)]
+}
+
 describe('Pages query client', function () {
   this.timeout(20000)
 
-  function setup() {
+  function setup(quads = [env.quad(resource, env.ns.schema.name, env.literal('Resource'))]) {
     const remoteEngine = new QueryEngine()
-    const dataset = env.dataset([env.quad(resource, env.ns.schema.name, env.literal('Resource'))])
+    const dataset = env.dataset(quads)
     const requests: string[] = []
     const client = new StreamClient({
       endpointUrl: 'https://example.com/sparql',
       user: 'user',
       password: 'password',
-      fetch: async (_input, init) => {
+      fetch: async (input, init) => {
         expect(new Headers(init?.headers).get('authorization')).to.equal('Basic dXNlcjpwYXNzd29yZA==')
-        const query = String(init?.body ?? '')
+        const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url)
+        const body = String(init?.body ?? '')
+        const query = url.searchParams.get('query') ?? new URLSearchParams(body).get('query') ?? body
         if (!query) return new Response('', { headers: { 'content-type': 'text/turtle' } })
         requests.push(query)
         expect(query).not.to.match(/pageUrl>?\s*\(/)
@@ -73,6 +86,68 @@ describe('Pages query client', function () {
     expect(requests.length).to.be.greaterThan(0)
   })
 
+  it('joins resolved page IRIs with subsequent endpoint triple patterns', async function () {
+    const secondResource = env.namedNode('http://example.org/resource/456')
+    const secondPage = env.namedNode('http://example.org/page/456')
+    const unrelatedPage = env.namedNode('http://example.org/page/unrelated')
+    const { client, requests } = setup([
+      env.quad(resource, env.ns.schema.name, env.literal('Resource')),
+      env.quad(secondResource, env.ns.schema.name, env.literal('Second resource')),
+      env.quad(page, env.ns.schema.headline, env.literal('First page')),
+      env.quad(secondPage, env.ns.schema.headline, env.literal('Second page')),
+      env.quad(unrelatedPage, env.ns.schema.headline, env.literal('Unrelated page')),
+    ])
+    const processor = new SparqlProcessor(env)
+    const query = new Generator().stringify(processor.process(new Parser().parse(`${prefixes}
+      CONSTRUCT { ?resource schema:mainEntityOfPage ?page . ?page schema:headline ?title }
+      WHERE {
+        ?resource schema:name ?name .
+        BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)
+        ?page schema:headline ?title .
+      }`)))
+    // Capture the actual execution context so explain uses the production
+    // sources, extension function, and authenticated fetch adapter unchanged.
+    const execution = sinon.spy(QueryEngine.prototype, 'queryQuads')
+    let result
+    let explained
+    let executionRequests: string[]
+    let explainRequests: string[]
+    try {
+      result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env)).query.construct(query))
+      executionRequests = [...requests]
+      requests.length = 0
+      const call = execution.firstCall
+      explained = await call.thisValue.explain(query, { ...call.args[1] }, 'physical-json')
+      explainRequests = [...requests]
+    }
+    finally {
+      execution.restore()
+    }
+    expect(result.size).to.equal(4)
+    expect(result.has(env.quad(resource, env.ns.schema.mainEntityOfPage, page))).to.be.true
+    expect(result.has(env.quad(secondResource, env.ns.schema.mainEntityOfPage, secondPage))).to.be.true
+    expect(result.has(env.quad(page, env.ns.schema.headline, env.literal('First page')))).to.be.true
+    expect(result.has(env.quad(secondPage, env.ns.schema.headline, env.literal('Second page')))).to.be.true
+    expect(result.match(unrelatedPage).size).to.equal(0)
+    expect(explained.explain).to.be.true
+    expect(explained.type).to.equal('physical-json')
+    const nodes = planNodes(explained.data)
+    expect(nodes.some(node => node.logical === 'join-inner' && node.physical === 'bind-source')).to.be.true
+    expect(nodes.filter(node => node.logical === 'extend')).to.have.length(2)
+
+    // For this fixture, both ordinary execution and physical explain use one
+    // resource query followed by one batched VALUES lookup, not one per page.
+    for (const queries of [executionRequests, explainRequests]) {
+      expect(queries).to.have.length(2)
+      const lookup = queries.find(request => request.includes('<http://schema.org/headline>'))
+      expect(lookup).to.be.a('string')
+      const parsed = new Parser().parse(lookup!)
+      if (parsed.type !== 'query' || parsed.queryType !== 'SELECT') throw new Error('Expected a SELECT lookup')
+      const values = parsed.where?.find((pattern): pattern is ValuesPattern => pattern.type === 'values')
+      expect(values?.values.map(row => row['?page']?.value)).to.have.members([page.value, secondPage.value])
+    }
+  })
+
   it('keeps other data when no page matches', async function () {
     const { dataset } = await run('BIND(kopflos:pageUrl(?resource, schema:about) AS ?page)',
       '?resource schema:name ?name ; schema:url ?page')
@@ -80,7 +155,7 @@ describe('Pages query client', function () {
     expect(dataset.has(env.quad(resource, env.ns.schema.name, env.literal('Resource')))).to.be.true
   })
 
-  for (const args of ['"literal", schema:mainEntity', '?resource, "literal"', '?missing, schema:mainEntity']) {
+  for (const args of ['', '?resource', '?resource, schema:mainEntity, schema:about', '"literal", schema:mainEntity', '?resource, "literal"', '?missing, schema:mainEntity']) {
     it(`leaves the page unbound for invalid or unbound arguments: ${args}`, async function () {
       const { dataset } = await run(`BIND(kopflos:pageUrl(${args}) AS ?page)`,
         '?resource schema:name ?name ; schema:url ?page')
@@ -95,10 +170,63 @@ describe('Pages query client', function () {
     expect(dataset.size).to.equal(1)
   })
 
-  it('supports nested function expressions without pushing pageUrl to the endpoint', async function () {
-    const { dataset } = await run('BIND(STR(kopflos:pageUrl(?resource, schema:mainEntityOfPage)) AS ?url)',
-      '?resource schema:url ?url')
+  it('allows further expressions on a separately bound page IRI', async function () {
+    const { dataset } = await run(`BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)
+      BIND(STR(?page) AS ?url)`,
+    '?resource schema:url ?url')
     expect(dataset.has(env.quad(resource, env.ns.schema.url, env.literal(page.value)))).to.be.true
+  })
+
+  it('supports sibling pageUrl calls composed with other functions', async function () {
+    const { dataset } = await run(`BIND(CONCAT(
+      STR(kopflos:pageUrl(?resource, schema:mainEntityOfPage)),
+      "#",
+      STR(kopflos:pageUrl(IRI(STR(?resource)), schema:mainEntity))
+    ) AS ?url)`, '?resource schema:url ?url')
+    expect(dataset.has(env.quad(resource, env.ns.schema.url, env.literal(`${page.value}#${page.value}`)))).to.be.true
+  })
+
+  it('resolves nested pageUrl calls in dependency order', async function () {
+    const routes = [...patterns, {
+      path: env.ns.schema.about,
+      resourcePattern: env.literal('^http://example.org/page/(?<id>.+)$'),
+      pagePattern: env.literal('http://example.org/landing/(?<id>.+)'),
+    }]
+    const { dataset } = await run(`BIND(kopflos:pageUrl(
+      kopflos:pageUrl(?resource, schema:mainEntityOfPage), schema:about
+    ) AS ?page)`, '?resource schema:url ?page', routes)
+    expect(dataset.has(env.quad(resource, env.ns.schema.url, env.namedNode('http://example.org/landing/123')))).to.be.true
+  })
+
+  it('preserves COALESCE and IF behavior when an extracted call has no match', async function () {
+    const { dataset } = await run(`
+      BIND(COALESCE(STR(kopflos:pageUrl(?resource, schema:about)), "fallback") AS ?fallback)
+      BIND(IF(true, "selected", STR(kopflos:pageUrl(?resource, schema:about))) AS ?selected)
+    `, '?resource schema:name ?fallback ; schema:description ?selected')
+    expect(dataset.has(env.quad(resource, env.ns.schema.name, env.literal('fallback')))).to.be.true
+    expect(dataset.has(env.quad(resource, env.ns.schema.description, env.literal('selected')))).to.be.true
+  })
+
+  it('visits pageUrl calls inside IN tuples', async function () {
+    const { dataset } = await run(`BIND(<${page.value}> IN (
+      kopflos:pageUrl(?resource, schema:mainEntityOfPage), <http://example.org/other>
+    ) AS ?matched)`, '?resource schema:value ?matched')
+    expect(dataset.has(env.quad(resource, env.ns.schema.value, env.literal('true', env.ns.xsd.boolean)))).to.be.true
+  })
+
+  it('allows COALESCE to recover from missing pageUrl arguments', async function () {
+    const { dataset } = await run('BIND(COALESCE(STR(kopflos:pageUrl(?resource)), "fallback") AS ?url)',
+      '?resource schema:url ?url')
+    expect(dataset.has(env.quad(resource, env.ns.schema.url, env.literal('fallback')))).to.be.true
+  })
+
+  it('keeps pageUrl calls in EXISTS graph patterns within their inner BIND scope', async function () {
+    const { dataset } = await run(`BIND(EXISTS {
+      VALUES ?target { <${resource.value}> }
+      BIND(kopflos:pageUrl(?target, schema:mainEntityOfPage) AS ?inner)
+      FILTER(?inner = <${page.value}>)
+    } AS ?matched)`, '?resource schema:value ?matched')
+    expect(dataset.has(env.quad(resource, env.ns.schema.value, env.literal('true', env.ns.xsd.boolean)))).to.be.true
   })
 
   it('keeps failed resolutions inside OPTIONAL from dropping other data', async function () {
