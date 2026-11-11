@@ -25,6 +25,54 @@ describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
     sinon.restore()
   })
 
+  for (const expression of ['BIND(<urn:custom>(?s) AS ?value)', 'FILTER(<urn:custom>(?s))']) {
+    it(`preserves ordinary custom functions in ${expression}`, function () {
+      // Given
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`SELECT * WHERE { ?s ?p ?o . ${expression} }`)
+
+      // When
+      const rewritten = processor.process(parsed)
+
+      // Then
+      expect(serializeQuery(rewritten)).to.equal(serializeQuery(parsed))
+      expect(processor.usesPageUrl).to.be.false
+    })
+  }
+
+  for (const triple of ['?s schema:about <urn:page>', '?s schema:about/schema:url ?page', '[] schema:about ?page']) {
+    it(`rejects unsupported legacy SERVICE triples: ${triple}`, function () {
+      // Given
+      sinon.stub(logger, 'warn')
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`${prefixes} SELECT * WHERE { SERVICE kopflos:Pages { ${triple} } }`)
+
+      // When
+      const process = () => processor.process(parsed)
+
+      // Then
+      expect(process).to.throw('Deprecated SERVICE kopflos:Pages requires a variable object and a simple relationship')
+      expect(processor.usesPageUrl).to.be.false
+    })
+  }
+
+  it('translates a NamedNode subject in a legacy SERVICE', function () {
+    // Given
+    sinon.stub(logger, 'warn')
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes} SELECT * WHERE {
+      SERVICE kopflos:Pages { <urn:resource> schema:mainEntityOfPage ?page }
+    }`)
+
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
+
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
+  })
+
   it('translates deprecated SERVICE syntax and logs a warning', function () {
     // Given
     const warn = sinon.stub(logger, 'warn')

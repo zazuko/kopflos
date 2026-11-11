@@ -33,8 +33,4 @@ export default class BindExpressionProcessor<F extends Required<DataFactory>> ex
     // Graph expressions contain independent BIND scopes.
     return this.processGraphPatterns(patterns)
   }
-
-  protected clone() {
-    return new BindExpressionProcessor(this.factory, this.processGraphPatterns)
-  }
 }

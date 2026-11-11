@@ -77,6 +77,15 @@ WHERE {
 }"
 `;
 
+exports[`@kopflos-labs/pages/lib/SparqlProcessor translates a NamedNode subject in a legacy SERVICE 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+SELECT * WHERE {
+  BIND(kopflos:pageUrl(<urn:resource>, schema:mainEntityOfPage) AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+}"
+`;
+
 exports[`@kopflos-labs/pages/lib/SparqlProcessor translates deprecated SERVICE syntax and logs a warning 1`] = `
 "PREFIX kopflos: <https://kopflos.described.at/>
 PREFIX schema: <http://schema.org/>

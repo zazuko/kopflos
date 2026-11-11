@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import env from '@zazuko/env-node'
-import { createPageUrl } from '../../lib/pageUrl.js'
+import { createPageUrl, createPageUrlExtension } from '../../lib/pageUrl.js'
 import type { Bindings } from '../../queries/page-patterns.rq'
 
 describe('@kopflos-labs/pages/lib/pageUrl', function () {
@@ -10,6 +10,58 @@ describe('@kopflos-labs/pages/lib/pageUrl', function () {
     pagePattern: env.literal('^http://example.org/page/(?<id>.+)$'),
   }
   const resource = env.namedNode('http://example.org/resource/123')
+
+  it('resolves routes without an explicit relationship for mainEntityOfPage', function () {
+    // Given
+    const resolve = createPageUrl([{ resourcePattern: pattern.resourcePattern, pagePattern: pattern.pagePattern }], env)
+
+    // When
+    const page = resolve([resource, env.ns.schema.mainEntityOfPage])
+
+    // Then
+    expect(page).to.eq(env.namedNode('http://example.org/page/123'))
+  })
+
+  for (const relationship of [env.ns.schema.mainEntity, env.ns.schema.about]) {
+    it(`rejects ${relationship.value} for routes without an explicit relationship`, function () {
+      // Given
+      const resolve = createPageUrl([{ resourcePattern: pattern.resourcePattern, pagePattern: pattern.pagePattern }], env)
+
+      // When
+      const page = () => resolve([resource, relationship])
+
+      // Then
+      expect(page).to.throw('No matching page URL')
+    })
+  }
+
+  it('propagates unexpected errors from the page URL extension', async function () {
+    // Given
+    const resolve = createPageUrlExtension([pattern], env)
+    const error = new Error('Term comparison failed')
+    const relationship = {
+      termType: 'NamedNode' as const,
+      value: env.ns.schema.mainEntityOfPage.value,
+      equals() { throw error },
+    }
+
+    // When
+    const page = resolve([resource, relationship])
+
+    // Then
+    await expect(page).to.be.rejectedWith(error)
+  })
+
+  it('returns a boolean failure sentinel for unmatched page URLs', async function () {
+    // Given
+    const resolve = createPageUrlExtension([], env)
+
+    // When
+    const page = await resolve([resource, env.ns.schema.mainEntityOfPage])
+
+    // Then
+    expect(page).to.eq(env.literal('false', env.ns.xsd.boolean))
+  })
 
   it('requires both IRI arguments', function () {
     const resolve = createPageUrl([pattern], env)

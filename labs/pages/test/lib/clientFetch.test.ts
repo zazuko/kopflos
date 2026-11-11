@@ -7,6 +7,70 @@ import { clientFetch } from '../../lib/clientFetch.js'
 import { clientSourceUrl } from '../../lib/sparqlRequest.js'
 
 describe('clientFetch', function () {
+  it('returns an empty service description for source metadata requests', async function () {
+    // Given
+    const { stream: client } = createInMemoryClients()
+    const select = sinon.spy(client.query, 'select')
+    const ask = sinon.spy(client.query, 'ask')
+
+    // When
+    const response = await clientFetch(client)(clientSourceUrl)
+
+    // Then
+    expect(response.headers.get('content-type')).to.equal('text/turtle')
+    expect(await response.text()).to.equal('')
+    expect(select).not.to.have.been.called
+    expect(ask).not.to.have.been.called
+  })
+
+  it('delegates external sources to global fetch', async function () {
+    // Given
+    const { stream: client } = createInMemoryClients()
+    const expected = new Response('external results')
+    const externalFetch = sinon.stub(globalThis, 'fetch').resolves(expected)
+    const input = 'https://example.org/sparql'
+    const init = { headers: { accept: 'application/sparql-results+json' } }
+
+    try {
+      // When
+      const response = await clientFetch(client)(input, init)
+
+      // Then
+      expect(response).to.equal(expected)
+      expect(externalFetch).to.have.been.calledOnceWithExactly(input, init)
+    }
+    finally {
+      externalFetch.restore()
+    }
+  })
+
+  for (const query of ['CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }', 'INSERT DATA { <urn:s> <urn:p> <urn:o> }']) {
+    it(`rejects unsupported queries: ${query}`, async function () {
+      // Given
+      const { stream: client } = createInMemoryClients()
+
+      // When
+      const response = clientFetch(client)(`${clientSourceUrl}?query=${encodeURIComponent(query)}`)
+
+      // Then
+      await expect(response).to.be.rejectedWith('Page sources support SELECT and ASK queries')
+    })
+  }
+
+  it('rejects unsupported RDF result terms through the response body', async function () {
+    // Given
+    const { stream: client } = createInMemoryClients()
+    const query = 'SELECT ?value WHERE { ?s ?p ?value }'
+    sinon.stub(client.query, 'select').returns(Readable.from([{ value: env.variable('unsupported') }]))
+
+    // When
+    const response = await clientFetch(client)(`${clientSourceUrl}?query=${encodeURIComponent(query)}`)
+    const result = response.text()
+
+    // Then
+    await expect(result).to.be.rejectedWith('Unsupported SPARQL result term: Variable')
+  })
+
   it('delegates ASK queries to the configured client', async function () {
     // Given
     const { stream: client } = createInMemoryClients()

@@ -1,10 +1,22 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
 import StreamClient from 'sparql-http-client/StreamClient.js'
+import { createInMemoryClients } from '../../../../packages/in-memory/index.js'
 import { endpointFetch } from '../../lib/endpointFetch.js'
 import { clientSourceUrl } from '../../lib/sparqlRequest.js'
 
 describe('endpointFetch', function () {
+  it('rejects clients without an endpoint URL', function () {
+    // Given
+    const { stream: client } = createInMemoryClients()
+
+    // When
+    const createFetch = () => endpointFetch(client)
+
+    // Then
+    expect(createFetch).to.throw('Page URL queries require a SPARQL endpoint URL')
+  })
+
   it('fetches endpoint metadata using the configured transport and authentication', async function () {
     const transport = sinon.stub().resolves(new Response('', { headers: { 'content-type': 'text/turtle' } }))
     const client = new StreamClient({ endpointUrl: 'https://example.org/sparql', user: 'user', password: 'password', fetch: transport })

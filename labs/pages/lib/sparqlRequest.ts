@@ -7,7 +7,7 @@ export async function sparqlRequest(input: Parameters<typeof fetch>[0], init?: R
   // Comunica 4 appends ?query= even when a SERVICE IRI already has selectors.
   if (!url.searchParams.has('query') && url.search.includes('?query=')) {
     url.search = url.search.replace('?query=', '&query=')
-    input = request ? new Request(url, request) : url.href
+    input = request ? new Request(url, request.clone()) : url.href
   }
   const headers = new Headers(init?.headers ?? request?.headers)
   const body = init?.body != null

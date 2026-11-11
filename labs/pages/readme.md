@@ -370,7 +370,7 @@ No match, invalid argument types, or multiple distinct matching URLs cause an ex
 
 The [benchmark report](benchmark/report.html) compares `kopflos:pageUrl` with the previous `SERVICE` + `PageUrlTransform` implementation. Download the self-contained HTML file and open it directly in a browser to explore latency, memory, CPU time, response sizes, and execution diagrams without a server.
 
-In the recorded synthetic Oxigraph 0.4.7 workloads, warmed latency was similar with one route and about 18–21× faster with 20 routes. The new implementation retained about 30 MiB more Node heap and incurred additional first-use initialization cost. All benchmarked resources were selected by the query and matched exactly one page route; routing-graph loading and HTML rendering were excluded. Production results depend on the endpoint, query shape, data, and network.
+In the recorded synthetic Oxigraph 0.4.7 workloads, warmed requests were about 18–19× faster with 20 routes. With one route, the observed latency ranges overlapped. The new implementation retained about 30 MiB more Node heap and incurred additional first-use initialization cost. All benchmarked resources were selected by the query and matched exactly one page route; routing-graph loading and HTML rendering were excluded. Production results depend on the endpoint, query shape, data, and network.
 
 See the [raw measurements and methodology](benchmark/results.json) and [benchmark harness](benchmark/run.mjs) for details and reproduction instructions.
 
