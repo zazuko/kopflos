@@ -10,6 +10,7 @@ import type { ValuesPattern } from 'sparqljs'
 import { createPageUrlExtension } from '../../lib/pageUrl.js'
 import { queryClient } from '../../lib/queryClient.js'
 import SparqlProcessor from '../../lib/SparqlProcessor.js'
+import { createInMemoryClients } from '../../../../packages/in-memory/index.js'
 
 const prefixes = 'PREFIX kopflos: <https://kopflos.described.at/> PREFIX schema: <http://schema.org/>'
 const resource = env.namedNode('http://example.org/resource/123')
@@ -33,12 +34,58 @@ function planNodes(node: PhysicalPlanNode): PhysicalPlanNode[] {
 describe('Pages query client', function () {
   this.timeout(20000)
 
-  function setup(quads = [env.quad(resource, env.ns.schema.name, env.literal('Resource'))]) {
+  for (const resolution of [
+    'BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)',
+    'SERVICE kopflos:Pages { ?resource schema:mainEntityOfPage ?page }',
+  ]) {
+    it(`resolves pages with the in-memory client: ${resolution}`, async function () {
+      // Given
+      const { stream: client } = createInMemoryClients()
+      await client.query.update(`INSERT DATA { GRAPH <urn:data> { <${resource.value}> <http://schema.org/name> "Resource" } }`)
+      const processor = new SparqlProcessor(env)
+      const query = new Generator().stringify(processor.process(new Parser().parse(`${prefixes}
+        CONSTRUCT { ?resource schema:mainEntityOfPage ?page ; schema:name ?name }
+        WHERE { ?resource schema:name ?name . ${resolution} FILTER(BOUND(?page)) }`)))
+
+      // When
+      const result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env), env).query.construct(query))
+
+      // Then
+      expect(result.size).to.equal(2)
+      expect(result.has(env.quad(resource, env.ns.schema.mainEntityOfPage, page))).to.be.true
+      expect(result.has(env.quad(resource, env.ns.schema.name, env.literal('Resource')))).to.be.true
+    })
+  }
+
+  it('preserves named graphs and RDF term types with the in-memory client', async function () {
+    // Given
+    const { stream: client } = createInMemoryClients()
+    await client.query.update(`INSERT DATA { GRAPH <urn:data> {
+      <${resource.value}> <http://schema.org/name> "Ressource"@de ; <http://schema.org/value> 42 ; <http://schema.org/about> _:detail .
+    } }`)
+    const processor = new SparqlProcessor(env)
+    const query = new Generator().stringify(processor.process(new Parser().parse(`${prefixes}
+      CONSTRUCT { ?page schema:name ?name ; schema:value ?value ; schema:about ?detail ; schema:isPartOf ?graph }
+      WHERE { GRAPH ?graph { ?resource schema:name ?name ; schema:value ?value ; schema:about ?detail }
+        BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page) }`)))
+
+    // When
+    const result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env), env).query.construct(query))
+
+    // Then
+    expect(result.size).to.equal(4)
+    expect(result.has(env.quad(page, env.ns.schema.name, env.literal('Ressource', 'de')))).to.be.true
+    expect(result.has(env.quad(page, env.ns.schema.value, env.literal('42', env.ns.xsd.integer)))).to.be.true
+    expect(result.has(env.quad(page, env.ns.schema.isPartOf, env.namedNode('urn:data')))).to.be.true
+    expect([...result.match(page, env.ns.schema.about)][0].object.termType).to.equal('BlankNode')
+  })
+
+  function setup(quads = [env.quad(resource, env.ns.schema.name, env.literal('Resource'))], endpointUrl = 'https://example.com/sparql') {
     const remoteEngine = new QueryEngine()
     const dataset = env.dataset(quads)
     const requests: string[] = []
     const client = new StreamClient({
-      endpointUrl: 'https://example.com/sparql',
+      endpointUrl,
       user: 'user',
       password: 'password',
       fetch: async (input, init) => {
@@ -65,12 +112,61 @@ describe('Pages query client', function () {
     return { client, requests }
   }
 
+  it('queries configured and SERVICE graphs through the same authenticated transport', async function () {
+    // Given
+    const { client, requests } = setup(undefined, 'https://example.com/sparql?default-graph-uri=urn:a')
+    const configuredFetch = client.fetch
+    client.headers!.set('x-client', 'custom')
+    const serviceEngine = new QueryEngine()
+    const serviceData = env.dataset([env.quad(resource, env.ns.schema.description, env.literal('From graph b'))])
+    const serviceRequests: string[] = []
+    sinon.stub(client, 'fetch').callsFake(async (input, init) => {
+      const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url)
+      expect(new Headers(init?.headers).get('authorization')).to.equal(client.headers!.get('authorization'))
+      expect(new Headers(init?.headers).get('x-client')).to.equal('custom')
+      if (url.searchParams.get('default-graph-uri') === 'urn:a') return configuredFetch(input, init)
+      const body = String(init?.body ?? '')
+      const query = url.searchParams.get('query') ?? new URLSearchParams(body).get('query') ?? body
+      expect(url.searchParams.get('default-graph-uri')).to.equal('urn:b')
+      if (!query) return new Response(`<> <http://www.w3.org/ns/sparql-service-description#endpoint> <${url.href}> .`, { headers: { 'content-type': 'text/turtle' } })
+      serviceRequests.push(query)
+      const result = await serviceEngine.query(query, { sources: [serviceData] })
+      const serialized = await serviceEngine.resultToString(result, 'application/sparql-results+json')
+      return new Response(Readable.toWeb(Readable.from(serialized.data)) as ReadableStream, { headers: { 'content-type': 'application/sparql-results+json' } })
+    })
+    const externalFetch = sinon.stub(globalThis, 'fetch').rejects(new Error('Same-endpoint queries must use the configured transport'))
+    const processor = new SparqlProcessor(env)
+    const query = new Generator().stringify(processor.process(new Parser().parse(`${prefixes}
+      CONSTRUCT { ?page schema:name ?name ; schema:description ?description }
+      WHERE {
+        ?resource schema:name ?name .
+        SERVICE <https://example.com/sparql?default-graph-uri=urn:b> { ?resource schema:description ?description }
+        BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)
+      }`)))
+
+    try {
+      // When
+      const result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env), env).query.construct(query))
+
+      // Then
+      expect(result.size).to.equal(2)
+      expect(result.has(env.quad(page, env.ns.schema.name, env.literal('Resource')))).to.be.true
+      expect(result.has(env.quad(page, env.ns.schema.description, env.literal('From graph b')))).to.be.true
+      expect(serviceRequests.length).to.be.greaterThan(0)
+      expect(requests.length).to.be.greaterThan(0)
+      expect(externalFetch).not.to.have.been.called
+    }
+    finally {
+      externalFetch.restore()
+    }
+  })
+
   async function run(where: string, template = '?page schema:mainEntity ?resource ; schema:url ?page', routes = patterns) {
     const { client, requests } = setup()
     const processor = new SparqlProcessor(env)
     const query = new Generator().stringify(processor.process(new Parser().parse(`${prefixes}
       CONSTRUCT { ${template} } WHERE { ?resource schema:name ?name . ${where} }`)))
-    const stream = queryClient(client, processor, createPageUrlExtension(routes, env)).query.construct(query)
+    const stream = queryClient(client, processor, createPageUrlExtension(routes, env), env).query.construct(query)
     const quads = []
     for await (const quad of stream) quads.push(quad)
     return { dataset: env.dataset(quads), requests }
@@ -113,7 +209,7 @@ describe('Pages query client', function () {
     let executionRequests: string[]
     let explainRequests: string[]
     try {
-      result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env)).query.construct(query))
+      result = await env.dataset().import(queryClient(client, processor, createPageUrlExtension(patterns, env), env).query.construct(query))
       executionRequests = [...requests]
       requests.length = 0
       const call = execution.firstCall
@@ -254,7 +350,7 @@ describe('Pages query client', function () {
     const { client } = setup()
     const construct = sinon.stub(client.query, 'construct').returns(Readable.from([]))
     const query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }'
-    const stream = queryClient(client, new SparqlProcessor(env), createPageUrlExtension(patterns, env)).query.construct(query)
+    const stream = queryClient(client, new SparqlProcessor(env), createPageUrlExtension(patterns, env), env).query.construct(query)
     stream.resume()
     await finished(stream)
     expect(construct).to.have.been.calledOnceWith(query)
@@ -265,7 +361,7 @@ describe('Pages query client', function () {
     sinon.stub(client, 'postDirect').rejects(new Error('Endpoint unavailable'))
     const processor = new SparqlProcessor(env)
     processor.usesPageUrl = true
-    const stream = queryClient(client, processor, createPageUrlExtension(patterns, env)).query.construct(`${prefixes}
+    const stream = queryClient(client, processor, createPageUrlExtension(patterns, env), env).query.construct(`${prefixes}
       CONSTRUCT { ?resource schema:url ?page } WHERE {
         ?resource schema:name ?name . BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)
       }`)

@@ -146,7 +146,7 @@ export async function executeQuery({ query, parameters, mainEntity, shape, const
   const processor = new SparqlProcessor(env)
   const result = await construct(params, {
     env,
-    client: queryClient(client, processor, createPageUrlExtension(pagePatterns, env, constraints)),
+    client: queryClient(client, processor, createPageUrlExtension(pagePatterns, env, constraints), env),
     processors: [processor],
   })
   const datasetPromise = env.dataset().import(result)

@@ -62,7 +62,7 @@ async function execute() {
     const text = new Generator().stringify(rewritten)
     const source = options.kind === 'legacy'
       ? client.query.construct(text)
-      : queryClient(client, processor, createPageUrlExtension(pages, env)).query.construct(text)
+      : queryClient(client, processor, createPageUrlExtension(pages, env), env).query.construct(text)
     const result = options.kind === 'legacy' ? source.pipe(new PageUrlTransform(pages, env)) : source
     if (result !== source) source.on('error', error => result.destroy(error))
     result.on('data', () => {
