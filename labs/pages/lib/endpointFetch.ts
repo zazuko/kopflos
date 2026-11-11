@@ -36,7 +36,10 @@ export function endpointFetch(client: StreamClient, sourceUrl = client.endpointU
     else {
       const mergedHeaders = new Headers(client.headers)
       headers.forEach((value, key) => mergedHeaders.set(key, value))
-      response = await transport.fetch(configuredSource ? endpoint : request.input, { ...init, headers: mergedHeaders })
+      const input = configuredSource
+        ? request.input instanceof Request ? new Request(endpoint, request.input.clone()) : endpoint
+        : request.input
+      response = await transport.fetch(input, { ...init, headers: mergedHeaders })
     }
     // sparql-http-client's default fetch exposes a Node readable body.
     if (response.body instanceof Readable) {

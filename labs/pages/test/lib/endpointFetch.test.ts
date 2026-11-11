@@ -87,6 +87,59 @@ describe('endpointFetch', function () {
     expect(String(transport.firstCall.args[0])).to.equal(client.endpointUrl)
   })
 
+  it('preserves Request options when rewriting the source metadata URL', async function () {
+    // Given
+    const transport = sinon.stub().resolves(new Response(''))
+    const client = new StreamClient({ endpointUrl: 'https://example.org/sparql?default-graph-uri=urn:a', user: 'user', password: 'password', fetch: transport })
+    const controller = new AbortController()
+    const input = new Request(clientSourceUrl, {
+      method: 'POST',
+      body: 'metadata',
+      headers: { 'content-type': 'text/plain', 'x-request': 'custom' },
+      signal: controller.signal,
+      credentials: 'include',
+      cache: 'no-store',
+      redirect: 'manual',
+    })
+
+    // When
+    await endpointFetch(client, clientSourceUrl)(input)
+    const forwarded = new Request(...transport.firstCall.args as [RequestInfo, RequestInit])
+    controller.abort()
+
+    // Then
+    expect(forwarded.url).to.equal(client.endpointUrl)
+    expect(forwarded.method).to.equal('POST')
+    expect(await forwarded.text()).to.equal('metadata')
+    expect(forwarded.headers.get('x-request')).to.equal('custom')
+    expect(forwarded.headers.get('authorization')).to.equal(client.headers!.get('authorization'))
+    expect(forwarded.credentials).to.equal('include')
+    expect(forwarded.cache).to.equal('no-store')
+    expect(forwarded.redirect).to.equal('manual')
+    expect(forwarded.signal.aborted).to.be.true
+    expect(await input.text()).to.equal('metadata')
+  })
+
+  it('applies init overrides when rewriting a metadata Request', async function () {
+    // Given
+    const transport = sinon.stub().resolves(new Response(''))
+    const client = new StreamClient({ endpointUrl: 'https://example.org/sparql', headers: { 'x-client': 'custom' }, fetch: transport })
+    const input = new Request(clientSourceUrl, { method: 'POST', body: 'original', headers: { 'x-request': 'original' } })
+    const init = { method: 'PUT', body: 'replacement', headers: { 'x-request': 'override' } }
+
+    // When
+    await endpointFetch(client, clientSourceUrl)(input, init)
+    const forwarded = new Request(...transport.firstCall.args as [RequestInfo, RequestInit])
+
+    // Then
+    expect(forwarded.url).to.equal(client.endpointUrl)
+    expect(forwarded.method).to.equal('PUT')
+    expect(await forwarded.text()).to.equal('replacement')
+    expect(forwarded.headers.get('x-request')).to.equal('override')
+    expect(forwarded.headers.get('x-client')).to.equal('custom')
+    expect(await input.text()).to.equal('original')
+  })
+
   it('preserves SERVICE selectors when Comunica appends a second query separator', async function () {
     // Given
     const transport = sinon.stub().resolves(new Response('{}'))

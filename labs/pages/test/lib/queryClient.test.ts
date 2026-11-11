@@ -34,6 +34,34 @@ function planNodes(node: PhysicalPlanNode): PhysicalPlanNode[] {
 describe('Pages query client', function () {
   this.timeout(20000)
 
+  it('preserves client transport and query methods without changing the original client', async function () {
+    // Given
+    const transport = sinon.stub().resolves(new Response(JSON.stringify({ boolean: true })))
+    transport.onCall(3).resolves({
+      ok: true,
+      body: Readable.from([JSON.stringify({ head: { vars: ['s'] }, results: { bindings: [{ s: { type: 'uri', value: resource.value } }] } })]),
+    })
+    const client = new StreamClient({ endpointUrl: 'https://example.org/sparql', updateUrl: 'https://example.org/update', fetch: transport })
+    const originalConstruct = client.query.construct
+
+    // When
+    const wrapped = queryClient(client, new SparqlProcessor(env), createPageUrlExtension(patterns, env), env) as StreamClient
+    const answer = await wrapped.query.ask('ASK { ?s ?p ?o }')
+    const response = await wrapped.postDirect('SELECT * WHERE { ?s ?p ?o }')
+    await wrapped.query.update('INSERT DATA { <urn:s> <urn:p> <urn:o> }')
+    const rows = await Readable.from(wrapped.query.select('SELECT ?s WHERE { ?s ?p ?o }', { headers: { 'x-query': 'custom' } })).toArray()
+
+    // Then
+    expect(answer).to.be.true
+    expect(response.ok).to.be.true
+    expect(transport.callCount).to.equal(4)
+    expect(rows).to.deep.equal([{ s: resource }])
+    expect(new Headers(transport.lastCall.args[1].headers).get('x-query')).to.equal('custom')
+    expect(wrapped.fetch).to.equal(client.fetch)
+    expect(client.query.construct).to.equal(originalConstruct)
+    expect(wrapped.query.construct).not.to.equal(originalConstruct)
+  })
+
   for (const resolution of [
     'BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)',
     'SERVICE kopflos:Pages { ?resource schema:mainEntityOfPage ?page }',
