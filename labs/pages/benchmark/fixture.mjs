@@ -1,4 +1,3 @@
-/* eslint require-extensions/require-extensions: off, require-extensions/require-index: off -- The plugin uses an API removed in ESLint 10. */
 export const scenarios = [
   { name: 'small', resources: 100, routes: 1, properties: 4 },
   { name: 'single-route', resources: 1000, routes: 1, properties: 4 },

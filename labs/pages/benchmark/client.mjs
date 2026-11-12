@@ -1,6 +1,3 @@
-/* eslint n/no-unsupported-features/node-builtins: off -- This benchmark targets Node 24. */
-/* eslint import-x/no-extraneous-dependencies: off, n/no-extraneous-import: off -- Uses the same development installation as the Pages tests. */
-/* eslint require-extensions/require-extensions: off, require-extensions/require-index: off -- The plugin uses an API removed in ESLint 10. */
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { pathToFileURL } from 'node:url'

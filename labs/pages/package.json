@@ -49,6 +49,7 @@
     "node-loader-sparql": "^0.2.3",
     "onetime": "^7.0.0",
     "rdf-literal": "^2.0.0",
+    "sparqljs": "^3.7.3",
     "vite-plugin-sparql": "^0.2.2"
   },
   "peerDependencies": {
@@ -86,5 +87,8 @@
     "require": [
       "node-loader-sparql"
     ]
+  },
+  "engines": {
+    "node": ">=24 || ^22.17"
   }
 }

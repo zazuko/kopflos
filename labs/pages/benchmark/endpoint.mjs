@@ -1,6 +1,3 @@
-/* eslint no-console: off -- Benchmark CLI progress and endpoint errors. */
-/* eslint import-x/no-extraneous-dependencies: off, n/no-extraneous-import: off -- Uses the same development installation as the Pages tests. */
-/* eslint require-extensions/require-extensions: off, require-extensions/require-index: off -- The plugin uses an API removed in ESLint 10. */
 import { createServer } from 'node:http'
 import { Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'

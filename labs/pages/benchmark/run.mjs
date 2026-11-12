@@ -1,6 +1,3 @@
-/* eslint no-console: off -- Benchmark CLI progress and endpoint errors. */
-/* eslint n/no-unsupported-features/node-builtins: off -- This benchmark targets Node 24. */
-/* eslint require-extensions/require-extensions: off, require-extensions/require-index: off -- The plugin uses an API removed in ESLint 10. */
 // Run from the repository root:
 // node labs/pages/benchmark/run.mjs --output /tmp/pages-benchmark.json
 // Native engine: create a temporary venv, install pyoxigraph==0.4.7, then add

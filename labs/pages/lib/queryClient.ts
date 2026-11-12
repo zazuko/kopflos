@@ -2,13 +2,13 @@ import { Readable } from 'node:stream'
 import onetime from 'onetime'
 import type { DataFactory } from '@rdfjs/types'
 import type { StreamClient } from 'sparql-http-client/StreamClient.js'
+import type StreamQuery from 'sparql-http-client/StreamQuery.js'
 import type { createPageUrlExtension } from './pageUrl.js'
 import { pageUrlFunction } from './pageUrl.js'
 import type SparqlProcessor from './SparqlProcessor.js'
 import { endpointFetch } from './endpointFetch.js'
 import { clientFetch } from './clientFetch.js'
 import { clientSourceUrl } from './sparqlRequest.js'
-import type StreamQuery from 'sparql-http-client/StreamQuery.js'
 
 // Load and instantiate Comunica only when a query needs local page resolution.
 // Reuse the engine, while keeping routes and transport credentials query-local.
