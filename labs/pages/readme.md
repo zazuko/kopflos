@@ -338,9 +338,9 @@ Summary of precedence when setting a parameter key:
 
 ---
 
-### 7. Resource-to-Page Routing with `SERVICE kopflos:Pages`
+### 7. Resource-to-Page Routing with `kopflos:pageUrl`
 
-`@kopflos-labs/pages` maintains a graph of page resource shapes (`kopflos:Pages`). You can link RDF resources to their corresponding HTML page URLs inside SPARQL queries using `SERVICE kopflos:Pages`:
+`@kopflos-labs/pages` maintains a graph of page resource shapes (`kopflos:Pages`). Resolve a resource to its HTML page IRI with `kopflos:pageUrl`:
 
 ```sparql
 PREFIX schema: <http://schema.org/>
@@ -352,19 +352,27 @@ CONSTRUCT {
 }
 WHERE {
   ?resource ?p ?o .
-
-  SERVICE kopflos:Pages {
-    ?resource schema:mainEntityOfPage ?pageUrl .
-  }
+  BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?pageUrl)
 }
 ```
 
-#### How it Works:
-1. **Multi-Property Resolution**: When querying `SERVICE kopflos:Pages`, the processor resolves triples matching property shapes defined across your pages:
-   - `?resource schema:mainEntityOfPage ?page` matches pages where `shape.property` defines `schema:mainEntity`.
-   - Direct predicate queries like `?resource schema:about ?page` match pages where `shape.property` defines `schema:about`.
-2. **Regex & Constraints Matching**: SPARQL pattern matching evaluates resource URIs against the compiled SHACL property patterns.
-3. **Stream URL Materialization**: During query stream execution (`PageUrlTransform`), capture groups from the resource URI are extracted and reverse-mapped through dictionary constraints (e.g. mapping `http://schema.org/` back to prefix `schema`) to materialize the exact page URL (e.g. `/schema:Person.html`).
+Call `kopflos:pageUrl` within a `BIND` expression in `WHERE`. Nested and sibling calls are supported, including `BIND(CONCAT(STR(kopflos:pageUrl(?resource, schema:about)), "#details") AS ?url)`. Calls may also use the result of another `pageUrl` call. Intermediate bindings stay within the originating BIND scope. Use the resulting variables in further expressions, filters, projections, and templates; direct calls outside BIND remain unsupported.
+
+Both arguments are required and must evaluate to IRIs: the resource and the relationship declared in the destination page's property shape. `schema:mainEntityOfPage` also matches shapes declaring `schema:mainEntity`; custom relationships such as `schema:about` match their corresponding property shapes.
+
+Pages evaluates the function locally with Comunica, using the configured query endpoint for RDF data. It matches resource patterns, extracts named capture groups, and reverse-maps dictionary alternatives to generate the destination page IRI. The IRI is available during query evaluation, including in filters and any position in the CONSTRUCT template. This is a Pages extension, not a function installed on your remote SPARQL endpoint.
+
+No match, invalid argument types, or multiple distinct matching URLs cause an expression error: `BIND` leaves the destination variable unbound and retains the other bindings. Add `FILTER(BOUND(?pageUrl))` if a matching page is required. Duplicate rules producing the same URL are accepted. Calls with missing or extra arguments also cause an expression error, leaving the BIND variable unbound.
+
+`SERVICE kopflos:Pages { }` is deprecated and rewritten as `BIND` statements. This syntax will be removed in a future breaking release; watch [the removal issue](https://github.com/zazuko/kopflos/issues/378).
+
+#### Performance benchmark
+
+The [benchmark report](benchmark/report.html) compares `kopflos:pageUrl` with the previous `SERVICE` + `PageUrlTransform` implementation. Download the self-contained HTML file and open it directly in a browser to explore latency, memory, CPU time, response sizes, and execution diagrams without a server.
+
+In the recorded synthetic Oxigraph 0.4.7 workloads, warmed requests were about 18–19× faster with 20 routes. With one route, the observed latency ranges overlapped. The new implementation retained about 30 MiB more Node heap and incurred additional first-use initialization cost. All benchmarked resources were selected by the query and matched exactly one page route; routing-graph loading and HTML rendering were excluded. Production results depend on the endpoint, query shape, data, and network.
+
+See the [raw measurements and methodology](benchmark/results.json) and [benchmark harness](benchmark/run.mjs) for details and reproduction instructions.
 
 ---
 

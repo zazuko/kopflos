@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { toRdf } from 'rdf-literal'
 import type { Environment } from '@rdfjs/environment/Environment.js'
 import type NsBuildersFactory from '@tpluscode/rdf-ns-builders'

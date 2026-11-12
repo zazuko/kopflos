@@ -1,262 +1,216 @@
 import { expect, use } from 'chai'
 import env from '@zazuko/env-node'
-import type { ServicePattern, GroupPattern, Pattern, ValuesPattern } from 'sparqljs'
+import sinon from 'sinon'
+import { Generator, Parser } from 'sparqljs'
+import type { SparqlQuery } from 'sparqljs'
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot'
-import { Generator, Parser, Wildcard } from 'sparqljs'
 import SparqlProcessor from '../../lib/SparqlProcessor.js'
-import type { Bindings } from '../../queries/page-patterns.rq'
+import { logger } from '../../lib/logger.js'
 
-use(jestSnapshotPlugin())
+const prefixes = 'PREFIX kopflos: <https://kopflos.described.at/> PREFIX schema: <http://schema.org/>'
+
+function serializeQuery(query: SparqlQuery): string {
+  const variables = new Map<string, string>()
+  return new Generator().stringify(query).replace(/\?__kopflos_pageUrl_[a-f0-9]{32}\b/g, (variable) => {
+    // Keep generated names stable while preserving distinct bindings and references.
+    if (!variables.has(variable)) variables.set(variable, `?__kopflos_pageUrl_${variables.size}`)
+    return variables.get(variable)!
+  })
+}
 
 describe('@kopflos-labs/pages/lib/SparqlProcessor', function () {
-  const pages: Bindings[] = [
-    {
-      path: env.ns.schema.mainEntityOfPage,
-      pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
-      resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
-    },
-  ]
+  use(jestSnapshotPlugin())
 
-  it('rewrites compiled SERVICE triples whose terms have no equals method', function () {
-    const processor = new SparqlProcessor(env, pages)
-    const query = new Parser().parse(`
-      CONSTRUCT { ?resource <http://schema.org/mainEntityOfPage> ?page }
-      WHERE {
-        SERVICE <https://kopflos.described.at/Pages> {
-          ?resource <http://schema.org/mainEntityOfPage> ?page
-        }
-      }
-    `)
-    const compiled = JSON.parse(JSON.stringify(query))
-    const service: ServicePattern = compiled.where[0]
-
-    const result = processor.processService(service) as Pattern[]
-    const values = result.find((p): p is ValuesPattern => p.type === 'values')
-    expect(values?.values).to.have.length(1)
-    expect(values?.values[0]['?pagePattern_resource']).to.equal(pages[0].pagePattern)
+  afterEach(function () {
+    sinon.restore()
   })
 
-  it('should ignore SERVICE clauses with other names', function () {
-    // given
-    const processor = new SparqlProcessor(env, pages)
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('http://example.org/other-service'),
-      patterns: [],
-      silent: false,
-    }
+  for (const expression of ['BIND(<urn:custom>(?s) AS ?value)', 'FILTER(<urn:custom>(?s))']) {
+    it(`preserves ordinary custom functions in ${expression}`, function () {
+      // Given
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`SELECT * WHERE { ?s ?p ?o . ${expression} }`)
 
-    // when
-    const result = processor.processService(service)
+      // When
+      const rewritten = processor.process(parsed)
 
-    // then
-    expect(result).to.deep.equal(service)
-  })
-
-  it('should rewrite SERVICE <https://kopflos.described.at/Pages>', function () {
-    // given
-    const processor = new SparqlProcessor(env, pages)
-    const resourceVar = env.variable('resource')
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [
-        {
-          type: 'bgp',
-          triples: [
-            {
-              subject: resourceVar,
-              predicate: env.ns.schema.mainEntityOfPage,
-              object: env.variable('page'),
-            },
-          ],
-        },
-      ],
-      silent: false,
-    }
-
-    // when
-    const result = processor.processService(service) as GroupPattern
-
-    // then
-    const query = new Generator().stringify({
-      type: 'query',
-      queryType: 'SELECT',
-      variables: [new Wildcard()],
-      where: [result],
-      prefixes: {},
+      // Then
+      expect(serializeQuery(rewritten)).to.equal(serializeQuery(parsed))
+      expect(processor.usesPageUrl).to.be.false
     })
+  }
+
+  for (const triple of ['?s schema:about <urn:page>', '?s schema:about/schema:url ?page', '[] schema:about ?page']) {
+    it(`rejects unsupported legacy SERVICE triples: ${triple}`, function () {
+      // Given
+      sinon.stub(logger, 'warn')
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`${prefixes} SELECT * WHERE { SERVICE kopflos:Pages { ${triple} } }`)
+
+      // When
+      const process = () => processor.process(parsed)
+
+      // Then
+      expect(process).to.throw('Deprecated SERVICE kopflos:Pages requires a variable object and a simple relationship')
+      expect(processor.usesPageUrl).to.be.false
+    })
+  }
+
+  it('translates a NamedNode subject in a legacy SERVICE', function () {
+    // Given
+    sinon.stub(logger, 'warn')
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes} SELECT * WHERE {
+      SERVICE kopflos:Pages { <urn:resource> schema:mainEntityOfPage ?page }
+    }`)
+
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
+
+    // Then
     expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
   })
 
-  it('should return empty group when resource variable is not found', function () {
-    // given
-    const processor = new SparqlProcessor(env, pages)
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [
-        {
-          type: 'bgp',
-          triples: [],
-        },
-      ],
-      silent: false,
-    }
+  it('translates deprecated SERVICE syntax and logs a warning', function () {
+    // Given
+    const warn = sinon.stub(logger, 'warn')
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes}
+      CONSTRUCT { ?resource schema:mainEntityOfPage ?page }
+      WHERE { SERVICE kopflos:Pages { ?resource schema:mainEntityOfPage ?page } }`)
+    const compiled = JSON.parse(JSON.stringify(parsed))
 
-    // when
-    const result = processor.processService(service)
+    // When
+    const rewritten = processor.process(compiled)
+    const query = serializeQuery(rewritten)
 
-    // then
-    expect(result).to.be.empty
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
+    expect(warn).to.have.been.calledOnceWith(sinon.match('deprecated'))
   })
 
-  it('should return empty group when service pattern has no BGP', function () {
-    // given
-    const processor = new SparqlProcessor(env, pages)
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [],
-      silent: false,
-    }
+  for (const contents of ['', 'FILTER(true)']) {
+    it(`warns when a legacy SERVICE has no supported triples: ${contents || 'empty group'}`, function () {
+      // Given
+      const warn = sinon.stub(logger, 'warn')
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`${prefixes}
+        CONSTRUCT { ?resource schema:mainEntityOfPage ?page }
+        WHERE { SERVICE kopflos:Pages { ${contents} } }`)
 
-    // when
-    const result = processor.processService(service)
+      // When
+      const rewritten = processor.process(parsed)
+      const query = serializeQuery(rewritten)
 
-    // then
-    expect(result).to.be.empty
-  })
-
-  it('should rewrite SERVICE <https://kopflos.described.at/Pages> with matching property path for schema.about', function () {
-    // given
-    const multiPages: Bindings[] = [
-      {
-        pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
-        resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
-        path: env.ns.schema.mainEntity,
-      },
-      {
-        pagePattern: env.literal('http://example.org/about/(?<prefix>.+)'),
-        resourcePattern: env.literal('^http://example.org/vocab/(?<prefix>.+)$'),
-        path: env.ns.schema.about,
-      },
-    ]
-    const processor = new SparqlProcessor(env, multiPages)
-    const resourceVar = env.variable('resource')
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [
-        {
-          type: 'bgp',
-          triples: [
-            {
-              subject: resourceVar,
-              predicate: env.ns.schema.about,
-              object: env.variable('aboutPage'),
-            },
-          ],
-        },
-      ],
-      silent: false,
-    }
-
-    // when
-    const result = processor.processService(service) as GroupPattern
-
-    // then
-    const query = new Generator().stringify({
-      type: 'query',
-      queryType: 'SELECT',
-      variables: [new Wildcard()],
-      where: [result],
-      prefixes: {},
+      // Then
+      expect(query).toMatchSnapshot()
+      expect(warn).to.have.been.calledWith(sinon.match('deprecated'))
+      expect(warn).to.have.been.calledWith('No supported triple patterns found in SERVICE kopflos:Pages')
+      expect(processor.usesPageUrl).to.be.false
     })
-    expect(query).to.contain('http://example.org/vocab/(?<prefix>.+)')
-    expect(query).to.not.contain('http://example.org/resource/(?<id>.+)')
-    expect(query).to.contain('AS ?aboutPage')
+  }
+
+  it('preserves other SERVICE clauses', function () {
+    // Given
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse('CONSTRUCT { ?s ?p ?o } WHERE { SERVICE <https://example.com/sparql> { ?s ?p ?o } }')
+
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
+
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.false
   })
 
-  it('should match pages with schema:mainEntity when query requests schema:mainEntityOfPage', function () {
-    // given
-    const mainEntityPages: Bindings[] = [
-      {
-        pagePattern: env.literal('http://example.org/page/(?<id>.+)'),
-        resourcePattern: env.literal('^http://example.org/resource/(?<id>.+)$'),
-        path: env.ns.schema.mainEntity,
-      },
-    ]
-    const processor = new SparqlProcessor(env, mainEntityPages)
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [
-        {
-          type: 'bgp',
-          triples: [
-            {
-              subject: env.variable('resource'),
-              predicate: env.ns.schema.mainEntityOfPage,
-              object: env.variable('page'),
-            },
-          ],
-        },
-      ],
-      silent: false,
-    }
+  it('recognizes exact pageUrl bindings inside OPTIONAL', function () {
+    // Given
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes} CONSTRUCT { ?s schema:url ?page } WHERE {
+      OPTIONAL { BIND(kopflos:pageUrl(?s, schema:about) AS ?page) }
+    }`)
 
-    // when
-    const result = processor.processService(service) as GroupPattern
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
 
-    // then
-    const query = new Generator().stringify({
-      type: 'query',
-      queryType: 'SELECT',
-      variables: [new Wildcard()],
-      where: [result],
-      prefixes: {},
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
+  })
+
+  it('rejects pageUrl outside BIND', function () {
+    // Given
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes}
+      CONSTRUCT { ?s schema:url ?page } WHERE {
+        FILTER(ISIRI(kopflos:pageUrl(?s, schema:about)))
+      }`)
+
+    // When
+    const process = () => processor.process(parsed)
+
+    // Then
+    expect(process).to.throw('within a BIND expression')
+    expect(processor.usesPageUrl).to.be.false
+  })
+
+  it('keeps extracted bindings inside their own BIND and OPTIONAL scopes', function () {
+    // Given
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes}
+      CONSTRUCT { ?s schema:url ?url } WHERE {
+        BIND(CONCAT(STR(kopflos:pageUrl(?s, schema:about)), "#details") AS ?url)
+        OPTIONAL { BIND(STR(kopflos:pageUrl(?s, schema:mainEntity)) AS ?other) }
+        BIND("unchanged" AS ?label)
+      }`)
+
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
+
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
+  })
+
+  it('recognizes pageUrl in SELECT subqueries', function () {
+    // Given
+    const processor = new SparqlProcessor(env)
+    const parsed = new Parser().parse(`${prefixes} CONSTRUCT { ?resource schema:url ?page } WHERE {
+      { SELECT ?resource ?page WHERE {
+        ?resource schema:name ?name .
+        BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?page)
+      } }
+    }`)
+
+    // When
+    const rewritten = processor.process(parsed)
+    const query = serializeQuery(rewritten)
+
+    // Then
+    expect(query).toMatchSnapshot()
+    expect(processor.usesPageUrl).to.be.true
+  })
+
+  for (const args of ['', '?s', '?s, schema:about, schema:name']) {
+    it(`defers invalid arity to expression evaluation: ${args}`, function () {
+      // Given
+      const processor = new SparqlProcessor(env)
+      const parsed = new Parser().parse(`${prefixes}
+        CONSTRUCT { ?s schema:url ?page } WHERE { BIND(kopflos:pageUrl(${args}) AS ?page) }`)
+
+      // When
+      const rewritten = processor.process(parsed)
+      const query = serializeQuery(rewritten)
+
+      // Then
+      expect(query).toMatchSnapshot()
+      expect(processor.usesPageUrl).to.be.true
     })
-    expect(query).to.contain('http://example.org/resource/(?<id>.+)')
-    expect(query).to.contain('http://example.org/page/(?<id>.+)')
-  })
-
-  it('should isolate internal pattern variables across multiple triples in SERVICE block', function () {
-    // given
-    const processor = new SparqlProcessor(env, pages)
-    const service: ServicePattern = {
-      type: 'service',
-      name: env.namedNode('https://kopflos.described.at/Pages'),
-      patterns: [
-        {
-          type: 'bgp',
-          triples: [
-            {
-              subject: env.variable('res1'),
-              predicate: env.ns.schema.mainEntityOfPage,
-              object: env.variable('page1'),
-            },
-            {
-              subject: env.variable('res2'),
-              predicate: env.ns.schema.mainEntityOfPage,
-              object: env.variable('page2'),
-            },
-          ],
-        },
-      ],
-      silent: false,
-    }
-
-    // when
-    const result = processor.processService(service) as Pattern[]
-
-    // then
-    const valuesPatterns = result.filter((p): p is ValuesPattern => p.type === 'values')
-    expect(valuesPatterns).to.have.length(2)
-    const firstVars = Object.keys(valuesPatterns[0].values[0])
-    const secondVars = Object.keys(valuesPatterns[1].values[0])
-    expect(firstVars).to.deep.equal(['?resourcePattern_res1', '?pagePattern_res1'])
-    expect(secondVars).to.deep.equal(['?resourcePattern_res2', '?pagePattern_res2'])
-    expect(firstVars.some(v => secondVars.includes(v))).to.be.false
-  })
+  }
 })

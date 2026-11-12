@@ -18,4 +18,10 @@ export default defineConfig([
     rules: {
       'n/no-unsupported-features/node-builtins': 'off',
     },
+  }, {
+    files: ['labs/pages/benchmark/*.mjs'],
+    rules: {
+      'import-x/no-extraneous-dependencies': 'off',
+      'no-console': 'off',
+    },
   }])

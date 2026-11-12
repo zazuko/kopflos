@@ -1,10 +1,109 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`@kopflos-labs/pages/lib/SparqlProcessor should rewrite SERVICE <https://kopflos.described.at/Pages> 1`] = `
-"SELECT * WHERE {
-  VALUES (?resourcePattern_resource ?pagePattern_resource) {
-    (\\"^http://example.org/resource/(?<id>.+)$\\" \\"http://example.org/page/(?<id>.+)\\")
-  }
-  BIND(IF(REGEX(STR(?resource), ?resourcePattern_resource), ?pagePattern_resource, 1  / 0 ) AS ?page)
+exports[`@kopflos-labs/pages/lib/SparqlProcessor defers invalid arity to expression evaluation:  1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?s schema:url ?page. }
+WHERE {
+  BIND(kopflos:pageUrl() AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
 }"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor defers invalid arity to expression evaluation: ?s 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?s schema:url ?page. }
+WHERE {
+  BIND(kopflos:pageUrl(?s) AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor defers invalid arity to expression evaluation: ?s, schema:about, schema:name 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?s schema:url ?page. }
+WHERE {
+  BIND(kopflos:pageUrl(?s, schema:about, schema:name) AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor keeps extracted bindings inside their own BIND and OPTIONAL scopes 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?s schema:url ?url. }
+WHERE {
+  BIND(kopflos:pageUrl(?s, schema:about) AS ?__kopflos_pageUrl_0)
+  BIND(CONCAT(STR(IRI(?__kopflos_pageUrl_0)), \\"#details\\") AS ?url)
+  OPTIONAL {
+    BIND(kopflos:pageUrl(?s, schema:mainEntity) AS ?__kopflos_pageUrl_1)
+    BIND(STR(IRI(?__kopflos_pageUrl_1)) AS ?other)
+  }
+  BIND(\\"unchanged\\" AS ?label)
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor preserves other SERVICE clauses 1`] = `
+"CONSTRUCT { ?s ?p ?o. }
+WHERE { SERVICE <https://example.com/sparql> { ?s ?p ?o. } }"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor recognizes exact pageUrl bindings inside OPTIONAL 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?s schema:url ?page. }
+WHERE {
+  OPTIONAL {
+    BIND(kopflos:pageUrl(?s, schema:about) AS ?__kopflos_pageUrl_0)
+    BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+  }
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor recognizes pageUrl in SELECT subqueries 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?resource schema:url ?page. }
+WHERE {
+  {
+    SELECT ?resource ?page WHERE {
+      ?resource schema:name ?name.
+      BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?__kopflos_pageUrl_0)
+      BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+    }
+  }
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor translates a NamedNode subject in a legacy SERVICE 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+SELECT * WHERE {
+  BIND(kopflos:pageUrl(<urn:resource>, schema:mainEntityOfPage) AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor translates deprecated SERVICE syntax and logs a warning 1`] = `
+"PREFIX kopflos: <https://kopflos.described.at/>
+PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?resource schema:mainEntityOfPage ?page. }
+WHERE {
+  BIND(kopflos:pageUrl(?resource, schema:mainEntityOfPage) AS ?__kopflos_pageUrl_0)
+  BIND(IRI(?__kopflos_pageUrl_0) AS ?page)
+}"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor warns when a legacy SERVICE has no supported triples: FILTER(true) 1`] = `
+"PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?resource schema:mainEntityOfPage ?page. }
+WHERE {  }"
+`;
+
+exports[`@kopflos-labs/pages/lib/SparqlProcessor warns when a legacy SERVICE has no supported triples: empty group 1`] = `
+"PREFIX schema: <http://schema.org/>
+CONSTRUCT { ?resource schema:mainEntityOfPage ?page. }
+WHERE {  }"
 `;

@@ -46,7 +46,7 @@ describe('pageData', function () {
       // then
       expect(result).to.be.ok
       expect(query).to.have.been.calledOnceWith(sinon.match.any, sinon.match({
-        client: env.sparql.default.stream,
+        client: sinon.match.has('type', 'default stream'),
       }))
     })
 
@@ -76,7 +76,7 @@ describe('pageData', function () {
 
       // then
       expect(query.query).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match.has('type', 'named stream'),
       }))
     })
 
@@ -108,7 +108,7 @@ describe('pageData', function () {
       // then
       expect(query.load).to.have.been.calledWith({ base: 'http://example.org/app#' })
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match.has('type', 'named stream'),
       }))
     })
 
@@ -145,7 +145,7 @@ describe('pageData', function () {
         'http://example.org/app#',
       )
       expect(loaded).to.have.been.calledWith(sinon.match.any, sinon.match({
-        client: env.sparql.named.stream,
+        client: sinon.match.has('type', 'named stream'),
       }))
     })
 
@@ -427,7 +427,10 @@ function mockSparqlFactory(...namedClients: string[]) {
     static exports = ['sparql']
     get sparql() {
       return Object.fromEntries(['default', ...namedClients].map(client => [client, {
-        stream: { type: `${client} stream` } as unknown as StreamClient,
+        stream: {
+          type: `${client} stream`,
+          query: { ask: sinon.stub(), select: sinon.stub(), update: sinon.stub(), construct: sinon.stub() },
+        } as unknown as StreamClient,
         parsed: { type: `${client}  parsed` } as unknown as ParsingClient,
       }]))
     }

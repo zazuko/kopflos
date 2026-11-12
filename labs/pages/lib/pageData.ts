@@ -15,7 +15,8 @@ import type { KopflosFactory, SparqlClientFactory } from '@kopflos-cms/core/env.
 import type { Bindings as PagePatternsRow } from '../queries/page-patterns.rq'
 import type { Shape } from './Plugin.js'
 import SparqlProcessor from './SparqlProcessor.js'
-import PageUrlTransform from './PageUrlTransform.js'
+import { createPageUrlExtension } from './pageUrl.js'
+import { queryClient } from './queryClient.js'
 import { fillTemplate } from './pageParameters.js'
 import type { Constraints } from './constraints.js'
 
@@ -142,19 +143,16 @@ export async function executeQuery({ query, parameters, mainEntity, shape, const
     }
   }
 
+  const processor = new SparqlProcessor(env)
   const result = await construct(params, {
     env,
-    client,
-    processors: [
-      new SparqlProcessor(env, pagePatterns),
-    ],
+    client: queryClient(client, processor, createPageUrlExtension(pagePatterns, env, constraints), env),
+    processors: [processor],
   })
-  const transformed = result.pipe(new PageUrlTransform(pagePatterns, env, constraints))
-  result.on('error', err => transformed.emit('error', err))
-  const datasetPromise = env.dataset().import(transformed)
+  const datasetPromise = env.dataset().import(result)
   const [dataset] = await Promise.all([
     datasetPromise,
-    finished(transformed),
+    finished(result as Readable),
   ])
 
   return env.clownface({

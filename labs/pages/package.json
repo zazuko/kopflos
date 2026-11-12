@@ -28,6 +28,7 @@
     "url": "https://github.com/zazuko/kopflos"
   },
   "dependencies": {
+    "@comunica/query-sparql": "^4.5.0",
     "@hydrofoil/sparql-processor": "^0.2.3",
     "@kopflos-cms/core": "^0.8.0",
     "@kopflos-cms/logger": "^0.1.0",
@@ -46,7 +47,9 @@
     "htmlparser2": "^10.1.0",
     "lit-html": "^3",
     "node-loader-sparql": "^0.2.3",
+    "onetime": "^7.0.0",
     "rdf-literal": "^2.0.0",
+    "sparqljs": "^3.7.3",
     "vite-plugin-sparql": "^0.2.2"
   },
   "peerDependencies": {
@@ -84,5 +87,8 @@
     "require": [
       "node-loader-sparql"
     ]
+  },
+  "engines": {
+    "node": ">=24 || ^22.17"
   }
 }
