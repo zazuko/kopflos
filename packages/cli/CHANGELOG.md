@@ -1,5 +1,11 @@
 # kopflos
 
+## 0.1.14
+
+### Patch Changes
+
+- c176e7b: Fix overlapping watch restarts and processes remaining alive after stopping the server. Debounce file changes by 200 ms to group multi-file saves into one restart.
+
 ## 0.1.13
 
 ### Patch Changes
