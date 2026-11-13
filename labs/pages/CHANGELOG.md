@@ -1,5 +1,17 @@
 # @kopflos-labs/pages
 
+## 0.4.0
+
+### Minor Changes
+
+- 3748470: Minimum node set to >=24 or ^22.17
+
+### Patch Changes
+
+- 791997d: Resolve page IRIs during query evaluation with Comunica using `kopflos:pageUrl(resource, relationship)`.
+
+  Deprecate `SERVICE kopflos:Pages { }` and translate supported triples to the new scalar function.
+
 ## 0.3.4
 
 ### Patch Changes
