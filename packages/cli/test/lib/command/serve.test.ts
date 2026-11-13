@@ -2,6 +2,9 @@
 import { fork } from 'node:child_process'
 import * as fs from 'node:fs'
 import url from 'node:url'
+import { once } from 'node:events'
+import { setTimeout as delay } from 'node:timers/promises'
+import { expect } from 'chai'
 import { createEmpty } from 'mocha-chai-rdf/store.js'
 import type { ServeArgs } from '../../../lib/command/serve.js'
 
@@ -27,9 +30,80 @@ describe('kopflos/lib/command/serve', function () {
     })
   })
 
-  afterEach(function () {
+  afterEach(async function () {
+    if (process.exitCode !== null || process.signalCode !== null) return
+
+    const exited = once(process, 'exit')
     process.kill()
+    await exited
   })
+
+  it('waits for 200 ms of quiet before requesting one restart for staggered saves', async function () {
+    // Given
+    const messages: unknown[] = []
+    await start()
+    process.on('message', message => messages.push(message))
+    const restarted = once(process, 'message')
+
+    // When
+    fs.writeFileSync(new URL('./burst-a.txt', fixturesDir), '')
+    await delay(120)
+
+    // Then
+    expect(messages).to.deep.equal([])
+
+    // When
+    fs.writeFileSync(new URL('./burst-b.txt', fixturesDir), '')
+    await delay(120)
+
+    // Then
+    expect(messages).to.deep.equal([])
+
+    // When
+    await restarted
+    await delay(250)
+
+    // Then
+    expect(messages).to.deep.equal(['restart'])
+  })
+
+  it('exits when the supervisor disconnects', async function () {
+    // Given
+    await start()
+    const exited = once(process, 'exit')
+
+    // When
+    process.disconnect()
+    const [code] = await exited
+
+    // Then
+    expect(code).to.equal(0)
+  })
+
+  it('exits cleanly on SIGTERM', async function () {
+    // Given
+    await start()
+    const exited = once(process, 'exit')
+
+    // When
+    process.kill('SIGTERM')
+    const [code] = await exited
+
+    // Then
+    expect(code).to.equal(0)
+  })
+
+  async function start() {
+    const ready = once(process, 'message')
+    process.send({
+      config: url.fileURLToPath(new URL('../../kopflos.config.ts', import.meta.url)),
+      variable: {},
+      watch: true,
+      port: 0,
+      host: '127.0.0.1',
+    })
+    await ready
+  }
 
   after(function () {
     fs.rmSync(fixturesDir, { recursive: true, force: true })
@@ -121,7 +195,6 @@ describe('kopflos/lib/command/serve', function () {
         if (payload === 'ready') {
           action(() => {
             done()
-            process.kill()
           })
         }
         else {
@@ -129,7 +202,7 @@ describe('kopflos/lib/command/serve', function () {
         }
       })
 
-      process.send(args)
+      process.send({ port: 0, host: '127.0.0.1', ...args })
     }
   }
 })
