@@ -1,4 +1,7 @@
+/* Process termination is required after cleanup: plugins may retain handles. */
+/* eslint-disable n/no-process-exit */
 import 'ulog'
+import { once } from 'node:events'
 import log from '@kopflos-cms/logger'
 import express from 'express'
 import * as chokidar from 'chokidar'
@@ -48,7 +51,9 @@ async function run({
 
   await instance.start()
 
-  const server = app.listen(port, host, () => {
+  const server = app.listen(port, host, (error?: Error) => {
+    if (error) throw error
+
     log.info(`Server running on ${port}. API URL: ${config.baseIri}`)
     instance.ready()
   })
@@ -57,19 +62,54 @@ async function run({
     ...config.watch || [],
     ...instance.plugins.flatMap(p => p.watchPaths?.(instance) || []),
   ]
+  let watcher: chokidar.FSWatcher | undefined
+  let restartTimer: ReturnType<typeof setTimeout> | undefined
+  let stopping = false
+
+  async function shutdown() {
+    if (stopping) return
+    stopping = true
+    clearTimeout(restartTimer)
+
+    // Plugins and active connections must not keep an orphaned child alive.
+    const timeout = setTimeout(() => process.exit(1), 5000)
+    timeout.unref()
+    try {
+      const closed = new Promise<void>((resolve, reject) => {
+        server.close(error => error ? reject(error) : resolve())
+      })
+      server.closeAllConnections()
+      await Promise.all([watcher?.close(), instance.stop(), closed])
+      process.exit(0)
+    }
+    catch (error) {
+      log.error(error)
+      process.exit(1)
+    }
+  }
+
+  process.on('SIGINT', shutdown)
+  process.on('SIGTERM', shutdown)
+  process.on('SIGHUP', shutdown)
+
   if (watch) {
     log.info(`Watch mode. Watching for changes in: ${watchPaths.join(', ')}`)
-    async function restartServer(path: string) {
-      log.info('Changes detected, restarting server')
-      log.debug(`Changed file: ${path}`)
+    let restarting = false
+    function restartServer(path: string) {
+      if (restarting || stopping) return
 
-      await instance.stop()
-      server.close(() => {
+      clearTimeout(restartTimer)
+      restartTimer = setTimeout(() => {
+        restarting = true
+
+        log.info('Changes detected, restarting server')
+        log.debug(`Changed file: ${path}`)
+
         process.send?.('restart')
-      })
+      }, 200)
     }
 
-    chokidar.watch(watchPaths, {
+    watcher = chokidar.watch(watchPaths, {
       cwd: instance.env.kopflos.basePath,
       ignored: /\.d\.ts$/i,
       ignoreInitial: true,
@@ -77,9 +117,13 @@ async function run({
       .on('change', restartServer)
       .on('add', restartServer)
       .on('unlink', restartServer)
+
+    await once(watcher, 'ready')
   }
 
   process.send?.('ready')
 }
 
-process.on('message', run)
+// If the supervisor is killed without a catchable signal, IPC still closes.
+process.once('disconnect', () => process.kill(process.pid, 'SIGTERM'))
+process.once('message', run)

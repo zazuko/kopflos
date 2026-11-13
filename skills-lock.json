@@ -29,6 +29,12 @@
       "version": "0.3.5",
       "computedHash": "dcbac7247ab14edb5cab93f1de8f08cdd73702b4d6062ed69e8bfebb7669dc8f"
     },
+    "node-cli-entrypoint": {
+      "source": "tpluscode/skills",
+      "sourceType": "github",
+      "skillPath": "skills/node-cli-entrypoint/SKILL.md",
+      "computedHash": "c302e31371ed4a158225e2fae860ca0567d61ca69f067efb6b64ed02c934c5ac"
+    },
     "node-loader-sparql": {
       "source": "node-loader-sparql",
       "sourceType": "node_modules",
